@@ -1,13 +1,15 @@
 #include <iostream>
 #include <thread>
 
+#include "Game/game.h"
+#include "Rendering/renderer.h"
 #include "TimeManagement/TimeManager.h"
 #include "FileIO/INI/INIParser.h"
 #include "src/logging.h"
 
 namespace
 {
-    const uint32_t runTimeSeconds = 10;
+    const uint32_t runTimeSeconds = 5;
     double initPos = 0;
     double speed = 100; // 100 m/s;
 }
@@ -24,6 +26,11 @@ int main(int argc, char **argv)
     VG::Time::TimeManager timeManager;
     timeManager.Init(fps);
     bool shouldTick = false;
+    
+    Game game;
+    game.Init();
+    Renderer renderer;
+    renderer.Init();
 
     while (true)
     {
@@ -33,6 +40,9 @@ int main(int argc, char **argv)
         {
             // VG::Log("Tick");
             initPos += speed * timeManager.GetDeltaTime();
+
+            game.Update(timeManager.GetDeltaTime());
+            renderer.Update(game.GetBuffer());
         }
 
         if (timeManager.GetTimeSinceStartup() > runTimeSeconds)
@@ -47,6 +57,8 @@ int main(int argc, char **argv)
     }
 
     timeManager.End();
+    game.End();
+    renderer.End();
 
     std::cout << "Final Pos: " << initPos << '\n';
 
