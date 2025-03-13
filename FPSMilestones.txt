@@ -4,4 +4,4 @@ FPS: 2.54154e+07
 
 March 12, 2025
 Added 100,000 simple debug messages with custom logging library.
-FPS: 7.47e+06
+FPS: 2.37625e+07
