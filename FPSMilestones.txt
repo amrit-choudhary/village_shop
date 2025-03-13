@@ -1,0 +1,7 @@
+March 12, 2025
+Basic game loop with delta time only.
+FPS: 2.54154e+07
+
+March 12, 2025
+Added 100,000 simple debug messages with custom logging library.
+FPS: 7.47e+06
