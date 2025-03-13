@@ -7,37 +7,46 @@
 
 namespace
 {
-    const uint32_t runTimeSeconds = 2;
+    const uint32_t runTimeSeconds = 10;
     double initPos = 0;
     double speed = 100; // 100 m/s;
 }
 
 int main(int argc, char **argv)
 {
-    TVG::Log("Game Start!");
+    VG::Log("Game Start!");
+
+    // Read game params from file.
+    INIMap iniMap = Load();
+    int fps = std::atoi(iniMap["settings"]["fps"].c_str());
 
     // Init global variables.
-    TimeManager timeManager;
-    timeManager.GameStart();
+    VG::Time::TimeManager timeManager;
+    timeManager.Init(fps);
+    bool shouldTick = false;
 
     while (true)
     {
-        timeManager.Update();
+        shouldTick = timeManager.Update();
 
-        initPos += speed * timeManager.GetDeltaTime();
+        if (shouldTick)
+        {
+            // VG::Log("Tick");
+            initPos += speed * timeManager.GetDeltaTime();
+        }
 
         if (timeManager.GetTimeSinceStartup() > runTimeSeconds)
         {
             break;
         }
     }
-    
+
     for (int i = 0; i < 100'000; i++)
     {
-        TVG::Log("Repeat Log!");
+        // VG::Log("Repeat Log!");
     }
 
-    timeManager.GameEnd();
+    timeManager.End();
 
     std::cout << "Final Pos: " << initPos << '\n';
 
@@ -45,9 +54,5 @@ int main(int argc, char **argv)
     std::cout << "Average FPS: " << timeManager.GetFrameCount() / timeManager.GetTimeSinceStartup() << '\n';
     std::cout << "Total Frames: " << timeManager.GetFrameCount() << '\n';
 
-    TVG::Log("Game Over!");
-
-    INIMap iniMap = Load();
-    PrintINI(iniMap);
-
+    VG::Log("Game Over!");
 }

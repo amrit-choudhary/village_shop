@@ -10,7 +10,7 @@
     #define LOGGING_API
 #endif
 
-namespace TVG
+namespace VG
 {
     LOGGING_API void Log(const char *input);
 }
