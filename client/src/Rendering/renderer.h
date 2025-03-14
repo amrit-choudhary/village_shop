@@ -21,8 +21,11 @@ public:
     void Init();
 
     // Will return true if game should tick based on FFR.
-    void Update(std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X>& frameBuffer);
+    void Update(std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &frameBuffer);
 
     // Will stop the timers to let it calculate average FPS.
     void End();
+
+private:
+    uint8_t lineBuffer[BUFFER_X + 1];
 };
