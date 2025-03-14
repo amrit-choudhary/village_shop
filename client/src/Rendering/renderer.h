@@ -27,5 +27,4 @@ public:
     void End();
 
 private:
-    uint8_t lineBuffer[BUFFER_X + 1];
 };

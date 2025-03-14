@@ -9,7 +9,7 @@
 
 namespace
 {
-    const uint32_t runTimeSeconds = 5;
+    const uint32_t runTimeSeconds = 120;
     double initPos = 0;
     double speed = 100; // 100 m/s;
 }
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     VG::Time::TimeManager timeManager;
     timeManager.Init(fps);
     bool shouldTick = false;
-    
+
     Game game;
     game.Init();
     Renderer renderer;

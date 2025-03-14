@@ -3,11 +3,11 @@
 
 #include "renderer.h"
 
-std::string asciiMap = R"($@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`'. )";
+std::string asciiMap = R"($@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`'.  )";
+std::string asciiMapShort = R"(@%#*+=-:. )";
 
 Renderer::Renderer()
 {
-    lineBuffer[BUFFER_X] = '\0';
 }
 
 Renderer::~Renderer()
@@ -26,9 +26,9 @@ void Renderer::Update(std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &frame
         for (int x = 0; x < BUFFER_X; ++x)
         {
             uint8_t index = frameBuffer[x][y];
-            lineBuffer[x] = asciiMap[index];
+            std::putchar(asciiMapShort[index - 1]);
         }
-        std::printf("%s\n", lineBuffer);
+        std::putchar('\n');
     }
     std::printf("\x1b[H");
 }

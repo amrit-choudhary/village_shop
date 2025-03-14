@@ -16,24 +16,31 @@ void Game::Init()
 
 void Game::Update(double deltaTime)
 {
+    for (int i = 0; i < BUFFER_X * BUFFER_Y; ++i)
+    {
+        healths[i].Update(deltaTime);
+    }
+
+    for (int i = 0; i < BUFFER_X * BUFFER_Y; ++i)
+    {
+        hungers[i].Update(deltaTime);
+    }
+
+    for (int i = 0; i < BUFFER_X * BUFFER_Y; ++i)
+    {
+        golds[i].Update(deltaTime);
+    }
+
     static double offset = 0;
     offset += deltaTime * 10;
     for (int y = 0; y < BUFFER_Y; ++y)
     {
         for (int x = 0; x < BUFFER_X; ++x)
         {
-            double xOff = x + offset;
-            double yOff = y + offset;
+            uint32_t index = y * BUFFER_Y + x;
+            double val = (hungers[index].Hunger / 100.0f) * ASCII_COUNT_SHORT;
 
-            double amplitude = 0.01f;
-            double xS = std::abs(std::sin(xOff * amplitude));
-            double yS = std::abs(std::sin(yOff * amplitude));
-
-            double xR = xS * ASCII_COUNT;
-            double yR = yS * ASCII_COUNT;
-
-            uint8_t value = (xR + yR) / 2.0f;
-            buffer1[x][y] = value;
+            buffer1[x][y] = ASCII_COUNT_SHORT - (uint8_t)val;
         }
     }
 }
