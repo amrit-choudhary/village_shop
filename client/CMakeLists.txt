@@ -5,10 +5,19 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(VillageShop_Client ${SOURCES})
 
-target_link_libraries(VillageShop_Client
+
+target_link_libraries(
+    VillageShop_Client
     PRIVATE
     VillageShop_Logging
-)
+    )
+    
+find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
+if (NOT APPLICATION_SERVICES_FRAMEWORK)
+    message(FATAL_ERROR "ApplicationServices framework not found")
+endif()
+    
+    target_link_libraries(VillageShop_Client PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 
 ## POST BUILD
 

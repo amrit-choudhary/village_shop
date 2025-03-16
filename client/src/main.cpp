@@ -6,10 +6,11 @@
 #include "TimeManagement/TimeManager.h"
 #include "FileIO/INI/INIParser.h"
 #include "src/logging.h"
+#include "Input/InputManager.h"
 
 namespace
 {
-    const uint32_t runTimeSeconds = 120;
+    const uint32_t runTimeSeconds = 60;
     double initPos = 0;
     double speed = 100; // 100 m/s;
 }
@@ -26,11 +27,14 @@ int main(int argc, char **argv)
     VG::Time::TimeManager timeManager;
     timeManager.Init(fps);
     bool shouldTick = false;
+    double deltaTime = 0.0f;
 
     Game game;
     game.Init();
     Renderer renderer;
     renderer.Init();
+    InputManager inputManager;
+    inputManager.Init();
 
     while (true)
     {
@@ -38,11 +42,11 @@ int main(int argc, char **argv)
 
         if (shouldTick)
         {
-            // VG::Log("Tick");
-            initPos += speed * timeManager.GetDeltaTime();
+            deltaTime = timeManager.GetDeltaTime();
 
-            game.Update(timeManager.GetDeltaTime());
+            game.Update(deltaTime);
             renderer.Update(game.GetBuffer());
+            inputManager.Update(deltaTime);
         }
 
         if (timeManager.GetTimeSinceStartup() > runTimeSeconds)

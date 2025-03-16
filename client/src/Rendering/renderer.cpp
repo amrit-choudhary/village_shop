@@ -4,7 +4,7 @@
 #include "renderer.h"
 
 std::string asciiMap = R"($@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`'.  )";
-std::string asciiMapShort = R"(@%#*+=-:. )";
+std::string asciiMapShort = R"(@%#*+=-:. XXXXX)";
 
 Renderer::Renderer()
 {

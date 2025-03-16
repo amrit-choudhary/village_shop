@@ -1,6 +1,10 @@
 #include <cmath>
+#include <iostream>
 
 #include "game.h"
+#include "../Input/InputManager.h"
+
+using namespace VG::Input;
 
 Game::Game()
 {
@@ -33,6 +37,7 @@ void Game::Update(double deltaTime)
 
     static double offset = 0;
     offset += deltaTime * 10;
+
     for (int y = 0; y < BUFFER_Y; ++y)
     {
         for (int x = 0; x < BUFFER_X; ++x)
@@ -43,6 +48,29 @@ void Game::Update(double deltaTime)
             buffer1[x][y] = ASCII_COUNT_SHORT - (uint8_t)val;
         }
     }
+
+    if (InputManager::GetKeyDown(KeyCode::W) ||
+        InputManager::GetKeyDown(KeyCode::UArrow))
+    {
+        y -= deltaTime * 10;
+    }
+    if (InputManager::GetKeyDown(KeyCode::S) ||
+        InputManager::GetKeyDown(KeyCode::DArrow))
+    {
+        y += deltaTime * 10;
+    }
+    if (InputManager::GetKeyDown(KeyCode::A) ||
+        InputManager::GetKeyDown(KeyCode::LArrow))
+    {
+        x -= deltaTime * 10;
+    }
+    if (InputManager::GetKeyDown(KeyCode::D) ||
+        InputManager::GetKeyDown(KeyCode::RArrow))
+    {
+        x += deltaTime * 10;
+    }
+
+    buffer1[x][y] = buffer1[x + 1][y] = buffer1[x][y + 1] = buffer1[x + 1][y + 1] = 11;
 }
 
 void Game::End()

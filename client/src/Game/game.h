@@ -49,4 +49,7 @@ private:
     VHunger hungers[BUFFER_X * BUFFER_Y];
     // Villager Gold.
     VGold golds[BUFFER_X * BUFFER_Y];
+
+    float x = 40;
+    float y = 20;
 };
