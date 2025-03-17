@@ -1,10 +1,13 @@
+#ifdef VG_MAC
+
 #include <iostream>
 
 #include "InputManagerMac.h"
 
 using namespace VG::Input;
 
-static std::map<uint16_t, KeyCode> KeyCodeMap = {
+// Native keycode to game KeyCode conversion map.
+static std::unordered_map<uint16_t, KeyCode> KeyCodeMap = {
     {13, KeyCode::W},
     {1, KeyCode::S},
     {0, KeyCode::A},
@@ -80,3 +83,5 @@ void InputManagerMac::Update(double deltaTime)
 void InputManagerMac::End()
 {
 }
+
+#endif // VG_MAC

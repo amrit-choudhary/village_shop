@@ -4,12 +4,13 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_executable(VillageShop_Client_Tests ${SOURCES} ${CLIENT_SHARED_SOURCES})
 
-find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
-if (NOT APPLICATION_SERVICES_FRAMEWORK)
-    message(FATAL_ERROR "ApplicationServices framework not found")
+if(APPLE)
+    find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
+    if (NOT APPLICATION_SERVICES_FRAMEWORK)
+        message(FATAL_ERROR "ApplicationServices framework not found")
+    endif()
+    target_link_libraries(VillageShop_Client_Tests PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 endif()
-    
-target_link_libraries(VillageShop_Client_Tests PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 
 target_include_directories(VillageShop_Client_Tests PRIVATE ${CLIENT_INCLUDE_DIR})
 

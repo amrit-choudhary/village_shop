@@ -5,7 +5,8 @@
 #pragma once
 
 #include <stdint.h>
-#include <map>
+#include <unordered_map>
+#include <thread>
 
 namespace VG::Input
 {
@@ -64,7 +65,7 @@ public:
     // Check if a key is up.
     static bool GetKeyUp(VG::Input::KeyCode keyCode);
     
-    static std::map<VG::Input::KeyCode, VG::Input::KeyState> GlobalKeyState;
+    static std::unordered_map<VG::Input::KeyCode, VG::Input::KeyState> GlobalKeyState;
 
 private:
     PlatformInputManager *platformInputManager;

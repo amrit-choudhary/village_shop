@@ -70,6 +70,8 @@ void Game::Update(double deltaTime)
         x += deltaTime * 10;
     }
 
+    std::cout << "X: " << x << "Y: " << y << '\n';
+
     buffer1[x][y] = buffer1[x + 1][y] = buffer1[x][y + 1] = buffer1[x + 1][y + 1] = 11;
 }
 

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <atomic>
 
 #include "Game/game.h"
 #include "Rendering/renderer.h"
@@ -8,9 +9,15 @@
 #include "src/logging.h"
 #include "Input/InputManager.h"
 
+/** 
+ * True till game is running.
+ * Made atomic so that other threads can stop too when game ends.
+*/
+std::atomic<bool> GameRunning(true);
+
 namespace
 {
-    const uint32_t runTimeSeconds = 60;
+    const uint32_t runTimeSeconds = 20;
     double initPos = 0;
     double speed = 100; // 100 m/s;
 }
@@ -29,14 +36,14 @@ int main(int argc, char **argv)
     bool shouldTick = false;
     double deltaTime = 0.0f;
 
+    InputManager inputManager;
+    inputManager.Init();
     Game game;
     game.Init();
     Renderer renderer;
     renderer.Init();
-    InputManager inputManager;
-    inputManager.Init();
 
-    while (true)
+    while (GameRunning)
     {
         shouldTick = timeManager.Update();
 
@@ -44,14 +51,14 @@ int main(int argc, char **argv)
         {
             deltaTime = timeManager.GetDeltaTime();
 
-            game.Update(deltaTime);
-            renderer.Update(game.GetBuffer());
             inputManager.Update(deltaTime);
+            game.Update(deltaTime);
+            // renderer.Update(game.GetBuffer());
         }
 
         if (timeManager.GetTimeSinceStartup() > runTimeSeconds)
         {
-            break;
+            GameRunning = false;
         }
     }
 
@@ -61,6 +68,7 @@ int main(int argc, char **argv)
     }
 
     timeManager.End();
+    inputManager.End();
     game.End();
     renderer.End();
 

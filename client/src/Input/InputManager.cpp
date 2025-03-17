@@ -1,10 +1,15 @@
 #include "InputManager.h"
+#ifdef VG_MAC
 #include "InputManagerMac.h"
+#endif
+#ifdef VG_WIN
+#include "InputManagerWin.h"
+#endif
 
 using namespace VG::Input;
 
 // Global key map with key states.
-std::map<KeyCode, KeyState> InputManager::GlobalKeyState = {
+std::unordered_map<KeyCode, KeyState> InputManager::GlobalKeyState = {
     {KeyCode::None, KeyState::None},
     {KeyCode::W, KeyState::Up},
     {KeyCode::A, KeyState::Up},
@@ -24,7 +29,13 @@ InputManager::~InputManager()
 
 void InputManager::Init()
 {
+    #ifdef VG_MAC
     platformInputManager = new InputManagerMac();
+    #endif 
+    #ifdef VG_WIN
+    platformInputManager = new InputManagerWin();
+    #endif
+
     platformInputManager->Init();
 }
 
