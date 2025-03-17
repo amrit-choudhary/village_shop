@@ -8,6 +8,8 @@
 #include <array>
 
 #include "villager.h"
+#include "../TimeManagement/TimeManager.h"
+#include "src/logging.h"
 
 constexpr uint8_t BUFFER_X = 80;
 constexpr uint8_t BUFFER_X_2 = 40;
@@ -25,7 +27,7 @@ public:
     // Game control functions.
 
     // Init game
-    void Init();
+    void Init(VG::Time::TimeManager *currentTimeManager);
 
     // Update game.
     void Update(double deltaTime);
@@ -40,6 +42,7 @@ public:
     }
 
 private:
+    VG::Time::TimeManager *timeManager;
     // Frame Buffer.
     std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;
 

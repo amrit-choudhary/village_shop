@@ -14,8 +14,11 @@ Game::~Game()
 {
 }
 
-void Game::Init()
+void Game::Init(VG::Time::TimeManager * currentTimeManager)
 {
+    VG::Log("Game Start!");
+
+    timeManager = currentTimeManager;
 }
 
 void Game::Update(double deltaTime)
@@ -77,4 +80,9 @@ void Game::Update(double deltaTime)
 
 void Game::End()
 {
+    std::cout << "Game Run Time: " << timeManager->GetTimeSinceStartup() << '\n';
+    std::cout << "Average FPS: " << timeManager->GetFrameCount() / timeManager->GetTimeSinceStartup() << '\n';
+    std::cout << "Total Frames: " << timeManager->GetFrameCount() << '\n';
+
+    VG::Log("Game Over!");
 }

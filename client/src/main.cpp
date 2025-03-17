@@ -9,26 +9,15 @@
 #include "src/logging.h"
 #include "Input/InputManager.h"
 
-/** 
- * True till game is running.
- * Made atomic so that other threads can stop too when game ends.
-*/
+// True till game is running.
 std::atomic<bool> GameRunning(true);
-
-namespace
-{
-    const uint32_t runTimeSeconds = 20;
-    double initPos = 0;
-    double speed = 100; // 100 m/s;
-}
 
 int main(int argc, char **argv)
 {
-    VG::Log("Game Start!");
-
     // Read game params from file.
     INIMap iniMap = Load();
     int fps = std::atoi(iniMap["settings"]["fps"].c_str());
+    int maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     // Init global variables.
     VG::Time::TimeManager timeManager;
@@ -39,14 +28,16 @@ int main(int argc, char **argv)
     InputManager inputManager;
     inputManager.Init();
     Game game;
-    game.Init();
+    game.Init(&timeManager);
     Renderer renderer;
     renderer.Init();
 
+    // Game Loop.
     while (GameRunning)
     {
         shouldTick = timeManager.Update();
 
+        // Game Tick.
         if (shouldTick)
         {
             deltaTime = timeManager.GetDeltaTime();
@@ -56,27 +47,15 @@ int main(int argc, char **argv)
             // renderer.Update(game.GetBuffer());
         }
 
-        if (timeManager.GetTimeSinceStartup() > runTimeSeconds)
+        if (timeManager.GetTimeSinceStartup() > maxRunTime)
         {
             GameRunning = false;
         }
     }
 
-    for (int i = 0; i < 100'000; i++)
-    {
-        // VG::Log("Repeat Log!");
-    }
-
+    // Game End.
     timeManager.End();
     inputManager.End();
     game.End();
     renderer.End();
-
-    std::cout << "Final Pos: " << initPos << '\n';
-
-    std::cout << "Game Run Time: " << timeManager.GetTimeSinceStartup() << '\n';
-    std::cout << "Average FPS: " << timeManager.GetFrameCount() / timeManager.GetTimeSinceStartup() << '\n';
-    std::cout << "Total Frames: " << timeManager.GetFrameCount() << '\n';
-
-    VG::Log("Game Over!");
 }
