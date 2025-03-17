@@ -8,6 +8,7 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <chrono>
 #include <windows.h>
 
 #include "InputManager.h"

@@ -20,8 +20,7 @@ static std::unordered_map<uint16_t, KeyCode> KeyCodeMap = {
 
 #pragma clang diagnostic ignored "-Wswitch"
 
-// Callback function to handle key events
-CGEventRef KeyEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon)
+CGEventRef InputManagerMac::InputCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon)
 {
     CGKeyCode keyCode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
 
@@ -29,7 +28,6 @@ CGEventRef KeyEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef 
     {
     case kCGEventKeyDown:
     {
-        std::cout << keyCode;
         InputManager::GlobalKeyState[KeyCodeMap[keyCode]] = KeyState::Down;
         break;
     }
@@ -45,7 +43,12 @@ CGEventRef KeyEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef 
 
 void InputManagerMac::Init()
 {
-    // Define the event mask
+    inputThread = std::thread(&InputManagerMac::StartEventLoop, this);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+}
+
+void InputManagerMac::StartEventLoop()
+{
     CGEventMask eventMask = (1 << kCGEventKeyDown) | (1 << kCGEventKeyUp);
 
     // Create the event tap
@@ -54,7 +57,7 @@ void InputManagerMac::Init()
         kCGHeadInsertEventTap,
         CGEventTapOptions::kCGEventTapOptionDefault,
         eventMask,
-        KeyEventCallback,
+        InputCallback,
         NULL);
 
     if (!eventTap)
@@ -73,6 +76,13 @@ void InputManagerMac::Init()
     // Add the source to the main run loop
     CFRunLoopAddSource(CFRunLoopGetMain(), runLoopSource, kCFRunLoopCommonModes);
     CGEventTapEnable(eventTap, true);
+
+    CFRunLoopRun();
+
+    // Cleanup
+    CFRelease(runLoopSource);
+    CFRelease(eventTap);
+    std::cout << "Event loop stopped" << std::endl;
 }
 
 void InputManagerMac::Update(double deltaTime)
@@ -82,6 +92,8 @@ void InputManagerMac::Update(double deltaTime)
 
 void InputManagerMac::End()
 {
+    CFRunLoopStop(CFRunLoopGetCurrent());
+    inputThread.join();
 }
 
 #endif // VG_MAC
