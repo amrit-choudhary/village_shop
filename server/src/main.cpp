@@ -1,5 +1,3 @@
 #include <iostream>
 
-int main(int argc, char **argv) {
-  std::cout << "Hello World from server!" << '\n';
-}
+int main(int argc, char **argv) { std::cout << "Hello World from server!" << '\n'; }

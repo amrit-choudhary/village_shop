@@ -45,23 +45,23 @@ const std::string_view bold_on_red = "\033[1m\033[41m";
 }  // namespace
 
 static std::string GetCurrentTimeAndDate() {
-  auto now = std::chrono::system_clock::now();
-  auto in_time_t = std::chrono::system_clock::to_time_t(now);
-  char buffer[20];
-  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", localtime(&in_time_t));
-  return buffer;
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    char buffer[20];
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", localtime(&in_time_t));
+    return buffer;
 }
 
 static std::string GetCurrentTime() {
-  auto now = std::chrono::system_clock::now();
-  auto in_time_t = std::chrono::system_clock::to_time_t(now);
-  char buffer[9];
-  strftime(buffer, sizeof(buffer), "%H:%M:%S", localtime(&in_time_t));
-  return buffer;
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+    char buffer[9];
+    strftime(buffer, sizeof(buffer), "%H:%M:%S", localtime(&in_time_t));
+    return buffer;
 }
 
 void VG::Log(const char *input) {
-  std::ostringstream oss;
-  oss << red << '[' << GetCurrentTime() << "] " << input << '\n' << white;
-  std::cout << oss.str();
+    std::ostringstream oss;
+    oss << red << '[' << GetCurrentTime() << "] " << input << '\n' << white;
+    std::cout << oss.str();
 }
