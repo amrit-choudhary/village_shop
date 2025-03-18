@@ -5,26 +5,27 @@
 
 #pragma once
 
-#include <iostream>
-#include <thread>
+#include <ApplicationServices/ApplicationServices.h>
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <atomic>
 #include <chrono>
-#include <CoreFoundation/CoreFoundation.h>
-#include <ApplicationServices/ApplicationServices.h>
+#include <iostream>
+#include <thread>
 
 #include "InputManager.h"
 
-class InputManagerMac : public PlatformInputManager
-{
-public:
-    void Init() override;
-    void Update(double deltaTime) override;
-    void End() override;
+class InputManagerMac : public PlatformInputManager {
+ public:
+  void Init() override;
+  void Update(double deltaTime) override;
+  void End() override;
 
-private:
-    std::thread inputThread;
-    static CGEventRef InputCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon);
-    void StartEventLoop();
+ private:
+  std::thread inputThread;
+  static CGEventRef InputCallback(CGEventTapProxy proxy, CGEventType type,
+                                  CGEventRef event, void *refcon);
+  void StartEventLoop();
 };
 
-#endif // VG_MAC
+#endif  // VG_MAC

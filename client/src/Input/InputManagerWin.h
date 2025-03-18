@@ -5,26 +5,26 @@
 
 #pragma once
 
-#include <iostream>
-#include <thread>
+#include <windows.h>
+
 #include <atomic>
 #include <chrono>
-#include <windows.h>
+#include <iostream>
+#include <thread>
 
 #include "InputManager.h"
 
-class InputManagerWin : public PlatformInputManager
-{
-public:
-    InputManagerWin();
-    ~InputManagerWin();
-    void Init() override;
-    void Update(double deltaTime) override;
-    void End() override;
+class InputManagerWin : public PlatformInputManager {
+ public:
+  InputManagerWin();
+  ~InputManagerWin();
+  void Init() override;
+  void Update(double deltaTime) override;
+  void End() override;
 
-private:
-    std::thread inputThread;
-    void InputCallback(HANDLE hInput);
+ private:
+  std::thread inputThread;
+  void InputCallback(HANDLE hInput);
 };
 
-#endif // VG_WIN
+#endif  // VG_WIN

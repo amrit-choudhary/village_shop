@@ -10,71 +10,46 @@ using namespace VG::Input;
 
 // Global key map with key states.
 std::unordered_map<KeyCode, KeyState> InputManager::GlobalKeyState = {
-    {KeyCode::None, KeyState::None},
-    {KeyCode::W, KeyState::Up},
-    {KeyCode::A, KeyState::Up},
-    {KeyCode::S, KeyState::Up},
-    {KeyCode::D, KeyState::Up},
-    {KeyCode::LArrow, KeyState::Up},
-    {KeyCode::RArrow, KeyState::Up},
-    {KeyCode::DArrow, KeyState::Up}};
+    {KeyCode::None, KeyState::None}, {KeyCode::W, KeyState::Up},
+    {KeyCode::A, KeyState::Up},      {KeyCode::S, KeyState::Up},
+    {KeyCode::D, KeyState::Up},      {KeyCode::LArrow, KeyState::Up},
+    {KeyCode::RArrow, KeyState::Up}, {KeyCode::DArrow, KeyState::Up}};
 
-InputManager::InputManager()
-{
+InputManager::InputManager() {}
+
+InputManager::~InputManager() {}
+
+void InputManager::Init() {
+#ifdef VG_MAC
+  platformInputManager = new InputManagerMac();
+#endif
+#ifdef VG_WIN
+  platformInputManager = new InputManagerWin();
+#endif
+
+  platformInputManager->Init();
 }
 
-InputManager::~InputManager()
-{
+void InputManager::Update(double deltaTime) {
+  platformInputManager->Update(deltaTime);
 }
 
-void InputManager::Init()
-{
-    #ifdef VG_MAC
-    platformInputManager = new InputManagerMac();
-    #endif 
-    #ifdef VG_WIN
-    platformInputManager = new InputManagerWin();
-    #endif
+void InputManager::End() { platformInputManager->End(); }
 
-    platformInputManager->Init();
+bool InputManager::GetKeyDown(KeyCode keyCode) {
+  return (GlobalKeyState[keyCode] == KeyState::Down);
 }
 
-void InputManager::Update(double deltaTime)
-{
-    platformInputManager->Update(deltaTime);
+bool InputManager::GetKeyUp(KeyCode keyCode) {
+  return (GlobalKeyState[keyCode] == KeyState::Up);
 }
 
-void InputManager::End()
-{
-    platformInputManager->End();
-}
+PlatformInputManager::PlatformInputManager() {}
 
-bool InputManager::GetKeyDown(KeyCode keyCode)
-{
-    return (GlobalKeyState[keyCode] == KeyState::Down);
-}
+PlatformInputManager::~PlatformInputManager() {}
 
-bool InputManager::GetKeyUp(KeyCode keyCode)
-{
-    return (GlobalKeyState[keyCode] == KeyState::Up);
-}
+void PlatformInputManager::Init() {}
 
-PlatformInputManager::PlatformInputManager()
-{
-}
+void PlatformInputManager::Update(double deltaTime) {}
 
-PlatformInputManager::~PlatformInputManager()
-{
-}
-
-void PlatformInputManager::Init()
-{
-}
-
-void PlatformInputManager::Update(double deltaTime)
-{
-}
-
-void PlatformInputManager::End()
-{
-}
+void PlatformInputManager::End() {}

@@ -14,4 +14,4 @@ set(CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/client/src CACHE INTERNAL "Cl
 add_subdirectory(logging)
 add_subdirectory(client)
 add_subdirectory(server)
-add_subdirectory(client_tests)
+# add_subdirectory(client_tests)

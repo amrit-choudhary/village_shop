@@ -2,9 +2,8 @@
 
 #include "FileIO/INIParser_tests.h"
 
-int main(int argc, char **argv)
-{
-    TEST::Test_INIParse();
+int main(int argc, char **argv) {
+  TEST::Test_INIParse();
 
-    return 0;
+  return 0;
 }
