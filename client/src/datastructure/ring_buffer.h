@@ -16,18 +16,46 @@ namespace VG {
 template <typename T>
 class RingBuffer {
    public:
-    RingBuffer() = delete;
     RingBuffer(uint16_t maxCapacity);
     ~RingBuffer();
-    uint16_t GetCount();
+    /**
+     * Returns current count of elements in the sequence.
+     */
+    uint16_t GetCount() const;
+
+    /**
+     * Returns the capacity of ring buffer.
+     */
+    uint16_t GetCapacity() const;
+
+    /**
+     * Inserts an element in the buffer in a cyclic fashion.
+     */
     void Insert(T item);
-    T Get(uint16_t index);
+
+    /**
+     * Gets items from the buffer in FIFO type sequence.
+     * Trying to Get(index 0) will be oldest element.
+     * Trying to Get(count -1) will be the newest element.
+     */
+    T Get(uint16_t index) const;
+    /**
+     * Same as Get(index).
+     */
+    T operator[](uint16_t index) const;
 
    private:
+    // Delete default constructor, copy, move and assignment.
+    RingBuffer() = delete;                               // default constructor
+    RingBuffer(const RingBuffer&) = delete;              // copy
+    RingBuffer& operator=(const RingBuffer&) = delete;   // copy assignment
+    RingBuffer(RingBuffer&&) = delete;                   // move
+    RingBuffer& operator=(const RingBuffer&&) = delete;  // move assignment
+
     const uint16_t capacity;
     uint16_t startIndex;
     uint16_t count;
-    T *buffer;
+    T* buffer;
 };
 
 template <typename T>
@@ -43,8 +71,13 @@ VG::RingBuffer<T>::~RingBuffer() {
 }
 
 template <typename T>
-uint16_t VG::RingBuffer<T>::GetCount() {
+uint16_t VG::RingBuffer<T>::GetCount() const {
     return count;
+}
+
+template <typename T>
+uint16_t VG::RingBuffer<T>::GetCapacity() const {
+    return capacity;
 }
 
 template <typename T>
@@ -68,7 +101,16 @@ void VG::RingBuffer<T>::Insert(T item) {
 }
 
 template <typename T>
-T VG::RingBuffer<T>::Get(uint16_t index) {
+T VG::RingBuffer<T>::Get(uint16_t index) const {
+    uint16_t destIndex = startIndex + index;
+    if (destIndex >= capacity) {
+        destIndex -= capacity;
+    }
+    return buffer[destIndex];
+}
+
+template <typename T>
+inline T RingBuffer<T>::operator[](uint16_t index) const {
     uint16_t destIndex = startIndex + index;
     if (destIndex >= capacity) {
         destIndex -= capacity;

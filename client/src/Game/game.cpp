@@ -67,7 +67,7 @@ void Game::Update(double deltaTime) {
 
     std::cout << '\n';
     for (int i = 0; i < ringBuffer->GetCount(); ++i) {
-        std::cout << ringBuffer->Get(i) << ", ";
+        std::cout << ringBuffer->Get(i) << ": " << (*ringBuffer)[i] << ", ";
     }
 }
 

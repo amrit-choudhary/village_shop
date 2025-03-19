@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     TEST::Test_RingBuffer2();
     TEST::Test_RingBuffer3();
     TEST::Test_RingBuffer4();
+    TEST::Test_RingBuffer5();
 
     return 0;
 }

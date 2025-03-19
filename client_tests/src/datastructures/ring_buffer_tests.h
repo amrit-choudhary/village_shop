@@ -7,4 +7,5 @@ bool Test_RingBuffer1();
 bool Test_RingBuffer2();
 bool Test_RingBuffer3();
 bool Test_RingBuffer4();
+bool Test_RingBuffer5();
 }  // namespace TEST
