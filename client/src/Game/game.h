@@ -10,6 +10,7 @@
 
 #include "../TimeManagement/TimeManager.h"
 #include "../datastructure/ring_buffer.h"
+#include "../random/random_engine.h"
 #include "src/logging.h"
 #include "villager.h"
 
@@ -56,4 +57,6 @@ class Game {
 
     VG::RingBuffer<uint8_t> *ringBuffer;
     uint8_t index;
+
+    VG::Random rnd{VG::Random(12345)};
 };

@@ -62,18 +62,49 @@ void Game::Update(double deltaTime) {
 
     buffer1[x][y] = buffer1[x + 1][y] = buffer1[x][y + 1] = buffer1[x + 1][y + 1] = 11;
 
-    ringBuffer->Insert(index + 65);
+    ringBuffer->Insert(rnd.NextRange(65, 66));
     ++index;
 
     std::cout << '\n';
     for (int i = 0; i < ringBuffer->GetCount(); ++i) {
-        std::cout << ringBuffer->Get(i) << ": " << (*ringBuffer)[i] << ", ";
+        std::cout << ringBuffer->Get(i) << ", ";
     }
+
+    int acount = 0;
+    int bcount = 0;
+    int ccount = 0;
+    int dcount = 0;
+    int ecount = 0;
+    for (int i = 0; i < 1'000'000; ++i) {
+        uint32_t res = rnd.NextRange(65, 69);
+        switch (res) {
+            case 'A':
+                ++acount;
+                break;
+            case 'B':
+                ++bcount;
+                break;
+            case 'C':
+                ++ccount;
+                break;
+            case 'D':
+                ++dcount;
+                break;
+            case 'E':
+                ++ecount;
+                break;
+            default:
+                break;
+        }
+    }
+    std::cout << "\n" << acount << ", " << bcount << ", " << ccount << ", " << dcount << ", " << ecount << "\n";
 }
 
 void Game::End() {
     std::cout << "Game Run Time: " << timeManager->GetTimeSinceStartup() << '\n';
     std::cout << "Average FPS: " << timeManager->GetFrameCount() / timeManager->GetTimeSinceStartup() << '\n';
+    std::cout << "Average Uncapped FPS: " << timeManager->GetNotFFRFrameCount() / timeManager->GetTimeSinceStartup()
+              << '\n';
     std::cout << "Total Frames: " << timeManager->GetFrameCount() << '\n';
 
     VG::Log("Game Over!");

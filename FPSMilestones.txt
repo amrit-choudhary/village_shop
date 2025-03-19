@@ -9,3 +9,7 @@ FPS: 2.37625e+07
 March 14, 2025
 Added Fixed Frame Rate system. FPS can now be capped to some value.
 FPS: 2.19000e+07
+
+March 20, 2025
+Added fast random number generator. Testing 1 million rng gen per frame.
+FPS: 2.27892e+07
