@@ -7,9 +7,12 @@
 
 using namespace VG::Input;
 
-Game::Game() {}
+Game::Game() {
+    index = 0;
+    ringBuffer = new VG::RingBuffer<uint8_t>(10);
+}
 
-Game::~Game() {}
+Game::~Game() { delete ringBuffer; }
 
 void Game::Init(VG::Time::TimeManager* currentTimeManager) {
     VG::Log("Game Start!");
@@ -55,9 +58,17 @@ void Game::Update(double deltaTime) {
         x += deltaTime * 10;
     }
 
-    std::cout << "X: " << x << "Y: " << y << '\n';
+    // std::cout << "X: " << x << "Y: " << y << '\n';
 
     buffer1[x][y] = buffer1[x + 1][y] = buffer1[x][y + 1] = buffer1[x + 1][y + 1] = 11;
+
+    ringBuffer->Insert(index + 65);
+    ++index;
+
+    std::cout << '\n';
+    for (int i = 0; i < ringBuffer->GetCount(); ++i) {
+        std::cout << ringBuffer->Get(i) << ", ";
+    }
 }
 
 void Game::End() {

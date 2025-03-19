@@ -4,6 +4,23 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_executable(VillageShop_Client_Tests ${SOURCES} ${CLIENT_SHARED_SOURCES})
 
+# Set preprocessor options.
+if(WIN32)
+    target_compile_definitions(VillageShop_Client_Tests PRIVATE VG_WIN)
+elseif(UNIX AND NOT APPLE)
+    target_compile_definitions(VillageShop_Client_Tests PRIVATE VG_LINUX)
+elseif(APPLE)
+    target_compile_definitions(VillageShop_Client_Tests PRIVATE VG_MAC)
+endif()
+# End Set preprocessor options.
+
+# Link libraries
+target_link_libraries(
+    VillageShop_Client_Tests
+    PRIVATE
+    VillageShop_Logging
+    )
+
 if(APPLE)
     find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
     if (NOT APPLICATION_SERVICES_FRAMEWORK)
@@ -12,7 +29,10 @@ if(APPLE)
     target_link_libraries(VillageShop_Client_Tests PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 endif()
 
+# Include Client code.
 target_include_directories(VillageShop_Client_Tests PRIVATE ${CLIENT_INCLUDE_DIR})
+
+## Post build.
 
 set(RES_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 

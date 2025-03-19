@@ -21,6 +21,7 @@ class RingBuffer {
     ~RingBuffer();
     uint16_t GetCount();
     void Insert(T item);
+    T Get(uint16_t index);
 
    private:
     const uint16_t capacity;
@@ -64,6 +65,15 @@ void VG::RingBuffer<T>::Insert(T item) {
             buffer[startIndex - 1] = item;
         }
     }
+}
+
+template <typename T>
+T VG::RingBuffer<T>::Get(uint16_t index) {
+    uint16_t destIndex = startIndex + index;
+    if (destIndex >= capacity) {
+        destIndex -= capacity;
+    }
+    return buffer[destIndex];
 }
 
 }  // namespace VG

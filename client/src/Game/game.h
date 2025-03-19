@@ -9,6 +9,7 @@
 #include <array>
 
 #include "../TimeManagement/TimeManager.h"
+#include "../datastructure/ring_buffer.h"
 #include "src/logging.h"
 #include "villager.h"
 
@@ -20,38 +21,39 @@ constexpr uint8_t ASCII_COUNT = 69;
 constexpr uint8_t ASCII_COUNT_SHORT = 10;
 
 class Game {
- public:
-  Game();
-  ~Game();
+   public:
+    Game();
+    ~Game();
 
-  // Game control functions.
+    // Game control functions.
 
-  // Init game
-  void Init(VG::Time::TimeManager *currentTimeManager);
+    // Init game
+    void Init(VG::Time::TimeManager *currentTimeManager);
 
-  // Update game.
-  void Update(double deltaTime);
+    // Update game.
+    void Update(double deltaTime);
 
-  // End game.
-  void End();
+    // End game.
+    void End();
 
-  // Getters
-  std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() {
-    return buffer1;
-  }
+    // Getters
+    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() { return buffer1; }
 
- private:
-  VG::Time::TimeManager *timeManager;
-  // Frame Buffer.
-  std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;
+   private:
+    VG::Time::TimeManager *timeManager;
+    // Frame Buffer.
+    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;
 
-  // Villager Health.
-  VHealth healths[BUFFER_X * BUFFER_Y];
-  // Villager Hunger.
-  VHunger hungers[BUFFER_X * BUFFER_Y];
-  // Villager Gold.
-  VGold golds[BUFFER_X * BUFFER_Y];
+    // Villager Health.
+    VHealth healths[BUFFER_X * BUFFER_Y];
+    // Villager Hunger.
+    VHunger hungers[BUFFER_X * BUFFER_Y];
+    // Villager Gold.
+    VGold golds[BUFFER_X * BUFFER_Y];
 
-  float x = 40;
-  float y = 20;
+    float x = 40;
+    float y = 20;
+
+    VG::RingBuffer<uint8_t> *ringBuffer;
+    uint8_t index;
 };
