@@ -48,7 +48,7 @@ uint64_t VG::Random::Next64() {
 
 // RandomWt
 
-VG::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) {
+VG::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) : random(seed) {
     lut = new uint8_t[10];
     std::memcpy(lut, lutValues, 10);
 }
