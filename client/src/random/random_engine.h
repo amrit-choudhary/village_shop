@@ -12,6 +12,9 @@ namespace VG {
 // Xoshiro128** RNG implementation.
 class Random {
    public:
+    // Default constructor.
+    Random();
+
     // Constructor with seed.
     Random(uint32_t seed);
 
@@ -32,7 +35,6 @@ class Random {
    private:
     uint32_t s[4];
     static inline uint32_t Rotl(const uint32_t x, int k) { return (x << k) | (x >> (32 - k)); }
-    Random() = delete;  // delete default constructor.
 };
 
 /**
@@ -40,19 +42,34 @@ class Random {
  * Uses Random as base random engine.
  * Weight values are provided in lutValues
  * Expecting a 10 size luValues, this can represent any 10% value.
+ * Example: [0, 0, 0, 1, 1, 2, 2, 2, 2, 3] means:
+ * outcome 0 = 30% chance
+ * outcome 1 = 20% chance
+ * outcome 2 = 40% chane
+ * outcome 3 = 10% chance
  */
 class RandomWt {
    private:
     Random random;
-    uint8_t* lut;
-    uint32_t size = 10;
+    const uint32_t size = 10;
+    uint8_t lut[10];
+
+    RandomWt() = delete;                             // deleted default constructor.
+    RandomWt(const RandomWt&) = delete;              // deleted copy constructor.
+    RandomWt& operator=(const RandomWt&) = delete;   // deleted copy assignment.
+    RandomWt(const RandomWt&&) = delete;             // deleted move constructor.
+    RandomWt& operator=(const RandomWt&&) = delete;  // deleted move assignment.
 
    public:
     /**
-     *@param lutValues = array of index of size 10. index is of weighted values.
+     * @param seed = seed value that will feed underlying random generator.
+     * @param lutValues = array of index of size 10. index is of weighted values.
+     * Check RandomWt class comments for more info.
      */
     RandomWt(uint32_t seed, uint8_t* lutValues);
     ~RandomWt();
+
+    // Get the next value based on the weighted chance values.
     uint8_t Next();
 };
 

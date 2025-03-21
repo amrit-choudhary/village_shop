@@ -1,8 +1,22 @@
 #include "random_engine.h"
 
+#include <chrono>
 #include <cstring>
 
 // Random
+
+VG::Random::Random() {
+    uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
+    s[0] = seed;
+    s[1] = seed ^ 0x5a827999;
+    s[2] = seed ^ 0x6ed9eba1;
+    s[3] = seed ^ 0x8f1bbcdc;
+
+    // Warm up the generator
+    for (int i = 0; i < 10; i++) {
+        Next();
+    }
+}
 
 VG::Random::Random(uint32_t seed) {
     s[0] = seed;
@@ -49,8 +63,14 @@ uint64_t VG::Random::Next64() {
 // RandomWt
 
 VG::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) : random(seed) {
-    lut = new uint8_t[10];
-    std::memcpy(lut, lutValues, 10);
+    for (int i = 0; i < 10; ++i) {
+        lut[i] = lutValues[i];
+    }
 }
 
-VG::RandomWt::~RandomWt() { delete[] lut; }
+VG::RandomWt::~RandomWt() {}
+
+uint8_t VG::RandomWt::Next() {
+    uint8_t rndIndex = random.NextRange(0, 9);
+    return lut[rndIndex];
+}

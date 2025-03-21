@@ -70,8 +70,8 @@ void Game::Update(double deltaTime) {
         std::cout << ringBuffer->Get(i) << ", ";
     }
 
-    uint8_t lut[] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 3};
-    VG::RandomWt(12345, lut);
+    uint8_t lut[10] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 3};
+    VG::RandomWt rndWt(12345, lut);
 
     int acount = 0;
     int bcount = 0;
@@ -79,7 +79,7 @@ void Game::Update(double deltaTime) {
     int dcount = 0;
     int ecount = 0;
     for (int i = 0; i < 1'000'000; ++i) {
-        uint32_t res = rnd.NextRange(65, 69);
+        uint32_t res = rndWt.Next() + 'A';
         switch (res) {
             case 'A':
                 ++acount;
