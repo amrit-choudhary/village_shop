@@ -70,6 +70,9 @@ void Game::Update(double deltaTime) {
         std::cout << ringBuffer->Get(i) << ", ";
     }
 
+    uint8_t lut[] = {0, 0, 0, 1, 1, 1, 2, 2, 2, 3};
+    VG::RandomWt(12345, lut);
+
     int acount = 0;
     int bcount = 0;
     int ccount = 0;

@@ -11,11 +11,6 @@ namespace VG {
 
 // Xoshiro128** RNG implementation.
 class Random {
-   private:
-    uint32_t s[4];
-
-    static inline uint32_t Rotl(const uint32_t x, int k) { return (x << k) | (x >> (32 - k)); }
-
    public:
     // Constructor with seed.
     Random(uint32_t seed);
@@ -33,5 +28,32 @@ class Random {
 
     // Generates a uint64_t.
     uint64_t Next64();
+
+   private:
+    uint32_t s[4];
+    static inline uint32_t Rotl(const uint32_t x, int k) { return (x << k) | (x >> (32 - k)); }
+    Random() = delete;  // delete default constructor.
 };
+
+/**
+ * Wighted Random engine.
+ * Uses Random as base random engine.
+ * Weight values are provided in lutValues
+ * Expecting a 10 size luValues, this can represent any 10% value.
+ */
+class RandomWt {
+   private:
+    Random random;
+    uint8_t* lut;
+    uint32_t size = 10;
+
+   public:
+    /**
+     *@param lutValues = array of index of size 10. index is of weighted values.
+     */
+    RandomWt(uint32_t seed, uint8_t* lutValues);
+    ~RandomWt();
+    uint8_t Next();
+};
+
 }  // namespace VG
