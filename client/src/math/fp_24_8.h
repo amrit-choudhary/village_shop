@@ -11,6 +11,9 @@
  * Bigget fraction = 0.99609375
  *
  * Rounding is enabled.
+ *
+ * Notes:
+ * 1. Using += operator will not instantiate new objects, compared to + operator.
  */
 
 #pragma once
@@ -45,9 +48,12 @@ class FP_24_8 {
     // Create a FP using another FPs raw value
     static FP_24_8 FromRawValue(int32_t val);
 
-    // Operator overloads
+    // Operator overloads for directly manipulating the FP.
     FP_24_8 operator-() const;
     FP_24_8& operator+=(const FP_24_8& b);
+    FP_24_8& operator+=(int32_t b);
+    FP_24_8& operator+=(float b);
+    FP_24_8& operator+=(double b);
     FP_24_8& operator-=(const FP_24_8& b);
     FP_24_8& operator*=(const FP_24_8& b);
     FP_24_8& operator/=(const FP_24_8& b);
@@ -59,7 +65,10 @@ class FP_24_8 {
     static constexpr int32_t fractionMult = 256;
 };
 
-FP_24_8 operator+(const FP_24_8&, const FP_24_8& b);
+FP_24_8 operator+(const FP_24_8& a, const FP_24_8& b);
+FP_24_8 operator+(const FP_24_8& a, int32_t b);
+FP_24_8 operator+(const FP_24_8& a, float b);
+FP_24_8 operator+(const FP_24_8& a, double b);
 FP_24_8 operator-(const FP_24_8& a, const FP_24_8& b);
 FP_24_8 operator*(const FP_24_8& a, const FP_24_8& b);
 FP_24_8 operator/(const FP_24_8& a, const FP_24_8& b);

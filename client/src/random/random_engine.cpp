@@ -3,6 +3,8 @@
 #include <chrono>
 #include <cstring>
 
+#include "../misc/utils.h"
+
 // Random
 
 ME::Random::Random() {
@@ -19,6 +21,19 @@ ME::Random::Random() {
 }
 
 ME::Random::Random(uint32_t seed) {
+    s[0] = seed;
+    s[1] = seed ^ 0x5a827999;
+    s[2] = seed ^ 0x6ed9eba1;
+    s[3] = seed ^ 0x8f1bbcdc;
+
+    // Warm up the generator
+    for (int i = 0; i < 10; i++) {
+        Next();
+    }
+}
+
+ME::Random::Random(const char *seedString) {
+    uint32_t seed = ME::HashString2uint32(seedString);
     s[0] = seed;
     s[1] = seed ^ 0x5a827999;
     s[2] = seed ^ 0x6ed9eba1;

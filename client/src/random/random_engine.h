@@ -18,6 +18,9 @@ class Random {
     // Constructor with seed.
     Random(uint32_t seed);
 
+    // Constructor with a seed string that gets converted to a uint32_t.
+    Random(const char* seedString);
+
     /** Generate next random number in the range of 0 to uint32_t maximum.
      * Better use some of the helper function like range.
      */

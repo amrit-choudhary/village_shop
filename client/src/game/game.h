@@ -17,6 +17,7 @@
 #include "villager.h"
 
 namespace ME {
+
 constexpr uint8_t BUFFER_X = 80;
 constexpr uint8_t BUFFER_X_2 = 40;
 constexpr uint8_t BUFFER_Y = 40;

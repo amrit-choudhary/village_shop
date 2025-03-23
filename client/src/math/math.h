@@ -9,6 +9,8 @@
 
 namespace ME::Math {
 
+using FP = ME::Math::FP_24_8;
+
 // Test add function.
 template <typename T>
 T add(T a, T b) {

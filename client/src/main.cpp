@@ -4,6 +4,7 @@
 
 #include "file_io/ini/ini_parser.h"
 #include "game/game.h"
+#include "game/village_game.h"
 #include "input/input_manager.h"
 #include "misc/global_vars.h"
 #include "rendering/renderer.h"
@@ -23,8 +24,8 @@ int main(int argc, char **argv) {
     double deltaTime = 0.0f;
 
     InputManager inputManager;
-    inputManager.Init();
-    ME::Game game;
+    // inputManager.Init();
+    ME::VillageGame game;
     game.Init(&timeManager);
     Renderer renderer;
     renderer.Init();
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
         if (shouldTick) {
             deltaTime = timeManager.GetDeltaTime();
 
-            inputManager.Update(deltaTime);
+            // inputManager.Update(deltaTime);
             game.Update(deltaTime);
             // renderer.Update(game.GetBuffer());
         }
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
 
     // Game End.
     timeManager.End();
-    inputManager.End();
+    // inputManager.End();
     game.End();
     renderer.End();
 }

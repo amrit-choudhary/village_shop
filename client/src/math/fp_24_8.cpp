@@ -43,6 +43,29 @@ FP_24_8& FP_24_8::operator+=(const FP_24_8& b) {
     return *this;
 }
 
+FP_24_8& ME::Math::FP_24_8::operator+=(int32_t b) {
+    rawValue += b * fractionMult;
+    return *this;
+}
+
+FP_24_8& ME::Math::FP_24_8::operator+=(float b) {
+    if (b >= 0.0f) {
+        rawValue += static_cast<int32_t>(b * fractionMult + 0.5f);
+    } else {
+        rawValue += static_cast<int32_t>(b * fractionMult - 0.5f);
+    }
+    return *this;
+}
+
+FP_24_8& ME::Math::FP_24_8::operator+=(double b) {
+    if (b >= 0.0f) {
+        rawValue += static_cast<int32_t>(b * fractionMult + 0.5f);
+    } else {
+        rawValue += static_cast<int32_t>(b * fractionMult - 0.5f);
+    }
+    return *this;
+}
+
 FP_24_8& FP_24_8::operator-=(const FP_24_8& b) {
     rawValue -= b.rawValue;
     return *this;
@@ -61,6 +84,10 @@ FP_24_8& FP_24_8::operator/=(const FP_24_8& b) {
 }
 
 FP_24_8 ME::Math::operator+(const FP_24_8& a, const FP_24_8& b) { return ME::Math::FP_24_8(a) += b; }
+
+FP_24_8 ME::Math::operator+(const FP_24_8& a, int32_t b) { return FP_24_8(a) += b; }
+FP_24_8 ME::Math::operator+(const FP_24_8& a, float b) { return FP_24_8(a) += b; }
+FP_24_8 ME::Math::operator+(const FP_24_8& a, double b) { return FP_24_8(a) += b; }
 
 FP_24_8 ME::Math::operator-(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) -= b; }
 
