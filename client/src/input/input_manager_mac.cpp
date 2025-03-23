@@ -1,6 +1,6 @@
 #ifdef VG_MAC
 
-#include "InputManagerMac.h"
+#include "input_manager_mac.h"
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "INIParser_tests.h"
+#include "ini_parser_tests.h"
 
 #include <iostream>
 

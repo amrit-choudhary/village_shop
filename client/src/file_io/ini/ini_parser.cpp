@@ -1,4 +1,4 @@
-#include "INIParser.h"
+#include "ini_parser.h"
 
 std::string fileName = "resources/config/settings.ini";
 

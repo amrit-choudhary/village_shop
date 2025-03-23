@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "FileIO/INIParser_tests.h"
 #include "datastructures/ring_buffer_tests.h"
+#include "file_io/ini_parser_tests.h"
 
 int main(int argc, char **argv) {
     // INI

@@ -1,9 +1,9 @@
-#include "InputManager.h"
+#include "input_manager.h"
 #ifdef VG_MAC
-#include "InputManagerMac.h"
+#include "input_manager_mac.h"
 #endif
 #ifdef VG_WIN
-#include "InputManagerWin.h"
+#include "input_manager_win.h"
 #endif
 
 using namespace ME::Input;

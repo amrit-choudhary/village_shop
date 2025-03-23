@@ -2,13 +2,13 @@
 #include <iostream>
 #include <thread>
 
-#include "FileIO/INI/INIParser.h"
-#include "Input/InputManager.h"
-#include "TimeManagement/TimeManager.h"
+#include "file_io/ini/ini_parser.h"
 #include "game/game.h"
+#include "input/input_manager.h"
 #include "misc/global_vars.h"
 #include "rendering/renderer.h"
 #include "src/logging.h"
+#include "time/time_manager.h"
 
 int main(int argc, char **argv) {
     // Read game params from file.
