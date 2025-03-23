@@ -32,8 +32,12 @@ ME::Random::Random(uint32_t seed) {
     }
 }
 
-ME::Random::Random(const char *seedString) {
+ME::Random::Random(const char *seedString, bool useTime) {
     uint32_t seed = ME::HashString2uint32(seedString);
+    if (useTime) {
+        seed += std::chrono::system_clock::now().time_since_epoch().count();
+    }
+
     s[0] = seed;
     s[1] = seed ^ 0x5a827999;
     s[2] = seed ^ 0x6ed9eba1;

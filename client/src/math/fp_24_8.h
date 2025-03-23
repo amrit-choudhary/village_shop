@@ -54,7 +54,12 @@ class FP_24_8 {
     FP_24_8& operator+=(int32_t b);
     FP_24_8& operator+=(float b);
     FP_24_8& operator+=(double b);
+
     FP_24_8& operator-=(const FP_24_8& b);
+    FP_24_8& operator-=(int32_t b);
+    FP_24_8& operator-=(float b);
+    FP_24_8& operator-=(double b);
+
     FP_24_8& operator*=(const FP_24_8& b);
     FP_24_8& operator/=(const FP_24_8& b);
 

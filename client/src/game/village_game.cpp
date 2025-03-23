@@ -10,17 +10,19 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
     ME::Game::Init(currentTimeManager);
     ME::Log("Village Game Start!");
 
-    framesPerDay = 10;
+    framesPerDay = 180;
     frameCount = 0;
     day = 0;
 
-    cost = FP{10.0f};
-    const char* seed1 = "cost_seed";
-    costRandom = Random(seed1);
+    buyPrice = FP{10.0f};
+    buyPriceAvg = FP{10.0f};
+    const char* seed1 = "buy_price_seed";
+    buyPriceRandom = Random(seed1, true);
 
-    price = FP{15.0f};
-    const char* seed2 = "price_seed";
-    priceRandom = Random(seed2);
+    sellPrice = FP{11.0f};
+    sellPriceAvg = FP{11.0f};
+    const char* seed2 = "sell_price_seed";
+    sellPriceRandom = Random(seed2, true);
 
     supply = FP{100'000};
     demand = FP{100.0f};
@@ -39,6 +41,10 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::VillageGame::Update(double deltaTime) {
     ME::Game::Update(deltaTime);
 
+    if (InputManager::GetKeyDown(ME::Input::KeyCode::A)) {
+        BuyStock();
+    }
+
     ++frameCount;
     if (frameCount >= framesPerDay) {
         frameCount = 0;
@@ -51,24 +57,40 @@ void ME::VillageGame::End() {
     ME::Game::End();
 }
 
+void ME::VillageGame::BuyStock() {
+    shop.stock += shop.cash / buyPrice;
+    shop.cash = FP{0.0f};
+
+    RefreshDisplay();
+}
+
 void ME::VillageGame::DayChange() {
     ++day;
 
     // Cost.
-    float costVar = costRandom.NextRange(0, 200);
+    float costVar = buyPriceRandom.NextRange(0, 200);
     costVar = (costVar - 100.0f) / 100.0f;
-    cost += costVar;
+    buyPrice += costVar;
 
     // Price.
-    float priceVar = priceRandom.NextRange(0, 200);
+    float priceVar = sellPriceRandom.NextRange(0, 200);
     priceVar = (priceVar - 100.0f) / 100.0f;
-    price += priceVar;
+    sellPrice += priceVar;
 
     // Shop.
+    shop.cash += shop.stock * sellPrice;
+    shop.stock = FP{0.0f};
 
+    RefreshDisplay();
+}
+
+void ME::VillageGame::RefreshDisplay() {
     std::cout << "\x1b[2J";
     std::cout << "Day: " << day << '\n';
-    std::cout << "Cost: " << cost.ToFloat() << "  (" << costVar << ")\n";
-    std::cout << "Price: " << price.ToFloat() << "  (" << priceVar << ")\n";
+    std::cout << "Cost: " << buyPrice.ToFloat() << "  (" << (buyPrice - buyPriceAvg).ToFloat() << ")\n";
+    std::cout << "Price: " << sellPrice.ToFloat() << "  (" << (sellPrice - sellPriceAvg).ToFloat() << ")\n";
+    std::cout << "Shop\n";
+    std::cout << "Stock: " << shop.stock.ToFloat() << '\n';
+    std::cout << "Cash: " << shop.cash.ToFloat() << '\n';
     std::cout << "\x1b[H";
 }

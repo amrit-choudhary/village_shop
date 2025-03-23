@@ -10,6 +10,7 @@
 #include <array>
 
 #include "../datastructure/ring_buffer.h"
+#include "../input/input_manager.h"
 #include "../math/math.h"
 #include "../random/random_engine.h"
 #include "../time/time_manager.h"

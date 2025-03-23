@@ -38,11 +38,13 @@ class VillageGame : public Game {
     uint32_t frameCount;
     uint32_t day;
 
-    FP cost;
-    Random costRandom;
+    FP buyPrice;
+    FP buyPriceAvg;
+    Random buyPriceRandom;
 
-    FP price;
-    Random priceRandom;
+    FP sellPrice;
+    FP sellPriceAvg;
+    Random sellPriceRandom;
 
     FP supply;
     FP demand;
@@ -50,6 +52,8 @@ class VillageGame : public Game {
     Shop shop;
 
     void DayChange();
+    void BuyStock();
+    void RefreshDisplay();
 };
 
 }  // namespace ME
