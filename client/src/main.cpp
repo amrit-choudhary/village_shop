@@ -3,11 +3,11 @@
 #include <thread>
 
 #include "FileIO/INI/INIParser.h"
-#include "Game/game.h"
 #include "Input/InputManager.h"
-#include "Rendering/renderer.h"
 #include "TimeManagement/TimeManager.h"
+#include "game/game.h"
 #include "misc/global_vars.h"
+#include "rendering/renderer.h"
 #include "src/logging.h"
 
 int main(int argc, char **argv) {
@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 
     InputManager inputManager;
     inputManager.Init();
-    Game game;
+    ME::Game game;
     game.Init(&timeManager);
     Renderer renderer;
     renderer.Init();

@@ -12,10 +12,10 @@ Renderer::~Renderer() {}
 
 void Renderer::Init() {}
 
-void Renderer::Update(std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &frameBuffer) {
+void Renderer::Update(std::array<std::array<uint8_t, ME::BUFFER_Y>, ME::BUFFER_X> &frameBuffer) {
     std::printf("\x1b[2J");
-    for (int y = 0; y < BUFFER_Y; ++y) {
-        for (int x = 0; x < BUFFER_X; ++x) {
+    for (int y = 0; y < ME::BUFFER_Y; ++y) {
+        for (int x = 0; x < ME::BUFFER_X; ++x) {
             uint8_t index = frameBuffer[x][y];
             std::putchar(asciiMapShort[index - 1]);
         }
