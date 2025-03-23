@@ -1,7 +1,7 @@
 
 #include "TimeManager.h"
 
-using namespace VG::Time;
+using namespace ME::Time;
 
 // Defining constants.
 namespace {

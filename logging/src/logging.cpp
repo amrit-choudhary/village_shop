@@ -60,7 +60,7 @@ static std::string GetCurrentTime() {
     return buffer;
 }
 
-void VG::Log(const char *input) {
+void ME::Log(const char *input) {
     std::ostringstream oss;
     oss << red << '[' << GetCurrentTime() << "] " << input << '\n' << white;
     std::cout << oss.str();

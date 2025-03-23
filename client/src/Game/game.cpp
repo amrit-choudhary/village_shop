@@ -5,17 +5,17 @@
 
 #include "../Input/InputManager.h"
 
-using namespace VG::Input;
+using namespace ME::Input;
 
 Game::Game() {
     index = 0;
-    ringBuffer = new VG::RingBuffer<uint8_t>(10);
+    ringBuffer = new ME::RingBuffer<uint8_t>(10);
 }
 
 Game::~Game() { delete ringBuffer; }
 
-void Game::Init(VG::Time::TimeManager* currentTimeManager) {
-    VG::Log("Game Start!");
+void Game::Init(ME::Time::TimeManager* currentTimeManager) {
+    ME::Log("Game Start!");
 
     timeManager = currentTimeManager;
 }
@@ -68,5 +68,5 @@ void Game::End() {
               << '\n';
     std::cout << "Total Frames: " << timeManager->GetFrameCount() << '\n';
 
-    VG::Log("Game Over!");
+    ME::Log("Game Over!");
 }

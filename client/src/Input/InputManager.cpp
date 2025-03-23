@@ -6,7 +6,7 @@
 #include "InputManagerWin.h"
 #endif
 
-using namespace VG::Input;
+using namespace ME::Input;
 
 // Global key map with key states.
 std::unordered_map<KeyCode, KeyState> InputManager::GlobalKeyState = {

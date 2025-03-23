@@ -1,6 +1,6 @@
 #include "fp_24_8.h"
 
-using namespace VG::Math;
+using namespace ME::Math;
 
 FP_24_8::FP_24_8() { rawValue = 0; }
 
@@ -34,9 +34,9 @@ float FP_24_8::ToFloat() const { return static_cast<float>(rawValue) / fractionM
 
 double FP_24_8::ToDouble() const { return static_cast<double>(rawValue) / fractionMult; }
 
-FP_24_8 VG::Math::FP_24_8::FromRawValue(int32_t val) { return FP_24_8(val, true); }
+FP_24_8 ME::Math::FP_24_8::FromRawValue(int32_t val) { return FP_24_8(val, true); }
 
-FP_24_8 VG::Math::FP_24_8::operator-() const { return FP_24_8::FromRawValue(-rawValue); }
+FP_24_8 ME::Math::FP_24_8::operator-() const { return FP_24_8::FromRawValue(-rawValue); }
 
 FP_24_8& FP_24_8::operator+=(const FP_24_8& b) {
     rawValue += b.rawValue;
@@ -60,22 +60,22 @@ FP_24_8& FP_24_8::operator/=(const FP_24_8& b) {
     return *this;
 }
 
-FP_24_8 VG::Math::operator+(const FP_24_8& a, const FP_24_8& b) { return VG::Math::FP_24_8(a) += b; }
+FP_24_8 ME::Math::operator+(const FP_24_8& a, const FP_24_8& b) { return ME::Math::FP_24_8(a) += b; }
 
-FP_24_8 VG::Math::operator-(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) -= b; }
+FP_24_8 ME::Math::operator-(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) -= b; }
 
-FP_24_8 VG::Math::operator*(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) *= b; }
+FP_24_8 ME::Math::operator*(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) *= b; }
 
-FP_24_8 VG::Math::operator/(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) /= b; }
+FP_24_8 ME::Math::operator/(const FP_24_8& a, const FP_24_8& b) { return FP_24_8(a) /= b; }
 
-bool VG::Math::operator==(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() == b.GetRaw(); }
+bool ME::Math::operator==(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() == b.GetRaw(); }
 
-bool VG::Math::operator!=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() != b.GetRaw(); }
+bool ME::Math::operator!=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() != b.GetRaw(); }
 
-bool VG::Math::operator<(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() < b.GetRaw(); }
+bool ME::Math::operator<(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() < b.GetRaw(); }
 
-bool VG::Math::operator>(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() > b.GetRaw(); }
+bool ME::Math::operator>(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() > b.GetRaw(); }
 
-bool VG::Math::operator<=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() <= b.GetRaw(); }
+bool ME::Math::operator<=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() <= b.GetRaw(); }
 
-bool VG::Math::operator>=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() >= b.GetRaw(); }
+bool ME::Math::operator>=(const FP_24_8& a, const FP_24_8& b) { return a.GetRaw() >= b.GetRaw(); }

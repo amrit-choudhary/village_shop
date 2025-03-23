@@ -5,7 +5,7 @@
 bool TEST::Test_RingBuffer1() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = initial count zero." << '\n';
 
-    VG::RingBuffer<int> rb(10);
+    ME::RingBuffer<int> rb(10);
 
     if (rb.GetCount() == 0) {
         std::cout << "TEST: Successful" << '\n';
@@ -19,7 +19,7 @@ bool TEST::Test_RingBuffer1() {
 bool TEST::Test_RingBuffer2() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = correct count after adding." << '\n';
 
-    VG::RingBuffer<int> rb(5);
+    ME::RingBuffer<int> rb(5);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
@@ -37,7 +37,7 @@ bool TEST::Test_RingBuffer2() {
 bool TEST::Test_RingBuffer3() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = count after adding excess items." << '\n';
 
-    VG::RingBuffer<int> rb(3);
+    ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
@@ -55,7 +55,7 @@ bool TEST::Test_RingBuffer3() {
 bool TEST::Test_RingBuffer4() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = get after excess." << '\n';
 
-    VG::RingBuffer<int> rb(3);
+    ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
@@ -73,7 +73,7 @@ bool TEST::Test_RingBuffer4() {
 bool TEST::Test_RingBuffer5() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = get using subscript." << '\n';
 
-    VG::RingBuffer<int> rb(3);
+    ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);

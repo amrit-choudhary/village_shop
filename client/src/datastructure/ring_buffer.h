@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <iostream>
 
-namespace VG {
+namespace ME {
 
 template <typename T>
 class RingBuffer {
@@ -66,22 +66,22 @@ RingBuffer<T>::RingBuffer(uint16_t maxCapacity) : capacity{maxCapacity} {
 }
 
 template <typename T>
-VG::RingBuffer<T>::~RingBuffer() {
+ME::RingBuffer<T>::~RingBuffer() {
     delete[] buffer;
 }
 
 template <typename T>
-uint16_t VG::RingBuffer<T>::GetCount() const {
+uint16_t ME::RingBuffer<T>::GetCount() const {
     return count;
 }
 
 template <typename T>
-uint16_t VG::RingBuffer<T>::GetCapacity() const {
+uint16_t ME::RingBuffer<T>::GetCapacity() const {
     return capacity;
 }
 
 template <typename T>
-void VG::RingBuffer<T>::Insert(T item) {
+void ME::RingBuffer<T>::Insert(T item) {
     // Buffer not full.
     if (count < capacity) {
         startIndex = 0;
@@ -101,7 +101,7 @@ void VG::RingBuffer<T>::Insert(T item) {
 }
 
 template <typename T>
-T VG::RingBuffer<T>::Get(uint16_t index) const {
+T ME::RingBuffer<T>::Get(uint16_t index) const {
     uint16_t destIndex = startIndex + index;
     if (destIndex >= capacity) {
         destIndex -= capacity;
@@ -118,4 +118,4 @@ inline T RingBuffer<T>::operator[](uint16_t index) const {
     return buffer[destIndex];
 }
 
-}  // namespace VG
+}  // namespace ME

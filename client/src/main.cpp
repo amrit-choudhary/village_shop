@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     int maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     // Init global variables.
-    VG::Time::TimeManager timeManager;
+    ME::Time::TimeManager timeManager;
     timeManager.Init(fps);
     bool shouldTick = false;
     double deltaTime = 0.0f;

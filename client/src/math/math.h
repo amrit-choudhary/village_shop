@@ -7,11 +7,11 @@
 
 #include "fp_24_8.h"
 
-namespace VG::Math {
+namespace ME::Math {
 
 // Test add function.
 template <typename T>
 T add(T a, T b) {
     return a + b;
 }
-}  // namespace VG::Math
+}  // namespace ME::Math

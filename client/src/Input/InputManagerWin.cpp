@@ -4,7 +4,7 @@
 
 #include "../misc/global_vars.h"
 
-using namespace VG::Input;
+using namespace ME::Input;
 
 // Native keycode to game KeyCode conversion map.
 static std::unordered_map<uint16_t, KeyCode> KeyCodeMap = {

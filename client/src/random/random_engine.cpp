@@ -5,7 +5,7 @@
 
 // Random
 
-VG::Random::Random() {
+ME::Random::Random() {
     uint32_t seed = std::chrono::system_clock::now().time_since_epoch().count();
     s[0] = seed;
     s[1] = seed ^ 0x5a827999;
@@ -18,7 +18,7 @@ VG::Random::Random() {
     }
 }
 
-VG::Random::Random(uint32_t seed) {
+ME::Random::Random(uint32_t seed) {
     s[0] = seed;
     s[1] = seed ^ 0x5a827999;
     s[2] = seed ^ 0x6ed9eba1;
@@ -30,7 +30,7 @@ VG::Random::Random(uint32_t seed) {
     }
 }
 
-uint32_t VG::Random::Next() {
+uint32_t ME::Random::Next() {
     const uint32_t result = Rotl(s[1] * 5, 7) * 9;
 
     const uint32_t t = s[1] << 9;
@@ -47,30 +47,30 @@ uint32_t VG::Random::Next() {
     return result;
 }
 
-uint32_t VG::Random::NextRange(uint32_t min, uint32_t max) {
+uint32_t ME::Random::NextRange(uint32_t min, uint32_t max) {
     uint32_t range = max - min + 1;
     return min + (Next() % range);
 }
 
-double VG::Random::NextDouble() {
+double ME::Random::NextDouble() {
     return (double)Next() / 4294967296.0;  // 2^32
 }
 
-uint64_t VG::Random::Next64() {
+uint64_t ME::Random::Next64() {
     return ((uint64_t)Next() << 32) | Next();  // Combines two 32 bit.
 }
 
 // RandomWt
 
-VG::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) : random(seed) {
+ME::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) : random(seed) {
     for (int i = 0; i < 10; ++i) {
         lut[i] = lutValues[i];
     }
 }
 
-VG::RandomWt::~RandomWt() {}
+ME::RandomWt::~RandomWt() {}
 
-uint8_t VG::RandomWt::Next() {
+uint8_t ME::RandomWt::Next() {
     uint8_t rndIndex = random.NextRange(0, 9);
     return lut[rndIndex];
 }

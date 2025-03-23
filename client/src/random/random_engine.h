@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace VG {
+namespace ME {
 
 // Xoshiro128** RNG implementation.
 class Random {
@@ -73,4 +73,4 @@ class RandomWt {
     uint8_t Next();
 };
 
-}  // namespace VG
+}  // namespace ME

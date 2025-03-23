@@ -19,7 +19,7 @@
 
 #include "fp_24_8.h"
 
-namespace VG::Math {
+namespace ME::Math {
 class FP_24_8 {
    public:
     // Constructors.
@@ -71,4 +71,4 @@ bool operator>(const FP_24_8& a, const FP_24_8& b);
 bool operator<=(const FP_24_8& a, const FP_24_8& b);
 bool operator>=(const FP_24_8& a, const FP_24_8& b);
 
-}  // namespace VG::Math
+}  // namespace ME::Math
