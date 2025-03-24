@@ -7,11 +7,14 @@
 #include "game/village_game.h"
 #include "input/input_manager.h"
 #include "misc/global_vars.h"
+#include "misc/utils.h"
 #include "rendering/renderer.h"
 #include "src/logging.h"
 #include "time/time_manager.h"
 
 int main(int argc, char **argv) {
+    ME::SetPaths(argv[0], argv[1]);
+
     // Read game params from file.
     INIMap iniMap = Load();
     int fps = std::atoi(iniMap["settings"]["fps"].c_str());

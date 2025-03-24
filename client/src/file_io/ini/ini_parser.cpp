@@ -1,9 +1,13 @@
 #include "ini_parser.h"
 
-std::string fileName = "resources/config/settings.ini";
+#include "../../misc/global_vars.h"
+#include "../../misc/utils.h"
+
+std::string fileName = "config/settings.ini";
 
 INIMap Load() {
     INIMap iniMap;
+    fileName = ME::GetResourcesPath() + fileName;
 
     std::ifstream file(fileName);
     std::stringstream buffer;
