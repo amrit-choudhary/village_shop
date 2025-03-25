@@ -82,6 +82,18 @@ void ME::VillageGame::DayChange() {
     shop.stock = FP{0.0f};
 
     RefreshDisplay();
+
+    // Create a stringstream to build the string
+    std::stringstream ss;
+    ss << "Day: " << day << '\n';
+
+    // Get the string as a char*
+    char* result = new char[ss.str().length() + 1];  // +1 for null terminator
+    strcpy(result, ss.str().c_str());
+
+    // Don't forget to free the memory when done
+    connection->SendMessage(result);
+    delete[] result;
 }
 
 void ME::VillageGame::RefreshDisplay() {

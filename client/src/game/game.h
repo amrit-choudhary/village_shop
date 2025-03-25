@@ -12,6 +12,7 @@
 #include "../datastructure/ring_buffer.h"
 #include "../input/input_manager.h"
 #include "../math/math.h"
+#include "../net/connection.h"
 #include "../random/random_engine.h"
 #include "../time/time_manager.h"
 #include "src/logging.h"
@@ -45,8 +46,11 @@ class Game {
     // Getters
     std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() { return buffer1; }
 
+    void SetConnectionRef(ME::Connection *ptrConnection);
+
    protected:
     ME::Time::TimeManager *timeManager;
+    ME::Connection *connection;
 
     // Frame Buffer.
     std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;

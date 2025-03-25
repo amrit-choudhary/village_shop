@@ -8,6 +8,7 @@
 #include "input/input_manager.h"
 #include "misc/global_vars.h"
 #include "misc/utils.h"
+#include "net/connection.h"
 #include "rendering/renderer.h"
 #include "src/logging.h"
 #include "time/time_manager.h"
@@ -32,6 +33,9 @@ int main(int argc, char **argv) {
     game.Init(&timeManager);
     Renderer renderer;
     renderer.Init();
+    ME::Connection connection;
+    connection.Init();
+    game.SetConnectionRef(&connection);
 
     // Game Loop.
     while (GameRunning) {
@@ -44,6 +48,7 @@ int main(int argc, char **argv) {
             inputManager.Update(deltaTime);
             game.Update(deltaTime);
             // renderer.Update(game.GetBuffer());
+            connection.Update(deltaTime);
         }
 
         if (timeManager.GetTimeSinceStartup() > maxRunTime) {
@@ -56,4 +61,5 @@ int main(int argc, char **argv) {
     inputManager.End();
     game.End();
     renderer.End();
+    connection.End();
 }

@@ -29,3 +29,5 @@ void Game::End() {
 
     ME::Log("Game Over!");
 }
+
+void ME::Game::SetConnectionRef(ME::Connection* ptrConnection) { connection = ptrConnection; }
