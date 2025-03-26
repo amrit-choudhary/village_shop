@@ -1,3 +1,5 @@
+#ifdef VG_MAC
+
 #include "connection_mac.h"
 
 #include <arpa/inet.h>
@@ -53,3 +55,5 @@ void ME::ConnectionMac::SendMessage(char* message) {
         return;
     }
 }
+
+#endif  // VG_MAC
