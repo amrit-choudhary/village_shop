@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../client/src/datastructure/ring_buffer.h"
+#include "src/datastructure/ring_buffer.h"
 
 namespace TEST {
 bool Test_RingBuffer1();

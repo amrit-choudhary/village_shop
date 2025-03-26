@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "src/datastructure/ring_buffer.h"
+
 bool TEST::Test_RingBuffer1() {
     std::cout << "\n\nTEST: Starting: Ring Buffer Test = initial count zero." << '\n';
 

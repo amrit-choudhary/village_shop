@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "src/file_io/ini/ini_parser.h"
+
 bool TEST::Test_INIParse() {
     std::cout << "TEST: Starting: INI Parser" << '\n';
     INIMap iniMap = Load();

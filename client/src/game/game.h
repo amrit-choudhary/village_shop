@@ -9,13 +9,13 @@
 
 #include <array>
 
-#include "../datastructure/ring_buffer.h"
 #include "../input/input_manager.h"
-#include "../math/math.h"
 #include "../net/connection.h"
-#include "../random/random_engine.h"
-#include "../time/time_manager.h"
+#include "src/datastructure/ring_buffer.h"
 #include "src/logging.h"
+#include "src/math/math.h"
+#include "src/random/random_engine.h"
+#include "src/time/time_manager.h"
 #include "villager.h"
 
 namespace ME {

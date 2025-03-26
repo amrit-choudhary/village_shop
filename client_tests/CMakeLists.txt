@@ -21,6 +21,12 @@ target_link_libraries(
     VillageShop_Logging
     )
 
+target_link_libraries(
+    VillageShop_Client_Tests
+    PRIVATE
+    VillageShop_Shared
+    )
+
 if(APPLE)
     find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
     if (NOT APPLICATION_SERVICES_FRAMEWORK)

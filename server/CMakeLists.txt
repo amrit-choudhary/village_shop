@@ -3,3 +3,9 @@
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(VillageShop_Server ${SOURCES})
+
+target_link_libraries(
+    VillageShop_Server
+    PRIVATE
+    VillageShop_Shared
+    )

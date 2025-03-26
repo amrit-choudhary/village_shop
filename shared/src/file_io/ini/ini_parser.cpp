@@ -1,6 +1,5 @@
 #include "ini_parser.h"
 
-#include "../../misc/global_vars.h"
 #include "../../misc/utils.h"
 
 std::string fileName = "config/settings.ini";
