@@ -2,10 +2,16 @@
 #ifdef VG_MAC
 #include "socket_server_mac.h"
 #endif
+#ifdef VG_WIN
+#include "socket_server_win.h"
+#endif
 
 void ME::SocketServer::Init() {
 #ifdef VG_MAC
     platformSocketServer = new ME::SocketServerMac();
+#endif
+#ifdef VG_WIN
+    platformSocketServer = new ME::SocketServerWin();
 #endif
     platformSocketServer->Init();
 }

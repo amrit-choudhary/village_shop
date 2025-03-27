@@ -12,19 +12,19 @@
 #include <iostream>
 #include <thread>
 
-#include "InputManager.h"
+#include "input_manager.h"
 
 class InputManagerWin : public PlatformInputManager {
- public:
-  InputManagerWin();
-  ~InputManagerWin();
-  void Init() override;
-  void Update(double deltaTime) override;
-  void End() override;
+   public:
+    InputManagerWin();
+    ~InputManagerWin();
+    void Init() override;
+    void Update(double deltaTime) override;
+    void End() override;
 
- private:
-  std::thread inputThread;
-  void InputCallback(HANDLE hInput);
+   private:
+    std::thread inputThread;
+    void InputCallback(HANDLE hInput);
 };
 
 #endif  // VG_WIN

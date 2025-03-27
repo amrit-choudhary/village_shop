@@ -1,6 +1,6 @@
 #ifdef VG_WIN
 
-#include "InputManagerWin.h"
+#include "input_manager_win.h"
 
 #include "../misc/global_vars.h"
 

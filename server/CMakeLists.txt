@@ -19,3 +19,8 @@ target_link_libraries(
     PRIVATE
     VillageShop_Shared
     )
+
+if(WIN32)
+    # Link against Winsock library
+    target_link_libraries(VillageShop_Server PRIVATE Ws2_32)
+endif()
