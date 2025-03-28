@@ -12,6 +12,7 @@
 
 namespace ME::Time {
 // Constants
+constexpr double FPS_1 = 1.0f;
 constexpr double FPS_10 = 10.0f;
 constexpr double FPS_30 = 30.0f;
 constexpr double FPS_60 = 60.0f;

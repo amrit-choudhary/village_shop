@@ -1,5 +1,5 @@
 /**
- * Mac implentation of socket server.
+ * Mac implentation of UDP socket server.
  */
 
 #pragma once
@@ -15,5 +15,6 @@ class SocketServerMac : public PlatformSocketServer {
     void End() override;
 
    private:
+    int serverSockerFd;
 };
 }  // namespace ME
