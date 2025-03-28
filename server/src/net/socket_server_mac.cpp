@@ -41,7 +41,7 @@ void ME::SocketServerMac::Init() {
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
 
-    // Bind and listen
+    // Bind server to socket.
     if (bind(serverSockerFd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         std::cerr << "Bind failed\n";
         return;
@@ -51,24 +51,26 @@ void ME::SocketServerMac::Init() {
 }
 
 void ME::SocketServerMac::Update(double deltaTime) {
-    unsigned char packet_data[256] = {0};
+    while (true) {
+        unsigned char packet_data[256] = {0};
 
-    unsigned int max_packet_size = sizeof(packet_data);
+        unsigned int max_packet_size = sizeof(packet_data);
 
-    sockaddr_in from;
-    socklen_t fromLength = sizeof(from);
+        sockaddr_in from;
+        socklen_t fromLength = sizeof(from);
 
-    int bytes = recvfrom(serverSockerFd, (char*)packet_data, max_packet_size, 0, (sockaddr*)&from, &fromLength);
+        int bytes = recvfrom(serverSockerFd, (char*)packet_data, max_packet_size, 0, (sockaddr*)&from, &fromLength);
 
-    if (bytes <= 0) return;
+        if (bytes <= 0) break;
 
-    unsigned int from_address = ntohl(from.sin_addr.s_addr);
+        unsigned int from_address = ntohl(from.sin_addr.s_addr);
 
-    unsigned int from_port = ntohs(from.sin_port);
+        unsigned int from_port = ntohs(from.sin_port);
 
-    std::cout << packet_data << '\n';
+        std::cout << packet_data << '\n';
 
-    // process received packet
+        // process received packet
+    }
 }
 
 void ME::SocketServerMac::End() { close(serverSockerFd); }
