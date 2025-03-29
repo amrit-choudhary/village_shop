@@ -3,6 +3,7 @@
 #include "connection_mac.h"
 
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -10,48 +11,92 @@
 
 #include <iostream>
 
+#include "src/net/net_protocol.h"
+
+static const char* SERVER_IP = "127.0.0.1";
+static const unsigned short PORT = 9310;
+
 void ME::ConnectionMac::Init() {
-    // Create socket (AF_INET for IPv4, SOCK_STREAM for TCP)
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    // Creating a UDP socket to connect to the erver.
+    std::cout << "Client Connection Starting\n";
+    clientSockerFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (clientSockerFd == -1) {
         std::cerr << "Socket creation failed\n";
         return;
     }
 
-    // Define server address structure
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;                      // IPv4
-    server_addr.sin_port = htons(12345);                   // Port 12345
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");  // Localhost
-
-    // Connect to server
-    if (connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        std::cerr << "Connection failed\n";
+    // Allow port reuse.
+    int opt = 1;
+    if (setsockopt(clientSockerFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        std::cerr << "Allow port reuse failed\n";
         return;
     }
 
-    // Send message
-    const char* message = "Hello from client!";
-    if (write(sock, message, strlen(message)) < 0) {
-        std::cerr << "Send failed\n";
+    // Set socket to non-blocking mode.
+    int nonBlocking = 1;
+    if (fcntl(clientSockerFd, F_SETFL, O_NONBLOCK, nonBlocking) == -1) {
+        std::cout << "Failed to set non blocking.";
         return;
     }
-
-    // Receive response
-    char buffer[1024] = {0};
-    read(sock, buffer, 1024);
-    std::cout << "Server response: " << buffer << "\n";
-
-    return;
 }
 
-void ME::ConnectionMac::Update(double deltaTime) {}
+void ME::ConnectionMac::Update(double deltaTime) {
+    while (true) {
+        unsigned char packet_data[256] = {0};
 
-void ME::ConnectionMac::End() {}
+        unsigned int max_packet_size = sizeof(packet_data);
+
+        sockaddr_in from;
+        socklen_t fromLength = sizeof(from);
+
+        int bytes = recvfrom(clientSockerFd, (char*)packet_data, max_packet_size, 0, (sockaddr*)&from, &fromLength);
+
+        if (bytes <= 0) break;
+
+        unsigned int from_address = ntohl(from.sin_addr.s_addr);
+
+        unsigned int from_port = ntohs(from.sin_port);
+
+        std::cout << packet_data << '\n';
+
+        // process received packet
+    }
+}
+
+void ME::ConnectionMac::End() { close(clientSockerFd); }
 
 void ME::ConnectionMac::SendMessage(char* message) {
-    if (write(sock, message, strlen(message)) < 0) {
-        std::cerr << "Send failed\n";
+    // Define server address structure
+    sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+
+    uint8_t packet_data[256] = {0};
+    *(packet_data) = (uint8_t)ME::Net::Version::VER_0;
+    *(packet_data + 1) = (uint8_t)ME::Net::Verb::PING;
+    uint8_t packet_size = 2;
+
+    int sent_bytes = sendto(clientSockerFd, packet_data, packet_size, 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));
+
+    if (sent_bytes != packet_size) {
+        std::cout << "Failed to send packet.";
+        return;
+    }
+}
+
+void ME::ConnectionMac::SendPacket(Packet* packet) {
+    // Define server address structure
+    sockaddr_in server_addr;
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+
+    int sent_bytes =
+        sendto(clientSockerFd, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));
+
+    if (sent_bytes != packet->GetSize()) {
+        std::cout << "Failed to send packet.";
         return;
     }
 }

@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     double deltaTime = 0.0f;
 
     InputManager inputManager;
-    inputManager.Init();
+    // inputManager.Init();
     ME::VillageGame game;
     game.Init(&timeManager);
     Renderer renderer;
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
         if (shouldTick) {
             deltaTime = timeManager.GetDeltaTime();
 
-            inputManager.Update(deltaTime);
+            // inputManager.Update(deltaTime);
             game.Update(deltaTime);
             // renderer.Update(game.GetBuffer());
             connection.Update(deltaTime);
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
     // Game End.
     timeManager.End();
-    inputManager.End();
+    // inputManager.End();
     game.End();
     renderer.End();
     connection.End();

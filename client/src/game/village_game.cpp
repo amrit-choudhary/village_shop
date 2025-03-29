@@ -92,7 +92,8 @@ void ME::VillageGame::DayChange() {
     strcpy(result, ss.str().c_str());
 
     // Don't forget to free the memory when done
-    connection->SendMessage(result);
+    // connection->SendMessage(result);
+    connection->SendPing();
     delete[] result;
 }
 

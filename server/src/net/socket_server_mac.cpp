@@ -11,6 +11,8 @@
 #include <iostream>
 #include <thread>
 
+#include "src/net/net_packet.h"
+
 constexpr unsigned short PORT = 9310;
 
 void ME::SocketServerMac::Init() {
@@ -52,14 +54,12 @@ void ME::SocketServerMac::Init() {
 
 void ME::SocketServerMac::Update(double deltaTime) {
     while (true) {
-        unsigned char packet_data[256] = {0};
-
-        unsigned int max_packet_size = sizeof(packet_data);
+        PacketMedium packet;
 
         sockaddr_in from;
         socklen_t fromLength = sizeof(from);
 
-        int bytes = recvfrom(serverSockerFd, (char*)packet_data, max_packet_size, 0, (sockaddr*)&from, &fromLength);
+        int bytes = recvfrom(serverSockerFd, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
 
         if (bytes <= 0) break;
 
@@ -67,7 +67,10 @@ void ME::SocketServerMac::Update(double deltaTime) {
 
         unsigned int from_port = ntohs(from.sin_port);
 
-        std::cout << packet_data << '\n';
+        uint8_t version = packet.ReadByte();
+        uint8_t verb = packet.ReadByte();
+
+        std::cout << from_address << ", " << from_port << ", " << ('A' + version) << ", " << ('A' + verb) << '\n';
 
         // process received packet
     }

@@ -10,7 +10,22 @@
 
 #include <stdint.h>
 
-namespace ME {
+namespace ME::Net {
+
+/**
+ * First byte of every packet.
+ * Denoting the protocol version.
+ */
+enum class Version : uint8_t {
+    VER_0 = 0x0000,
+    VER_1 = 0x0001,
+    VER_2 = 0x0002,
+    VER_3 = 0x0003,
+    VER_4 = 0x0004,
+    VER_5 = 0x0005,
+    VER_6 = 0x0006,
+    VER_7 = 0x0007,
+};
 
 /**
  * Every packet sent between client and server will have these verbs that
@@ -26,7 +41,7 @@ namespace ME {
  * 0xC0 - 0xDF
  * 0xE0 - 0xFF
  */
-enum class NetVerb : uint8_t {
+enum class Verb : uint8_t {
     // System
     NONE = 0x0000,
     ACK = 0x0001,
@@ -39,5 +54,4 @@ enum class NetVerb : uint8_t {
     GET = 0x0020,
 
 };
-
-}  // namespace ME
+}  // namespace ME::Net

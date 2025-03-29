@@ -14,8 +14,9 @@ class ConnectionMac : public PlatformConnection {
     void Update(double deltaTime) override;
     void End() override;
     void SendMessage(char* message) override;
+    void SendPacket(Packet* packet) override;
 
    private:
-    int sock;
+    int clientSockerFd;
 };
 }  // namespace ME
