@@ -3,6 +3,7 @@
  * Packet looks like this:
  * 1 byte : version number
  * 2 byte : Verbs
+ * 1 byte : Client ID
  * x bytes: data
  */
 
@@ -49,9 +50,37 @@ enum class Verb : uint8_t {
     PING = 0x0003,
     PONG = 0x0004,
     DATA = 0x0005,
+    CONNECT = 0x0006,
+    CONNECTED = 0x0007,
+    DISCONNECT = 0x0008,
 
     // Http
     GET = 0x0020,
 
+};
+
+/**
+ * Data representing a connected client.
+ * Sever will have a list of ConnectedClients.
+ */
+class ConnectedClient {
+   public:
+    /**
+     * Assigned by the server once CONNECT request comes.
+     * Client will get the same ID and will send this in every request to the server.
+     */
+    uint8_t clientID;
+    uint32_t address;
+    uint16_t port;
+};
+
+/**
+ * Data representing a connected server.
+ * Used on client.
+ */
+class ConnectedServer {
+   public:
+    uint32_t address;
+    uint16_t port;
 };
 }  // namespace ME::Net

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "src/net/net_packet.h"
+#include "src/net/net_protocol.h"
 
 namespace ME {
 
@@ -35,6 +36,7 @@ class Connection {
 
    private:
     PlatformConnection* platformConnection;
+    Net::ConnectedServer connectedServer;
 };
 
 }  // namespace ME

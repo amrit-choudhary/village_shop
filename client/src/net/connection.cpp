@@ -31,12 +31,17 @@ void ME::Connection::End() { platformConnection->End(); }
 
 void ME::Connection::SendMessage(char* message) { platformConnection->SendMessage(message); }
 
-void ME::Connection::SendConnectRequest() {}
+void ME::Connection::SendConnectRequest() {
+    PacketSmall packet;
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CONNECT));
+    SendPacket(&packet);
+}
 
 void ME::Connection::SendPing() {
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_3));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::GET));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::PING));
     SendPacket(&packet);
 }
 

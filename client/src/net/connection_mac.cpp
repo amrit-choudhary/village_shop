@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "src/net/net_protocol.h"
+#include "src/net/net_utils.h"
 
 static const char* SERVER_IP = "127.0.0.1";
 static const unsigned short PORT = 9310;
@@ -42,22 +43,23 @@ void ME::ConnectionMac::Init() {
 
 void ME::ConnectionMac::Update(double deltaTime) {
     while (true) {
-        unsigned char packet_data[256] = {0};
-
-        unsigned int max_packet_size = sizeof(packet_data);
+        PacketMedium packet;
 
         sockaddr_in from;
         socklen_t fromLength = sizeof(from);
 
-        int bytes = recvfrom(clientSockerFd, (char*)packet_data, max_packet_size, 0, (sockaddr*)&from, &fromLength);
-
+        int bytes = recvfrom(clientSockerFd, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
         if (bytes <= 0) break;
 
-        unsigned int from_address = ntohl(from.sin_addr.s_addr);
+        uint32_t from_address = ntohl(from.sin_addr.s_addr);
+        uint16_t from_port = ntohs(from.sin_port);
 
-        unsigned int from_port = ntohs(from.sin_port);
+        uint8_t version = packet.ReadByte();
+        uint8_t verb = packet.ReadByte();
 
-        std::cout << packet_data << '\n';
+        std::cout << from_address << ", " << from_port << ", " << ('A' + version) << ", " << ('A' + verb) << '\n';
+
+        std::cout << ME::Net::GetVerbName(static_cast<ME::Net::Verb>(verb)) << '\n';
 
         // process received packet
     }

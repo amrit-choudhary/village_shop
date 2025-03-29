@@ -14,6 +14,8 @@ class SocketServerMac : public PlatformSocketServer {
     void Update(double deltaTime) override;
     void End() override;
 
+    void SendPacket(Packet* packet) override;
+
    private:
     int serverSockerFd;
 };

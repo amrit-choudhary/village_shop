@@ -29,13 +29,15 @@ int main(int argc, char **argv) {
 
     InputManager inputManager;
     // inputManager.Init();
-    ME::VillageGame game;
-    game.Init(&timeManager);
-    Renderer renderer;
-    renderer.Init();
     ME::Connection connection;
     connection.Init();
+
+    ME::VillageGame game;
     game.SetConnectionRef(&connection);
+    game.Init(&timeManager);
+
+    Renderer renderer;
+    renderer.Init();
 
     // Game Loop.
     while (GameRunning) {

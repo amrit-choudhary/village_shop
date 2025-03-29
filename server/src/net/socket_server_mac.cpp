@@ -60,19 +60,29 @@ void ME::SocketServerMac::Update(double deltaTime) {
         socklen_t fromLength = sizeof(from);
 
         int bytes = recvfrom(serverSockerFd, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
-
         if (bytes <= 0) break;
 
-        unsigned int from_address = ntohl(from.sin_addr.s_addr);
+        uint32_t from_address = ntohl(from.sin_addr.s_addr);
+        uint16_t from_port = ntohs(from.sin_port);
 
-        unsigned int from_port = ntohs(from.sin_port);
+        socketServer->ProcessPacket(packet, from_address, from_port);
+    }
+}
 
-        uint8_t version = packet.ReadByte();
-        uint8_t verb = packet.ReadByte();
+void ME::SocketServerMac::SendPacket(Packet* packet) {
+    // Define client address structure
+    ME::Net::ConnectedClient client = socketServer->GetClient();
+    sockaddr_in client_addr;
+    client_addr.sin_family = AF_INET;
+    client_addr.sin_port = htons(client.port);
+    client_addr.sin_addr.s_addr = htonl(client.address);
 
-        std::cout << from_address << ", " << from_port << ", " << ('A' + version) << ", " << ('A' + verb) << '\n';
+    int sent_bytes =
+        sendto(serverSockerFd, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr, sizeof(sockaddr_in));
 
-        // process received packet
+    if (sent_bytes != packet->GetSize()) {
+        std::cout << "Failed to send packet.";
+        return;
     }
 }
 

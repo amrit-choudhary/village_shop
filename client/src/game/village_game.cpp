@@ -36,6 +36,8 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
     shop.pnl = FP{0.0f};
     shop.loan = FP{0.0f};
     shop.interest = FP{0.0f};
+
+    connection->SendConnectRequest();
 }
 
 void ME::VillageGame::Update(double deltaTime) {
