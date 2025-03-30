@@ -12,6 +12,8 @@
 
 namespace ME {
 
+class Connection;  // Forward declaration.
+
 class PlatformConnection {
    public:
     virtual void Init();
@@ -19,6 +21,9 @@ class PlatformConnection {
     virtual void End();
     virtual void SendMessage(char* message);
     virtual void SendPacket(Packet* packet);
+
+    // Pointer to the Connection, which is the interface with other code.
+    Connection* connection;
 
    protected:
    private:
@@ -33,6 +38,8 @@ class Connection {
     void SendConnectRequest();
     void SendPing();
     void SendPacket(Packet* packet);
+    void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
+    uint8_t GetClientID();
 
    private:
     PlatformConnection* platformConnection;

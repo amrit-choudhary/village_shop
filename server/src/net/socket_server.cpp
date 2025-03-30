@@ -32,9 +32,10 @@ void ME::SocketServer::End() { platformSocketServer->End(); }
 void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
     uint8_t versionInt = packet.ReadByte();
     uint8_t verbInt = packet.ReadByte();
+    uint8_t clientID = packet.ReadByte();
     ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
 
-    std::cout << "Packet: Verb: " << ME::Net::GetVerbName(verb) << '\n';
+    std::cout << "Packet: Verb: " << ME::Net::GetVerbName(verb) << ", " << ('A' + clientID) << '\n';
 
     switch (verb) {
         case ME::Net::Verb::CONNECT:
@@ -44,23 +45,34 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
             newClient.port = fromPort;
 
             connectedClients.push_back(newClient);
+            SendConnected(connectedClients.size() - 1);
             break;
         case ME::Net::Verb::PING:
-            SendPong();
+            SendPong(clientID);
             break;
     }
 }
 
-void ME::SocketServer::SendPong() {
+void ME::SocketServer::SendConnected(uint8_t clientID) {
+    PacketSmall packet;
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CONNECTED));
+    packet.WriteByte(static_cast<uint8_t>(clientID));
+    SendPacket(&packet, clientID);
+}
+
+void ME::SocketServer::SendPong(uint8_t clientID) {
     PacketSmall packet;
     packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
     packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::PONG));
-    SendPacket(&packet);
+    SendPacket(&packet, clientID);
 }
 
-void ME::SocketServer::SendPacket(Packet* packet) { platformSocketServer->SendPacket(packet); }
+void ME::SocketServer::SendPacket(Packet* packet, uint8_t clientID) {
+    platformSocketServer->SendPacket(packet, clientID);
+}
 
-ME::Net::ConnectedClient ME::SocketServer::GetClient() { return connectedClients[0]; }
+ME::Net::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) { return connectedClients[clientID]; }
 
 void ME::PlatformSocketServer::Init() {}
 
@@ -68,4 +80,4 @@ void ME::PlatformSocketServer::Update(double deltaTime) {}
 
 void ME::PlatformSocketServer::End() {}
 
-void ME::PlatformSocketServer::SendPacket(Packet* packet) {}
+void ME::PlatformSocketServer::SendPacket(Packet* packet, uint8_t clientID) {}

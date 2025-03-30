@@ -82,5 +82,10 @@ class ConnectedServer {
    public:
     uint32_t address;
     uint16_t port;
+    /**
+     * ClientID as assigned by the serve. Send in every request from client to server.
+     * Not connected = 0xFFFF.
+     */
+    uint8_t clientID = 0xFF;
 };
 }  // namespace ME::Net

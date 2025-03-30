@@ -54,14 +54,7 @@ void ME::ConnectionMac::Update(double deltaTime) {
         uint32_t from_address = ntohl(from.sin_addr.s_addr);
         uint16_t from_port = ntohs(from.sin_port);
 
-        uint8_t version = packet.ReadByte();
-        uint8_t verb = packet.ReadByte();
-
-        std::cout << from_address << ", " << from_port << ", " << ('A' + version) << ", " << ('A' + verb) << '\n';
-
-        std::cout << ME::Net::GetVerbName(static_cast<ME::Net::Verb>(verb)) << '\n';
-
-        // process received packet
+        connection->ProcessPacket(packet, from_address, from_port);
     }
 }
 

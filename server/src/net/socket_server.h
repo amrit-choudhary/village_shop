@@ -20,7 +20,7 @@ class PlatformSocketServer {
     virtual void Update(double deltaTime);
     virtual void End();
 
-    virtual void SendPacket(Packet* packet);
+    virtual void SendPacket(Packet* packet, uint8_t clientID);
 
     // Pointer to the server, which is the interface with other code.
     SocketServer* socketServer;
@@ -36,9 +36,10 @@ class SocketServer {
     void End();
 
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
-    void SendPong();
-    void SendPacket(Packet* packet);
-    ME::Net::ConnectedClient GetClient();
+    void SendPacket(Packet* packet, uint8_t clientID);
+    void SendPong(uint8_t clientID);
+    void SendConnected(uint8_t clientID);
+    ME::Net::ConnectedClient GetClient(uint8_t clientID);
 
    private:
     PlatformSocketServer* platformSocketServer;
