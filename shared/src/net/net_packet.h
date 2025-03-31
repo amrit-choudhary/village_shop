@@ -29,7 +29,7 @@ class Packet {
     void WriteString(const char* value);
     // Read data from the packet.
     uint8_t ReadByte();
-    char* ReadString();
+    void ReadString(char* ptrString);
 
    protected:
     uint16_t index;

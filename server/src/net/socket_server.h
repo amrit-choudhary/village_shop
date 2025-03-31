@@ -38,8 +38,10 @@ class SocketServer {
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
     void SendPacket(Packet* packet, uint8_t clientID);
     void SendPong(uint8_t clientID);
+    void HandleChat(Packet& packet, uint8_t clientID);
     void SendConnected(uint8_t clientID);
     ME::Net::ConnectedClient GetClient(uint8_t clientID);
+    std::vector<ME::Net::ConnectedClient> GetAllClients();
 
    private:
     PlatformSocketServer* platformSocketServer;

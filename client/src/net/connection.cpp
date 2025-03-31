@@ -38,6 +38,26 @@ void ME::Connection::End() { platformConnection->End(); }
 
 void ME::Connection::SendMessage(char* message) { platformConnection->SendMessage(message); }
 
+void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
+    uint8_t versionInt = packet.ReadByte();
+    uint8_t verbInt = packet.ReadByte();
+    uint8_t clientID = packet.ReadByte();
+    ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
+
+    std::cout << "Packet: Process: Verb: " << ME::Net::GetVerbName(verb) << '\n';
+
+    switch (verb) {
+        case ME::Net::Verb::CONNECTED:
+            connectedServer.clientID = clientID;
+            break;
+        case ME::Net::Verb::PONG:
+            break;
+        case ME::Net::Verb::CHAT_RECV:
+            RecvChat(packet, clientID);
+            break;
+    }
+}
+
 void ME::Connection::SendConnectRequest() {
     PacketSmall packet;
     packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
@@ -66,28 +86,12 @@ void ME::Connection::SendChat(const char* message) {
     SendPacket(&packet);
 }
 
-void ME::Connection::RecvChat(Packet& packet) { std::cout << "Received Chat!" << '\n'; }
+void ME::Connection::RecvChat(Packet& packet, uint8_t clientID) {
+    char messageBuffer[64];
+    packet.ReadString(messageBuffer);
+    std::cout << "Received Chat!\tFrom: " << ('A' + clientID) << ":\t" << messageBuffer << '\n';
+}
 
 void ME::Connection::SendPacket(Packet* packet) { platformConnection->SendPacket(packet); }
-
-void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
-    uint8_t versionInt = packet.ReadByte();
-    uint8_t verbInt = packet.ReadByte();
-    uint8_t clientID = packet.ReadByte();
-    ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
-
-    std::cout << "Packet: Process: Verb: " << ME::Net::GetVerbName(verb) << '\n';
-
-    switch (verb) {
-        case ME::Net::Verb::CONNECTED:
-            connectedServer.clientID = clientID;
-            break;
-        case ME::Net::Verb::PONG:
-            break;
-        case ME::Net::Verb::CHAT_RECV:
-            RecvChat(packet);
-            break;
-    }
-}
 
 uint8_t ME::Connection::GetClientID() { return connectedServer.clientID; }

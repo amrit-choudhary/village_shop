@@ -50,6 +50,9 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
         case ME::Net::Verb::PING:
             SendPong(clientID);
             break;
+        case ME::Net::Verb::CHAT_SEND:
+            HandleChat(packet, clientID);
+            break;
     }
 }
 
@@ -68,11 +71,29 @@ void ME::SocketServer::SendPong(uint8_t clientID) {
     SendPacket(&packet, clientID);
 }
 
+void ME::SocketServer::HandleChat(Packet& packet, uint8_t clientID) {
+    char messageBuffer[64];
+    packet.ReadString(messageBuffer);
+    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    for (int i = 0; i < clients.size(); ++i) {
+        if (clientID != clients[i].clientID) {
+            PacketSmall packet;
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CHAT_RECV));
+            packet.WriteByte(static_cast<uint8_t>(clientID));
+            packet.WriteString(messageBuffer);
+            SendPacket(&packet, clients[i].clientID);
+        }
+    }
+}
+
 void ME::SocketServer::SendPacket(Packet* packet, uint8_t clientID) {
     platformSocketServer->SendPacket(packet, clientID);
 }
 
 ME::Net::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) { return connectedClients[clientID]; }
+
+std::vector<ME::Net::ConnectedClient> ME::SocketServer::GetAllClients() { return connectedClients; }
 
 void ME::PlatformSocketServer::Init() {}
 

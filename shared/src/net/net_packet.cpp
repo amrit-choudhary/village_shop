@@ -33,7 +33,12 @@ void ME::Packet::WriteString(const char* value) {
     index += (len + 1);
 }
 
-char* ME::Packet::ReadString() { return "Hello World!"; }
+void ME::Packet::ReadString(char* ptrString) {
+    char* source = reinterpret_cast<char*>(dataPtr + index);
+    strcpy(ptrString, source);
+    uint8_t len = strlen(ptrString);
+    index += (len + 1);
+}
 
 ME::PacketSmall::PacketSmall() {
     index = 0;

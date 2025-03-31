@@ -102,7 +102,6 @@ void ME::VillageGame::DayChange() {
 
     std::string input;
     bool hasInput = inputManager->GetCLIInputString(input);
-    connection->SendChat("Amrit");
     if (hasInput) {
         connection->SendChat(input.c_str());
     }
