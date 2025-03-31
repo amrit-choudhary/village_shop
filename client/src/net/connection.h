@@ -37,6 +37,8 @@ class Connection {
     void SendMessage(char* message);
     void SendConnectRequest();
     void SendPing();
+    void SendChat(const char* message);
+    void RecvChat(Packet& packet);
     void SendPacket(Packet* packet);
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
     uint8_t GetClientID();

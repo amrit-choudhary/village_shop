@@ -46,11 +46,13 @@ class Game {
     // Getters
     std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() { return buffer1; }
 
+    void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);
 
    protected:
     ME::Time::TimeManager *timeManager;
     ME::Connection *connection;
+    ME::Input::InputManager *inputManager;
 
     // Frame Buffer.
     std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;

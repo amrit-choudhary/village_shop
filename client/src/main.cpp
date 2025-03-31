@@ -27,12 +27,13 @@ int main(int argc, char **argv) {
     bool shouldTick = false;
     double deltaTime = 0.0f;
 
-    InputManager inputManager;
-    // inputManager.Init();
+    ME::Input::InputManager inputManager;
+    inputManager.Init();
     ME::Connection connection;
     connection.Init();
 
     ME::VillageGame game;
+    game.SetInputManagerRef(&inputManager);
     game.SetConnectionRef(&connection);
     game.Init(&timeManager);
 
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
         if (shouldTick) {
             deltaTime = timeManager.GetDeltaTime();
 
-            // inputManager.Update(deltaTime);
+            inputManager.Update(deltaTime);
             game.Update(deltaTime);
             // renderer.Update(game.GetBuffer());
             connection.Update(deltaTime);

@@ -1,5 +1,6 @@
 #include "input_manager.h"
 #ifdef VG_MAC
+#include "input_manager_cli_mac.h"
 #include "input_manager_mac.h"
 #endif
 #ifdef VG_WIN
@@ -20,7 +21,8 @@ InputManager::~InputManager() {}
 
 void InputManager::Init() {
 #ifdef VG_MAC
-    platformInputManager = new InputManagerMac();
+    // platformInputManager = new InputManagerMac();
+    platformInputManager = new InputManagerCLIMac();
 #endif
 #ifdef VG_WIN
     platformInputManager = new InputManagerWin();
@@ -37,6 +39,8 @@ bool InputManager::GetKeyDown(KeyCode keyCode) { return (GlobalKeyState[keyCode]
 
 bool InputManager::GetKeyUp(KeyCode keyCode) { return (GlobalKeyState[keyCode] == KeyState::Up); }
 
+bool InputManager::GetCLIInputString(std::string& input) { return platformInputManager->GetCLIInputString(input); }
+
 PlatformInputManager::PlatformInputManager() {}
 
 PlatformInputManager::~PlatformInputManager() {}
@@ -46,3 +50,5 @@ void PlatformInputManager::Init() {}
 void PlatformInputManager::Update(double deltaTime) {}
 
 void PlatformInputManager::End() {}
+
+bool PlatformInputManager::GetCLIInputString(std::string& input) { return false; }

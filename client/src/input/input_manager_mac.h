@@ -1,6 +1,6 @@
 #ifdef VG_MAC
 /**
- * Input manager or Mac
+ * Input manager for Mac
  */
 
 #pragma once
@@ -15,6 +15,8 @@
 
 #include "input_manager.h"
 
+namespace ME::Input {
+
 class InputManagerMac : public PlatformInputManager {
    public:
     void Init() override;
@@ -26,5 +28,7 @@ class InputManagerMac : public PlatformInputManager {
     static CGEventRef InputCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon);
     void StartEventLoop();
 };
+
+}  // namespace ME::Input
 
 #endif  // VG_MAC

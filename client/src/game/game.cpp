@@ -30,4 +30,6 @@ void Game::End() {
     ME::Log("Game Over!");
 }
 
+void ME::Game::SetInputManagerRef(ME::Input::InputManager* ptrInput) { inputManager = ptrInput; }
+
 void ME::Game::SetConnectionRef(ME::Connection* ptrConnection) { connection = ptrConnection; }

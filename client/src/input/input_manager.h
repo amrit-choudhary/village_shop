@@ -17,7 +17,6 @@ enum class KeyState : uint8_t {
 };
 
 enum class KeyCode : uint16_t { None = 0, W = 1, A = 2, S = 3, D = 4, LArrow = 5, RArrow = 6, UArrow = 7, DArrow = 8 };
-}  // namespace ME::Input
 
 /**
  * Base class for platform specific Input implementation.
@@ -29,6 +28,7 @@ class PlatformInputManager {
     virtual void Init();
     virtual void Update(double deltaTime);
     virtual void End();
+    virtual bool GetCLIInputString(std::string& input);
 };
 
 class InputManagerMac;
@@ -53,6 +53,10 @@ class InputManager {
 
     static std::unordered_map<ME::Input::KeyCode, ME::Input::KeyState> GlobalKeyState;
 
+    bool GetCLIInputString(std::string& input);
+
    private:
-    PlatformInputManager *platformInputManager;
+    PlatformInputManager* platformInputManager;
 };
+
+}  // namespace ME::Input

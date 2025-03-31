@@ -55,6 +55,19 @@ void ME::Connection::SendPing() {
     SendPacket(&packet);
 }
 
+void ME::Connection::SendChat(const char* message) {
+    if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
+
+    PacketSmall packet;
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CHAT_SEND));
+    packet.WriteByte(connectedServer.clientID);
+    packet.WriteString(message);
+    SendPacket(&packet);
+}
+
+void ME::Connection::RecvChat(Packet& packet) { std::cout << "Received Chat!" << '\n'; }
+
 void ME::Connection::SendPacket(Packet* packet) { platformConnection->SendPacket(packet); }
 
 void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
@@ -70,6 +83,9 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
             connectedServer.clientID = clientID;
             break;
         case ME::Net::Verb::PONG:
+            break;
+        case ME::Net::Verb::CHAT_RECV:
+            RecvChat(packet);
             break;
     }
 }

@@ -26,9 +26,10 @@ class Packet {
 
     // Write data in the packet.
     void WriteByte(uint8_t value);
-
+    void WriteString(const char* value);
     // Read data from the packet.
     uint8_t ReadByte();
+    char* ReadString();
 
    protected:
     uint16_t index;

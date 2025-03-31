@@ -43,7 +43,7 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::VillageGame::Update(double deltaTime) {
     ME::Game::Update(deltaTime);
 
-    if (InputManager::GetKeyDown(ME::Input::KeyCode::A)) {
+    if (ME::Input::InputManager::GetKeyDown(ME::Input::KeyCode::A)) {
         BuyStock();
     }
 
@@ -97,9 +97,19 @@ void ME::VillageGame::DayChange() {
     // connection->SendMessage(result);
     connection->SendPing();
     delete[] result;
+
+    std::cout << "Day: " << day << '\n';
+
+    std::string input;
+    bool hasInput = inputManager->GetCLIInputString(input);
+    connection->SendChat("Amrit");
+    if (hasInput) {
+        connection->SendChat(input.c_str());
+    }
 }
 
 void ME::VillageGame::RefreshDisplay() {
+    return;
     std::cout << "\x1b[2J";
     std::cout << "Day: " << day << '\n';
     std::cout << "Cost: " << buyPrice.ToFloat() << "  (" << (buyPrice - buyPriceAvg).ToFloat() << ")\n";

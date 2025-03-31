@@ -1,5 +1,7 @@
 #include "net_packet.h"
 
+#include "string.h"
+
 uint8_t* ME::Packet::GetData() { return dataPtr; }
 
 uint16_t ME::Packet::GetSize() { return size; }
@@ -23,6 +25,15 @@ uint8_t ME::Packet::ReadByte() {
     index += 1;
     return value;
 }
+
+void ME::Packet::WriteString(const char* value) {
+    uint8_t len = strlen(value);
+    char* dest = reinterpret_cast<char*>(dataPtr + index);
+    strcpy(dest, value);
+    index += (len + 1);
+}
+
+char* ME::Packet::ReadString() { return "Hello World!"; }
 
 ME::PacketSmall::PacketSmall() {
     index = 0;

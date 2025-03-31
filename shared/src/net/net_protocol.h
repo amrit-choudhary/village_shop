@@ -18,14 +18,14 @@ namespace ME::Net {
  * Denoting the protocol version.
  */
 enum class Version : uint8_t {
-    VER_0 = 0x0000,
-    VER_1 = 0x0001,
-    VER_2 = 0x0002,
-    VER_3 = 0x0003,
-    VER_4 = 0x0004,
-    VER_5 = 0x0005,
-    VER_6 = 0x0006,
-    VER_7 = 0x0007,
+    VER_0 = 0x00,
+    VER_1 = 0x01,
+    VER_2 = 0x02,
+    VER_3 = 0x03,
+    VER_4 = 0x04,
+    VER_5 = 0x05,
+    VER_6 = 0x06,
+    VER_7 = 0x07,
 };
 
 /**
@@ -44,18 +44,22 @@ enum class Version : uint8_t {
  */
 enum class Verb : uint8_t {
     // System
-    NONE = 0x0000,
-    ACK = 0x0001,
-    AUTH = 0x0002,
-    PING = 0x0003,
-    PONG = 0x0004,
-    DATA = 0x0005,
-    CONNECT = 0x0006,
-    CONNECTED = 0x0007,
-    DISCONNECT = 0x0008,
+    NONE = 0x00,
+    ACK = 0x01,
+    AUTH = 0x02,
+    PING = 0x03,
+    PONG = 0x04,
+    DATA = 0x05,
+    CONNECT = 0x06,
+    CONNECTED = 0x07,
+    DISCONNECT = 0x08,
 
     // Http
-    GET = 0x0020,
+    GET = 0x20,
+
+    // Gameplay
+    CHAT_SEND = 0x60,
+    CHAT_RECV = 0x61,
 
 };
 
