@@ -1,6 +1,8 @@
 
 #include "time_manager.h"
 
+#include <thread>
+
 using namespace ME::Time;
 
 // Defining constants.
@@ -25,6 +27,9 @@ void TimeManager::Init(double fixedFrameRateFPS) {
 }
 
 bool TimeManager::Update() {
+    // TODO: Replace with exact values of sleep time.
+    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
     thisFrameEndTP = std::chrono::high_resolution_clock::now();
 
     auto frameDuration = thisFrameEndTP - previousFrameEndTP;

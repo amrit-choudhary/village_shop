@@ -44,7 +44,7 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
     uint8_t clientID = packet.ReadByte();
     ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
 
-    std::cout << "Packet: Process: Verb: " << ME::Net::GetVerbName(verb) << '\n';
+    // std::cout << "Packet: Process: Verb: " << ME::Net::GetVerbName(verb) << '\n';
 
     switch (verb) {
         case ME::Net::Verb::CONNECTED:

@@ -85,36 +85,27 @@ void ME::VillageGame::DayChange() {
 
     RefreshDisplay();
 
-    // Create a stringstream to build the string
-    std::stringstream ss;
-    ss << "Day: " << day << '\n';
-
-    // Get the string as a char*
-    char* result = new char[ss.str().length() + 1];  // +1 for null terminator
-    strcpy(result, ss.str().c_str());
-
-    // Don't forget to free the memory when done
-    // connection->SendMessage(result);
     connection->SendPing();
-    delete[] result;
-
-    std::cout << "Day: " << day << '\n';
 
     std::string input;
     bool hasInput = inputManager->GetCLIInputString(input);
     if (hasInput) {
-        connection->SendChat(input.c_str());
+        if (input == "b" || input == "B" || input == "buy" || input == "BUY" || input == "Buy") {
+            BuyStock();
+        } else {
+            connection->SendChat(input.c_str());
+        }
     }
 }
 
 void ME::VillageGame::RefreshDisplay() {
-    return;
-    std::cout << "\x1b[2J";
+    // std::cout << "\x1b[2J";
+    std::cout << "#############################\n";
     std::cout << "Day: " << day << '\n';
     std::cout << "Cost: " << buyPrice.ToFloat() << "  (" << (buyPrice - buyPriceAvg).ToFloat() << ")\n";
     std::cout << "Price: " << sellPrice.ToFloat() << "  (" << (sellPrice - sellPriceAvg).ToFloat() << ")\n";
     std::cout << "Shop\n";
     std::cout << "Stock: " << shop.stock.ToFloat() << '\n';
     std::cout << "Cash: " << shop.cash.ToFloat() << '\n';
-    std::cout << "\x1b[H";
+    // std::cout << "\x1b[H";
 }
