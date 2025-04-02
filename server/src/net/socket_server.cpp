@@ -53,6 +53,9 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
         case ME::Net::Verb::CHAT_SEND:
             HandleChat(packet, clientID);
             break;
+        case ME::Net::Verb::DATA_SEND:
+            HandleData(packet, clientID);
+            break;
     }
 }
 
@@ -82,6 +85,26 @@ void ME::SocketServer::HandleChat(Packet& packet, uint8_t clientID) {
             packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CHAT_RECV));
             packet.WriteByte(static_cast<uint8_t>(clientID));
             packet.WriteString(messageBuffer);
+            SendPacket(&packet, clients[i].clientID);
+        }
+    }
+}
+
+void ME::SocketServer::HandleData(Packet& packet, uint8_t clientID) {
+    ME::Math::FP_24_8 value1 = packet.ReadFP();
+    ME::Math::FP_24_8 value2 = packet.ReadFP();
+    ME::Math::FP_24_8 value3 = packet.ReadFP();
+
+    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    for (int i = 0; i < clients.size(); ++i) {
+        if (clientID != clients[i].clientID) {
+            PacketSmall packet;
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::DATA_RECV));
+            packet.WriteByte(static_cast<uint8_t>(clientID));
+            packet.WriteFP(value1);
+            packet.WriteFP(value2);
+            packet.WriteFP(value3);
             SendPacket(&packet, clients[i].clientID);
         }
     }

@@ -33,11 +33,23 @@ void ME::Packet::WriteString(const char* value) {
     index += (len + 1);
 }
 
+void ME::Packet::WriteFP(const ME::Math::FP_24_8& value) {
+    uint32_t* ptr = reinterpret_cast<uint32_t*>(dataPtr + index);
+    *ptr = value.GetRaw();
+    index += 4;
+}
+
 void ME::Packet::ReadString(char* ptrString) {
     char* source = reinterpret_cast<char*>(dataPtr + index);
     strcpy(ptrString, source);
     uint8_t len = strlen(ptrString);
     index += (len + 1);
+}
+
+ME::Math::FP_24_8 ME::Packet::ReadFP() {
+    uint32_t* ptr = reinterpret_cast<uint32_t*>(dataPtr + index);
+    index += 4;
+    return ME::Math::FP_24_8(*ptr, true);
 }
 
 ME::PacketSmall::PacketSmall() {

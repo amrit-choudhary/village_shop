@@ -39,6 +39,9 @@ class Connection {
     void SendPing();
     void SendChat(const char* message);
     void RecvChat(Packet& packet, uint8_t clientID);
+    void SendGameData(const ME::Math::FP_24_8& value1, const ME::Math::FP_24_8& value2,
+                      const ME::Math::FP_24_8& value3);
+    void RecvGameData(Packet& packet, uint8_t clientID);
     void SendPacket(Packet* packet);
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
     uint8_t GetClientID();

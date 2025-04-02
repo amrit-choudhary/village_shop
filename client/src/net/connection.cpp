@@ -55,6 +55,9 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
         case ME::Net::Verb::CHAT_RECV:
             RecvChat(packet, clientID);
             break;
+        case ME::Net::Verb::DATA_RECV:
+            RecvGameData(packet, clientID);
+            break;
     }
 }
 
@@ -90,6 +93,28 @@ void ME::Connection::RecvChat(Packet& packet, uint8_t clientID) {
     char messageBuffer[64];
     packet.ReadString(messageBuffer);
     std::cout << "Received Chat!\tFrom: " << ('A' + clientID) << ":\t" << messageBuffer << '\n';
+}
+
+void ME::Connection::SendGameData(const ME::Math::FP_24_8& value1, const ME::Math::FP_24_8& value2,
+                                  const ME::Math::FP_24_8& value3) {
+    if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
+
+    PacketSmall packet;
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::DATA_SEND));
+    packet.WriteByte(connectedServer.clientID);
+    packet.WriteFP(value1);
+    packet.WriteFP(value2);
+    packet.WriteFP(value3);
+    SendPacket(&packet);
+}
+
+void ME::Connection::RecvGameData(Packet& packet, uint8_t clientID) {
+    ME::Math::FP_24_8 value1 = packet.ReadFP();
+    ME::Math::FP_24_8 value2 = packet.ReadFP();
+    ME::Math::FP_24_8 value3 = packet.ReadFP();
+
+    std::cout << "Received Data: " << value1.ToFloat() << ", " << value2.ToFloat() << ", " << value3.ToFloat() << '\n';
 }
 
 void ME::Connection::SendPacket(Packet* packet) { platformConnection->SendPacket(packet); }

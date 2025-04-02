@@ -39,6 +39,7 @@ class SocketServer {
     void SendPacket(Packet* packet, uint8_t clientID);
     void SendPong(uint8_t clientID);
     void HandleChat(Packet& packet, uint8_t clientID);
+    void HandleData(Packet& packet, uint8_t clientID);
     void SendConnected(uint8_t clientID);
     ME::Net::ConnectedClient GetClient(uint8_t clientID);
     std::vector<ME::Net::ConnectedClient> GetAllClients();

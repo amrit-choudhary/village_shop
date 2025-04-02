@@ -86,6 +86,7 @@ void ME::VillageGame::DayChange() {
     RefreshDisplay();
 
     connection->SendPing();
+    connection->SendGameData(buyPrice, sellPrice, shop.cash);
 
     std::string input;
     bool hasInput = inputManager->GetCLIInputString(input);

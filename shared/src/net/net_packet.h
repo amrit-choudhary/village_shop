@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "../math/fp_24_8.h"
+
 namespace ME {
 
 constexpr uint16_t PACKET_SIZE_SMALL = 64;
@@ -27,9 +29,11 @@ class Packet {
     // Write data in the packet.
     void WriteByte(uint8_t value);
     void WriteString(const char* value);
+    void WriteFP(const ME::Math::FP_24_8& value);
     // Read data from the packet.
     uint8_t ReadByte();
     void ReadString(char* ptrString);
+    ME::Math::FP_24_8 ReadFP();
 
    protected:
     uint16_t index;

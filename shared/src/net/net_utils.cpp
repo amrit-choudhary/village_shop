@@ -18,7 +18,9 @@ static const std::map<Verb, std::string> verbStringMap = {{Verb::NONE, "None"},
                                                           {Verb::DISCONNECT, "Disconnect"},
                                                           {Verb::GET, "Get"},
                                                           {Verb::CHAT_SEND, "ChatSend"},
-                                                          {Verb::CHAT_RECV, "ChatRecv"}};
+                                                          {Verb::CHAT_RECV, "ChatRecv"},
+                                                          {Verb::DATA_SEND, "DataSend"},
+                                                          {Verb::DATA_RECV, "DataRecv"}};
 }
 
 std::string ME::Net::GetVerbName(Verb verb) { return verbStringMap.find(verb)->second; }
