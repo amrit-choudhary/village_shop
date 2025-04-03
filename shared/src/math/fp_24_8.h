@@ -20,8 +20,6 @@
 
 #include <cstdint>
 
-#include "fp_24_8.h"
-
 namespace ME::Math {
 class FP_24_8 {
    public:
