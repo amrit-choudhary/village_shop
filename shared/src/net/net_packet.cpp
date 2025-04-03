@@ -2,11 +2,17 @@
 
 #include "string.h"
 
-uint8_t* ME::Packet::GetData() { return dataPtr; }
+uint8_t* ME::Packet::GetData() {
+    return dataPtr;
+}
 
-uint16_t ME::Packet::GetSize() { return size; }
+uint16_t ME::Packet::GetSize() {
+    return size;
+}
 
-uint16_t ME::Packet::GetIndex() { return index; }
+uint16_t ME::Packet::GetIndex() {
+    return index;
+}
 
 void ME::Packet::ClearPacket() {
     for (int i = 0; i < size; ++i) {
@@ -58,7 +64,9 @@ ME::PacketSmall::PacketSmall() {
     dataPtr = new uint8_t[size]();
 }
 
-ME::PacketSmall::~PacketSmall() { delete[] dataPtr; }
+ME::PacketSmall::~PacketSmall() {
+    delete[] dataPtr;
+}
 
 ME::PacketMedium::PacketMedium() {
     index = 0;
@@ -66,7 +74,9 @@ ME::PacketMedium::PacketMedium() {
     dataPtr = new uint8_t[size]();
 }
 
-ME::PacketMedium::~PacketMedium() { delete[] dataPtr; }
+ME::PacketMedium::~PacketMedium() {
+    delete[] dataPtr;
+}
 
 ME::PacketBig::PacketBig() {
     index = 0;
@@ -74,7 +84,9 @@ ME::PacketBig::PacketBig() {
     dataPtr = new uint8_t[size]();
 }
 
-ME::PacketBig::~PacketBig() { delete[] dataPtr; }
+ME::PacketBig::~PacketBig() {
+    delete[] dataPtr;
+}
 
 ME::PacketHuge::PacketHuge() {
     index = 0;
@@ -82,4 +94,6 @@ ME::PacketHuge::PacketHuge() {
     dataPtr = new uint8_t[size]();
 }
 
-ME::PacketHuge::~PacketHuge() { delete[] dataPtr; }
+ME::PacketHuge::~PacketHuge() {
+    delete[] dataPtr;
+}

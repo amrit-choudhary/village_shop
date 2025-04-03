@@ -32,11 +32,17 @@ void ME::Connection::Init() {
     platformConnection->Init();
 }
 
-void ME::Connection::Update(double deltaTime) { platformConnection->Update(deltaTime); }
+void ME::Connection::Update(double deltaTime) {
+    platformConnection->Update(deltaTime);
+}
 
-void ME::Connection::End() { platformConnection->End(); }
+void ME::Connection::End() {
+    platformConnection->End();
+}
 
-void ME::Connection::SendMessage(char* message) { platformConnection->SendMessage(message); }
+void ME::Connection::SendMessage(char* message) {
+    platformConnection->SendMessage(message);
+}
 
 void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
     uint8_t versionInt = packet.ReadByte();
@@ -117,6 +123,10 @@ void ME::Connection::RecvGameData(Packet& packet, uint8_t clientID) {
     std::cout << "Received Data: " << value1.ToFloat() << ", " << value2.ToFloat() << ", " << value3.ToFloat() << '\n';
 }
 
-void ME::Connection::SendPacket(Packet* packet) { platformConnection->SendPacket(packet); }
+void ME::Connection::SendPacket(Packet* packet) {
+    platformConnection->SendPacket(packet);
+}
 
-uint8_t ME::Connection::GetClientID() { return connectedServer.clientID; }
+uint8_t ME::Connection::GetClientID() {
+    return connectedServer.clientID;
+}

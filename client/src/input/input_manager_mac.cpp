@@ -67,7 +67,9 @@ void InputManagerMac::StartEventLoop() {
     std::cout << "Event loop stopped" << std::endl;
 }
 
-void InputManagerMac::Update(double deltaTime) { CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, false); }
+void InputManagerMac::Update(double deltaTime) {
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, false);
+}
 
 void InputManagerMac::End() {
     CFRunLoopStop(CFRunLoopGetCurrent());

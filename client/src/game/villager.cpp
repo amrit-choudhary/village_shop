@@ -3,7 +3,9 @@
 #include <random>
 
 // Health related functions.
-VHealth::VHealth() { Health = 100.0f; }
+VHealth::VHealth() {
+    Health = 100.0f;
+}
 
 VHealth::~VHealth() {}
 
@@ -32,7 +34,9 @@ void VHunger::Update(double deltaTime) {
 
 // Gold related function.
 
-VGold::VGold() { Gold = 10; }
+VGold::VGold() {
+    Gold = 10;
+}
 
 VGold::~VGold() {}
 

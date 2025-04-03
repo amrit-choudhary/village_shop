@@ -60,10 +60,18 @@ void TimeManager::End() {
     gameEndTP = std::chrono::high_resolution_clock::now();
 }
 
-double TimeManager::GetDeltaTime() const { return ffrDeltaTime * timeScale; }
+double TimeManager::GetDeltaTime() const {
+    return ffrDeltaTime * timeScale;
+}
 
-uint64_t TimeManager::GetFrameCount() const { return ffrFrameCout; }
+uint64_t TimeManager::GetFrameCount() const {
+    return ffrFrameCout;
+}
 
-uint64_t TimeManager::GetNotFFRFrameCount() const { return frameCout; }
+uint64_t TimeManager::GetNotFFRFrameCount() const {
+    return frameCout;
+}
 
-double TimeManager::GetTimeSinceStartup() const { return timeSinceStartup; }
+double TimeManager::GetTimeSinceStartup() const {
+    return timeSinceStartup;
+}

@@ -39,7 +39,9 @@ class Random {
 
    private:
     uint32_t s[4];
-    static inline uint32_t Rotl(const uint32_t x, int k) { return (x << k) | (x >> (32 - k)); }
+    static inline uint32_t Rotl(const uint32_t x, int k) {
+        return (x << k) | (x >> (32 - k));
+    }
 };
 
 /**

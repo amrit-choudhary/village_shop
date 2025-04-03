@@ -44,7 +44,9 @@ class Game {
     virtual void End();
 
     // Getters
-    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() { return buffer1; }
+    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() {
+        return buffer1;
+    }
 
     void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);

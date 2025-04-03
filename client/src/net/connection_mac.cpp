@@ -58,7 +58,9 @@ void ME::ConnectionMac::Update(double deltaTime) {
     }
 }
 
-void ME::ConnectionMac::End() { close(clientSockerFd); }
+void ME::ConnectionMac::End() {
+    close(clientSockerFd);
+}
 
 void ME::ConnectionMac::SendMessage(char* message) {
     // Define server address structure

@@ -34,4 +34,6 @@ void ME::SetPaths(char* arg1, char* arg2) {
     resourceDirPath += "/resources/";
 }
 
-std::string ME::GetResourcesPath() { return resourceDirPath; }
+std::string ME::GetResourcesPath() {
+    return resourceDirPath;
+}

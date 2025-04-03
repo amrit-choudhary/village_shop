@@ -54,6 +54,8 @@ void InputManagerWin::Init() {
 
 void InputManagerWin::Update(double deltaTime) {}
 
-void InputManagerWin::End() { inputThread.join(); }
+void InputManagerWin::End() {
+    inputThread.join();
+}
 
 #endif  // VG_WIN

@@ -23,9 +23,13 @@ void InputManagerCLIMac::Init() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
-void InputManagerCLIMac::Update(double deltaTime) { return; }
+void InputManagerCLIMac::Update(double deltaTime) {
+    return;
+}
 
-void InputManagerCLIMac::End() { std::cout << "CLI End" << '\n'; }
+void InputManagerCLIMac::End() {
+    std::cout << "CLI End" << '\n';
+}
 
 bool InputManagerCLIMac::GetCLIInputString(std::string& input) {
     {

@@ -86,6 +86,8 @@ void ME::SocketServerMac::SendPacket(Packet* packet, uint8_t clientID) {
     }
 }
 
-void ME::SocketServerMac::End() { close(serverSockerFd); }
+void ME::SocketServerMac::End() {
+    close(serverSockerFd);
+}
 
 #endif  // VG_MAC

@@ -31,15 +31,25 @@ void InputManager::Init() {
     platformInputManager->Init();
 }
 
-void InputManager::Update(double deltaTime) { platformInputManager->Update(deltaTime); }
+void InputManager::Update(double deltaTime) {
+    platformInputManager->Update(deltaTime);
+}
 
-void InputManager::End() { platformInputManager->End(); }
+void InputManager::End() {
+    platformInputManager->End();
+}
 
-bool InputManager::GetKeyDown(KeyCode keyCode) { return (GlobalKeyState[keyCode] == KeyState::Down); }
+bool InputManager::GetKeyDown(KeyCode keyCode) {
+    return (GlobalKeyState[keyCode] == KeyState::Down);
+}
 
-bool InputManager::GetKeyUp(KeyCode keyCode) { return (GlobalKeyState[keyCode] == KeyState::Up); }
+bool InputManager::GetKeyUp(KeyCode keyCode) {
+    return (GlobalKeyState[keyCode] == KeyState::Up);
+}
 
-bool InputManager::GetCLIInputString(std::string& input) { return platformInputManager->GetCLIInputString(input); }
+bool InputManager::GetCLIInputString(std::string& input) {
+    return platformInputManager->GetCLIInputString(input);
+}
 
 PlatformInputManager::PlatformInputManager() {}
 
@@ -51,4 +61,6 @@ void PlatformInputManager::Update(double deltaTime) {}
 
 void PlatformInputManager::End() {}
 
-bool PlatformInputManager::GetCLIInputString(std::string& input) { return false; }
+bool PlatformInputManager::GetCLIInputString(std::string& input) {
+    return false;
+}

@@ -25,9 +25,13 @@ void ME::SocketServer::Init() {
     platformSocketServer->socketServer = this;
     platformSocketServer->Init();
 }
-void ME::SocketServer::Update(double deltaTime) { platformSocketServer->Update(deltaTime); }
+void ME::SocketServer::Update(double deltaTime) {
+    platformSocketServer->Update(deltaTime);
+}
 
-void ME::SocketServer::End() { platformSocketServer->End(); }
+void ME::SocketServer::End() {
+    platformSocketServer->End();
+}
 
 void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
     uint8_t versionInt = packet.ReadByte();
@@ -114,9 +118,13 @@ void ME::SocketServer::SendPacket(Packet* packet, uint8_t clientID) {
     platformSocketServer->SendPacket(packet, clientID);
 }
 
-ME::Net::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) { return connectedClients[clientID]; }
+ME::Net::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) {
+    return connectedClients[clientID];
+}
 
-std::vector<ME::Net::ConnectedClient> ME::SocketServer::GetAllClients() { return connectedClients; }
+std::vector<ME::Net::ConnectedClient> ME::SocketServer::GetAllClients() {
+    return connectedClients;
+}
 
 void ME::PlatformSocketServer::Init() {}
 

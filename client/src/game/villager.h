@@ -5,29 +5,29 @@
 #pragma once
 
 class VHealth {
- public:
-  VHealth();
-  ~VHealth();
-  float Health;
-  void Update(double deltaTime);
+   public:
+    VHealth();
+    ~VHealth();
+    float Health;
+    void Update(double deltaTime);
 };
 
 class VHunger {
- public:
-  VHunger();
-  VHunger(float inHungerRate);
-  ~VHunger();
-  float Hunger;
-  void Update(double deltaTime);
+   public:
+    VHunger();
+    VHunger(float inHungerRate);
+    ~VHunger();
+    float Hunger;
+    void Update(double deltaTime);
 
- private:
-  float hungerRate;
+   private:
+    float hungerRate;
 };
 
 class VGold {
- public:
-  VGold();
-  ~VGold();
-  float Gold;
-  void Update(double deltaTime);
+   public:
+    VGold();
+    ~VGold();
+    float Gold;
+    void Update(double deltaTime);
 };
