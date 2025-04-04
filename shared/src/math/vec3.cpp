@@ -27,13 +27,22 @@ void ME::Math::Vec3::Normalise() {
     z = z / len;
 }
 
+void ME::Math::Vec3::NormaliseSafe() {
+    float len = Length();
+    if (len == 0) {
+        x = 0;
+        y = 0;
+        z = 0;
+    } else {
+        x = x / len;
+        y = y / len;
+        z = z / len;
+    }
+}
+
 Vec3 ME::Math::Vec3::Normalised() {
     float len = Length();
-    x = x / len;
-    y = y / len;
-    z = z / len;
-
-    return Vec3{x, y, z};
+    return (len > 0) ? Vec3{x / len, y / len, z / len} : Vec3{0, 0, 0};
 }
 
 Vec3 ME::Math::Vec3::operator-() const {
@@ -68,6 +77,14 @@ Vec3& ME::Math::Vec3::operator/=(const Vec3& b) {
     return *this;
 }
 
+float ME::Math::Vec3::Dot(const Vec3& a, const Vec3& b) {
+    return (a.x + b.x + a.y * b.y + a.z * b.z);
+}
+
+Vec3 ME::Math::Vec3::Cross(const Vec3& a, const Vec3& b) {
+    return Vec3{a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+}
+
 Vec3 ME::Math::operator+(const Vec3& a, const Vec3& b) {
     return Vec3{a.x + b.x, a.y + b.y, a.z + b.z};
 }
@@ -93,9 +110,5 @@ bool ME::Math::operator==(const Vec3& a, const Vec3& b) {
 }
 
 bool ME::Math::operator!=(const Vec3& a, const Vec3& b) {
-    if (a.x == b.x && a.y == b.y && a.z == b.z) {
-        return false;
-    } else {
-        return true;
-    }
+    return !(a == b);
 }

@@ -41,6 +41,8 @@ class Vec3 {
     float Length();
     // In place normalise this vector.
     void Normalise();
+    // In place normalise this vector. Will also check for 0 length;
+    void NormaliseSafe();
     // Returns a new vector that is normalised.
     Vec3 Normalised();
 
@@ -51,10 +53,15 @@ class Vec3 {
     Vec3& operator*=(const Vec3& b);
     Vec3& operator/=(const Vec3& b);
 
+    // Math functions
+    static float Dot(const Vec3& a, const Vec3& b);
+    static Vec3 Cross(const Vec3& a, const Vec3& b);
+
    private:
    protected:
 };
 
+// Operator overloads.
 Vec3 operator+(const Vec3& a, const Vec3& b);
 Vec3 operator-(const Vec3& a, const Vec3& b);
 Vec3 operator*(const Vec3& a, const Vec3& b);
@@ -62,5 +69,7 @@ Vec3 operator/(const Vec3& a, const Vec3& b);
 
 bool operator==(const Vec3& a, const Vec3& b);
 bool operator!=(const Vec3& a, const Vec3& b);
+
+// Math functions
 
 }  // namespace ME::Math
