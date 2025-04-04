@@ -78,7 +78,7 @@ Vec3& ME::Math::Vec3::operator/=(const Vec3& b) {
 }
 
 float ME::Math::Vec3::Dot(const Vec3& a, const Vec3& b) {
-    return (a.x + b.x + a.y * b.y + a.z * b.z);
+    return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
 Vec3 ME::Math::Vec3::Cross(const Vec3& a, const Vec3& b) {
