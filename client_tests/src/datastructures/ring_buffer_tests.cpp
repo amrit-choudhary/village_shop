@@ -1,91 +1,52 @@
-#include "ring_buffer_tests.h"
+/**
+ * Tests for ring buffer.
+ */
 
-#include <iostream>
-
+#include "../test_runner.h"
 #include "src/datastructure/ring_buffer.h"
 
-bool TEST::Test_RingBuffer1() {
-    std::cout << "\n\nTEST: Starting: Ring Buffer Test = initial count zero." << '\n';
-
+TEST(RingBuffer, InitialCountZero) {
     ME::RingBuffer<int> rb(10);
 
-    if (rb.GetCount() == 0) {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT_EQ(rb.GetCount() == 0);
 }
 
-bool TEST::Test_RingBuffer2() {
-    std::cout << "\n\nTEST: Starting: Ring Buffer Test = correct count after adding." << '\n';
-
+TEST(RingBuffer, InitialCountCorrectAfterAdding) {
     ME::RingBuffer<int> rb(5);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
     rb.Insert(4);
 
-    if (rb.GetCount() == 4) {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT_EQ(rb.GetCount() == 4);
 }
 
-bool TEST::Test_RingBuffer3() {
-    std::cout << "\n\nTEST: Starting: Ring Buffer Test = count after adding excess items." << '\n';
-
+TEST(RingBuffer, InitialCountCorrectAfterAddingExcess) {
     ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
     rb.Insert(4);
 
-    if (rb.GetCount() == 3) {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT_EQ(rb.GetCount() == 3);
 }
 
-bool TEST::Test_RingBuffer4() {
-    std::cout << "\n\nTEST: Starting: Ring Buffer Test = get after excess." << '\n';
-
+TEST(RingBuffer, GetAfterExcess) {
     ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
     rb.Insert(4);
 
-    if (rb.Get(0) == 2) {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT_EQ(rb.Get(0) == 2);
 }
 
-bool TEST::Test_RingBuffer5() {
-    std::cout << "\n\nTEST: Starting: Ring Buffer Test = get using subscript." << '\n';
-
+TEST(RingBuffer, GetUsingSubscript) {
     ME::RingBuffer<int> rb(3);
     rb.Insert(1);
     rb.Insert(2);
     rb.Insert(3);
     rb.Insert(4);
 
-    if (rb[0] == 2) {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT_EQ(rb[0] == 2);
 }
