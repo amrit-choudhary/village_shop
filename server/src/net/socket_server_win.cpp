@@ -21,8 +21,8 @@ void ME::SocketServerWin::Init() {
         return;
     }
 
-    serverSockerFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (serverSockerFd == INVALID_SOCKET) {
+    serverSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (serverSocketFD == INVALID_SOCKET) {
         std::cerr << "Socket creation failed: " << WSAGetLastError() << "\n";
         WSACleanup();
         return;
@@ -30,7 +30,7 @@ void ME::SocketServerWin::Init() {
 
     // Allow port reuse.
     const char opt = 1;
-    if (setsockopt(serverSockerFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(serverSocketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         std::cerr << "Allow port reuse failed\n";
         WSACleanup();
         return;
@@ -38,7 +38,7 @@ void ME::SocketServerWin::Init() {
 
     // Set socket to non-blocking mode
     u_long mode = 1;  // 1 for non-blocking
-    if (ioctlsocket(serverSockerFd, FIONBIO, &mode) == SOCKET_ERROR) {
+    if (ioctlsocket(serverSocketFD, FIONBIO, &mode) == SOCKET_ERROR) {
         std::cout << "Failed to set non-blocking: " << WSAGetLastError() << "\n";
         End();
         return;
@@ -51,9 +51,9 @@ void ME::SocketServerWin::Init() {
     server_addr.sin_port = htons(PORT);
 
     // Bind server to socket.
-    if (bind(serverSockerFd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+    if (bind(serverSocketFD, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
         std::cerr << "Bind failed: " << WSAGetLastError() << "\n";
-        closesocket(serverSockerFd);
+        closesocket(serverSocketFD);
         WSACleanup();
         return;
     }
@@ -69,7 +69,7 @@ void ME::SocketServerWin::Update(double deltaTime) {
         socklen_t fromLength = sizeof(from);
 
         int bytes =
-            recvfrom(serverSockerFd, (char*)(packet.GetData()), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
+            recvfrom(serverSocketFD, (char*)(packet.GetData()), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
         if (bytes <= 0) break;
 
         uint32_t from_address = ntohl(from.sin_addr.s_addr);
@@ -87,7 +87,7 @@ void ME::SocketServerWin::SendPacket(Packet* packet, uint8_t clientID) {
     client_addr.sin_port = htons(client.port);
     client_addr.sin_addr.s_addr = htonl(client.address);
 
-    int sent_bytes = sendto(serverSockerFd, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr,
+    int sent_bytes = sendto(serverSocketFD, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr,
                             sizeof(sockaddr_in));
 
     if (sent_bytes != packet->GetSize()) {
@@ -97,7 +97,7 @@ void ME::SocketServerWin::SendPacket(Packet* packet, uint8_t clientID) {
 }
 
 void ME::SocketServerWin::End() {
-    closesocket(serverSockerFd);
+    closesocket(serverSocketFD);
     WSACleanup();
 }
 

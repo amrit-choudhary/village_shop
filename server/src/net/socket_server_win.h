@@ -19,7 +19,7 @@ class SocketServerWin : public PlatformSocketServer {
     void SendPacket(Packet* packet, uint8_t clientID) override;
 
    private:
-    int serverSockerFd;
+    int serverSocketFD;
 };
 }  // namespace ME
 

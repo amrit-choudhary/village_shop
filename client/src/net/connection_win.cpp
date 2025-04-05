@@ -22,8 +22,8 @@ void ME::ConnectionWin::Init() {
 
     // Creating a UDP socket to connect to the erver.
     std::cout << "Client Connection Starting\n";
-    clientSockerFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (clientSockerFd == -1) {
+    clientSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (clientSocketFD == -1) {
         std::cerr << "Socket creation failed\n";
         WSACleanup();
         return;
@@ -31,7 +31,7 @@ void ME::ConnectionWin::Init() {
 
     // Allow port reuse.
     const char opt = 1;
-    if (setsockopt(clientSockerFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(clientSocketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         std::cerr << "Allow port reuse failed\n";
         WSACleanup();
         return;
@@ -39,7 +39,7 @@ void ME::ConnectionWin::Init() {
 
     // Set socket to non-blocking mode
     u_long mode = 1;  // 1 for non-blocking
-    if (ioctlsocket(clientSockerFd, FIONBIO, &mode) == SOCKET_ERROR) {
+    if (ioctlsocket(clientSocketFD, FIONBIO, &mode) == SOCKET_ERROR) {
         std::cout << "Failed to set non-blocking: " << WSAGetLastError() << "\n";
         End();
         return;
@@ -54,7 +54,7 @@ void ME::ConnectionWin::Update(double deltaTime) {
         socklen_t fromLength = sizeof(from);
 
         int bytes =
-            recvfrom(clientSockerFd, (char*)packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
+            recvfrom(clientSocketFD, (char*)packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
         if (bytes <= 0) break;
 
         uint32_t from_address = ntohl(from.sin_addr.s_addr);
@@ -65,7 +65,7 @@ void ME::ConnectionWin::Update(double deltaTime) {
 }
 
 void ME::ConnectionWin::End() {
-    closesocket(clientSockerFd);
+    closesocket(clientSocketFD);
     WSACleanup();
 }
 
@@ -76,7 +76,7 @@ void ME::ConnectionWin::SendPacket(Packet* packet) {
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-    int sent_bytes = sendto(clientSockerFd, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr,
+    int sent_bytes = sendto(clientSocketFD, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr,
                             sizeof(sockaddr_in));
 
     if (sent_bytes != packet->GetSize()) {

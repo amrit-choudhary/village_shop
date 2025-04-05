@@ -20,22 +20,22 @@ static const unsigned short PORT = 9310;
 void ME::ConnectionMac::Init() {
     // Creating a UDP socket to connect to the erver.
     std::cout << "Client Connection Starting\n";
-    clientSockerFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (clientSockerFd == -1) {
+    clientSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (clientSocketFD == -1) {
         std::cerr << "Socket creation failed\n";
         return;
     }
 
     // Allow port reuse.
     int opt = 1;
-    if (setsockopt(clientSockerFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+    if (setsockopt(clientSocketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         std::cerr << "Allow port reuse failed\n";
         return;
     }
 
     // Set socket to non-blocking mode.
     int nonBlocking = 1;
-    if (fcntl(clientSockerFd, F_SETFL, O_NONBLOCK, nonBlocking) == -1) {
+    if (fcntl(clientSocketFD, F_SETFL, O_NONBLOCK, nonBlocking) == -1) {
         std::cout << "Failed to set non blocking.";
         return;
     }
@@ -48,7 +48,7 @@ void ME::ConnectionMac::Update(double deltaTime) {
         sockaddr_in from;
         socklen_t fromLength = sizeof(from);
 
-        int bytes = recvfrom(clientSockerFd, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
+        int bytes = recvfrom(clientSocketFD, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
         if (bytes <= 0) break;
 
         uint32_t from_address = ntohl(from.sin_addr.s_addr);
@@ -59,27 +59,7 @@ void ME::ConnectionMac::Update(double deltaTime) {
 }
 
 void ME::ConnectionMac::End() {
-    close(clientSockerFd);
-}
-
-void ME::ConnectionMac::SendMessage(char* message) {
-    // Define server address structure
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
-
-    uint8_t packet_data[256] = {0};
-    *(packet_data) = (uint8_t)ME::Net::Version::VER_0;
-    *(packet_data + 1) = (uint8_t)ME::Net::Verb::PING;
-    uint8_t packet_size = 2;
-
-    int sent_bytes = sendto(clientSockerFd, packet_data, packet_size, 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));
-
-    if (sent_bytes != packet_size) {
-        std::cout << "Failed to send packet.";
-        return;
-    }
+    close(clientSocketFD);
 }
 
 void ME::ConnectionMac::SendPacket(Packet* packet) {
@@ -90,7 +70,7 @@ void ME::ConnectionMac::SendPacket(Packet* packet) {
     server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
     int sent_bytes =
-        sendto(clientSockerFd, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));
+        sendto(clientSocketFD, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));
 
     if (sent_bytes != packet->GetSize()) {
         std::cout << "Failed to send packet.";

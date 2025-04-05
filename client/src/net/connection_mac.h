@@ -17,7 +17,7 @@ class ConnectionMac : public PlatformConnection {
     void SendPacket(Packet* packet) override;
 
    private:
-    int clientSockerFd;
+    int clientSocketFD;
 };
 }  // namespace ME
 
