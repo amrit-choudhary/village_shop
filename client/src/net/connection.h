@@ -19,7 +19,6 @@ class PlatformConnection {
     virtual void Init();
     virtual void Update(double deltaTime);
     virtual void End();
-    virtual void SendMessage(char* message);
     virtual void SendPacket(Packet* packet);
 
     // Pointer to the Connection, which is the interface with other code.
@@ -34,7 +33,6 @@ class Connection {
     void Init();
     void Update(double deltaTime);
     void End();
-    void SendMessage(char* message);
     void SendConnectRequest();
     void SendPing();
     void SendChat(const char* message);

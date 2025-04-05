@@ -2,6 +2,9 @@
 #ifdef VG_MAC
 #include "connection_mac.h"
 #endif
+#ifdef VG_WIN
+#include "connection_win.h"
+#endif
 
 #include <iostream>
 
@@ -19,13 +22,14 @@ void ME::PlatformConnection::Update(double deltaTime) {}
 
 void ME::PlatformConnection::End() {}
 
-void ME::PlatformConnection::SendMessage(char* message) {}
-
 void ME::PlatformConnection::SendPacket(Packet* packet) {}
 
 void ME::Connection::Init() {
 #ifdef VG_MAC
     platformConnection = new ME::ConnectionMac();
+#endif
+#ifdef VG_WIN
+    platformConnection = new ME::ConnectionWin();
 #endif
 
     platformConnection->connection = this;
@@ -38,10 +42,6 @@ void ME::Connection::Update(double deltaTime) {
 
 void ME::Connection::End() {
     platformConnection->End();
-}
-
-void ME::Connection::SendMessage(char* message) {
-    platformConnection->SendMessage(message);
 }
 
 void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {

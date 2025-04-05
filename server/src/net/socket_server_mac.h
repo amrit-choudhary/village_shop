@@ -1,3 +1,5 @@
+#ifdef VG_MAC
+
 /**
  * Mac implentation of UDP socket server.
  */
@@ -20,3 +22,5 @@ class SocketServerMac : public PlatformSocketServer {
     int serverSockerFd;
 };
 }  // namespace ME
+
+#endif  // VG_MAC

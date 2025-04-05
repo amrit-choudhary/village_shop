@@ -5,7 +5,13 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#include <chrono>
 #include <iostream>
+#include <thread>
+
+#include "src/net/net_packet.h"
+
+constexpr unsigned short PORT = 9310;
 
 void ME::SocketServerWin::Init() {
     // Initialize Winsock
@@ -15,20 +21,26 @@ void ME::SocketServerWin::Init() {
         return;
     }
 
-    // Create socket
-    SOCKET server_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (server_fd == INVALID_SOCKET) {
+    serverSockerFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (serverSockerFd == INVALID_SOCKET) {
         std::cerr << "Socket creation failed: " << WSAGetLastError() << "\n";
         WSACleanup();
         return;
     }
 
-    // Allow port reuse
-    int opt = 1;
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&opt, sizeof(opt)) == SOCKET_ERROR) {
-        std::cerr << "Setsockopt failed: " << WSAGetLastError() << "\n";
-        closesocket(server_fd);
+    // Allow port reuse.
+    const char opt = 1;
+    if (setsockopt(serverSockerFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        std::cerr << "Allow port reuse failed\n";
         WSACleanup();
+        return;
+    }
+
+    // Set socket to non-blocking mode
+    u_long mode = 1;  // 1 for non-blocking
+    if (ioctlsocket(serverSockerFd, FIONBIO, &mode) == SOCKET_ERROR) {
+        std::cout << "Failed to set non-blocking: " << WSAGetLastError() << "\n";
+        End();
         return;
     }
 
@@ -36,64 +48,57 @@ void ME::SocketServerWin::Init() {
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(12345);
+    server_addr.sin_port = htons(PORT);
 
-    // Bind and listen
-    if (bind(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+    // Bind server to socket.
+    if (bind(serverSockerFd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
         std::cerr << "Bind failed: " << WSAGetLastError() << "\n";
-        closesocket(server_fd);
+        closesocket(serverSockerFd);
         WSACleanup();
         return;
     }
-    if (listen(server_fd, 1) == SOCKET_ERROR) {
-        std::cerr << "Listen failed: " << WSAGetLastError() << "\n";
-        closesocket(server_fd);
-        WSACleanup();
-        return;
-    }
-    std::cout << "Server listening on port 12345...\n";
 
-    while (true) {
-        // Accept incoming connection
-        sockaddr_in client_addr;
-        int client_len = sizeof(client_addr);
-        SOCKET client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
-        if (client_fd == INVALID_SOCKET) {
-            std::cerr << "Accept failed: " << WSAGetLastError() << "\n";
-            continue;
-        }
-        std::cout << "Client connected\n";
-
-        // Handle client communication in a loop
-        while (true) {
-            char buffer[1024] = {0};
-            int bytes_received = recv(client_fd, buffer, 1024, 0);
-            if (bytes_received == SOCKET_ERROR || bytes_received == 0) {
-                std::cout << "Client disconnected: " << WSAGetLastError() << "\n";
-                break;
-            }
-            std::cout << "Received: " << buffer << "\n";
-
-            // Send response
-            const char* response = "Message received!";
-            if (send(client_fd, response, strlen(response), 0) == SOCKET_ERROR) {
-                std::cerr << "Send failed: " << WSAGetLastError() << "\n";
-                break;
-            }
-        }
-
-        // Close client connection
-        closesocket(client_fd);
-    }
-
-    // Cleanup
-    closesocket(server_fd);
-    WSACleanup();
-    return;
+    std::cout << "Server listening on port: " << ntohs(server_addr.sin_port) << '\n';
 }
 
-void ME::SocketServerWin::Update(double deltaTime) {}
+void ME::SocketServerWin::Update(double deltaTime) {
+    while (true) {
+        PacketMedium packet;
 
-void ME::SocketServerWin::End() {}
+        sockaddr_in from;
+        socklen_t fromLength = sizeof(from);
+
+        int bytes =
+            recvfrom(serverSockerFd, (char*)(packet.GetData()), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
+        if (bytes <= 0) break;
+
+        uint32_t from_address = ntohl(from.sin_addr.s_addr);
+        uint16_t from_port = ntohs(from.sin_port);
+
+        socketServer->ProcessPacket(packet, from_address, from_port);
+    }
+}
+
+void ME::SocketServerWin::SendPacket(Packet* packet, uint8_t clientID) {
+    // Define client address structure
+    ME::Net::ConnectedClient client = socketServer->GetClient(clientID);
+    sockaddr_in client_addr;
+    client_addr.sin_family = AF_INET;
+    client_addr.sin_port = htons(client.port);
+    client_addr.sin_addr.s_addr = htonl(client.address);
+
+    int sent_bytes = sendto(serverSockerFd, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr,
+                            sizeof(sockaddr_in));
+
+    if (sent_bytes != packet->GetSize()) {
+        std::cout << "Failed to send packet.";
+        return;
+    }
+}
+
+void ME::SocketServerWin::End() {
+    closesocket(serverSockerFd);
+    WSACleanup();
+}
 
 #endif  // VG_WIN

@@ -1,6 +1,6 @@
-#ifdef VG_MAC
+#ifdef VG_WIN
 /**
- * Mac implementation for socket for client side.
+ * Win implementation for socket for client side.
  */
 
 #pragma once
@@ -9,7 +9,7 @@
 
 namespace ME {
 
-class ConnectionMac : public PlatformConnection {
+class ConnectionWin : public PlatformConnection {
    public:
     void Init() override;
     void Update(double deltaTime) override;
@@ -21,4 +21,4 @@ class ConnectionMac : public PlatformConnection {
 };
 }  // namespace ME
 
-#endif  // VG_MAC
+#endif  // VG_WIN

@@ -28,7 +28,16 @@ void ME::SetPaths(char* arg1, char* arg2) {
     executablePath = arg1;
 
     executableDirPath = std::string{executablePath};
+
+#ifdef VG_MAC
+    // Remove the executable file name from path to create dir path.
     executableDirPath.resize(executableDirPath.length() - 19);
+#endif
+#ifdef VG_WIN
+    // Remove the executable file name from path to create dir path.
+    // Different for windows because need to remove ".exe".
+    executableDirPath.resize(executableDirPath.length() - 23);
+#endif
 
     resourceDirPath = std::string{executableDirPath};
     resourceDirPath += "/resources/";

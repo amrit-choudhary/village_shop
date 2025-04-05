@@ -4,6 +4,7 @@
 #include "input_manager_mac.h"
 #endif
 #ifdef VG_WIN
+#include "input_manager_cli_win.h"
 #include "input_manager_win.h"
 #endif
 
@@ -21,11 +22,10 @@ InputManager::~InputManager() {}
 
 void InputManager::Init() {
 #ifdef VG_MAC
-    // platformInputManager = new InputManagerMac();
     platformInputManager = new InputManagerCLIMac();
 #endif
 #ifdef VG_WIN
-    platformInputManager = new InputManagerWin();
+    platformInputManager = new InputManagerCLIWin();
 #endif
 
     platformInputManager->Init();

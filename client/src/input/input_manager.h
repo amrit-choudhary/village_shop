@@ -6,8 +6,10 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <thread>
 #include <unordered_map>
+
 
 namespace ME::Input {
 enum class KeyState : uint8_t {

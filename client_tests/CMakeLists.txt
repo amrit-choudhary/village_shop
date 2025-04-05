@@ -35,6 +35,11 @@ if(APPLE)
     target_link_libraries(VillageShop_Client_Tests PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 endif()
 
+if(WIN32)
+    # Link against Winsock library
+    target_link_libraries(VillageShop_Client_Tests PRIVATE Ws2_32)
+endif()
+
 # Include Client code.
 target_include_directories(VillageShop_Client_Tests PRIVATE ${CLIENT_INCLUDE_DIR})
 

@@ -35,8 +35,13 @@ if(APPLE)
     endif()    
     target_link_libraries(VillageShop_Client PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
 endif()
-#End link libraries
 
+if(WIN32)
+    # Link against Winsock library
+    target_link_libraries(VillageShop_Client PRIVATE Ws2_32)
+endif()
+
+#End link libraries
 
 ## POST BUILD
 

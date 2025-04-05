@@ -14,7 +14,7 @@
 
 #include "input_manager.h"
 
-class InputManagerWin : public PlatformInputManager {
+class InputManagerWin : public ME::Input::PlatformInputManager {
    public:
     InputManagerWin();
     ~InputManagerWin();

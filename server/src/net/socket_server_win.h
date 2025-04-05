@@ -1,3 +1,5 @@
+#ifdef VG_WIN
+
 /**
  * Windows implentation of socket server.
  */
@@ -14,6 +16,11 @@ class SocketServerWin : public PlatformSocketServer {
     void Update(double deltaTime) override;
     void End() override;
 
+    void SendPacket(Packet* packet, uint8_t clientID) override;
+
    private:
+    int serverSockerFd;
 };
 }  // namespace ME
+
+#endif  // VG_WIN
