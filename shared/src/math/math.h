@@ -7,6 +7,7 @@
 
 // Including the math libraries. So users will need to include this one header.
 #include "fp_24_8.h"
+#include "matrix4.h"
 #include "vec3.h"
 #include "vec3i.h"
 #include "vec4.h"
