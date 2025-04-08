@@ -13,4 +13,5 @@ target_link_libraries(METAL_LIB INTERFACE
     "-framework Foundation"
     "-framework QuartzCore"
     "-framework AppKit"
+    "-framework MetalKit"
 )
