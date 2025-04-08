@@ -1,5 +1,5 @@
 /**
- * Main Game renderer
+ * Game Renderer
  */
 
 #pragma once
@@ -9,6 +9,18 @@
 #include <array>
 
 #include "../game/game.h"
+
+namespace ME {
+
+/**
+ * Base interface for platform specific renderers.
+ */
+class PlatformRenderer {
+   public:
+    virtual void Init() = 0;
+    virtual void Update() = 0;
+    virtual void End() = 0;
+};
 
 class Renderer {
    public:
@@ -21,10 +33,13 @@ class Renderer {
     void Init();
 
     // Will return true if game should tick based on FFR.
-    void Update(std::array<std::array<uint8_t, ME::BUFFER_Y>, ME::BUFFER_X> &frameBuffer);
+    void Update();
 
     // Will stop the timers to let it calculate average FPS.
     void End();
 
    private:
+    PlatformRenderer *platformRenderer;
 };
+
+}  // namespace ME
