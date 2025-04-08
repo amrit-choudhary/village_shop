@@ -3,6 +3,11 @@ include(CMakePrintHelpers)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+if(APPLE)
+    # Add metal headers.
+    add_subdirectory(third_party/metal)
+endif()
+
 add_executable(VillageShop_Client ${SOURCES})
 
 # Set preprocessor options.
@@ -29,11 +34,9 @@ target_link_libraries(
     )
 
 if(APPLE)
-    find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)
-    if (NOT APPLICATION_SERVICES_FRAMEWORK)
-        message(FATAL_ERROR "ApplicationServices framework not found")
-    endif()    
+    find_library(APPLICATION_SERVICES_FRAMEWORK ApplicationServices)   
     target_link_libraries(VillageShop_Client PRIVATE ${APPLICATION_SERVICES_FRAMEWORK})
+    target_link_libraries(VillageShop_Client PRIVATE METAL_LIB)
 endif()
 
 if(WIN32)

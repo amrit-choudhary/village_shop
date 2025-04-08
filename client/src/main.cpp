@@ -13,7 +13,7 @@
 #include "src/misc/utils.h"
 #include "src/time/time_manager.h"
 
-int main(int argc, char **argv) {
+int main2(int argc, char **argv) {
     ME::SetPaths(argv[0], argv[1]);
 
     // Read game params from file.
