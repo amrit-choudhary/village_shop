@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     game.SetConnectionRef(&connection);
     game.Init(&timeManager);
 
-    Renderer renderer;
+    ME::Renderer renderer;
     renderer.Init();
 
     // Game Loop.
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
             inputManager.Update(deltaTime);
             game.Update(deltaTime);
-            // renderer.Update(game.GetBuffer());
+            renderer.Update();
             connection.Update(deltaTime);
         }
 

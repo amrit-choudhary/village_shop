@@ -24,6 +24,15 @@ class RendererASCII : public PlatformRenderer {
     void End() override;
 
    private:
+    static const uint8_t BUFFER_X = 80;
+    static const uint8_t BUFFER_X_2 = 40;
+    static const uint8_t BUFFER_Y = 40;
+    static const uint8_t BUFFER_Y_2 = 20;
+    static const uint8_t ASCII_COUNT = 69;
+    static const uint8_t ASCII_COUNT_SHORT = 10;
+
+    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> frameBuffer;
+
    protected:
 };
 }  // namespace ME

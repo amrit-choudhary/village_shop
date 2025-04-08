@@ -22,6 +22,11 @@ class PlatformRenderer {
     virtual void End() = 0;
 };
 
+/**
+ * Renderering Interface for the game.
+ * This will spawn the approprite renderer for the platform.
+ * This will also handle the game loop and update the renderer.
+ */
 class Renderer {
    public:
     Renderer();
@@ -29,13 +34,13 @@ class Renderer {
 
     // Game control functions.
 
-    // Init game
+    // Init renderer.
     void Init();
 
-    // Will return true if game should tick based on FFR.
+    // Update renderer, mostly redraws.
     void Update();
 
-    // Will stop the timers to let it calculate average FPS.
+    // Cleanup renderer
     void End();
 
    private:

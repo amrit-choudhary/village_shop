@@ -10,12 +10,16 @@ ME::Renderer::Renderer() {}
 ME::Renderer::~Renderer() {}
 
 void ME::Renderer::Init() {
+#ifdef VG_MAC
     platformRenderer = new ME::RendererMetal();
+#endif
     platformRenderer->Init();
 }
 
-void ME::Renderer::Update() {}
+void ME::Renderer::Update() {
+    platformRenderer->Update();
+}
 
-void ME::Renderer::Update(std::array<std::array<uint8_t, ME::BUFFER_Y>, ME::BUFFER_X> &frameBuffer) {}
-
-void ME::Renderer::End() {}
+void ME::Renderer::End() {
+    platformRenderer->End();
+}

@@ -20,13 +20,6 @@
 
 namespace ME {
 
-constexpr uint8_t BUFFER_X = 80;
-constexpr uint8_t BUFFER_X_2 = 40;
-constexpr uint8_t BUFFER_Y = 40;
-constexpr uint8_t BUFFER_Y_2 = 20;
-constexpr uint8_t ASCII_COUNT = 69;
-constexpr uint8_t ASCII_COUNT_SHORT = 10;
-
 class Game {
    public:
     Game();
@@ -43,11 +36,6 @@ class Game {
     // End game.
     virtual void End();
 
-    // Getters
-    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> &GetBuffer() {
-        return buffer1;
-    }
-
     void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);
 
@@ -55,8 +43,5 @@ class Game {
     ME::Time::TimeManager *timeManager;
     ME::Connection *connection;
     ME::Input::InputManager *inputManager;
-
-    // Frame Buffer.
-    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> buffer1;
 };
 }  // namespace ME

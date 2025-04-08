@@ -1,7 +1,16 @@
 #include "renderer_metal.h"
 
-void ME::RendererMetal::Init() {}
+#include "src/logging.h"
 
-void ME::RendererMetal::Update() {}
+void ME::RendererMetal::Init() {
+    ME::Log("RendererMetal::Init");
+}
 
-void ME::RendererMetal::End() {}
+void ME::RendererMetal::Update() {
+    // Update.
+}
+
+void ME::RendererMetal::End() {
+    // End.
+    ME::Log("RendererMetal::End");
+}
