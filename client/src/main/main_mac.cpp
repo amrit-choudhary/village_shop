@@ -1,19 +1,21 @@
+#ifdef VG_MAC
+
 #include <atomic>
 #include <iostream>
 #include <thread>
 
-#include "game/game.h"
-#include "game/village_game.h"
-#include "input/input_manager.h"
-#include "misc/global_vars.h"
-#include "net/connection.h"
-#include "rendering/renderer.h"
+#include "../game/game.h"
+#include "../game/village_game.h"
+#include "../input/input_manager.h"
+#include "../misc/global_vars.h"
+#include "../net/connection.h"
+#include "../rendering/renderer.h"
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"
 #include "src/time/time_manager.h"
 
-int main2(int argc, char **argv) {
+int main(int argc, char **argv) {
     ME::SetPaths(argv[0], argv[1]);
 
     // Read game params from file.
@@ -66,3 +68,5 @@ int main2(int argc, char **argv) {
     renderer.End();
     connection.End();
 }
+
+#endif
