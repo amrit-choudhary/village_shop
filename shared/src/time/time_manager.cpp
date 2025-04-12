@@ -14,7 +14,7 @@ TimeManager::TimeManager() {}
 
 TimeManager::~TimeManager() {}
 
-void TimeManager::Init(double fixedFrameRateFPS) {
+void TimeManager::Init(double fixedFrameRateFPS, bool inSleepNeeded) {
     timeScale = 1.0f;
     deltaTime = 0.0f;
     frameCout = 0;
@@ -24,11 +24,14 @@ void TimeManager::Init(double fixedFrameRateFPS) {
     ffrTimeStep = 1.0f / ffrFps;
     ffrTimeAcc = 0.0f;
     ffrFrameCout = 0;
+    sleepNeeded = inSleepNeeded;
 }
 
 bool TimeManager::Update() {
     // TODO: Replace with exact values of sleep time.
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    if (sleepNeeded) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
 
     thisFrameEndTP = std::chrono::high_resolution_clock::now();
 

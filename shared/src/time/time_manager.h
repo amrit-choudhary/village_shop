@@ -30,7 +30,7 @@ class TimeManager {
     /** Will initialise the clocks and setup FFR.
      * Not providing any fps will set it to uncapped FPS mode.
      */
-    void Init(double fixedFrameRateFPS = FPS_MAX);
+    void Init(double fixedFrameRateFPS = FPS_MAX, bool inSleepNeeded = true);
 
     // Will return true if game should tick based on FFR.
     bool Update();
@@ -63,6 +63,12 @@ class TimeManager {
     double ffrTimeAcc;
     /** FFR fps. */
     double ffrFps;
+
+    /**
+     * If sleep between ticks is needed.
+     * No need for sleep on MacOS.
+     */
+    bool sleepNeeded = true;
 
     /** Time at start of the game. */
     std::chrono::time_point<std::chrono::high_resolution_clock> gameStartTP;

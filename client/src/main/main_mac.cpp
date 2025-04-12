@@ -1,66 +1,36 @@
-/*
- *
- * Copyright 2022 Apple Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/**
+ * Main app entry point for macOS using Metal.
+ * This file contains the main function and the application delegate.
+ * */
 
 #include <cassert>
-
-#include "../game/game.h"
-#include "../game/village_game.h"
-#include "../input/input_manager.h"
-#include "../misc/global_vars.h"
-#include "../net/connection.h"
-// #include "../rendering/renderer.h"
-#include "src/file_io/ini/ini_parser.h"
-#include "src/logging.h"
-#include "src/misc/utils.h"
-#include "src/time/time_manager.h"
 
 #define NS_PRIVATE_IMPLEMENTATION
 #define MTL_PRIVATE_IMPLEMENTATION
 #define MTK_PRIVATE_IMPLEMENTATION
 #define CA_PRIVATE_IMPLEMENTATION
 
-#include <simd/simd.h>
-
 #include <AppKit/AppKit.hpp>
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-class Renderer {
-   public:
-    Renderer(MTL::Device* device);
-    ~Renderer();
-    void buildShaders();
-    void buildBuffers();
-    void draw(MTK::View* view);
-
-   private:
-    MTL::Device* device;
-    MTL::CommandQueue* commandQueue;
-    MTL::RenderPipelineState* PSO;
-    MTL::Buffer* vertexPositionsBuffer;
-    MTL::Buffer* vertexColorsBuffer;
-};
+#include "../game/game.h"
+#include "../game/village_game.h"
+#include "../input/input_manager.h"
+#include "../misc/global_vars.h"
+#include "../net/connection.h"
+#include "../rendering/metal/renderer_metal.h"
+#include "src/file_io/ini/ini_parser.h"
+#include "src/logging.h"
+#include "src/misc/utils.h"
+#include "src/time/time_manager.h"
 
 class GameMain : public MTK::ViewDelegate {
    public:
     GameMain(MTL::Device* pDevice, MTK::View* pView);
     virtual ~GameMain() override;
 
-    bool InitGameSystems();
+    bool InitGameSystems(MTL::Device* device, MTK::View* view);
 
     // Game Loop Update
     virtual void drawInMTKView(MTK::View* pView) override;
@@ -79,8 +49,7 @@ class GameMain : public MTK::ViewDelegate {
     ME::Input::InputManager inputManager;  // Needs adaptation for NSEvent
     ME::Connection connection;
     ME::VillageGame game;
-    // ME::Renderer _renderer;
-    Renderer* renderer;  // Needs adaptation for MTKView
+    ME::RendererMetal renderer;
 
     int fps = 0;
     int maxRunTime = 0;
@@ -189,7 +158,7 @@ void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotificat
     // Create Metal View.
     mtkView = MTK::View::alloc()->init(frame, device);
     mtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-    mtkView->setClearColor(MTL::ClearColor::Make(1.0, 0.0, 0.0, 1.0));
+    mtkView->setClearColor(MTL::ClearColor::Make(0.1, 0.1, 0.1, 1.0));
 
     // Create GameMain.
     viewDelegate = new GameMain(device, mtkView);
@@ -211,19 +180,18 @@ bool GameAppDelegate::applicationShouldTerminateAfterLastWindowClosed(NS::Applic
     return true;
 }
 
-GameMain::GameMain(MTL::Device* device, MTK::View* view)
-    : MTK::ViewDelegate(), mtkView(view), device(device), renderer(new Renderer(device)) {
-    InitGameSystems();
+GameMain::GameMain(MTL::Device* device, MTK::View* view) : MTK::ViewDelegate(), mtkView(view), device(device) {
+    InitGameSystems(device, view);
 }
 
-bool GameMain::InitGameSystems() {
+bool GameMain::InitGameSystems(MTL::Device* device, MTK::View* view) {
     // Read game params from file.
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
     maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     // Init global variables.
-    timeManager.Init(fps);
+    timeManager.Init(fps, false);
     bool shouldTick = false;
     double deltaTime = 0.0f;
 
@@ -234,15 +202,14 @@ bool GameMain::InitGameSystems() {
     game.SetConnectionRef(&connection);
     game.Init(&timeManager);
 
-    // ME::Renderer renderer;
-    // renderer.Init();
+    renderer.Init();
+    renderer.InitMTL(device, view);
 
     return true;
 }
 
 GameMain::~GameMain() {
     ShutDownGameSystems();
-    delete renderer;
 }
 
 void GameMain::drawInMTKView(MTK::View* view) {
@@ -258,8 +225,8 @@ void GameMain::drawInMTKView(MTK::View* view) {
 
         game.Update(deltaTime);
 
-        // renderer.Update();
-        renderer->draw(view);
+        renderer.Update();
+        renderer.Draw(view);
 
         connection.Update(deltaTime);
     }
@@ -271,6 +238,8 @@ void GameMain::drawInMTKView(MTK::View* view) {
 
     // Check for exit condition (e.g., max run time)
     if (maxRunTime > 0 && timeManager.GetTimeSinceStartup() > maxRunTime) {
+        ShutDownGameSystems();
+        // Close the application
         NS::Application::sharedApplication()->windows()->object<NS::Window>(0)->close();
     }
 
@@ -282,130 +251,5 @@ void GameMain::ShutDownGameSystems() {
     connection.End();
     inputManager.End();
     timeManager.End();
-}
-
-Renderer::Renderer(MTL::Device* device) : device(device->retain()) {
-    commandQueue = device->newCommandQueue();
-    buildShaders();
-    buildBuffers();
-}
-
-Renderer::~Renderer() {
-    vertexPositionsBuffer->release();
-    vertexColorsBuffer->release();
-    PSO->release();
-    commandQueue->release();
-    device->release();
-}
-
-void Renderer::buildShaders() {
-    using NS::StringEncoding::UTF8StringEncoding;
-
-    const char* shaderSrc = R"(
-         #include <metal_stdlib>
-         using namespace metal;
- 
-         struct v2f
-         {
-             float4 position [[position]];
-             half3 color;
-         };
- 
-         v2f vertex vertexMain( uint vertexId [[vertex_id]],
-                                device const float3* positions [[buffer(0)]],
-                                device const float3* colors [[buffer(1)]] )
-         {
-             v2f o;
-             o.position = float4( positions[ vertexId ], 1.0 );
-             o.color = half3 ( colors[ vertexId ] );
-             return o;
-         }
- 
-         half4 fragment fragmentMain( v2f in [[stage_in]] )
-         {
-             return half4( in.color, 1.0 );
-         }
-     )";
-
-    NS::Error* error = nullptr;
-    MTL::Library* library = device->newLibrary(NS::String::string(shaderSrc, UTF8StringEncoding), nullptr, &error);
-    if (!library) {
-        __builtin_printf("%s", error->localizedDescription()->utf8String());
-        assert(false);
-    }
-
-    MTL::Function* vertexFn = library->newFunction(NS::String::string("vertexMain", UTF8StringEncoding));
-    MTL::Function* fragFn = library->newFunction(NS::String::string("fragmentMain", UTF8StringEncoding));
-
-    MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
-    desc->setVertexFunction(vertexFn);
-    desc->setFragmentFunction(fragFn);
-    desc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-
-    PSO = device->newRenderPipelineState(desc, &error);
-    if (!PSO) {
-        __builtin_printf("%s", error->localizedDescription()->utf8String());
-        assert(false);
-    }
-
-    vertexFn->release();
-    fragFn->release();
-    desc->release();
-    library->release();
-}
-
-void Renderer::buildBuffers() {
-    const size_t NumVertices = 3;
-
-    simd::float3 positions[NumVertices] = {{-0.8f, 0.8f, 0.0f}, {0.0f, -0.8f, 0.0f}, {+0.8f, 0.8f, 0.0f}};
-
-    static float deltaR = 0;
-    static float deltaG = 0;
-    static float deltaB = 0;
-
-    deltaR += 0.01;
-    deltaG += 0.02;
-    deltaB += 0.03;
-
-    if (deltaR > 1.0f) deltaR = 0;
-    if (deltaG > 1.0f) deltaG = 0;
-    if (deltaB > 1.0f) deltaB = 0;
-
-    simd::float3 colors[NumVertices] = {{deltaR, 0.0f, 0.0f}, {0.0, deltaG, 0.0f}, {0.0f, 0.0f, deltaB}};
-
-    const size_t positionsDataSize = NumVertices * sizeof(simd::float3);
-    const size_t colorDataSize = NumVertices * sizeof(simd::float3);
-
-    MTL::Buffer* tempVertexPositionsBuffer = device->newBuffer(positionsDataSize, MTL::ResourceStorageModeManaged);
-    MTL::Buffer* tempVertexColorsBuffer = device->newBuffer(colorDataSize, MTL::ResourceStorageModeManaged);
-
-    vertexPositionsBuffer = tempVertexPositionsBuffer;
-    vertexColorsBuffer = tempVertexColorsBuffer;
-
-    memcpy(vertexPositionsBuffer->contents(), positions, positionsDataSize);
-    memcpy(vertexColorsBuffer->contents(), colors, colorDataSize);
-
-    vertexPositionsBuffer->didModifyRange(NS::Range::Make(0, vertexPositionsBuffer->length()));
-    vertexColorsBuffer->didModifyRange(NS::Range::Make(0, vertexColorsBuffer->length()));
-}
-
-void Renderer::draw(MTK::View* view) {
-    NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
-
-    buildBuffers();
-
-    MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
-    MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
-    MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
-
-    enc->setRenderPipelineState(PSO);
-    enc->setVertexBuffer(vertexPositionsBuffer, 0, 0);
-    enc->setVertexBuffer(vertexColorsBuffer, 0, 1);
-    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(3));
-
-    enc->endEncoding();
-    cmd->presentDrawable(view->currentDrawable());
-    cmd->commit();
-
-    pool->release();
+    renderer.End();
 }

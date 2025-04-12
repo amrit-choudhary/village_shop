@@ -4,6 +4,12 @@
 
 #pragma once
 
+#include <simd/simd.h>
+
+#include <AppKit/AppKit.hpp>
+#include <Metal/Metal.hpp>
+#include <MetalKit/MetalKit.hpp>
+
 #include "../renderer.h"
 
 namespace ME {
@@ -23,8 +29,22 @@ class RendererMetal : public PlatformRenderer {
     // Will stop the timers to let it calculate average FPS.
     void End() override;
 
+    void InitMTL(MTL::Device* device, MTK::View* view);
+
    private:
    protected:
+   public:
+    void BuildShaders();
+    void BuildBuffers();
+    void Draw(MTK::View* view);
+
+   private:
+    MTL::Device* device;
+    MTK::View* view;
+    MTL::CommandQueue* commandQueue;
+    MTL::RenderPipelineState* PSO;
+    MTL::Buffer* vertexPositionsBuffer;
+    MTL::Buffer* vertexColorsBuffer;
 };
 
 }  // namespace ME
