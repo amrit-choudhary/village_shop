@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "metal/renderer_metal.h"
+#include "../metal/renderer_metal.h"
 
 ME::Renderer::Renderer() {}
 

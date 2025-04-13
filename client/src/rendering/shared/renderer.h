@@ -8,7 +8,7 @@
 
 #include <array>
 
-#include "../game/game.h"
+#include "../../game/game.h"
 
 namespace ME {
 

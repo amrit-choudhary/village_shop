@@ -10,7 +10,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../renderer.h"
+#include "../shared/renderer.h"
 
 namespace ME {
 
