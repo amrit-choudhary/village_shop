@@ -1,7 +1,21 @@
 /**
- * Vertex structure representing a 3D vertex with position, normal, and texture coordinates.
- * This structure is used in 3D rendering and graphics applications.
+ * Vertex class representing a 3D vertex with position, normal, and texture coordinates.
+ * This class is used in 3D rendering and graphics applications.
  */
+
 #pragma once
 
-namespace ME {}  // namespace ME
+#include "src/math/vec2.h"
+#include "src/math/vec3.h"
+
+namespace ME {
+
+class Vertex {
+   public:
+    ME::Math::Vec3 position;  // Position of the vertex in 3D space
+    ME::Math::Vec3 normal;    // Normal vector at the vertex for lighting calculations
+    ME::Math::Vec2 texCoord;  // Texture coordinates for mapping textures to the vertex
+   private:
+};
+
+}  // namespace ME
