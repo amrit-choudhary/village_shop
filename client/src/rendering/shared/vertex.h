@@ -14,7 +14,7 @@ class Vertex {
    public:
     ME::Math::Vec3 position;  // Position of the vertex in 3D space
     ME::Math::Vec3 normal;    // Normal vector at the vertex for lighting calculations
-    ME::Math::Vec2 texCoord;  // Texture coordinates for mapping textures to the vertex
+    ME::Math::Vec2 uv;        // Texture coordinates for mapping textures to the vertex
    private:
 };
 

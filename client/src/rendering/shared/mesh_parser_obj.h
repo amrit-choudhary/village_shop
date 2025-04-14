@@ -1,8 +1,13 @@
 /**
- * Loads obj files and converts them to a mesh format
- * that can be used by the rendering engine.
+ * Loads obj files and converts them to a common mesh format
+ * that can be used by the different rendering engines.
  */
 
 #pragma once
 
-namespace ME {}  // namespace ME
+namespace ME {
+class Mesh;
+
+Mesh CreateMeshFromOBJ(const char* fileName);
+
+}  // namespace ME

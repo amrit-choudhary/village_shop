@@ -1,7 +1,12 @@
 #include "renderer_metal.h"
 
+#include <cmath>
+
+#include "../shared/mesh.h"
+#include "../shared/mesh_parser_obj.h"
 #include "shader/shader_mac.h"
 #include "src/logging.h"
+#include "src/math/vec3.h"
 
 void ME::RendererMetal::Init() {
     ME::Log("RendererMetal::Init");
@@ -29,7 +34,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 }
 
 void ME::RendererMetal::BuildShaders() {
-    ME::Shader shader(device, "shaders/metal/first.shader");
+    ME::Shader shader(device, "shaders/metal/first.metal");
 
     MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
     desc->setVertexFunction(shader.GetVertexFunction());
@@ -47,26 +52,30 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    const size_t NumVertices = 3;
+    static float rot = 0;
+    rot += 0.03f;
 
-    simd::float3 positions[NumVertices] = {{-0.8f, 0.8f, 0.0f}, {0.0f, -0.8f, 0.0f}, {+0.8f, 0.8f, 0.0f}};
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/icosahedron.obj");
+    const size_t count = mesh.indexCount;
 
-    static float deltaR = 0;
-    static float deltaG = 0;
-    static float deltaB = 0;
+    simd::float3 positions[count];
+    simd::float3 colors[count];
+    for (int i = 0; i < count; i++) {
+        ME::Vertex vertex = mesh.vertices[mesh.indices[i]];
+        ME::Math::Vec3 rotatedPosition =
+            ME::Math::Vec3(vertex.position.x * cos(rot) - vertex.position.z * sin(rot), vertex.position.y,
+                           vertex.position.x * sin(rot) + vertex.position.z * cos(rot));
 
-    deltaR += 0.01;
-    deltaG += 0.02;
-    deltaB += 0.03;
+        positions[i] = {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z};
 
-    if (deltaR > 1.0f) deltaR = 0;
-    if (deltaG > 1.0f) deltaG = 0;
-    if (deltaB > 1.0f) deltaB = 0;
+        ME::Math::Vec3 normNorm = vertex.normal.Normalised();
 
-    simd::float3 colors[NumVertices] = {{deltaR, 0.0f, 0.0f}, {0.0, deltaG, 0.0f}, {0.0f, 0.0f, deltaB}};
+        colors[i] = {vertex.uv.x, vertex.uv.y, 0.0f};
+        // colors[i] = {vertex.normal.x, vertex.normal.y, vertex.normal.z};
+    }
 
-    const size_t positionsDataSize = NumVertices * sizeof(simd::float3);
-    const size_t colorDataSize = NumVertices * sizeof(simd::float3);
+    const size_t positionsDataSize = count * sizeof(simd::float3);
+    const size_t colorDataSize = count * sizeof(simd::float3);
 
     MTL::Buffer* tempVertexPositionsBuffer = device->newBuffer(positionsDataSize, MTL::ResourceStorageModeManaged);
     MTL::Buffer* tempVertexColorsBuffer = device->newBuffer(colorDataSize, MTL::ResourceStorageModeManaged);
@@ -93,7 +102,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(PSO);
     enc->setVertexBuffer(vertexPositionsBuffer, 0, 0);
     enc->setVertexBuffer(vertexColorsBuffer, 0, 1);
-    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(3));
+
+    enc->setCullMode(MTL::CullModeBack);
+    enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+
+    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(100));
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());

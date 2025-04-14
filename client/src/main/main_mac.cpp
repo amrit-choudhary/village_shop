@@ -146,7 +146,7 @@ void GameAppDelegate::applicationWillFinishLaunching(NS::Notification* pNotifica
 
 void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotification) {
     // Create window.
-    CGRect frame = (CGRect){{100.0, 100.0}, {512.0, 512.0}};
+    CGRect frame = (CGRect){{100.0, 100.0}, {720.0, 720.0}};
 
     window = NS::Window::alloc()->init(frame, NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled,
                                        NS::BackingStoreBuffered, false);
