@@ -17,8 +17,8 @@ void ME::RendererMetal::Update() {
 }
 
 void ME::RendererMetal::End() {
-    vertexPositionsBuffer->release();
-    vertexColorsBuffer->release();
+    vertexBuffer->release();
+    indexBuffer->release();
     PSO->release();
     commandQueue->release();
     device->release();
@@ -40,6 +40,25 @@ void ME::RendererMetal::BuildShaders() {
     desc->setVertexFunction(shader.GetVertexFunction());
     desc->setFragmentFunction(shader.GetFragmentFunction());
     desc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+    MTL::VertexDescriptor* vertexDesc = MTL::VertexDescriptor::alloc()->init();
+
+    // Position
+    vertexDesc->attributes()->object(0)->setFormat(MTL::VertexFormat::VertexFormatFloat3);
+    vertexDesc->attributes()->object(0)->setOffset(0);
+    vertexDesc->attributes()->object(0)->setBufferIndex(0);
+    // Normal
+    vertexDesc->attributes()->object(1)->setFormat(MTL::VertexFormat::VertexFormatFloat3);
+    vertexDesc->attributes()->object(1)->setOffset(12);
+    vertexDesc->attributes()->object(1)->setBufferIndex(0);
+    // UV
+    vertexDesc->attributes()->object(2)->setFormat(MTL::VertexFormat::VertexFormatFloat2);
+    vertexDesc->attributes()->object(2)->setOffset(24);
+    vertexDesc->attributes()->object(2)->setBufferIndex(0);
+
+    vertexDesc->layouts()->object(0)->setStride(sizeof(ME::Vertex));
+    vertexDesc->layouts()->object(0)->setStepFunction(MTL::VertexStepFunction::VertexStepFunctionPerVertex);
+
+    desc->setVertexDescriptor(vertexDesc);
 
     NS::Error* error = nullptr;
     PSO = device->newRenderPipelineState(desc, &error);
@@ -48,65 +67,45 @@ void ME::RendererMetal::BuildShaders() {
         assert(false);
     }
 
+    vertexDesc->release();
     desc->release();
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    static float rot = 0;
-    rot += 0.03f;
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/stanford-bunny.obj");
+    mesh.CalculateNormal();
 
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/icosahedron.obj");
-    const size_t count = mesh.indexCount;
+    const size_t vertexCount = mesh.vertexCount;
+    const size_t indexCount = mesh.indexCount;
 
-    simd::float3 positions[count];
-    simd::float3 colors[count];
-    for (int i = 0; i < count; i++) {
-        ME::Vertex vertex = mesh.vertices[mesh.indices[i]];
-        ME::Math::Vec3 rotatedPosition =
-            ME::Math::Vec3(vertex.position.x * cos(rot) - vertex.position.z * sin(rot), vertex.position.y,
-                           vertex.position.x * sin(rot) + vertex.position.z * cos(rot));
+    const size_t vertexDataSize = vertexCount * sizeof(ME::Vertex);
+    const size_t indexDataSize = indexCount * sizeof(uint32_t);
 
-        positions[i] = {rotatedPosition.x, rotatedPosition.y, rotatedPosition.z};
+    vertexBuffer = device->newBuffer(vertexDataSize, MTL::ResourceStorageModeManaged);
+    indexBuffer = device->newBuffer(indexDataSize, MTL::ResourceStorageModeManaged);
 
-        ME::Math::Vec3 normNorm = vertex.normal.Normalised();
+    memcpy(vertexBuffer->contents(), mesh.vertices.data(), vertexDataSize);
+    memcpy(indexBuffer->contents(), mesh.indices.data(), indexDataSize);
 
-        colors[i] = {vertex.uv.x, vertex.uv.y, 0.0f};
-        // colors[i] = {vertex.normal.x, vertex.normal.y, vertex.normal.z};
-    }
-
-    const size_t positionsDataSize = count * sizeof(simd::float3);
-    const size_t colorDataSize = count * sizeof(simd::float3);
-
-    MTL::Buffer* tempVertexPositionsBuffer = device->newBuffer(positionsDataSize, MTL::ResourceStorageModeManaged);
-    MTL::Buffer* tempVertexColorsBuffer = device->newBuffer(colorDataSize, MTL::ResourceStorageModeManaged);
-
-    vertexPositionsBuffer = tempVertexPositionsBuffer;
-    vertexColorsBuffer = tempVertexColorsBuffer;
-
-    memcpy(vertexPositionsBuffer->contents(), positions, positionsDataSize);
-    memcpy(vertexColorsBuffer->contents(), colors, colorDataSize);
-
-    vertexPositionsBuffer->didModifyRange(NS::Range::Make(0, vertexPositionsBuffer->length()));
-    vertexColorsBuffer->didModifyRange(NS::Range::Make(0, vertexColorsBuffer->length()));
+    vertexBuffer->didModifyRange(NS::Range::Make(0, vertexBuffer->length()));
+    indexBuffer->didModifyRange(NS::Range::Make(0, indexBuffer->length()));
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
-
-    BuildBuffers();
 
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
     enc->setRenderPipelineState(PSO);
-    enc->setVertexBuffer(vertexPositionsBuffer, 0, 0);
-    enc->setVertexBuffer(vertexColorsBuffer, 0, 1);
+    enc->setVertexBuffer(vertexBuffer, 0, 0);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(100));
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexBuffer->length() / sizeof(uint32_t),
+                               MTL::IndexType::IndexTypeUInt32, indexBuffer, 0, 1);
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());

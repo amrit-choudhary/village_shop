@@ -43,8 +43,8 @@ class RendererMetal : public PlatformRenderer {
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     MTL::RenderPipelineState* PSO;
-    MTL::Buffer* vertexPositionsBuffer;
-    MTL::Buffer* vertexColorsBuffer;
+    MTL::Buffer* vertexBuffer;
+    MTL::Buffer* indexBuffer;
 };
 
 }  // namespace ME

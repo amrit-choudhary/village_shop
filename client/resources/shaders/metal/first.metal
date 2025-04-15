@@ -1,23 +1,28 @@
 #include <metal_stdlib>
 using namespace metal;
 
-struct v2f
-{
-    float4 position [[position]];
-    half3 color;
+struct VertexIn {
+    float3 position [[attribute(0)]];
+    float3 normal   [[attribute(1)]];
+    float2 uv    [[attribute(2)]];
 };
 
-v2f vertex vertexMain( uint vertexId [[vertex_id]],
-                       device const float3* positions [[buffer(0)]],
-                       device const float3* colors [[buffer(1)]] )
-{
-    v2f o;
-    o.position = float4( positions[ vertexId ], 1.0 );
-    o.color = half3 ( colors[ vertexId ] );
-    return o;
+struct VertexOut {
+    float4 position [[position]];
+    float3 normal;
+    float3 color;
+};
+
+vertex VertexOut vertexMain(VertexIn in [[stage_in]]) {
+    VertexOut out;
+    out.position = float4(in.position * 5.0, 1.0);
+    out.normal = in.normal;
+    //out.color = float3(abs(in.normal.x), abs(in.normal.y), abs(in.normal.z));
+    float light = in.normal.y * 0.5 + 0.5;
+    out.color = float3(light, light, light);
+    return out;
 }
 
-half4 fragment fragmentMain( v2f in [[stage_in]] )
-{
-    return half4( in.color, 1.0 );
+fragment float4 fragmentMain(VertexOut in [[stage_in]]) {
+    return float4(in.color.x, in.color.y, in.color.z, 1.0);
 }

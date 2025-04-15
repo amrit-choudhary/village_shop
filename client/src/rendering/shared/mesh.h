@@ -28,6 +28,8 @@ class Mesh {
     void SetRotation(float x, float y, float z);
     void SetScale(float x, float y, float z);
 
+    void CalculateNormal();
+
     std::vector<ME::Vertex> vertices;  // List of vertices that make up the mesh
     std::vector<uint32_t> indices;     // List of indices for indexed drawing
 
