@@ -6,7 +6,10 @@
 #include "../shared/mesh_parser_obj.h"
 #include "shader/shader_mac.h"
 #include "src/logging.h"
+#include "src/math/vec16.h"
 #include "src/math/vec3.h"
+
+using namespace ME::Math;
 
 void ME::RendererMetal::Init() {
     ME::Log("RendererMetal::Init");
@@ -19,6 +22,7 @@ void ME::RendererMetal::Update() {
 void ME::RendererMetal::End() {
     vertexBuffer->release();
     indexBuffer->release();
+    uniformBuffer->release();
     PSO->release();
     commandQueue->release();
     device->release();
@@ -40,6 +44,7 @@ void ME::RendererMetal::BuildShaders() {
     desc->setVertexFunction(shader.GetVertexFunction());
     desc->setFragmentFunction(shader.GetFragmentFunction());
     desc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
+
     MTL::VertexDescriptor* vertexDesc = MTL::VertexDescriptor::alloc()->init();
 
     // Position
@@ -83,6 +88,7 @@ void ME::RendererMetal::BuildBuffers() {
 
     vertexBuffer = device->newBuffer(vertexDataSize, MTL::ResourceStorageModeManaged);
     indexBuffer = device->newBuffer(indexDataSize, MTL::ResourceStorageModeManaged);
+    uniformBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
 
     memcpy(vertexBuffer->contents(), mesh.vertices.data(), vertexDataSize);
     memcpy(indexBuffer->contents(), mesh.indices.data(), indexDataSize);
@@ -94,12 +100,28 @@ void ME::RendererMetal::BuildBuffers() {
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
+    static float rotation = 0.0f;
+    rotation += 0.01f;
+    if (rotation > 360.0f) {
+        rotation = 0.0f;
+    }
+
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, -0.5f, 0.0f, 1.0f));
+    Mat4 rotationMat = Mat4::Rotation(Vec4(rotation, rotation, rotation, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(7.0f, 7.0f, 7.0f, 1.0f));
+    Mat4 transformationMat = rotationMat * translationMat * scaleMat;
+
+    Vec16 transformationData = transformationMat.GetData();
+    memcpy(uniformBuffer->contents(), &transformationData, sizeof(Vec16));
+    uniformBuffer->didModifyRange(NS::Range::Make(0, uniformBuffer->length()));
+
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
     enc->setRenderPipelineState(PSO);
     enc->setVertexBuffer(vertexBuffer, 0, 0);
+    enc->setVertexBuffer(uniformBuffer, 0, 1);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);

@@ -7,6 +7,7 @@
 namespace ME::Math {
 
 class Vec4;
+class Vec16;
 
 /**
  * 4 x 4 Matrix class.
@@ -19,9 +20,34 @@ class Mat4 {
     float m20, m21, m22, m23;
     float m30, m31, m32, m33;
 
+    static const Mat4 Identity;
+    static const Mat4 Zero;
+    static const Mat4 One;
+
     Vec4 GetRow(const int row) const;
 
     Vec4 GetColumn(const int column) const;
+
+    // Returns the matrix as a Vec16. Column major order. Default is column major.
+    Vec16 GetData() const;
+
+    // Returns the matrix as a Vec16. Row major order.
+    Vec16 GetDataRowMajor() const;
+
+    // Returns the matrix as a Vec16. Column major order.
+    Vec16 GetDataColumnMajor() const;
+
+    // Creates a Translation matrix based on provided translation vector.
+    static Mat4 Translation(const Vec4& translation);
+
+    // Creates a Rotation matrix based on provided rotation vector.
+    static Mat4 Rotation(const Vec4& rotation);
+
+    // Creates a Scale matrix based on provided scale vector.
+    static Mat4 Scale(const Vec4& scale);
+
+    // Multiplies this matrix by another matrix and returns the result.
+    Mat4 operator*(const Mat4& other) const;
 };
 
 }  // namespace ME::Math

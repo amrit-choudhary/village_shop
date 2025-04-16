@@ -9,16 +9,59 @@ struct VertexIn {
 
 struct VertexOut {
     float4 position [[position]];
-    float3 normal;
+    float4 normal;
     float3 color;
 };
 
-vertex VertexOut vertexMain(VertexIn in [[stage_in]]) {
+struct Uniforms {
+    float4x4 transformationMatrix;
+};
+
+// Compute the determinant of a 3x3 matrix
+float determinant3x3(float3x3 m) {
+    return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
+           m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) +
+           m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+}
+
+// Compute the inverse of a 3x3 matrix
+float3x3 inverse3x3(float3x3 m) {
+    float det = determinant3x3(m);
+    float3x3 result;
+    
+    // Check for non-invertible matrix
+    if (abs(det) < 1e-6) {
+        return float3x3(1.0); // Return identity matrix
+    }
+    
+    float invDet = 1.0 / det;
+    
+    result[0][0] = (m[1][1] * m[2][2] - m[1][2] * m[2][1]) * invDet;
+    result[0][1] = (m[0][2] * m[2][1] - m[0][1] * m[2][2]) * invDet;
+    result[0][2] = (m[0][1] * m[1][2] - m[0][2] * m[1][1]) * invDet;
+    result[1][0] = (m[1][2] * m[2][0] - m[1][0] * m[2][2]) * invDet;
+    result[1][1] = (m[0][0] * m[2][2] - m[0][2] * m[2][0]) * invDet;
+    result[1][2] = (m[0][2] * m[1][0] - m[0][0] * m[1][2]) * invDet;
+    result[2][0] = (m[1][0] * m[2][1] - m[1][1] * m[2][0]) * invDet;
+    result[2][1] = (m[0][1] * m[2][0] - m[0][0] * m[2][1]) * invDet;
+    result[2][2] = (m[0][0] * m[1][1] - m[0][1] * m[1][0]) * invDet;
+    
+    return result;
+}
+
+vertex VertexOut vertexMain(VertexIn in [[stage_in]], 
+                            constant Uniforms& uniforms [[buffer(1)]]) {
+
+    float3x3 normalMatrix = transpose(inverse3x3(float3x3(
+                                                uniforms.transformationMatrix[0].xyz,
+                                                uniforms.transformationMatrix[1].xyz,
+                                                uniforms.transformationMatrix[2].xyz)));
+    
     VertexOut out;
-    out.position = float4(in.position * 5.0, 1.0);
-    out.normal = in.normal;
-    //out.color = float3(abs(in.normal.x), abs(in.normal.y), abs(in.normal.z));
-    float light = in.normal.y * 0.5 + 0.5;
+    out.position = uniforms.transformationMatrix * float4(in.position, 1.0);
+    out.normal = float4(normalMatrix * in.normal, 1.0);
+    // out.color = float3(abs(out.normal.x), abs(out.normal.y), abs(out.normal.z));
+    float light = 0.07 + out.normal.x;
     out.color = float3(light, light, light);
     return out;
 }

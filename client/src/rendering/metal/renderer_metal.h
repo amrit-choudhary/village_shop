@@ -45,6 +45,7 @@ class RendererMetal : public PlatformRenderer {
     MTL::RenderPipelineState* PSO;
     MTL::Buffer* vertexBuffer;
     MTL::Buffer* indexBuffer;
+    MTL::Buffer* uniformBuffer;
 };
 
 }  // namespace ME
