@@ -11,6 +11,7 @@ struct VertexOut {
     float4 position [[position]];
     float4 normal;
     float3 color;
+    float2 uv;
 };
 
 struct Uniforms {
@@ -59,10 +60,10 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
     
     VertexOut out;
     out.position = uniforms.transformationMatrix * float4(in.position, 1.0);
-    out.normal = float4(normalMatrix * in.normal, 1.0);
-    // out.color = float3(abs(out.normal.x), abs(out.normal.y), abs(out.normal.z));
-    float light = 0.07 + out.normal.x;
+    // out.normal = float4(normalMatrix * in.normal, 1.0);
+    float light = in.normal.x * 0.2 + in.normal.y * 0.2 + in.normal.z * 0.2;
     out.color = float3(light, light, light);
+    out.uv = in.uv;
     return out;
 }
 

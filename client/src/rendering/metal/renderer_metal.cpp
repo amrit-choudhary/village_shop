@@ -77,7 +77,7 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/stanford-bunny.obj");
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/torus.obj");
     mesh.CalculateNormal();
 
     const size_t vertexCount = mesh.vertexCount;
@@ -106,9 +106,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, -0.5f, 0.0f, 1.0f));
-    Mat4 rotationMat = Mat4::Rotation(Vec4(rotation, rotation, rotation, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(7.0f, 7.0f, 7.0f, 1.0f));
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    Mat4 rotationMat = Mat4::Rotation(Vec4(rotation, 0.0f, 0.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(0.6f, 0.6f, 0.6f, 1.0f));
     Mat4 transformationMat = rotationMat * translationMat * scaleMat;
 
     Vec16 transformationData = transformationMat.GetData();

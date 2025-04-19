@@ -86,13 +86,17 @@ Mat4 ME::Math::Mat4::Translation(const Vec4 & translation)
 
 Mat4 ME::Math::Mat4::Rotation(const Vec4 & rotation)
 {
-    float angle = rotation.z;
-    float cosAngle = std::cos(angle);
-    float sinAngle = std::sin(angle);
+    float cAlpha = std::cos(rotation.x);
+    float sAlpha = std::sin(rotation.x);
+    float cBeta = std::cos(rotation.y);
+    float sBeta = std::sin(rotation.y);
+    float cGamma = std::cos(rotation.z);
+    float sGamma = std::sin(rotation.z);
+
     return Mat4{
-        cosAngle, 0.0f, sinAngle, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        -sinAngle, 0.0f, cosAngle, 0.0f,
+        cBeta * cGamma, cAlpha * sGamma + sAlpha * sBeta * cGamma, sAlpha * sGamma - cAlpha * sBeta * cGamma, 0.0f,
+        -cBeta * sGamma, cAlpha * cGamma - sAlpha * sBeta * sGamma, sAlpha * cGamma + cAlpha * sBeta * sGamma, 0.0f,
+        sBeta, -sAlpha * cBeta, cAlpha * cBeta, 0.0f,
         0.0f, 0.0f, 0.0f, 1.0f};
 }
 
