@@ -5,14 +5,14 @@ echo ""
 echo ""
 echo ""
 echo "Client"
-cd ../client
+cd ../client/src
 cloc .
 
 echo ""
 echo ""
 echo ""
 echo "Server"
-cd ../server
+cd ../../server
 cloc .
 
 echo ""
