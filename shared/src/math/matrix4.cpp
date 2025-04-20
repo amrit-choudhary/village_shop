@@ -126,6 +126,21 @@ Mat4 ME::Math::Mat4::Orthographic(float left, float right, float bottom, float t
         -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.0f};
 }
 
+Mat4 ME::Math::Mat4::View(const Vec4& position, const Vec4& target, const Vec4& up) {
+    Vec4 zaxis = (target - position).Normalised();
+    Vec4 xaxis = Vec4::Cross(up, zaxis).Normalised();
+    Vec4 yaxis = Vec4::Cross(zaxis, xaxis).Normalised();
+    float a = Vec4::Dot(-xaxis, position);
+    float b = Vec4::Dot(-yaxis, position);
+    float c = Vec4::Dot(-zaxis, position);
+
+    return Mat4{
+        xaxis.x, yaxis.x, zaxis.x, 0.0f,
+        xaxis.y, yaxis.y, zaxis.y, 0.0f,
+        xaxis.z, yaxis.z, zaxis.z, 0.0f,
+        a, b, c, 1.0f};
+}
+
 Mat4 Mat4::operator*(const Mat4& other) const {
     Mat4 result;
 

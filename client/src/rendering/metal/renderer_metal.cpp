@@ -78,8 +78,8 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/cube.obj");
-    // mesh.CalculateNormal();
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/stanford-bunny.obj");
+    mesh.CalculateNormal();
 
     const size_t vertexCount = mesh.vertexCount;
     const size_t indexCount = mesh.indexCount;
@@ -109,22 +109,22 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 20.0f, 1.0f));
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, -10.0f, 30.0f, 1.0f));
     Mat4 rotationMat = Mat4::Rotation(Vec4(0.0f, rotation, 0.0f, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(5.0f, 5.0f, 5.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(150.0f, 150.0f, 150.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
     Vec16 modelData = modelMat.GetData();
     memcpy(modelBuffer->contents(), &modelData, sizeof(Vec16));
     modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
 
-    Mat4 viewMat = Mat4::Identity;
+    Mat4 viewMat =
+        Mat4::View(Vec4(0.0f, 0.0f, 0.0f, 1.0f), Vec4(0.0f, 0.0f, 100.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 1.0f));
     Vec16 viewData = viewMat.GetData();
     memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
     viewBuffer->didModifyRange(NS::Range::Make(0, viewBuffer->length()));
 
-    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.0f, 10.0f, 100.0f);
-    // Mat4 projectionMat = Mat4::Identity;
+    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.0f, 0.1f, 100.0f);
     Vec16 projectionData = projectionMat.GetData();
     memcpy(projectionBuffer->contents(), &projectionData, sizeof(Vec16));
     projectionBuffer->didModifyRange(NS::Range::Make(0, projectionBuffer->length()));
@@ -140,7 +140,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(projectionBuffer, 0, 3);
 
     enc->setCullMode(MTL::CullModeBack);
-    enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+    // enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
+    enc->setFrontFacingWinding(MTL::Winding::WindingClockwise);
 
     enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexBuffer->length() / sizeof(uint32_t),
                                MTL::IndexType::IndexTypeUInt32, indexBuffer, 0, 1);

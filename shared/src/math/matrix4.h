@@ -52,6 +52,9 @@ class Mat4 {
     // Creates a Perspective matrix based on provided field of view, aspect ratio, near and far planes.
     static Mat4 Perspective(float fov, float aspect, float near, float far);
 
+    // Create a View matrix based on the camera position, target position and up vector.
+    static Mat4 View(const Vec4& position, const Vec4& target, const Vec4& up);
+
     // Multiplies this matrix by another matrix and returns the result.
     Mat4 operator*(const Mat4& other) const;
 };

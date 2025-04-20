@@ -45,7 +45,7 @@ class Vec4 {
 
     // Math functions
     static float Dot(const Vec4& a, const Vec4& b);
-    // Cross is not well defined for 4D vectors, but can be implemented in a specific context.
+    static Vec4 Cross(const Vec4& a, const Vec4& b);
 
    private:
    protected:
