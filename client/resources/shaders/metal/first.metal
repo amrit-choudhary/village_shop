@@ -47,9 +47,11 @@ float3x3 inverse3x3(float3x3 m) {
 }
 
 vertex VertexOut vertexMain(VertexIn in [[stage_in]], 
-                            constant float4x4& modelMatrix [[buffer(1)]],
-                            constant float4x4& viewMatrix [[buffer(2)]],
-                            constant float4x4& projectionMatrix [[buffer(3)]]) {
+                            constant float4x4& modelMatrix      [[buffer(1)]],
+                            constant float4x4& viewMatrix       [[buffer(2)]],
+                            constant float4x4& projectionMatrix [[buffer(3)]],
+                            constant float4* instances          [[buffer(4)]],
+                            uint instanceID                     [[instance_id]]) {
 
     float3x3 normalMatrix = transpose(inverse3x3(float3x3(
                                                 modelMatrix[0].xyz,
@@ -57,10 +59,12 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
                                                 modelMatrix[2].xyz)));
     
     VertexOut out;
-    out.position = (projectionMatrix * (viewMatrix * (modelMatrix * float4(in.position, 1.0))));
+    float4 instancedPos = modelMatrix * float4(in.position, 1.0f) + float4(instances[instanceID].xyz, 1.0f);
+    out.position = (projectionMatrix * (viewMatrix * instancedPos));
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
     float light = clamp(out.normal.x, 0.0, 1.0f) + 0.2f;
+    light = light * instances[instanceID].w;
     out.color = float3(light, light, light);
     out.uv = in.uv;
     return out;
