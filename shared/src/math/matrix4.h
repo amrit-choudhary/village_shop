@@ -46,6 +46,12 @@ class Mat4 {
     // Creates a Scale matrix based on provided scale vector.
     static Mat4 Scale(const Vec4& scale);
 
+    // Creates an Orthographic matrix based on provided left, right, bottom, top, near and far planes.
+    static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
+
+    // Creates a Perspective matrix based on provided field of view, aspect ratio, near and far planes.
+    static Mat4 Perspective(float fov, float aspect, float near, float far);
+
     // Multiplies this matrix by another matrix and returns the result.
     Mat4 operator*(const Mat4& other) const;
 };

@@ -22,7 +22,8 @@ void ME::RendererMetal::Update() {
 void ME::RendererMetal::End() {
     vertexBuffer->release();
     indexBuffer->release();
-    uniformBuffer->release();
+    modelBuffer->release();
+    projectionBuffer->release();
     PSO->release();
     commandQueue->release();
     device->release();
@@ -77,7 +78,7 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/torus.obj");
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/stanford-bunny.obj");
     mesh.CalculateNormal();
 
     const size_t vertexCount = mesh.vertexCount;
@@ -88,7 +89,9 @@ void ME::RendererMetal::BuildBuffers() {
 
     vertexBuffer = device->newBuffer(vertexDataSize, MTL::ResourceStorageModeManaged);
     indexBuffer = device->newBuffer(indexDataSize, MTL::ResourceStorageModeManaged);
-    uniformBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
+    modelBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
+    viewBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
+    projectionBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
 
     memcpy(vertexBuffer->contents(), mesh.vertices.data(), vertexDataSize);
     memcpy(indexBuffer->contents(), mesh.indices.data(), indexDataSize);
@@ -107,13 +110,23 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     }
 
     Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    Mat4 rotationMat = Mat4::Rotation(Vec4(rotation, 0.0f, 0.0f, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(0.6f, 0.6f, 0.6f, 1.0f));
-    Mat4 transformationMat = rotationMat * translationMat * scaleMat;
+    Mat4 rotationMat = Mat4::Rotation(Vec4(0.0f, 0.0, 0.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(5.0f, 5.0f, 5.0f, 5.0f));
+    Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
-    Vec16 transformationData = transformationMat.GetData();
-    memcpy(uniformBuffer->contents(), &transformationData, sizeof(Vec16));
-    uniformBuffer->didModifyRange(NS::Range::Make(0, uniformBuffer->length()));
+    Vec16 modelData = modelMat.GetData();
+    memcpy(modelBuffer->contents(), &modelData, sizeof(Vec16));
+    modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
+
+    Mat4 viewMat = Mat4::Identity;
+    Vec16 viewData = viewMat.GetData();
+    memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
+    viewBuffer->didModifyRange(NS::Range::Make(0, viewBuffer->length()));
+
+    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.0f, 10.0f, 100.0f);
+    Vec16 projectionData = projectionMat.GetData();
+    memcpy(projectionBuffer->contents(), &projectionData, sizeof(Vec16));
+    projectionBuffer->didModifyRange(NS::Range::Make(0, projectionBuffer->length()));
 
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
@@ -121,7 +134,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
 
     enc->setRenderPipelineState(PSO);
     enc->setVertexBuffer(vertexBuffer, 0, 0);
-    enc->setVertexBuffer(uniformBuffer, 0, 1);
+    enc->setVertexBuffer(modelBuffer, 0, 1);
+    enc->setVertexBuffer(viewBuffer, 0, 2);
+    enc->setVertexBuffer(projectionBuffer, 0, 3);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);

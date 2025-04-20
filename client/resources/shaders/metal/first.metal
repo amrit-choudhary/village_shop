@@ -14,10 +14,6 @@ struct VertexOut {
     float2 uv;
 };
 
-struct Uniforms {
-    float4x4 transformationMatrix;
-};
-
 // Compute the determinant of a 3x3 matrix
 float determinant3x3(float3x3 m) {
     return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
@@ -51,17 +47,19 @@ float3x3 inverse3x3(float3x3 m) {
 }
 
 vertex VertexOut vertexMain(VertexIn in [[stage_in]], 
-                            constant Uniforms& uniforms [[buffer(1)]]) {
+                            constant float4x4& modelMatrix [[buffer(1)]],
+                            constant float4x4& viewMatrix [[buffer(2)]],
+                            constant float4x4& projectionMatrix [[buffer(3)]]) {
 
     float3x3 normalMatrix = transpose(inverse3x3(float3x3(
-                                                uniforms.transformationMatrix[0].xyz,
-                                                uniforms.transformationMatrix[1].xyz,
-                                                uniforms.transformationMatrix[2].xyz)));
+                                                modelMatrix[0].xyz,
+                                                modelMatrix[1].xyz,
+                                                modelMatrix[2].xyz)));
     
     VertexOut out;
-    out.position = uniforms.transformationMatrix * float4(in.position, 1.0);
-    // out.normal = float4(normalMatrix * in.normal, 1.0);
-    float light = in.normal.x * 0.2 + in.normal.y * 0.2 + in.normal.z * 0.2;
+    out.position = (projectionMatrix * (viewMatrix * (modelMatrix * float4(in.position, 1.0))));
+    out.normal = float4(normalMatrix * in.normal, 1.0);
+    float light = clamp(out.normal.x, 0.0, 1.0f) + 0.2f;
     out.color = float3(light, light, light);
     out.uv = in.uv;
     return out;

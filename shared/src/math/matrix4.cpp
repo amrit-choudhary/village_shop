@@ -109,6 +109,23 @@ Mat4 ME::Math::Mat4::Scale(const Vec4 & scale)
         0.0f, 0.0f, 0.0f, scale.w};
 }
 
+Mat4 ME::Math::Mat4::Perspective(float fov, float aspect, float near, float far) {
+    float f = 1.0f / std::tan(fov / 2.0f);
+    return Mat4{
+        f / aspect, 0.0f, 0.0f, 0.0f,
+        0.0f, f, 0.0f, 0.0f,
+        0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
+        0.0f, 0.0f, -1.0f, 0.0f};
+}
+
+Mat4 ME::Math::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
+    return Mat4{
+        2.0f / (right - left), 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / (top - bottom), 0.0f, 0.0f,
+        0.0f, 0.0f, -2.0f / (far - near), 0.0f,
+        -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.0f};
+}
+
 Mat4 Mat4::operator*(const Mat4& other) const {
     Mat4 result;
 
