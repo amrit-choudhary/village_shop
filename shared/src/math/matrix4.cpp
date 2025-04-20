@@ -114,8 +114,8 @@ Mat4 ME::Math::Mat4::Perspective(float fov, float aspect, float near, float far)
     return Mat4{
         f / aspect, 0.0f, 0.0f, 0.0f,
         0.0f, f, 0.0f, 0.0f,
-        0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
-        0.0f, 0.0f, -1.0f, 0.0f};
+        0.0f, 0.0f, far / (far - near), - far * near / (far - near),
+        0.0f, 0.0f, 1.0f, 0.0f};
 }
 
 Mat4 ME::Math::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
