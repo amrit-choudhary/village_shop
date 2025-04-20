@@ -111,7 +111,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
 
     Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 20.0f, 1.0f));
     Mat4 rotationMat = Mat4::Rotation(Vec4(0.0f, rotation, 0.0f, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(10.0f, 10.0f, 10.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(5.0f, 5.0f, 5.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
     Vec16 modelData = modelMat.GetData();
