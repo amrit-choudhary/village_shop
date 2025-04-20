@@ -59,6 +59,7 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
     VertexOut out;
     out.position = (projectionMatrix * (viewMatrix * (modelMatrix * float4(in.position, 1.0))));
     out.normal = float4(normalMatrix * in.normal, 1.0);
+    out.normal.xyz = normalize(out.normal.xyz);
     float light = clamp(out.normal.x, 0.0, 1.0f) + 0.2f;
     out.color = float3(light, light, light);
     out.uv = in.uv;

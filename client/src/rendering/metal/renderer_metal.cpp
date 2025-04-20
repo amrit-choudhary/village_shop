@@ -78,7 +78,7 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/plane.obj");
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/cube.obj");
     // mesh.CalculateNormal();
 
     const size_t vertexCount = mesh.vertexCount;
@@ -109,9 +109,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 30.0f, 1.0f));
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 20.0f, 1.0f));
     Mat4 rotationMat = Mat4::Rotation(Vec4(0.0f, rotation, 0.0f, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(5.0f, 5.0f, 5.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(10.0f, 10.0f, 10.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
     Vec16 modelData = modelMat.GetData();
