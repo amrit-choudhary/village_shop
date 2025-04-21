@@ -159,6 +159,8 @@ void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotificat
     mtkView = MTK::View::alloc()->init(frame, device);
     mtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
     mtkView->setClearColor(MTL::ClearColor::Make(0.01, 0.01, 0.01, 1.0));
+    mtkView->setDepthStencilPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
+    mtkView->setClearDepth(1.0);
 
     // Create GameMain.
     viewDelegate = new GameMain(device, mtkView);

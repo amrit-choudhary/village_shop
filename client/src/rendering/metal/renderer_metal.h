@@ -35,6 +35,7 @@ class RendererMetal : public PlatformRenderer {
    protected:
    public:
     void BuildShaders();
+    void BuildDepthStencilState();
     void BuildBuffers();
     void Draw(MTK::View* view);
 
@@ -43,6 +44,7 @@ class RendererMetal : public PlatformRenderer {
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     MTL::RenderPipelineState* PSO;
+    MTL::DepthStencilState* depthStencilState;
     MTL::Buffer* vertexBuffer;
     MTL::Buffer* indexBuffer;
     MTL::Buffer* modelBuffer;

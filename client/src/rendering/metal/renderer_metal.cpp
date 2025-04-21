@@ -27,6 +27,7 @@ void ME::RendererMetal::End() {
     viewBuffer->release();
     instanceBuffer->release();
     PSO->release();
+    depthStencilState->release();
     commandQueue->release();
     device->release();
     view->release();
@@ -36,6 +37,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     device = inDevice->retain();
     commandQueue = device->newCommandQueue();
     BuildShaders();
+    BuildDepthStencilState();
     BuildBuffers();
     view = inView;
 }
@@ -68,6 +70,8 @@ void ME::RendererMetal::BuildShaders() {
 
     desc->setVertexDescriptor(vertexDesc);
 
+    desc->setDepthAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
+
     NS::Error* error = nullptr;
     PSO = device->newRenderPipelineState(desc, &error);
     if (!PSO) {
@@ -77,6 +81,16 @@ void ME::RendererMetal::BuildShaders() {
 
     vertexDesc->release();
     desc->release();
+}
+
+void ME::RendererMetal::BuildDepthStencilState() {
+    MTL::DepthStencilDescriptor* dsDesc = MTL::DepthStencilDescriptor::alloc()->init();
+    dsDesc->setDepthCompareFunction(MTL::CompareFunction::CompareFunctionLess);
+    dsDesc->setDepthWriteEnabled(true);
+
+    depthStencilState = device->newDepthStencilState(dsDesc);
+
+    dsDesc->release();
 }
 
 void ME::RendererMetal::BuildBuffers() {
@@ -144,6 +158,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
     enc->setRenderPipelineState(PSO);
+    enc->setDepthStencilState(depthStencilState);
+
     enc->setVertexBuffer(vertexBuffer, 0, 0);
     enc->setVertexBuffer(modelBuffer, 0, 1);
     enc->setVertexBuffer(viewBuffer, 0, 2);
