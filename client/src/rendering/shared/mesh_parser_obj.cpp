@@ -65,17 +65,13 @@ ME::Mesh ME::CreateMeshFromOBJ(const char* fileName) {
     for (int i = 0; i < tempPositions.size(); ++i) {
         Vertex vertex;
         vertex.position = tempPositions[i];
-        if (tempNormalIndices[i] < tempNormals.size()) {
-            vertex.normal = tempNormals[tempNormalIndices[i]];
-        } else {
-            vertex.normal = ME::Math::Vec3::Zero;
-        }
-        if (tempUVIndices[i] < tempUVs.size()) {
-            vertex.uv = tempUVs[tempUVIndices[i]];
-        } else {
-            vertex.uv = ME::Math::Vec2::Zero;
-        }
         vertices.emplace_back(vertex);
+    }
+
+    for (int i = 0; i < indices.size(); ++i) {
+        uint32_t index = indices[i];
+        vertices[index].normal = tempNormals[tempNormalIndices[i]];
+        vertices[index].uv = tempUVs[tempUVIndices[i]];
     }
 
     mesh.vertices = vertices;

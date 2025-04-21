@@ -63,13 +63,15 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
     out.position = (projectionMatrix * (viewMatrix * instancedPos));
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
-    float light = clamp(out.normal.x, 0.0, 1.0f) + 0.2f;
-    light = light * instances[instanceID].w;
-    out.color = float3(light, light, light);
     out.uv = in.uv;
     return out;
 }
 
-fragment float4 fragmentMain(VertexOut in [[stage_in]]) {
-    return float4(in.color.x, in.color.y, in.color.z, 1.0);
+fragment half4 fragmentMain(VertexOut in [[stage_in]]) {
+    // assume light coming from (front-top-right)
+    float3 l = normalize(float3( 1.0, 1.0, -0.8 ));
+    float3 n = normalize( in.normal.xyz );
+
+    float ndotl = saturate( dot( n, l ) ) + 0.1f;
+    return half4( ndotl, ndotl, ndotl, 1.0 );
 }

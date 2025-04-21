@@ -80,7 +80,7 @@ void ME::RendererMetal::BuildShaders() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/cube.obj");
+    Mesh mesh = ME::CreateMeshFromOBJ("meshes/cube_unshared.obj");
     // mesh.CalculateNormal();
 
     const size_t vertexCount = mesh.vertexCount;
@@ -107,7 +107,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
     static float rotation = 0.0f;
-    rotation += 0.05f;
+    rotation += 0.01f;
     if (rotation > 360.0f) {
         rotation = 0.0f;
     }
