@@ -1,5 +1,9 @@
 # The Village Shop
 
+<p align="center">
+<img src="/screenshots/2025_04_23/MVP_Matrix_Light_Tex.png" width="300px" />
+</p>
+
 ## Introduction
 This is a C++ game about establishing a profitable shop in a functioning village. Villagers will have multitudes of demands like food, shelter, luxury goods etc. and it will be your choice to venture in a business that you think will make you the most profit.
 
