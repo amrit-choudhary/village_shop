@@ -37,6 +37,7 @@ class RendererMetal : public PlatformRenderer {
     void BuildShaders();
     void BuildDepthStencilState();
     void BuildBuffers();
+    void BuildTextures();
     void Draw(MTK::View* view);
 
    private:
@@ -51,6 +52,7 @@ class RendererMetal : public PlatformRenderer {
     MTL::Buffer* viewBuffer;
     MTL::Buffer* projectionBuffer;
     MTL::Buffer* instanceBuffer;
+    MTL::Texture* texture;
 };
 
 }  // namespace ME

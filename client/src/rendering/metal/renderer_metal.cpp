@@ -28,6 +28,7 @@ void ME::RendererMetal::End() {
     instanceBuffer->release();
     PSO->release();
     depthStencilState->release();
+    texture->release();
     commandQueue->release();
     device->release();
     view->release();
@@ -39,6 +40,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     BuildShaders();
     BuildDepthStencilState();
     BuildBuffers();
+    BuildTextures();
     view = inView;
 }
 
@@ -117,6 +119,57 @@ void ME::RendererMetal::BuildBuffers() {
     indexBuffer->didModifyRange(NS::Range::Make(0, indexBuffer->length()));
 }
 
+void ME::RendererMetal::BuildTextures() {
+    const size_t width = 1024;
+    const size_t height = 1024;
+    const size_t bytesPerPixel = 4;
+    const size_t imageSize = width * height * bytesPerPixel;
+    uint8_t* imageData = new uint8_t[imageSize];
+
+    for (size_t i = 0; i < width * height; ++i) {
+        float x = (float)(i % width) / (float)width;
+        float y = (float)(i / width) / (float)height;
+        uint8_t cr = 255;
+        uint8_t cg = 255;
+        uint8_t cb = 255;
+
+        bool grid = (x < 0.5f && y < 0.5f) || (x > 0.5f && y > 0.5f);
+        bool center = (x > 0.25f && x < 0.75f) && (y > 0.25f && y < 0.75f);
+
+        if (grid) {
+            cr = 128;
+            cg = 0;
+            cb = 128;
+        };
+
+        if (center) {
+            cr = 0;
+            cg = 255;
+            cb = 0;
+        }
+
+        imageData[i * bytesPerPixel + 0] = cr;
+        imageData[i * bytesPerPixel + 1] = cg;
+        imageData[i * bytesPerPixel + 2] = cb;
+        imageData[i * bytesPerPixel + 3] = 255;
+    }
+
+    MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
+    textureDesc->setWidth(width);
+    textureDesc->setHeight(height);
+    textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
+    textureDesc->setTextureType(MTL::TextureType2D);
+    textureDesc->setStorageMode(MTL::StorageModeManaged);
+    textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead);
+
+    texture = device->newTexture(textureDesc);
+
+    texture->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, imageData, width * bytesPerPixel);
+
+    textureDesc->release();
+    delete[] imageData;
+}
+
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
@@ -165,6 +218,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(viewBuffer, 0, 2);
     enc->setVertexBuffer(projectionBuffer, 0, 3);
     enc->setVertexBuffer(instanceBuffer, 0, 4);
+
+    enc->setFragmentTexture(texture, 0);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);

@@ -67,11 +67,16 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
     return out;
 }
 
-fragment half4 fragmentMain(VertexOut in [[stage_in]]) {
+fragment half4 fragmentMain(VertexOut in [[stage_in]],
+                            texture2d<half, access::sample> tex [[texture(0)]]) {
+    
+    constexpr sampler s(address::repeat, filter::linear);
+    half3 texel =  tex.sample(s, in.uv).rgb;
+
     // assume light coming from (front-top-right)
     float3 l = normalize(float3( 1.0, 1.0, -0.8 ));
     float3 n = normalize( in.normal.xyz );
 
-    float ndotl = saturate( dot( n, l ) ) + 0.1f;
-    return half4( ndotl, ndotl, ndotl, 1.0 );
+    float ndotl = saturate( dot( n, l ) ) + 0.05f;
+    return half4( ndotl * texel.r, ndotl * texel.g, ndotl * texel.b, 1.0 );
 }

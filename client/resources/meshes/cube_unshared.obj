@@ -52,21 +52,21 @@ vn 0.0 1.0 0.0   # Top normal
 vn 0.0 -1.0 0.0  # Bottom normal
 
 # Faces (vertex_index/texture_coord_index/normal_index)
-# Front face (+Z) - Normal 1
-f 3/1/1 2/2/1 1/3/1
-f 1/1/1 4/3/1 3/4/1
-# Right face (+X) - Normal 5 (Vertices 17-20, UVs mapped for CCW from outside)
-f 7/1/2 6/2/2 5/3/2
-f 5/1/2 8/3/2 7/4/2
-# Back face (-Z) - Normal 2 (Vertices 5-8, UVs mapped for CCW from outside)
-f 11/1/3 10/2/3 9/3/3 
-f 9/1/3 12/3/3 11/4/3 
-# Left face (-X) - Normal 6 (Vertices 21-24, UVs mapped for CCW from outside)
-f 15/1/4 14/2/4 13/3/4
-f 13/1/4 16/3/4 15/4/4
-# Top face (+Y) - Normal 3 (Vertices 9-12, UVs mapped for CCW from outside)
-f 19/1/5 18/2/5 17/3/5
-f 17/1/5 20/3/5 19/4/5
-# Bottom face (-Y) - Normal 4 (Vertices 13-16, UVs mapped for CCW from outside)
-f 23/1/6 22/2/6 21/3/6
-f 21/1/6 24/3/6 23/4/6
+# Front face (+Z)
+f 3/3/1 2/2/1 1/1/1
+f 1/1/1 4/4/1 3/3/1
+# Right face (+X)
+f 7/3/2 6/2/2 5/1/2
+f 5/1/2 8/4/2 7/3/2
+# Back face (-Z)
+f 11/3/3 10/2/3 9/1/3 
+f 9/1/3 12/4/3 11/3/3 
+# Left face (-X)
+f 15/3/4 14/2/4 13/1/4
+f 13/1/4 16/4/4 15/3/4
+# Top face (+Y)
+f 19/3/5 18/2/5 17/1/5
+f 17/1/5 20/4/5 19/3/5
+# Bottom face (-Y)
+f 23/3/6 22/2/6 21/1/6
+f 21/1/6 24/4/6 23/3/6
