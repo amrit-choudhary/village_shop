@@ -8,6 +8,20 @@ if(APPLE)
     add_subdirectory(third_party/metal)
 endif()
 
+# Add zlib
+set(ZLIB_BUILD_TESTS OFF CACHE BOOL "Disable zlib tests" FORCE)
+set(INSTALL_PKGCONFIG_DIR OFF CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
+add_subdirectory(third_party/zlib-1.3.1)
+
+# Add libpng
+set(PNG_SHARED OFF CACHE BOOL "Build libpng shared library" FORCE)
+set(PNG_STATIC ON CACHE BOOL "Build libpng static library" FORCE) # Be explicit
+set(PNG_TESTS OFF CACHE BOOL "Build libpng tests" FORCE)
+set(PNG_TOOLS OFF CACHE BOOL "Build libpng tools" FORCE)
+add_subdirectory(third_party/libpng-1.6.47)
+
+# Executable
 add_executable(VillageShop_Client ${SOURCES})
 
 # Set preprocessor options.
@@ -31,6 +45,13 @@ target_link_libraries(
     VillageShop_Client
     PRIVATE
     VillageShop_Shared
+    )
+
+target_link_libraries(
+    VillageShop_Client
+    PRIVATE
+    png_static
+    zlibstatic
     )
 
 if(APPLE)

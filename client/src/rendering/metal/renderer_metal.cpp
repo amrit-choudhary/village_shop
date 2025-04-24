@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "../shared/image_loader_png.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
 #include "shader/shader_mac.h"
@@ -120,43 +121,13 @@ void ME::RendererMetal::BuildBuffers() {
 }
 
 void ME::RendererMetal::BuildTextures() {
-    const size_t width = 1024;
-    const size_t height = 1024;
+    ME::PngData pngData;
+    LoadPNG("textures/kenney_puzzle-pack-2/PNG/Tiles yellow/tileYellow_27.png", pngData);
     const size_t bytesPerPixel = 4;
-    const size_t imageSize = width * height * bytesPerPixel;
-    uint8_t* imageData = new uint8_t[imageSize];
-
-    for (size_t i = 0; i < width * height; ++i) {
-        float x = (float)(i % width) / (float)width;
-        float y = (float)(i / width) / (float)height;
-        uint8_t cr = 255;
-        uint8_t cg = 255;
-        uint8_t cb = 255;
-
-        bool grid = (x < 0.5f && y < 0.5f) || (x > 0.5f && y > 0.5f);
-        bool center = (x > 0.25f && x < 0.75f) && (y > 0.25f && y < 0.75f);
-
-        if (grid) {
-            cr = 128;
-            cg = 0;
-            cb = 128;
-        };
-
-        if (center) {
-            cr = 0;
-            cg = 255;
-            cb = 0;
-        }
-
-        imageData[i * bytesPerPixel + 0] = cr;
-        imageData[i * bytesPerPixel + 1] = cg;
-        imageData[i * bytesPerPixel + 2] = cb;
-        imageData[i * bytesPerPixel + 3] = 255;
-    }
 
     MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
-    textureDesc->setWidth(width);
-    textureDesc->setHeight(height);
+    textureDesc->setWidth(pngData.width);
+    textureDesc->setHeight(pngData.height);
     textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
     textureDesc->setTextureType(MTL::TextureType2D);
     textureDesc->setStorageMode(MTL::StorageModeManaged);
@@ -164,10 +135,11 @@ void ME::RendererMetal::BuildTextures() {
 
     texture = device->newTexture(textureDesc);
 
-    texture->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, imageData, width * bytesPerPixel);
+    texture->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData.pixels.data(),
+                           pngData.width * bytesPerPixel);
 
     textureDesc->release();
-    delete[] imageData;
+    // delete[] imageData;
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
