@@ -12,6 +12,7 @@ struct VertexOut {
     float4 normal;
     float3 color;
     float2 uv;
+    float height;
 };
 
 // Compute the determinant of a 3x3 matrix
@@ -60,11 +61,12 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 
     VertexOut out;
     float4 posM = modelMatrix * float4(in.position, 1.0f);
-    float4 posI = posM + float4(instances[instanceID].xyz * 3, 0.0f);
+    float4 posI = posM + float4(instances[instanceID].xyz * 2.0f, 0.0f);
     out.position = projectionMatrix * viewMatrix * posI;
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
     out.uv = in.uv;
+    out.height = posI.y;
     return out;
 }
 
@@ -79,6 +81,6 @@ fragment half4 fragmentMain(VertexOut in [[stage_in]],
     float3 l = normalize(float3( 1.0, 1.0, -0.8 ));
     float3 n = normalize( in.normal.xyz );
 
-    float ndotl = saturate( dot( n, l ) ) + 0.05f;
+    float ndotl = saturate( dot( n, l ) )+ in.height * 0.03f;
     return half4( ndotl * texel.r, ndotl * texel.g, ndotl * texel.b, 1.0 );
 }

@@ -53,6 +53,8 @@ class RendererMetal : public PlatformRenderer {
     MTL::Buffer* projectionBuffer;
     MTL::Buffer* instanceBuffer;
     MTL::Texture* texture;
+
+    size_t instanceCount = 0;
 };
 
 }  // namespace ME

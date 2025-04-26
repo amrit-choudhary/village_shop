@@ -146,7 +146,7 @@ void GameAppDelegate::applicationWillFinishLaunching(NS::Notification* pNotifica
 
 void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotification) {
     // Create window.
-    CGRect frame = (CGRect){{100.0, 100.0}, {720.0, 720.0}};
+    CGRect frame = (CGRect){{100.0, 100.0}, {1024.0, 768.0}};
 
     window = NS::Window::alloc()->init(frame, NS::WindowStyleMaskClosable | NS::WindowStyleMaskTitled,
                                        NS::BackingStoreBuffered, false);
@@ -158,7 +158,7 @@ void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotificat
     // Create Metal View.
     mtkView = MTK::View::alloc()->init(frame, device);
     mtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-    mtkView->setClearColor(MTL::ClearColor::Make(0.01, 0.01, 0.01, 1.0));
+    mtkView->setClearColor(MTL::ClearColor::Make(0.53, 0.81, 0.98, 1.0));
     mtkView->setDepthStencilPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
     mtkView->setClearDepth(1.0);
 
