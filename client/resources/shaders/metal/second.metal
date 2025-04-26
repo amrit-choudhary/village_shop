@@ -60,10 +60,8 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 
     VertexOut out;
     float4 posM = modelMatrix * float4(in.position, 1.0f);
-    float4 posI = posM + float4(instances[instanceID].xyz * 2.2f, 0.0f);
-    float4 posV = viewMatrix * posI;
-    out.position = float4(posV.xyz * 0.2f, 1.0f);
-    out.position.z = 0.5f;
+    float4 posI = posM + float4(instances[instanceID].xyz * 3, 0.0f);
+    out.position = projectionMatrix * viewMatrix * posI;
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
     out.uv = in.uv;

@@ -151,7 +151,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 50.0f, 1.0f));
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 20.0f, 1.0f));
     Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, rotation, 1.0f));
     Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
@@ -160,8 +160,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     memcpy(modelBuffer->contents(), &modelData, sizeof(Vec16));
     modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
 
-    Mat4 viewMat =
-        Mat4::View(Vec4(0.0f, 0.0f, 0.0f, 1.0f), Vec4(0.0f, 0.0f, 50.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 0.0f));
+    Mat4 viewMat = Mat4::View(Vec4(0.0f, 0.0f, 0.0f + rotation, 1.0f), Vec4(0.0f, 0.0f, 50.0f, 1.0f),
+                              Vec4(0.0f, 1.0f, 0.0f, 0.0f));
     Vec16 viewData = viewMat.GetData();
     memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
     viewBuffer->didModifyRange(NS::Range::Make(0, viewBuffer->length()));
