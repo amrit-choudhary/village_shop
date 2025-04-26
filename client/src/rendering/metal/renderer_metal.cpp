@@ -46,7 +46,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 }
 
 void ME::RendererMetal::BuildShaders() {
-    ME::Shader shader(device, "shaders/metal/first.metal");
+    ME::Shader shader(device, "shaders/metal/second.metal");
 
     MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
     desc->setVertexFunction(shader.GetVertexFunction());
@@ -151,9 +151,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 30.0f, 1.0f));
-    Mat4 rotationMat = Mat4::Rotation(Vec4(rotation, rotation, 0.0f, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(4.0f, 4.0f, 4.0f, 1.0f));
+    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 50.0f, 1.0f));
+    Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, rotation, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
     Vec16 modelData = modelMat.GetData();
@@ -161,20 +161,21 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
 
     Mat4 viewMat =
-        Mat4::View(Vec4(0.0f, 0.0f, 0.0f, 1.0f), Vec4(0.0f, 0.0f, 100.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 1.0f));
+        Mat4::View(Vec4(0.0f, 0.0f, 0.0f, 1.0f), Vec4(0.0f, 0.0f, 50.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 0.0f));
     Vec16 viewData = viewMat.GetData();
     memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
     viewBuffer->didModifyRange(NS::Range::Make(0, viewBuffer->length()));
 
-    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.0f, 0.1f, 100.0f);
+    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.0f, 0.1f, 10000.0f);
     Vec16 projectionData = projectionMat.GetData();
     memcpy(projectionBuffer->contents(), &projectionData, sizeof(Vec16));
     projectionBuffer->didModifyRange(NS::Range::Make(0, projectionBuffer->length()));
 
     Vec4 instanceData[9] = {
-        Vec4(-8.0f, 8.0f, -8.0f, 0.7f), Vec4(0.0f, 8.0f, -8.0f, 0.7f), Vec4(8.0f, 8.0f, -8.0f, 0.7f),
-        Vec4(-8.0f, 0.0f, 0.0f, 0.5f),  Vec4(0.0f, 0.0f, 0.0f, 0.5f),  Vec4(8.0f, 0.0f, 0.0f, 0.5f),
-        Vec4(-8.0f, -8.0f, 8.0f, 0.2f), Vec4(0.0f, -8.0f, 8.0f, 0.2f), Vec4(8.0f, -8.0f, 8.0f, 0.2f)};
+        Vec4(-1.0f, -1.0f, -1.0f, 1.0f), Vec4(1.0f, -1.0f, -1.0f, 1.0f), Vec4(1.0f, 1.0f, -1.0f, 1.0f),
+        Vec4(-1.0f, 1.0f, -1.0f, 1.0f),  Vec4(0.0f, 0.0f, 0.0f, 1.0f),   Vec4(-1.0f, -1.0f, 1.0f, 1.0f),
+        Vec4(1.0f, -1.0f, 1.0f, 1.0f),   Vec4(1.0f, 1.0f, 1.0f, 1.0f),   Vec4(-1.0f, 1.0f, 1.0f, 1.0f)};
+
     memcpy(instanceBuffer->contents(), instanceData, sizeof(Vec4) * 9);
     instanceBuffer->didModifyRange(NS::Range::Make(0, instanceBuffer->length()));
 
