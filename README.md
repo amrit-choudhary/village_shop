@@ -1,7 +1,7 @@
 # The Village Shop
 
 <p align="center">
-<img src="/screenshots/2025_04_26/Heightmap_Voxel.png" width="500px" />
+<img src="/screenshots/2025_04_28/MultipleTextures.png" width="700px" />
 </p>
 
 ## Introduction

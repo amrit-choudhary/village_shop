@@ -158,7 +158,7 @@ void GameAppDelegate::applicationDidFinishLaunching(NS::Notification* pNotificat
     // Create Metal View.
     mtkView = MTK::View::alloc()->init(frame, device);
     mtkView->setColorPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-    mtkView->setClearColor(MTL::ClearColor::Make(0.53, 0.81, 0.98, 1.0));
+    mtkView->setClearColor(MTL::ClearColor::Make(0.33, 0.61, 0.98, 1.0));
     mtkView->setDepthStencilPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
     mtkView->setClearDepth(1.0);
 

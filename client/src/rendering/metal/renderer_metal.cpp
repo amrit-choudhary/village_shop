@@ -30,6 +30,9 @@ void ME::RendererMetal::End() {
     PSO->release();
     depthStencilState->release();
     texture->release();
+    texture2->release();
+    texture3->release();
+    texture4->release();
     samplerState->release();
     commandQueue->release();
     device->release();
@@ -119,7 +122,7 @@ void ME::RendererMetal::BuildBuffers() {
     indexBuffer->didModifyRange(NS::Range::Make(0, indexBuffer->length()));
 
     ME::PngData heightmap;
-    LoadPNG("textures/heightmap.png", heightmap);
+    LoadPNG("textures/world/heightmap.png", heightmap);
     instanceCount = heightmap.width * heightmap.height;
     Vec4 instanceData[instanceCount];
 
@@ -137,7 +140,14 @@ void ME::RendererMetal::BuildTextures() {
     NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
     ME::PngData pngData;
-    LoadPNG("textures/kenney_puzzle-pack-2/PNG/Tiles green/tileGreen_25.png", pngData);
+    LoadPNG("textures/world/cobblestone.png", pngData);
+    ME::PngData pngData2;
+    LoadPNG("textures/world/dirt.png", pngData2);
+    ME::PngData pngData3;
+    LoadPNG("textures/world/ice.png", pngData3);
+    ME::PngData pngData4;
+    LoadPNG("textures/world/green_concrete_powder.png", pngData4);
+
     const size_t bytesPerPixel = 4;
 
     MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
@@ -146,14 +156,22 @@ void ME::RendererMetal::BuildTextures() {
     textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
     textureDesc->setTextureType(MTL::TextureType2D);
     textureDesc->setStorageMode(MTL::StorageModeShared);
-    textureDesc->setMipmapLevelCount(6);
-
+    textureDesc->setMipmapLevelCount(5);
     textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead | MTL::ResourceUsageWrite);
 
     texture = device->newTexture(textureDesc);
+    texture2 = device->newTexture(textureDesc);
+    texture3 = device->newTexture(textureDesc);
+    texture4 = device->newTexture(textureDesc);
 
     texture->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData.pixels.data(),
                            pngData.width * bytesPerPixel);
+    texture2->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData2.pixels.data(),
+                            pngData.width * bytesPerPixel);
+    texture3->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData3.pixels.data(),
+                            pngData.width * bytesPerPixel);
+    texture4->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData4.pixels.data(),
+                            pngData.width * bytesPerPixel);
 
     textureDesc->release();
 
@@ -161,6 +179,9 @@ void ME::RendererMetal::BuildTextures() {
     MTL::CommandBuffer* m_cmd = commandQueue->commandBuffer();
     MTL::BlitCommandEncoder* blitEncoder = m_cmd->blitCommandEncoder();
     blitEncoder->generateMipmaps(texture);
+    blitEncoder->generateMipmaps(texture2);
+    blitEncoder->generateMipmaps(texture3);
+    blitEncoder->generateMipmaps(texture4);
     blitEncoder->endEncoding();
     m_cmd->commit();
     m_cmd->waitUntilCompleted();
@@ -194,7 +215,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
 
     Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
     Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, 0, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 3.0f, 1.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
 
     Vec16 modelData = modelMat.GetData();
@@ -226,6 +247,10 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(instanceBuffer, 0, 4);
 
     enc->setFragmentTexture(texture, 0);
+    enc->setFragmentTexture(texture2, 1);
+    enc->setFragmentTexture(texture3, 2);
+    enc->setFragmentTexture(texture4, 3);
+
     enc->setFragmentSamplerState(samplerState, 0);
 
     enc->setCullMode(MTL::CullModeBack);
