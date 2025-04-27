@@ -53,6 +53,7 @@ class RendererMetal : public PlatformRenderer {
     MTL::Buffer* projectionBuffer;
     MTL::Buffer* instanceBuffer;
     MTL::Texture* texture;
+    MTL::SamplerState* samplerState;
 
     size_t instanceCount = 0;
 };

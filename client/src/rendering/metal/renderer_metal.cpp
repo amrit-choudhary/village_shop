@@ -30,6 +30,7 @@ void ME::RendererMetal::End() {
     PSO->release();
     depthStencilState->release();
     texture->release();
+    samplerState->release();
     commandQueue->release();
     device->release();
     view->release();
@@ -133,6 +134,8 @@ void ME::RendererMetal::BuildBuffers() {
 }
 
 void ME::RendererMetal::BuildTextures() {
+    NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+
     ME::PngData pngData;
     LoadPNG("textures/kenney_puzzle-pack-2/PNG/Tiles green/tileGreen_25.png", pngData);
     const size_t bytesPerPixel = 4;
@@ -142,8 +145,10 @@ void ME::RendererMetal::BuildTextures() {
     textureDesc->setHeight(pngData.height);
     textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
     textureDesc->setTextureType(MTL::TextureType2D);
-    textureDesc->setStorageMode(MTL::StorageModeManaged);
-    textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead);
+    textureDesc->setStorageMode(MTL::StorageModeShared);
+    textureDesc->setMipmapLevelCount(6);
+
+    textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead | MTL::ResourceUsageWrite);
 
     texture = device->newTexture(textureDesc);
 
@@ -151,7 +156,29 @@ void ME::RendererMetal::BuildTextures() {
                            pngData.width * bytesPerPixel);
 
     textureDesc->release();
-    // delete[] imageData;
+
+    // Creating Mipmaps
+    MTL::CommandBuffer* m_cmd = commandQueue->commandBuffer();
+    MTL::BlitCommandEncoder* blitEncoder = m_cmd->blitCommandEncoder();
+    blitEncoder->generateMipmaps(texture);
+    blitEncoder->endEncoding();
+    m_cmd->commit();
+    m_cmd->waitUntilCompleted();
+    // blitEncoder->release();
+    // m_cmd->release();
+
+    MTL::SamplerDescriptor* samplerDesc = MTL::SamplerDescriptor::alloc()->init();
+    samplerDesc->setMinFilter(MTL::SamplerMinMagFilterLinear);
+    samplerDesc->setMagFilter(MTL::SamplerMinMagFilterLinear);
+    samplerDesc->setMipFilter(MTL::SamplerMipFilterLinear);
+    samplerDesc->setSAddressMode(MTL::SamplerAddressModeRepeat);
+    samplerDesc->setTAddressMode(MTL::SamplerAddressModeRepeat);
+    samplerDesc->setNormalizedCoordinates(true);
+
+    samplerState = device->newSamplerState(samplerDesc);
+    samplerDesc->release();
+
+    pAutoreleasePool->release();
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -174,7 +201,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     memcpy(modelBuffer->contents(), &modelData, sizeof(Vec16));
     modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
 
-    Mat4 viewMat = Mat4::View(Vec4(-10.0f + translation, 100.0f, -10.0f + translation, 1.0f),
+    Mat4 viewMat = Mat4::View(Vec4(-10.0f + translation, 50.0f, -10.0f + translation, 1.0f),
                               Vec4(200.0f, 0.0f, 200.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 0.0f));
     Vec16 viewData = viewMat.GetData();
     memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
@@ -199,6 +226,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(instanceBuffer, 0, 4);
 
     enc->setFragmentTexture(texture, 0);
+    enc->setFragmentSamplerState(samplerState, 0);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);

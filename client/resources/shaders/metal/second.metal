@@ -71,11 +71,10 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 }
 
 fragment half4 fragmentMain(VertexOut in [[stage_in]],
-                            texture2d<half, access::sample> tex [[texture(0)]]) {
+                            texture2d<half, access::sample> tex [[texture(0)]],
+                            sampler textureSampler [[sampler(0)]]) {
 
-    constexpr sampler s(address::repeat, filter::linear);
-    half3 texel =  tex.sample(s, in.uv).rgb;
-    
+    half3 texel =  tex.sample(textureSampler, in.uv).rgb;
     
     // assume light coming from (front-top-right)
     float3 l = normalize(float3( 1.0, 1.0, -0.8 ));
