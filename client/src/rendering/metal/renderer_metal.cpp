@@ -5,6 +5,7 @@
 #include "../shared/image_loader_png.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
+#include "../shared/texture.h"
 #include "shader/shader_mac.h"
 #include "src/logging.h"
 #include "src/math/vec16.h"
@@ -121,14 +122,16 @@ void ME::RendererMetal::BuildBuffers() {
     memcpy(indexBuffer->contents(), mesh.indices.data(), indexDataSize);
     indexBuffer->didModifyRange(NS::Range::Make(0, indexBuffer->length()));
 
-    ME::PngData heightmap;
-    LoadPNG("textures/world/heightmap.png", heightmap);
-    instanceCount = heightmap.width * heightmap.height;
+    ME::Texture heightmap{"textures/world/heightmap.png"};
+    const uint32_t w = heightmap.GetWidth();
+    const uint32_t h = heightmap.GetHeight();
+    const uint8_t* data = heightmap.GetData();
+    instanceCount = w * h;
     Vec4 instanceData[instanceCount];
 
     for (size_t i = 0; i < instanceCount; ++i) {
-        instanceData[i] = Vec4{static_cast<float>(i % heightmap.width), 12.0f * heightmap.pixels[i * 4] / 255.0f,
-                               static_cast<float>(i / heightmap.width), 1.0f};
+        instanceData[i] =
+            Vec4{static_cast<float>(i % w), 12.0f * data[i * 4] / 255.0f, static_cast<float>(i / w), 1.0f};
     }
 
     instanceBuffer = device->newBuffer(sizeof(Vec4) * instanceCount, MTL::ResourceStorageModeManaged);
@@ -139,20 +142,18 @@ void ME::RendererMetal::BuildBuffers() {
 void ME::RendererMetal::BuildTextures() {
     NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
 
-    ME::PngData pngData;
-    LoadPNG("textures/world/cobblestone.png", pngData);
-    ME::PngData pngData2;
-    LoadPNG("textures/world/dirt.png", pngData2);
-    ME::PngData pngData3;
-    LoadPNG("textures/world/ice.png", pngData3);
-    ME::PngData pngData4;
-    LoadPNG("textures/world/green_concrete_powder.png", pngData4);
+    ME::Texture tex1{"textures/world/cobblestone.png"};
+    ME::Texture tex2{"textures/world/dirt.png"};
+    ME::Texture tex3{"textures/world/ice.png"};
+    ME::Texture tex4{"textures/world/green_concrete_powder.png"};
 
-    const size_t bytesPerPixel = 4;
+    const uint32_t bytesPerPixel = tex1.GetChannels();
+    const uint32_t width = tex1.GetWidth();
+    const uint32_t height = tex1.GetHeight();
 
     MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
-    textureDesc->setWidth(pngData.width);
-    textureDesc->setHeight(pngData.height);
+    textureDesc->setWidth(width);
+    textureDesc->setHeight(height);
     textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
     textureDesc->setTextureType(MTL::TextureType2D);
     textureDesc->setStorageMode(MTL::StorageModeShared);
@@ -164,14 +165,10 @@ void ME::RendererMetal::BuildTextures() {
     texture3 = device->newTexture(textureDesc);
     texture4 = device->newTexture(textureDesc);
 
-    texture->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData.pixels.data(),
-                           pngData.width * bytesPerPixel);
-    texture2->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData2.pixels.data(),
-                            pngData.width * bytesPerPixel);
-    texture3->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData3.pixels.data(),
-                            pngData.width * bytesPerPixel);
-    texture4->replaceRegion(MTL::Region::Make2D(0, 0, pngData.width, pngData.height), 0, pngData4.pixels.data(),
-                            pngData.width * bytesPerPixel);
+    texture->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex1.GetData(), width * bytesPerPixel);
+    texture2->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex2.GetData(), width * bytesPerPixel);
+    texture3->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex3.GetData(), width * bytesPerPixel);
+    texture4->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex4.GetData(), width * bytesPerPixel);
 
     textureDesc->release();
 

@@ -31,7 +31,7 @@ void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
     // Warnings don't usually require jumping, just logging.
 }
 
-bool ME::LoadPNG(const char* fileName, PngData& out_data) {
+bool ME::LoadPNG(const char* fileName, PNGData& out_data) {
     std::string fileNameString = ME::GetResourcesPath() + fileName;
     const char* filename = fileNameString.c_str();
 
@@ -161,8 +161,5 @@ bool ME::LoadPNG(const char* fileName, PngData& out_data) {
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     fclose(fp);
 
-    std::cout << "Successfully loaded PNG: " << filename << " (" << out_data.width << "x" << out_data.height
-              << ", Channels: " << out_data.channels << ", Alpha: " << (out_data.has_alpha ? "Yes" : "No") << ")"
-              << std::endl;
     return true;
 }
