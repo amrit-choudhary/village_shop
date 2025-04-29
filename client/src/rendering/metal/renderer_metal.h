@@ -11,6 +11,7 @@
 #include <MetalKit/MetalKit.hpp>
 
 #include "../shared/renderer.h"
+#include "texture_metal.h"
 
 namespace ME {
 
@@ -52,10 +53,10 @@ class RendererMetal : public PlatformRenderer {
     MTL::Buffer* viewBuffer;
     MTL::Buffer* projectionBuffer;
     MTL::Buffer* instanceBuffer;
-    MTL::Texture* texture;
-    MTL::Texture* texture2;
-    MTL::Texture* texture3;
-    MTL::Texture* texture4;
+    ME::TextureMetal* texture1;
+    ME::TextureMetal* texture2;
+    ME::TextureMetal* texture3;
+    ME::TextureMetal* texture4;
     MTL::SamplerState* samplerState;
 
     size_t instanceCount = 0;

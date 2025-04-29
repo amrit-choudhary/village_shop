@@ -13,7 +13,7 @@ class Texture {
    public:
     Texture();
     Texture(const char* path);
-    ~Texture();
+    virtual ~Texture();
 
     // Load the texture from a file, using the libpng library.
     void Load(const char* path);
@@ -40,7 +40,7 @@ class Texture {
         return data;
     }
 
-   private:
+   protected:
     uint16_t width;
     uint16_t height;
     uint8_t channels;

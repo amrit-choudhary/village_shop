@@ -1,0 +1,52 @@
+#ifdef VG_MAC
+
+/**
+ * Metal's specific texture class.
+ */
+
+#pragma once
+
+#include <simd/simd.h>
+
+#include <AppKit/AppKit.hpp>
+#include <Metal/Metal.hpp>
+#include <MetalKit/MetalKit.hpp>
+
+#include "../shared/texture.h"
+
+namespace ME {
+
+constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
+
+/**
+ * Texture class for handling textures in Metal.
+ * This class is used to load and manage textures using Metal.
+ */
+class TextureMetal : public Texture {
+   public:
+    TextureMetal();
+    /**
+     * 1. Loads a PNG texture from file.
+     * 2. Create a Metal texture buffer.
+     * 3. Upload the data to the GPU.
+     * 4. Optionally creates Mipmaps.
+     */
+    TextureMetal(const char* path, MTL::Device* device, bool hasMipmaps = false, MTL::CommandQueue* cmdQueue = nullptr);
+    ~TextureMetal() override;
+
+    MTL::Texture* GetTextureMetal() const {
+        return textureMetal;
+    }
+
+    /**
+     * Creates a default Sampler State and returns for the render pass.
+     */
+    static MTL::SamplerState* GetSamplerState(MTL::Device* device);
+
+   protected:
+    MTL::Texture* textureMetal;
+};
+
+}  // namespace ME
+
+#endif

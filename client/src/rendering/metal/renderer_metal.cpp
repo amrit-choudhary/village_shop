@@ -10,6 +10,7 @@
 #include "src/logging.h"
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
+#include "texture_metal.h"
 
 using namespace ME::Math;
 
@@ -30,14 +31,14 @@ void ME::RendererMetal::End() {
     instanceBuffer->release();
     PSO->release();
     depthStencilState->release();
-    texture->release();
-    texture2->release();
-    texture3->release();
-    texture4->release();
     samplerState->release();
     commandQueue->release();
     device->release();
     view->release();
+    delete texture1;
+    delete texture2;
+    delete texture3;
+    delete texture4;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -140,63 +141,12 @@ void ME::RendererMetal::BuildBuffers() {
 }
 
 void ME::RendererMetal::BuildTextures() {
-    NS::AutoreleasePool* pAutoreleasePool = NS::AutoreleasePool::alloc()->init();
+    texture1 = new ME::TextureMetal{"textures/world/cobblestone.png", device, true, commandQueue};
+    texture2 = new ME::TextureMetal{"textures/world/dirt.png", device, true, commandQueue};
+    texture3 = new ME::TextureMetal{"textures/world/ice.png", device, true, commandQueue};
+    texture4 = new ME::TextureMetal{"textures/world/green_concrete_powder.png", device, true, commandQueue};
 
-    ME::Texture tex1{"textures/world/cobblestone.png"};
-    ME::Texture tex2{"textures/world/dirt.png"};
-    ME::Texture tex3{"textures/world/ice.png"};
-    ME::Texture tex4{"textures/world/green_concrete_powder.png"};
-
-    const uint32_t bytesPerPixel = tex1.GetChannels();
-    const uint32_t width = tex1.GetWidth();
-    const uint32_t height = tex1.GetHeight();
-
-    MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
-    textureDesc->setWidth(width);
-    textureDesc->setHeight(height);
-    textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
-    textureDesc->setTextureType(MTL::TextureType2D);
-    textureDesc->setStorageMode(MTL::StorageModeShared);
-    textureDesc->setMipmapLevelCount(5);
-    textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead | MTL::ResourceUsageWrite);
-
-    texture = device->newTexture(textureDesc);
-    texture2 = device->newTexture(textureDesc);
-    texture3 = device->newTexture(textureDesc);
-    texture4 = device->newTexture(textureDesc);
-
-    texture->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex1.GetData(), width * bytesPerPixel);
-    texture2->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex2.GetData(), width * bytesPerPixel);
-    texture3->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex3.GetData(), width * bytesPerPixel);
-    texture4->replaceRegion(MTL::Region::Make2D(0, 0, width, height), 0, tex4.GetData(), width * bytesPerPixel);
-
-    textureDesc->release();
-
-    // Creating Mipmaps
-    MTL::CommandBuffer* m_cmd = commandQueue->commandBuffer();
-    MTL::BlitCommandEncoder* blitEncoder = m_cmd->blitCommandEncoder();
-    blitEncoder->generateMipmaps(texture);
-    blitEncoder->generateMipmaps(texture2);
-    blitEncoder->generateMipmaps(texture3);
-    blitEncoder->generateMipmaps(texture4);
-    blitEncoder->endEncoding();
-    m_cmd->commit();
-    m_cmd->waitUntilCompleted();
-    // blitEncoder->release();
-    // m_cmd->release();
-
-    MTL::SamplerDescriptor* samplerDesc = MTL::SamplerDescriptor::alloc()->init();
-    samplerDesc->setMinFilter(MTL::SamplerMinMagFilterLinear);
-    samplerDesc->setMagFilter(MTL::SamplerMinMagFilterLinear);
-    samplerDesc->setMipFilter(MTL::SamplerMipFilterLinear);
-    samplerDesc->setSAddressMode(MTL::SamplerAddressModeRepeat);
-    samplerDesc->setTAddressMode(MTL::SamplerAddressModeRepeat);
-    samplerDesc->setNormalizedCoordinates(true);
-
-    samplerState = device->newSamplerState(samplerDesc);
-    samplerDesc->release();
-
-    pAutoreleasePool->release();
+    samplerState = ME::TextureMetal::GetSamplerState(device);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -243,10 +193,10 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(projectionBuffer, 0, 3);
     enc->setVertexBuffer(instanceBuffer, 0, 4);
 
-    enc->setFragmentTexture(texture, 0);
-    enc->setFragmentTexture(texture2, 1);
-    enc->setFragmentTexture(texture3, 2);
-    enc->setFragmentTexture(texture4, 3);
+    enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
+    enc->setFragmentTexture(texture2->GetTextureMetal(), 1);
+    enc->setFragmentTexture(texture3->GetTextureMetal(), 2);
+    enc->setFragmentTexture(texture4->GetTextureMetal(), 3);
 
     enc->setFragmentSamplerState(samplerState, 0);
 
