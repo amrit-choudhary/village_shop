@@ -49,9 +49,6 @@ class RendererMetal : public PlatformRenderer {
     MTL::CommandQueue* commandQueue;
     MTL::Buffer* vertexBuffer;
     MTL::Buffer* indexBuffer;
-    MTL::Buffer* modelBuffer;
-    MTL::Buffer* viewBuffer;
-    MTL::Buffer* projectionBuffer;
     MTL::Buffer* instanceBuffer;
     ME::TextureMetal* texture1;
     ME::TextureMetal* texture2;

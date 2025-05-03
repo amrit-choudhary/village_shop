@@ -25,9 +25,6 @@ void ME::RendererMetal::Update() {
 void ME::RendererMetal::End() {
     vertexBuffer->release();
     indexBuffer->release();
-    modelBuffer->release();
-    projectionBuffer->release();
-    viewBuffer->release();
     instanceBuffer->release();
     samplerState->release();
     commandQueue->release();
@@ -71,9 +68,6 @@ void ME::RendererMetal::BuildBuffers() {
 
     vertexBuffer = device->newBuffer(vertexDataSize, MTL::ResourceStorageModeManaged);
     indexBuffer = device->newBuffer(indexDataSize, MTL::ResourceStorageModeManaged);
-    modelBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
-    viewBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
-    projectionBuffer = device->newBuffer(sizeof(Vec16), MTL::ResourceStorageModeManaged);
 
     memcpy(vertexBuffer->contents(), mesh.vertices.data(), vertexDataSize);
     vertexBuffer->didModifyRange(NS::Range::Make(0, vertexBuffer->length()));
@@ -121,21 +115,14 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, 0, 1.0f));
     Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 3.0f, 1.0f, 1.0f));
     Mat4 modelMat = translationMat * rotationMat * scaleMat;
-
-    Vec16 modelData = modelMat.GetData();
-    memcpy(modelBuffer->contents(), &modelData, sizeof(Vec16));
-    modelBuffer->didModifyRange(NS::Range::Make(0, modelBuffer->length()));
+    Vec16 modelMatVec = modelMat.GetData();
 
     Mat4 viewMat = Mat4::View(Vec4(-10.0f + translation, 50.0f, -10.0f + translation, 1.0f),
                               Vec4(200.0f, 0.0f, 200.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 0.0f));
-    Vec16 viewData = viewMat.GetData();
-    memcpy(viewBuffer->contents(), &viewData, sizeof(Vec16));
-    viewBuffer->didModifyRange(NS::Range::Make(0, viewBuffer->length()));
+    Vec16 viewMatVec = viewMat.GetData();
 
     Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.33333f, 0.1f, 10000.0f);
-    Vec16 projectionData = projectionMat.GetData();
-    memcpy(projectionBuffer->contents(), &projectionData, sizeof(Vec16));
-    projectionBuffer->didModifyRange(NS::Range::Make(0, projectionBuffer->length()));
+    Vec16 projectionMatVec = projectionMat.GetData();
 
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
@@ -145,9 +132,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setDepthStencilState(depthStencilState->GetDSSDefault());
 
     enc->setVertexBuffer(vertexBuffer, 0, 0);
-    enc->setVertexBuffer(modelBuffer, 0, 1);
-    enc->setVertexBuffer(viewBuffer, 0, 2);
-    enc->setVertexBuffer(projectionBuffer, 0, 3);
+    enc->setVertexBytes(&modelMatVec, sizeof(ME::Math::Vec16), 1);
+    enc->setVertexBytes(&viewMatVec, sizeof(ME::Math::Vec16), 2);
+    enc->setVertexBytes(&projectionMatVec, sizeof(ME::Math::Vec16), 3);
     enc->setVertexBuffer(instanceBuffer, 0, 4);
 
     enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
