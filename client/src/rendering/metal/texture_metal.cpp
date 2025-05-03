@@ -2,8 +2,6 @@
 
 #include "texture_metal.h"
 
-#endif
-
 ME::TextureMetal::TextureMetal() : Texture() {}
 
 ME::TextureMetal::TextureMetal(const char* path, MTL::Device* device, bool hasMipmaps, MTL::CommandQueue* cmdQueue) {
@@ -55,3 +53,5 @@ MTL::SamplerState* ME::TextureMetal::GetSamplerState(MTL::Device* device) {
 
     return newState;
 }
+
+#endif

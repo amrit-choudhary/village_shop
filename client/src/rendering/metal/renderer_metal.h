@@ -11,6 +11,8 @@
 #include <MetalKit/MetalKit.hpp>
 
 #include "../shared/renderer.h"
+#include "depth_stencil_state_metal.h"
+#include "render_pipeline_state_metal.h"
 #include "texture_metal.h"
 
 namespace ME {
@@ -45,8 +47,6 @@ class RendererMetal : public PlatformRenderer {
     MTL::Device* device;
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
-    MTL::RenderPipelineState* PSO;
-    MTL::DepthStencilState* depthStencilState;
     MTL::Buffer* vertexBuffer;
     MTL::Buffer* indexBuffer;
     MTL::Buffer* modelBuffer;
@@ -58,6 +58,8 @@ class RendererMetal : public PlatformRenderer {
     ME::TextureMetal* texture3;
     ME::TextureMetal* texture4;
     MTL::SamplerState* samplerState;
+    ME::RenderPipelineStateMetal* renderPipelineState;
+    ME::DepthStencilStateMetal* depthStencilState;
 
     size_t instanceCount = 0;
 };

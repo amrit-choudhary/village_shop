@@ -29,8 +29,6 @@ void ME::RendererMetal::End() {
     projectionBuffer->release();
     viewBuffer->release();
     instanceBuffer->release();
-    PSO->release();
-    depthStencilState->release();
     samplerState->release();
     commandQueue->release();
     device->release();
@@ -39,6 +37,8 @@ void ME::RendererMetal::End() {
     delete texture2;
     delete texture3;
     delete texture4;
+    delete renderPipelineState;
+    delete depthStencilState;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -52,54 +52,11 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 }
 
 void ME::RendererMetal::BuildShaders() {
-    ME::Shader shader(device, "shaders/metal/second.metal");
-
-    MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
-    desc->setVertexFunction(shader.GetVertexFunction());
-    desc->setFragmentFunction(shader.GetFragmentFunction());
-    desc->colorAttachments()->object(0)->setPixelFormat(MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB);
-
-    MTL::VertexDescriptor* vertexDesc = MTL::VertexDescriptor::alloc()->init();
-
-    // Position
-    vertexDesc->attributes()->object(0)->setFormat(MTL::VertexFormat::VertexFormatFloat3);
-    vertexDesc->attributes()->object(0)->setOffset(0);
-    vertexDesc->attributes()->object(0)->setBufferIndex(0);
-    // Normal
-    vertexDesc->attributes()->object(1)->setFormat(MTL::VertexFormat::VertexFormatFloat3);
-    vertexDesc->attributes()->object(1)->setOffset(12);
-    vertexDesc->attributes()->object(1)->setBufferIndex(0);
-    // UV
-    vertexDesc->attributes()->object(2)->setFormat(MTL::VertexFormat::VertexFormatFloat2);
-    vertexDesc->attributes()->object(2)->setOffset(24);
-    vertexDesc->attributes()->object(2)->setBufferIndex(0);
-
-    vertexDesc->layouts()->object(0)->setStride(sizeof(ME::Vertex));
-    vertexDesc->layouts()->object(0)->setStepFunction(MTL::VertexStepFunction::VertexStepFunctionPerVertex);
-
-    desc->setVertexDescriptor(vertexDesc);
-
-    desc->setDepthAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
-
-    NS::Error* error = nullptr;
-    PSO = device->newRenderPipelineState(desc, &error);
-    if (!PSO) {
-        __builtin_printf("%s", error->localizedDescription()->utf8String());
-        assert(false);
-    }
-
-    vertexDesc->release();
-    desc->release();
+    renderPipelineState = new ME::RenderPipelineStateMetal(device);
 }
 
 void ME::RendererMetal::BuildDepthStencilState() {
-    MTL::DepthStencilDescriptor* dsDesc = MTL::DepthStencilDescriptor::alloc()->init();
-    dsDesc->setDepthCompareFunction(MTL::CompareFunction::CompareFunctionLess);
-    dsDesc->setDepthWriteEnabled(true);
-
-    depthStencilState = device->newDepthStencilState(dsDesc);
-
-    dsDesc->release();
+    depthStencilState = new ME::DepthStencilStateMetal(device);
 }
 
 void ME::RendererMetal::BuildBuffers() {
@@ -184,8 +141,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
-    enc->setRenderPipelineState(PSO);
-    enc->setDepthStencilState(depthStencilState);
+    enc->setRenderPipelineState(renderPipelineState->GetPSODefault());
+    enc->setDepthStencilState(depthStencilState->GetDSSDefault());
 
     enc->setVertexBuffer(vertexBuffer, 0, 0);
     enc->setVertexBuffer(modelBuffer, 0, 1);
