@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "../shared/camera.h"
 #include "../shared/image_loader_png.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
@@ -112,23 +113,18 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    // Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    // Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, 0, 1.0f));
-    // Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 3.0f, 1.0f, 1.0f));
-    // Mat4 modelMat = translationMat * rotationMat * scaleMat;
     ME::Transform transform;
     transform.SetPosition(0.0f, 0.0f, 0.0f);
     transform.SetRotation(0.0f, 0.0f, 0.0f, 1.0f);
     transform.SetScale(1.0f, 3.0f, 1.0f);
-    Mat4 modelMat = transform.GetModelMatrix();
-    Vec16 modelMatVec = modelMat.GetData();
+    Vec16 modelMatVec = transform.GetModelMatrix().GetData();
 
-    Mat4 viewMat = Mat4::View(Vec4(-10.0f + translation, 50.0f, -10.0f + translation, 1.0f),
-                              Vec4(200.0f, 0.0f, 200.0f, 1.0f), Vec4(0.0f, 1.0f, 0.0f, 0.0f));
-    Vec16 viewMatVec = viewMat.GetData();
+    ME::Camera camera;
+    camera.position = ME::Math::Vec3{-10.0f + translation, 50.0f, -10.0f + translation};
+    camera.viewPosition = ME::Math::Vec3{200.0f, 0.0f, 200.0f};
+    Vec16 viewMatVec = camera.GetViewMatrix().GetData();
 
-    Mat4 projectionMat = Mat4::Perspective(90.0f * (M_PI / 180.0f), 1.33333f, 0.1f, 10000.0f);
-    Vec16 projectionMatVec = projectionMat.GetData();
+    Vec16 projectionMatVec = camera.GetProjectionMatrix().GetData();
 
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
