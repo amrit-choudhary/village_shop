@@ -6,6 +6,7 @@
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
+#include "../shared/transform.h"
 #include "shader/shader_mac.h"
 #include "src/logging.h"
 #include "src/math/vec16.h"
@@ -111,10 +112,15 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         rotation = 0.0f;
     }
 
-    Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
-    Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, 0, 1.0f));
-    Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 3.0f, 1.0f, 1.0f));
-    Mat4 modelMat = translationMat * rotationMat * scaleMat;
+    // Mat4 translationMat = Mat4::Translation(Vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    // Mat4 rotationMat = Mat4::Rotation(Vec4(0, 0, 0, 1.0f));
+    // Mat4 scaleMat = Mat4::Scale(Vec4(1.0f, 3.0f, 1.0f, 1.0f));
+    // Mat4 modelMat = translationMat * rotationMat * scaleMat;
+    ME::Transform transform;
+    transform.SetPosition(0.0f, 0.0f, 0.0f);
+    transform.SetRotation(0.0f, 0.0f, 0.0f, 1.0f);
+    transform.SetScale(1.0f, 3.0f, 1.0f);
+    Mat4 modelMat = transform.GetModelMatrix();
     Vec16 modelMatVec = modelMat.GetData();
 
     Mat4 viewMat = Mat4::View(Vec4(-10.0f + translation, 50.0f, -10.0f + translation, 1.0f),

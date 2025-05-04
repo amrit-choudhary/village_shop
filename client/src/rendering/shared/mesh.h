@@ -33,10 +33,6 @@ class Mesh {
     std::vector<ME::Vertex> vertices;  // List of vertices that make up the mesh
     std::vector<uint32_t> indices;     // List of indices for indexed drawing
 
-    ME::Math::Vec4 position;  // Position of the mesh in 3D space
-    ME::Math::Vec4 rotation;  // Rotation of the mesh in 3D space
-    ME::Math::Vec4 scale;     // Scale of the mesh in 3D space
-
     uint32_t vertexCount = 0;
     uint32_t indexCount = 0;
 };
