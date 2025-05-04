@@ -9,7 +9,7 @@
 
 #pragma once
 
-namespace ME::Math {
+namespace ME {
 
 /**
  * Float Vector3 class.
@@ -72,4 +72,4 @@ bool operator!=(const Vec3& a, const Vec3& b);
 
 // Math functions
 
-}  // namespace ME::Math
+}  // namespace ME

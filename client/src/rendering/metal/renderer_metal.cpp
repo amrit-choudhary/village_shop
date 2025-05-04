@@ -14,8 +14,6 @@
 #include "src/math/vec3.h"
 #include "texture_metal.h"
 
-using namespace ME::Math;
-
 void ME::RendererMetal::Init() {
     ME::Log("RendererMetal::Init");
 }
@@ -120,8 +118,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     Vec16 modelMatVec = transform.GetModelMatrix().GetData();
 
     ME::Camera camera;
-    camera.position = ME::Math::Vec3{-10.0f + translation, 50.0f, -10.0f + translation};
-    camera.viewPosition = ME::Math::Vec3{200.0f, 0.0f, 200.0f};
+    camera.position = ME::Vec3{-10.0f + translation, 50.0f, -10.0f + translation};
+    camera.viewPosition = ME::Vec3{200.0f, 0.0f, 200.0f};
     Vec16 viewMatVec = camera.GetViewMatrix().GetData();
 
     Vec16 projectionMatVec = camera.GetProjectionMatrix().GetData();
@@ -134,9 +132,9 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setDepthStencilState(depthStencilState->GetDSSDefault());
 
     enc->setVertexBuffer(vertexBuffer, 0, 0);
-    enc->setVertexBytes(&modelMatVec, sizeof(ME::Math::Vec16), 1);
-    enc->setVertexBytes(&viewMatVec, sizeof(ME::Math::Vec16), 2);
-    enc->setVertexBytes(&projectionMatVec, sizeof(ME::Math::Vec16), 3);
+    enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
+    enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
+    enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
     enc->setVertexBuffer(instanceBuffer, 0, 4);
 
     enc->setFragmentTexture(texture1->GetTextureMetal(), 0);

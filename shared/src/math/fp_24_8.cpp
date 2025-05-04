@@ -1,6 +1,6 @@
 #include "fp_24_8.h"
 
-using namespace ME::Math;
+using namespace ME;
 
 FP_24_8::FP_24_8() {
     rawValue = 0;
@@ -50,11 +50,11 @@ double FP_24_8::ToDouble() const {
     return static_cast<double>(rawValue) / fractionMult;
 }
 
-FP_24_8 ME::Math::FP_24_8::FromRawValue(int32_t val) {
+FP_24_8 ME::FP_24_8::FromRawValue(int32_t val) {
     return FP_24_8(val, true);
 }
 
-FP_24_8 ME::Math::FP_24_8::operator-() const {
+FP_24_8 ME::FP_24_8::operator-() const {
     return FP_24_8::FromRawValue(-rawValue);
 }
 
@@ -63,12 +63,12 @@ FP_24_8& FP_24_8::operator+=(const FP_24_8& b) {
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator+=(int32_t b) {
+FP_24_8& ME::FP_24_8::operator+=(int32_t b) {
     rawValue += b * fractionMult;
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator+=(float b) {
+FP_24_8& ME::FP_24_8::operator+=(float b) {
     if (b >= 0.0f) {
         rawValue += static_cast<int32_t>(b * fractionMult + 0.5f);
     } else {
@@ -77,7 +77,7 @@ FP_24_8& ME::Math::FP_24_8::operator+=(float b) {
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator+=(double b) {
+FP_24_8& ME::FP_24_8::operator+=(double b) {
     if (b >= 0.0f) {
         rawValue += static_cast<int32_t>(b * fractionMult + 0.5f);
     } else {
@@ -91,12 +91,12 @@ FP_24_8& FP_24_8::operator-=(const FP_24_8& b) {
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator-=(int32_t b) {
+FP_24_8& ME::FP_24_8::operator-=(int32_t b) {
     rawValue -= b * fractionMult;
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator-=(float b) {
+FP_24_8& ME::FP_24_8::operator-=(float b) {
     if (b >= 0.0f) {
         rawValue -= static_cast<int32_t>(b * fractionMult + 0.5f);
     } else {
@@ -105,7 +105,7 @@ FP_24_8& ME::Math::FP_24_8::operator-=(float b) {
     return *this;
 }
 
-FP_24_8& ME::Math::FP_24_8::operator-=(double b) {
+FP_24_8& ME::FP_24_8::operator-=(double b) {
     if (b >= 0.0f) {
         rawValue -= static_cast<int32_t>(b * fractionMult + 0.5f);
     } else {
@@ -126,52 +126,52 @@ FP_24_8& FP_24_8::operator/=(const FP_24_8& b) {
     return *this;
 }
 
-FP_24_8 ME::Math::operator+(const FP_24_8& a, const FP_24_8& b) {
-    return ME::Math::FP_24_8(a) += b;
+FP_24_8 ME::operator+(const FP_24_8& a, const FP_24_8& b) {
+    return ME::FP_24_8(a) += b;
 }
 
-FP_24_8 ME::Math::operator+(const FP_24_8& a, int32_t b) {
+FP_24_8 ME::operator+(const FP_24_8& a, int32_t b) {
     return FP_24_8(a) += b;
 }
-FP_24_8 ME::Math::operator+(const FP_24_8& a, float b) {
+FP_24_8 ME::operator+(const FP_24_8& a, float b) {
     return FP_24_8(a) += b;
 }
-FP_24_8 ME::Math::operator+(const FP_24_8& a, double b) {
+FP_24_8 ME::operator+(const FP_24_8& a, double b) {
     return FP_24_8(a) += b;
 }
 
-FP_24_8 ME::Math::operator-(const FP_24_8& a, const FP_24_8& b) {
+FP_24_8 ME::operator-(const FP_24_8& a, const FP_24_8& b) {
     return FP_24_8(a) -= b;
 }
 
-FP_24_8 ME::Math::operator*(const FP_24_8& a, const FP_24_8& b) {
+FP_24_8 ME::operator*(const FP_24_8& a, const FP_24_8& b) {
     return FP_24_8(a) *= b;
 }
 
-FP_24_8 ME::Math::operator/(const FP_24_8& a, const FP_24_8& b) {
+FP_24_8 ME::operator/(const FP_24_8& a, const FP_24_8& b) {
     return FP_24_8(a) /= b;
 }
 
-bool ME::Math::operator==(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator==(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() == b.GetRaw();
 }
 
-bool ME::Math::operator!=(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator!=(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() != b.GetRaw();
 }
 
-bool ME::Math::operator<(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator<(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() < b.GetRaw();
 }
 
-bool ME::Math::operator>(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator>(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() > b.GetRaw();
 }
 
-bool ME::Math::operator<=(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator<=(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() <= b.GetRaw();
 }
 
-bool ME::Math::operator>=(const FP_24_8& a, const FP_24_8& b) {
+bool ME::operator>=(const FP_24_8& a, const FP_24_8& b) {
     return a.GetRaw() >= b.GetRaw();
 }

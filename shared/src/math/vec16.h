@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace ME::Math {
+namespace ME {
 
 class Vec16 {
    public:
@@ -27,4 +27,4 @@ class Vec16 {
     float x15;
 };
 
-}  // namespace ME::Math
+}  // namespace ME

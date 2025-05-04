@@ -12,13 +12,13 @@
 #include "vec3i.h"
 #include "vec4.h"
 
-namespace ME::Math {
+namespace ME {
 
-using FP = ME::Math::FP_24_8;
+using FP = ME::FP_24_8;
 
 // Test add function.
 template <typename T>
 T add(T a, T b) {
     return a + b;
 }
-}  // namespace ME::Math
+}  // namespace ME

@@ -6,8 +6,6 @@
 
 #include "game.h"
 
-using namespace ME::Math;
-
 namespace ME {
 
 class Shop {

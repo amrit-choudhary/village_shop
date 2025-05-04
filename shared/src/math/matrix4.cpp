@@ -6,7 +6,7 @@
 
 // clang-format off
 
-using namespace ME::Math;
+using namespace ME;
 
 const Mat4 Mat4::Identity{
                         1.0f, 0.0f, 0.0f, 0.0f,
@@ -55,11 +55,11 @@ Vec4 Mat4::GetColumn(const int column) const {
     }
 }
 
-Vec16 ME::Math::Mat4::GetData() const {
+Vec16 ME::Mat4::GetData() const {
     return GetDataColumnMajor();
 }
 
-Vec16 ME::Math::Mat4::GetDataRowMajor() const {
+Vec16 ME::Mat4::GetDataRowMajor() const {
     return Vec16{
         m00, m01, m02, m03, 
         m10, m11, m12, m13, 
@@ -67,7 +67,7 @@ Vec16 ME::Math::Mat4::GetDataRowMajor() const {
         m30, m31, m32, m33};
 }
 
-Vec16 ME::Math::Mat4::GetDataColumnMajor() const {
+Vec16 ME::Mat4::GetDataColumnMajor() const {
     return Vec16{
         m00, m10, m20, m30, 
         m01, m11, m21, m31, 
@@ -75,7 +75,7 @@ Vec16 ME::Math::Mat4::GetDataColumnMajor() const {
         m03, m13, m23, m33};
 }
 
-Mat4 ME::Math::Mat4::Translation(const Vec4 & translation)
+Mat4 ME::Mat4::Translation(const Vec4 & translation)
 {
     return Mat4{
         1.0f, 0.0f, 0.0f, translation.x,
@@ -84,7 +84,7 @@ Mat4 ME::Math::Mat4::Translation(const Vec4 & translation)
         0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-Mat4 ME::Math::Mat4::Rotation(const Vec4 & rotation)
+Mat4 ME::Mat4::Rotation(const Vec4 & rotation)
 {
     float cAlpha = std::cos(rotation.x);
     float sAlpha = std::sin(rotation.x);
@@ -100,7 +100,7 @@ Mat4 ME::Math::Mat4::Rotation(const Vec4 & rotation)
         0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-Mat4 ME::Math::Mat4::Scale(const Vec4 & scale)
+Mat4 ME::Mat4::Scale(const Vec4 & scale)
 {
     return Mat4{
         scale.x, 0.0f, 0.0f, 0.0f,
@@ -109,7 +109,7 @@ Mat4 ME::Math::Mat4::Scale(const Vec4 & scale)
         0.0f, 0.0f, 0.0f, scale.w};
 }
 
-Mat4 ME::Math::Mat4::Perspective(float fov, float aspect, float near, float far) {
+Mat4 ME::Mat4::Perspective(float fov, float aspect, float near, float far) {
     float f = 1.0f / std::tan(fov / 2.0f);
     return Mat4{
         f / aspect, 0.0f, 0.0f, 0.0f,
@@ -118,7 +118,7 @@ Mat4 ME::Math::Mat4::Perspective(float fov, float aspect, float near, float far)
         0.0f, 0.0f, 1.0f, 0.0f};
 }
 
-Mat4 ME::Math::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
+Mat4 ME::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
     return Mat4{
         2.0f / (right - left), 0.0f, 0.0f, 0.0f,
         0.0f, 2.0f / (top - bottom), 0.0f, 0.0f,
@@ -126,7 +126,7 @@ Mat4 ME::Math::Mat4::Orthographic(float left, float right, float bottom, float t
         -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.0f};
 }
 
-Mat4 ME::Math::Mat4::View(const Vec4& position, const Vec4& target, const Vec4& up) {
+Mat4 ME::Mat4::View(const Vec4& position, const Vec4& target, const Vec4& up) {
     Vec4 zaxis = (target - position).Normalised();
     Vec4 xaxis = Vec4::Cross(up, zaxis).Normalised();
     Vec4 yaxis = Vec4::Cross(zaxis, xaxis);

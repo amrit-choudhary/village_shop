@@ -95,9 +95,9 @@ void ME::SocketServer::HandleChat(Packet& packet, uint8_t clientID) {
 }
 
 void ME::SocketServer::HandleData(Packet& packet, uint8_t clientID) {
-    ME::Math::FP_24_8 value1 = packet.ReadFP();
-    ME::Math::FP_24_8 value2 = packet.ReadFP();
-    ME::Math::FP_24_8 value3 = packet.ReadFP();
+    ME::FP_24_8 value1 = packet.ReadFP();
+    ME::FP_24_8 value2 = packet.ReadFP();
+    ME::FP_24_8 value3 = packet.ReadFP();
 
     std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
     for (int i = 0; i < clients.size(); ++i) {

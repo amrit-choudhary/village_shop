@@ -9,7 +9,7 @@
 
 #pragma once
 
-namespace ME::Math {
+namespace ME {
 
 class Vec3;
 
@@ -70,4 +70,4 @@ Vec3i operator/(const Vec3i& a, const Vec3i& b);
 bool operator==(const Vec3i& a, const Vec3i& b);
 bool operator!=(const Vec3i& a, const Vec3i& b);
 
-}  // namespace ME::Math
+}  // namespace ME

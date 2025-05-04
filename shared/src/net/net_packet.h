@@ -29,11 +29,11 @@ class Packet {
     // Write data in the packet.
     void WriteByte(uint8_t value);
     void WriteString(const char* value);
-    void WriteFP(const ME::Math::FP_24_8& value);
+    void WriteFP(const ME::FP_24_8& value);
     // Read data from the packet.
     uint8_t ReadByte();
     void ReadString(char* ptrString);
-    ME::Math::FP_24_8 ReadFP();
+    ME::FP_24_8 ReadFP();
 
    protected:
     uint16_t index;

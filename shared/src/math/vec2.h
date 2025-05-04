@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace ME::Math {
+namespace ME {
 
 /**
  * Float Vector2 class.
@@ -63,4 +63,4 @@ Vec2 operator/(const Vec2& a, const Vec2& b);
 bool operator==(const Vec2& a, const Vec2& b);
 bool operator!=(const Vec2& a, const Vec2& b);
 
-}  // namespace ME::Math
+}  // namespace ME

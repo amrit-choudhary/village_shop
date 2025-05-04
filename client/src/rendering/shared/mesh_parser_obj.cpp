@@ -21,9 +21,9 @@ ME::Mesh ME::CreateMeshFromOBJ(const char* fileName) {
     std::vector<ME::Vertex> vertices;
     std::vector<uint32_t> indices;
 
-    std::vector<ME::Math::Vec3> tempPositions;
-    std::vector<ME::Math::Vec3> tempNormals;
-    std::vector<ME::Math::Vec2> tempUVs;
+    std::vector<ME::Vec3> tempPositions;
+    std::vector<ME::Vec3> tempNormals;
+    std::vector<ME::Vec2> tempUVs;
     std::vector<uint32_t> tempNormalIndices;
     std::vector<uint32_t> tempUVIndices;
 

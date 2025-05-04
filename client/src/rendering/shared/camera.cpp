@@ -3,10 +3,10 @@
 #include <cmath>
 
 ME::Camera::Camera() {
-    position = ME::Math::Vec3::Zero;
-    rotation = ME::Math::Vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    up = ME::Math::Vec3::Up;
-    viewPosition = ME::Math::Vec3{0.0f, 0.0f, 1000.0f};
+    position = ME::Vec3::Zero;
+    rotation = ME::Vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    up = ME::Vec3::Up;
+    viewPosition = ME::Vec3{0.0f, 0.0f, 1000.0f};
 
     fov = 90.0f;
     aspectRatio = 1.3333f;
@@ -16,12 +16,12 @@ ME::Camera::Camera() {
 
 ME::Camera::~Camera() {}
 
-ME::Math::Mat4 ME::Camera::GetViewMatrix() {
-    return ME::Math::Mat4::View(ME::Math::Vec4{position.x, position.y, position.z, 1.0f},
-                                ME::Math::Vec4{viewPosition.x, viewPosition.y, viewPosition.z, 1.0f},
-                                ME::Math::Vec4{up.x, up.y, up.z, 1.0f});
+ME::Mat4 ME::Camera::GetViewMatrix() {
+    return ME::Mat4::View(ME::Vec4{position.x, position.y, position.z, 1.0f},
+                          ME::Vec4{viewPosition.x, viewPosition.y, viewPosition.z, 1.0f},
+                          ME::Vec4{up.x, up.y, up.z, 1.0f});
 }
 
-ME::Math::Mat4 ME::Camera::GetProjectionMatrix() {
-    return ME::Math::Mat4::Perspective(fov * (M_PI / 180.0f), aspectRatio, nearPlane, farPlane);
+ME::Mat4 ME::Camera::GetProjectionMatrix() {
+    return ME::Mat4::Perspective(fov * (M_PI / 180.0f), aspectRatio, nearPlane, farPlane);
 }

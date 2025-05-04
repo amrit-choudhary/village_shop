@@ -28,19 +28,18 @@ class Transform {
 
     void SetScale(float x, float y, float z);
 
-    ME::Math::Mat4 GetModelMatrix() const {
+    ME::Mat4 GetModelMatrix() const {
         // Create the model matrix using position, rotation, and scale.
-        ME::Math::Mat4 translationMat =
-            ME::Math::Mat4::Translation(ME::Math::Vec4{position.x, position.y, position.z, 1.0f});
-        ME::Math::Mat4 rotationMat = ME::Math::Mat4::Rotation(rotation);
-        ME::Math::Mat4 scaleMat = ME::Math::Mat4::Scale(ME::Math::Vec4{scale.x, scale.y, scale.z, 1.0f});
+        ME::Mat4 translationMat = ME::Mat4::Translation(ME::Vec4{position.x, position.y, position.z, 1.0f});
+        ME::Mat4 rotationMat = ME::Mat4::Rotation(rotation);
+        ME::Mat4 scaleMat = ME::Mat4::Scale(ME::Vec4{scale.x, scale.y, scale.z, 1.0f});
         return translationMat * rotationMat * scaleMat;
     }
 
    private:
-    ME::Math::Vec3 position;
-    ME::Math::Vec4 rotation;
-    ME::Math::Vec3 scale;
+    ME::Vec3 position;
+    ME::Vec4 rotation;
+    ME::Vec3 scale;
 };
 
 }  // namespace ME

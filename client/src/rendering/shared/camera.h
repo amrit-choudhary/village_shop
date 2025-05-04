@@ -18,13 +18,13 @@ class Camera {
     Camera();
     ~Camera();
 
-    ME::Math::Mat4 GetViewMatrix();
-    ME::Math::Mat4 GetProjectionMatrix();
+    ME::Mat4 GetViewMatrix();
+    ME::Mat4 GetProjectionMatrix();
 
-    ME::Math::Vec3 position;
-    ME::Math::Vec4 rotation;
-    ME::Math::Vec3 up;
-    ME::Math::Vec3 viewPosition;
+    ME::Vec3 position;
+    ME::Vec4 rotation;
+    ME::Vec3 up;
+    ME::Vec3 viewPosition;
 
     float fov;
     float aspectRatio;

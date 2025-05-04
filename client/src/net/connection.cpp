@@ -101,8 +101,7 @@ void ME::Connection::RecvChat(Packet& packet, uint8_t clientID) {
     std::cout << "Received Chat!\tFrom: " << ('A' + clientID) << ":\t" << messageBuffer << '\n';
 }
 
-void ME::Connection::SendGameData(const ME::Math::FP_24_8& value1, const ME::Math::FP_24_8& value2,
-                                  const ME::Math::FP_24_8& value3) {
+void ME::Connection::SendGameData(const ME::FP_24_8& value1, const ME::FP_24_8& value2, const ME::FP_24_8& value3) {
     if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
 
     PacketSmall packet;
@@ -116,9 +115,9 @@ void ME::Connection::SendGameData(const ME::Math::FP_24_8& value1, const ME::Mat
 }
 
 void ME::Connection::RecvGameData(Packet& packet, uint8_t clientID) {
-    ME::Math::FP_24_8 value1 = packet.ReadFP();
-    ME::Math::FP_24_8 value2 = packet.ReadFP();
-    ME::Math::FP_24_8 value3 = packet.ReadFP();
+    ME::FP_24_8 value1 = packet.ReadFP();
+    ME::FP_24_8 value2 = packet.ReadFP();
+    ME::FP_24_8 value3 = packet.ReadFP();
 
     std::cout << "Received Data: " << value1.ToFloat() << ", " << value2.ToFloat() << ", " << value3.ToFloat() << '\n';
 }

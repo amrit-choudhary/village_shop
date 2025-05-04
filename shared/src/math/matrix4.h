@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace ME::Math {
+namespace ME {
 
 class Vec4;
 class Vec16;
@@ -59,4 +59,4 @@ class Mat4 {
     Mat4 operator*(const Mat4& other) const;
 };
 
-}  // namespace ME::Math
+}  // namespace ME

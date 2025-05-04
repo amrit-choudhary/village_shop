@@ -20,7 +20,7 @@
 
 #include <cstdint>
 
-namespace ME::Math {
+namespace ME {
 class FP_24_8 {
    public:
     // Constructors.
@@ -83,4 +83,4 @@ bool operator>(const FP_24_8& a, const FP_24_8& b);
 bool operator<=(const FP_24_8& a, const FP_24_8& b);
 bool operator>=(const FP_24_8& a, const FP_24_8& b);
 
-}  // namespace ME::Math
+}  // namespace ME

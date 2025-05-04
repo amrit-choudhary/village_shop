@@ -2,16 +2,16 @@
 
 #include "cmath"
 
-using namespace ME::Math;
+using namespace ME;
 
 const Vec4 Vec4::Zero{0.0f, 0.0f, 0.0f, 0.0f};
 const Vec4 Vec4::One{1.0f, 1.0f, 1.0f, 1.0f};
 
-float ME::Math::Vec4::Length() {
+float ME::Vec4::Length() {
     return std::sqrt(x * x + y * y + z * z + w * w);
 }
 
-void ME::Math::Vec4::Normalise() {
+void ME::Vec4::Normalise() {
     float len = Length();
     x = x / len;
     y = y / len;
@@ -19,7 +19,7 @@ void ME::Math::Vec4::Normalise() {
     w = w / len;
 }
 
-void ME::Math::Vec4::NormaliseSafe() {
+void ME::Vec4::NormaliseSafe() {
     float len = Length();
     if (len == 0) {
         x = 0;
@@ -34,16 +34,16 @@ void ME::Math::Vec4::NormaliseSafe() {
     }
 }
 
-Vec4 ME::Math::Vec4::Normalised() {
+Vec4 ME::Vec4::Normalised() {
     float len = Length();
     return (len > 0) ? Vec4{x / len, y / len, z / len, w / len} : Vec4{0, 0, 0, 0};
 }
 
-Vec4 ME::Math::Vec4::operator-() const {
+Vec4 ME::Vec4::operator-() const {
     return Vec4{-x, -y, -z, -w};
 }
 
-Vec4& ME::Math::Vec4::operator+=(const Vec4& b) {
+Vec4& ME::Vec4::operator+=(const Vec4& b) {
     x += b.x;
     y += b.y;
     z += b.z;
@@ -51,7 +51,7 @@ Vec4& ME::Math::Vec4::operator+=(const Vec4& b) {
     return *this;
 }
 
-Vec4& ME::Math::Vec4::operator-=(const Vec4& b) {
+Vec4& ME::Vec4::operator-=(const Vec4& b) {
     x -= b.x;
     y -= b.y;
     z -= b.z;
@@ -59,7 +59,7 @@ Vec4& ME::Math::Vec4::operator-=(const Vec4& b) {
     return *this;
 }
 
-Vec4& ME::Math::Vec4::operator*=(const Vec4& b) {
+Vec4& ME::Vec4::operator*=(const Vec4& b) {
     x *= b.x;
     y *= b.y;
     z *= b.z;
@@ -67,7 +67,7 @@ Vec4& ME::Math::Vec4::operator*=(const Vec4& b) {
     return *this;
 }
 
-Vec4& ME::Math::Vec4::operator/=(const Vec4& b) {
+Vec4& ME::Vec4::operator/=(const Vec4& b) {
     x /= b.x;
     y /= b.y;
     z /= b.z;
@@ -75,34 +75,34 @@ Vec4& ME::Math::Vec4::operator/=(const Vec4& b) {
     return *this;
 }
 
-float ME::Math::Vec4::Dot(const Vec4& a, const Vec4& b) {
+float ME::Vec4::Dot(const Vec4& a, const Vec4& b) {
     return (a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
 }
 
-Vec4 ME::Math::Vec4::Cross(const Vec4& a, const Vec4& b) {
+Vec4 ME::Vec4::Cross(const Vec4& a, const Vec4& b) {
     return Vec4{a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x, 0.0f};
 }
 
-Vec4 ME::Math::operator+(const Vec4& a, const Vec4& b) {
+Vec4 ME::operator+(const Vec4& a, const Vec4& b) {
     return Vec4{a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w};
 }
 
-Vec4 ME::Math::operator-(const Vec4& a, const Vec4& b) {
+Vec4 ME::operator-(const Vec4& a, const Vec4& b) {
     return Vec4{a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w};
 }
 
-Vec4 ME::Math::operator*(const Vec4& a, const Vec4& b) {
+Vec4 ME::operator*(const Vec4& a, const Vec4& b) {
     return Vec4{a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w};
 }
 
-Vec4 ME::Math::operator/(const Vec4& a, const Vec4& b) {
+Vec4 ME::operator/(const Vec4& a, const Vec4& b) {
     return Vec4{a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w};
 }
 
-bool ME::Math::operator==(const Vec4& a, const Vec4& b) {
+bool ME::operator==(const Vec4& a, const Vec4& b) {
     return (a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w);
 }
 
-bool ME::Math::operator!=(const Vec4& a, const Vec4& b) {
+bool ME::operator!=(const Vec4& a, const Vec4& b) {
     return !(a == b);
 }
