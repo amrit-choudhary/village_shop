@@ -23,8 +23,6 @@ void ME::RendererMetal::Update() {
 }
 
 void ME::RendererMetal::End() {
-    vertexBuffer->release();
-    indexBuffer->release();
     instanceBuffer->release();
     samplerState->release();
     commandQueue->release();
@@ -36,6 +34,7 @@ void ME::RendererMetal::End() {
     delete texture4;
     delete renderPipelineState;
     delete depthStencilState;
+    delete mesh;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -57,22 +56,7 @@ void ME::RendererMetal::BuildDepthStencilState() {
 }
 
 void ME::RendererMetal::BuildBuffers() {
-    Mesh mesh = ME::CreateMeshFromOBJ("meshes/cube_unshared.obj");
-    // mesh.CalculateNormal();
-
-    const size_t vertexCount = mesh.vertexCount;
-    const size_t indexCount = mesh.indexCount;
-
-    const size_t vertexDataSize = vertexCount * sizeof(ME::Vertex);
-    const size_t indexDataSize = indexCount * sizeof(uint32_t);
-
-    vertexBuffer = device->newBuffer(vertexDataSize, MTL::ResourceStorageModeManaged);
-    indexBuffer = device->newBuffer(indexDataSize, MTL::ResourceStorageModeManaged);
-
-    memcpy(vertexBuffer->contents(), mesh.vertices.data(), vertexDataSize);
-    vertexBuffer->didModifyRange(NS::Range::Make(0, vertexBuffer->length()));
-    memcpy(indexBuffer->contents(), mesh.indices.data(), indexDataSize);
-    indexBuffer->didModifyRange(NS::Range::Make(0, indexBuffer->length()));
+    mesh = new ME::MeshMetal("meshes/cube_unshared.obj", device, commandQueue);
 
     ME::Texture heightmap{"textures/world/heightmap.png"};
     const uint32_t w = heightmap.GetWidth();
@@ -131,7 +115,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(renderPipelineState->GetPSODefault());
     enc->setDepthStencilState(depthStencilState->GetDSSDefault());
 
-    enc->setVertexBuffer(vertexBuffer, 0, 0);
+    enc->setVertexBuffer(mesh->vertexBuffer, 0, 0);
     enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
@@ -147,8 +131,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexBuffer->length() / sizeof(uint32_t),
-                               MTL::IndexType::IndexTypeUInt32, indexBuffer, 0, instanceCount);
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, mesh->indexCount,
+                               MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, instanceCount);
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());

@@ -12,6 +12,7 @@
 
 #include "../shared/renderer.h"
 #include "depth_stencil_state_metal.h"
+#include "mesh_metal.h"
 #include "render_pipeline_state_metal.h"
 #include "texture_metal.h"
 
@@ -47,8 +48,6 @@ class RendererMetal : public PlatformRenderer {
     MTL::Device* device;
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
-    MTL::Buffer* vertexBuffer;
-    MTL::Buffer* indexBuffer;
     MTL::Buffer* instanceBuffer;
     ME::TextureMetal* texture1;
     ME::TextureMetal* texture2;
@@ -57,6 +56,7 @@ class RendererMetal : public PlatformRenderer {
     MTL::SamplerState* samplerState;
     ME::RenderPipelineStateMetal* renderPipelineState;
     ME::DepthStencilStateMetal* depthStencilState;
+    ME::MeshMetal* mesh;
 
     size_t instanceCount = 0;
 };

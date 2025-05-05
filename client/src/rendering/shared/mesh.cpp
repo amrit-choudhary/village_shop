@@ -1,15 +1,26 @@
 #include "mesh.h"
 
+#include "mesh_parser_obj.h"
+
 ME::Mesh::Mesh() {}
 
-ME::Mesh::~Mesh() {}
+ME::Mesh::Mesh(const char* filename) {
+    LoadFromFile(filename);
+}
 
-void ME::Mesh::LoadFromFile(const char* filename) {}
+ME::Mesh::~Mesh() {
+    delete[] vertices;
+    delete[] indices;
+}
+
+void ME::Mesh::LoadFromFile(const char* filename) {
+    ME::CreateMeshFromOBJ(filename, *this);
+}
 
 void ME::Mesh::Render() {}
 
 void ME::Mesh::CalculateNormal() {
-    for (int i = 0; i < indices.size() - 3; i += 3) {
+    for (int i = 0; i < indexCount - 3; i += 3) {
         int vertIndex = indices[i];
         ME::Vec3& v0 = vertices[indices[i]].position;
         ME::Vec3& v1 = vertices[indices[i + 1]].position;

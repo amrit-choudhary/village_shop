@@ -8,6 +8,6 @@
 namespace ME {
 class Mesh;
 
-Mesh CreateMeshFromOBJ(const char* fileName);
+void CreateMeshFromOBJ(const char* fileName, Mesh& mesh);
 
 }  // namespace ME

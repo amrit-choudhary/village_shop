@@ -9,14 +9,12 @@
 #include "mesh.h"
 #include "src/misc/utils.h"
 
-ME::Mesh ME::CreateMeshFromOBJ(const char* fileName) {
+void ME::CreateMeshFromOBJ(const char* fileName, ME::Mesh& mesh) {
     std::string filePath = ME::GetResourcesPath() + fileName;
     std::ifstream file(filePath);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + filePath);
     }
-
-    Mesh mesh;
 
     std::vector<ME::Vertex> vertices;
     std::vector<uint32_t> indices;
@@ -74,10 +72,17 @@ ME::Mesh ME::CreateMeshFromOBJ(const char* fileName) {
         vertices[index].uv = tempUVs[tempUVIndices[i]];
     }
 
-    mesh.vertices = vertices;
-    mesh.indices = indices;
     mesh.vertexCount = vertices.size();
     mesh.indexCount = indices.size();
+    mesh.verticesSize = mesh.vertexCount * sizeof(ME::Vertex);
+    mesh.indicesSize = mesh.indexCount * sizeof(uint32_t);
 
-    return mesh;
+    mesh.vertices = new ME::Vertex[mesh.vertexCount];
+    for (uint32_t i = 0; i < mesh.vertexCount; ++i) {
+        mesh.vertices[i] = vertices[i];
+    }
+    mesh.indices = new uint32_t[mesh.indexCount];
+    for (uint32_t i = 0; i < mesh.indexCount; ++i) {
+        mesh.indices[i] = indices[i];
+    }
 }
