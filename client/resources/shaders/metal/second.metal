@@ -61,7 +61,7 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 
     VertexOut out;
     float4 posM = modelMatrix * float4(in.position, 1.0f);
-    float4 posI = posM + float4(instances[instanceID].xyz * float3(1.0f, 1.7f, 1.0f), 0.0f);
+    float4 posI = posM + float4(instances[instanceID].xyz * float3(2.0f, 3.0f, 2.0f), 0.0f);
     out.position = projectionMatrix * viewMatrix * posI;
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
@@ -81,7 +81,7 @@ fragment half4 fragmentMain(VertexOut in [[stage_in]],
     if(in.height < 6.0f){
         texel =  tex0.sample(textureSampler, in.uv).rgb;
     }else{
-        if(in.height < 16.0f){
+        if(in.height < 22.0f){
             if(in.normal.y == 1.0f){
                 texel =  tex3.sample(textureSampler, in.uv).rgb;
             }else{

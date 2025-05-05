@@ -81,7 +81,7 @@ void ME::RendererMetal::BuildTextures() {
     texture3 = new ME::TextureMetal{"textures/world/ice.png", device, true, commandQueue};
     texture4 = new ME::TextureMetal{"textures/world/green_concrete_powder.png", device, true, commandQueue};
 
-    samplerState = ME::TextureMetal::GetSamplerState(device);
+    samplerState = ME::TextureMetal::GetSamplerStateNearest(device);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -98,7 +98,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     ME::Transform transform;
     transform.SetPosition(0.0f, 0.0f, 0.0f);
     transform.SetRotation(0.0f, 0.0f, 0.0f, 1.0f);
-    transform.SetScale(1.0f, 3.0f, 1.0f);
+    transform.SetScale(1.0f, 2.0f, 1.0f);
     Vec16 modelMatVec = transform.GetModelMatrix().GetData();
 
     ME::Camera camera;

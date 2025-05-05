@@ -39,7 +39,22 @@ ME::TextureMetal::~TextureMetal() {
     textureMetal->release();
 }
 
-MTL::SamplerState* ME::TextureMetal::GetSamplerState(MTL::Device* device) {
+MTL::SamplerState* ME::TextureMetal::GetSamplerStateNearest(MTL::Device* device) {
+    MTL::SamplerDescriptor* samplerDesc = MTL::SamplerDescriptor::alloc()->init();
+    samplerDesc->setMinFilter(MTL::SamplerMinMagFilterNearest);
+    samplerDesc->setMagFilter(MTL::SamplerMinMagFilterNearest);
+    samplerDesc->setMipFilter(MTL::SamplerMipFilterNearest);
+    samplerDesc->setSAddressMode(MTL::SamplerAddressModeRepeat);
+    samplerDesc->setTAddressMode(MTL::SamplerAddressModeRepeat);
+    samplerDesc->setNormalizedCoordinates(true);
+
+    MTL::SamplerState* newState = device->newSamplerState(samplerDesc);
+    samplerDesc->release();
+
+    return newState;
+}
+
+MTL::SamplerState* ME::TextureMetal::GetSamplerStateLinear(MTL::Device* device) {
     MTL::SamplerDescriptor* samplerDesc = MTL::SamplerDescriptor::alloc()->init();
     samplerDesc->setMinFilter(MTL::SamplerMinMagFilterLinear);
     samplerDesc->setMagFilter(MTL::SamplerMinMagFilterLinear);

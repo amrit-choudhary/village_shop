@@ -40,8 +40,15 @@ class TextureMetal : public Texture {
 
     /**
      * Creates a default Sampler State and returns for the render pass.
+     * Nearest sampler is good for pixel art.
      */
-    static MTL::SamplerState* GetSamplerState(MTL::Device* device);
+    static MTL::SamplerState* GetSamplerStateNearest(MTL::Device* device);
+
+    /**
+     * Creates a default Sampler State and returns for the render pass.
+     * Linear sampler is good for smooth textures.
+     */
+    static MTL::SamplerState* GetSamplerStateLinear(MTL::Device* device);
 
    protected:
     MTL::Texture* textureMetal;
