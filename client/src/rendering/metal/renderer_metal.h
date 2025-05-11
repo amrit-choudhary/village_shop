@@ -48,11 +48,7 @@ class RendererMetal : public PlatformRenderer {
     MTL::Device* device;
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
-    MTL::Buffer* instanceBuffer;
     ME::TextureMetal* texture1;
-    ME::TextureMetal* texture2;
-    ME::TextureMetal* texture3;
-    ME::TextureMetal* texture4;
     MTL::SamplerState* samplerState;
     ME::RenderPipelineStateMetal* renderPipelineState;
     ME::DepthStencilStateMetal* depthStencilState;

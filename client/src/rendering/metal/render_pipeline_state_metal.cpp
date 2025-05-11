@@ -16,7 +16,7 @@ ME::RenderPipelineStateMetal::~RenderPipelineStateMetal() {
 }
 
 void ME::RenderPipelineStateMetal::CreateDefaultStates(MTL::Device* device) {
-    ME::Shader shader(device, "shaders/metal/second.metal");
+    ME::Shader shader(device, "shaders/metal/basic.metal");
 
     MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
     desc->setVertexFunction(shader.GetVertexFunction());
