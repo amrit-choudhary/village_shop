@@ -9,38 +9,3 @@ ME::Light::Light() {
 }
 
 ME::Light::~Light() {}
-
-void ME::Light::SetPosition(const ME::Vec3& position) {
-    this->position = position;
-}
-
-ME::Vec3 ME::Light::GetPosition() const {
-    return position;
-}
-
-void ME::Light::SetDirection(const ME::Vec3& direction) {
-    this->direction = direction;
-}
-
-ME::Vec3 ME::Light::GetDirection() const {
-    return direction;
-}
-
-void ME::Light::SetColor(const ME::Color& color) {
-    this->color = color;
-}
-ME::Color ME::Light::GetColor() const {
-    return color;
-}
-void ME::Light::SetIntensity(float intensity) {
-    this->intensity = intensity;
-}
-float ME::Light::GetIntensity() const {
-    return intensity;
-}
-ME::LightType ME::Light::GetType() const {
-    return type;
-}
-void ME::Light::SetType(LightType type) {
-    this->type = type;
-}
