@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "../shared/camera.h"
+#include "../shared/color.h"
 #include "../shared/image_loader_png.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
@@ -66,22 +67,24 @@ void ME::RendererMetal::BuildTextures() {
 
 void ME::RendererMetal::BuildLights() {
     ambientLight = new ME::Light();
-    ambientLight->SetColor(ME::Vec3{1.0f, 1.0f, 1.0f});
+    ambientLight->SetColor(ME::Color::White());
     ambientLight->SetIntensity(0.1f);
 
     directionalLight = new ME::Light();
     directionalLight->SetDirection(ME::Vec3{1.0f, 1.0f, -1.0f}.Normalised());
-    directionalLight->SetColor(ME::Vec3{1.0f, 1.0f, 1.0f});
+    directionalLight->SetColor(ME::Color::White());
     directionalLight->SetIntensity(1.0f);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
+    ME::Color tint = ME::Color::White();
+
     static float rotation = 0.0f;
     static float translation = 0.0f;
     rotation += 0.01f;
-    //    translation += 0.1f;
+    //   translation += 0.1f;
     if (rotation > 360.0f) {
         rotation = 0.0f;
     }
@@ -97,10 +100,10 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     camera.viewPosition = ME::Vec3{0.0f, 0.0f, 100.0f};
     Vec16 viewMatVec = camera.GetViewMatrix().GetData();
 
-    ME::Vec3 ambientColor = ambientLight->GetColor();
+    ME::Color ambientColor = ambientLight->GetColor();
     float ambientIntensity = ambientLight->GetIntensity();
     ME::Vec3 directionalDirection = directionalLight->GetDirection();
-    ME::Vec3 directionalColor = directionalLight->GetColor();
+    ME::Color directionalColor = directionalLight->GetColor();
     float directionalIntensity = directionalLight->GetIntensity();
 
     Vec16 projectionMatVec = camera.GetProjectionMatrix().GetData();
@@ -116,6 +119,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
+    enc->setVertexBytes(&tint, sizeof(ME::Color), 4);
 
     enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
     enc->setFragmentBytes(&ambientColor, sizeof(ME::Vec3), 1);

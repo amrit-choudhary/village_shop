@@ -1,0 +1,85 @@
+/**
+ * Color class definition.
+ * This class represents a color in a 3D rendering engine.
+ * It contains properties such as red, green, blue, and alpha values.
+ * The color values are represented as floating-point numbers in the range [0.0, 1.0].
+ */
+
+#pragma once
+
+namespace ME {
+
+class Color {
+   public:
+    constexpr Color() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
+
+    constexpr Color(float red, float green, float blue, float alpha = 1.0f) : r(red), g(green), b(blue), a(alpha) {}
+
+    ~Color() = default;
+
+    float r;
+    float g;
+    float b;
+    float a;
+
+    // Static constexpr common colors
+    static constexpr Color White() {
+        return Color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    static constexpr Color Black() {
+        return Color(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+    static constexpr Color Red() {
+        return Color(1.0f, 0.0f, 0.0f, 1.0f);
+    }
+    static constexpr Color Green() {
+        return Color(0.0f, 1.0f, 0.0f, 1.0f);
+    }
+    static constexpr Color Blue() {
+        return Color(0.0f, 0.0f, 1.0f, 1.0f);
+    }
+    static constexpr Color Yellow() {
+        return Color(1.0f, 1.0f, 0.0f, 1.0f);
+    }
+    static constexpr Color Cyan() {
+        return Color(0.0f, 1.0f, 1.0f, 1.0f);
+    }
+    static constexpr Color Magenta() {
+        return Color(1.0f, 0.0f, 1.0f, 1.0f);
+    }
+    static constexpr Color Orange() {
+        return Color(1.0f, 0.5f, 0.0f, 1.0f);
+    }
+    static constexpr Color Purple() {
+        return Color(0.5f, 0.0f, 0.5f, 1.0f);
+    }
+    static constexpr Color Pink() {
+        return Color(1.0f, 0.75f, 0.8f, 1.0f);
+    }
+    static constexpr Color Brown() {
+        return Color(0.6f, 0.3f, 0.0f, 1.0f);
+    }
+    static constexpr Color Gray() {
+        return Color(0.5f, 0.5f, 0.5f, 1.0f);
+    }
+    static constexpr Color LightGray() {
+        return Color(0.75f, 0.75f, 0.75f, 1.0f);
+    }
+    static constexpr Color DarkGray() {
+        return Color(0.25f, 0.25f, 0.25f, 1.0f);
+    }
+    static constexpr Color Teal() {
+        return Color(0.0f, 0.5f, 0.5f, 1.0f);
+    }
+    static constexpr Color Lime() {
+        return Color(0.75f, 1.0f, 0.0f, 1.0f);
+    }
+    static constexpr Color Gold() {
+        return Color(1.0f, 0.84f, 0.0f, 1.0f);
+    }
+    static constexpr Color Silver() {
+        return Color(0.75f, 0.75f, 0.75f, 1.0f);
+    }
+};
+
+}  // namespace ME

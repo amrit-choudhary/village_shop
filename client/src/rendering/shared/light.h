@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "color.h"
 #include "src/math/vec3.h"
 
 namespace ME {
@@ -29,8 +30,8 @@ class Light {
     void SetDirection(const ME::Vec3& direction);
     ME::Vec3 GetDirection() const;
 
-    void SetColor(const ME::Vec3& color);
-    ME::Vec3 GetColor() const;
+    void SetColor(const ME::Color& color);
+    ME::Color GetColor() const;
 
     void SetIntensity(float intensity);
     float GetIntensity() const;
@@ -39,11 +40,11 @@ class Light {
     void SetType(LightType type);
 
    private:
-    ME::Vec3 position;   // Position of the light in 3D space
-    ME::Vec3 direction;  // Direction of the light (for directional and spotlight)
-    ME::Vec3 color;      // Color of the light
-    float intensity;     // Intensity of the light
-    LightType type;      // Type of the light (ambient, directional, point, spotlight)
+    ME::Vec3 position;
+    ME::Vec3 direction;
+    ME::Color color;
+    float intensity;
+    LightType type;
 };
 
 }  // namespace ME
