@@ -18,10 +18,27 @@ enum class LightType {
     Spotlight,
 };
 
+struct LightDataAmbient {
+    ME::Color color;
+    float intensity;
+    float padding[3];  // Padding to align the structure
+};
+
+struct LightDataDirectional {
+    ME::Vec3 direction;
+    float padding1;  // Padding to align the structure
+    float intensity;
+    float padding2[3];  // Padding to align the structure
+    ME::Color color;
+};
+
 class Light {
    public:
     Light();
     ~Light();
+
+    LightDataAmbient GetLightDataAmbient();
+    LightDataDirectional GetLightDataDirectional();
 
     ME::Vec3 position;
     ME::Vec3 direction;

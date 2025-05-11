@@ -9,3 +9,19 @@ ME::Light::Light() {
 }
 
 ME::Light::~Light() {}
+
+ME::LightDataAmbient ME::Light::GetLightDataAmbient() {
+    return LightDataAmbient{
+        color,
+        intensity,
+    };
+}
+
+ME::LightDataDirectional ME::Light::GetLightDataDirectional() {
+    return LightDataDirectional{
+        direction,
+        0.0f,                         // Padding to align the structure
+        intensity, 0.0f, 0.0f, 0.0f,  // Padding to align the structure
+        color,
+    };
+}

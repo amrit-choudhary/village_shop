@@ -76,10 +76,13 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     static float rotation = 0.0f;
     static float translation = 0.0f;
     rotation += 0.01f;
-    //   translation += 0.1f;
+    //     translation += 0.1f;
     if (rotation > 360.0f) {
         rotation = 0.0f;
     }
+
+    ME::LightDataAmbient lightDataAmbient = scene->ambientLight->GetLightDataAmbient();
+    ME::LightDataDirectional lightDataDirectional = scene->directionalLight->GetLightDataDirectional();
 
     ME::Transform transform;
     transform.SetPosition(0.0f, 0.0f, 0.0f);
@@ -104,11 +107,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&tint, sizeof(ME::Color), 4);
 
     enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
-    enc->setFragmentBytes(&scene->ambientLight->color, sizeof(ME::Vec3), 1);
-    enc->setFragmentBytes(&scene->ambientLight->intensity, sizeof(float), 2);
-    enc->setFragmentBytes(&scene->directionalLight->direction, sizeof(ME::Vec3), 3);
-    enc->setFragmentBytes(&scene->directionalLight->color, sizeof(ME::Vec3), 4);
-    enc->setFragmentBytes(&scene->directionalLight->intensity, sizeof(float), 5);
+    enc->setFragmentBytes(&lightDataAmbient, sizeof(ME::LightDataAmbient), 1);
+    enc->setFragmentBytes(&lightDataDirectional, sizeof(ME::LightDataDirectional), 2);
 
     enc->setFragmentSamplerState(samplerState, 0);
 

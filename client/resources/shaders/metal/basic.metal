@@ -14,6 +14,17 @@ struct VertexOut {
     float4 tint;
 };
 
+struct LightDataAmbient {
+    float4 color;
+    float intensity;
+};
+
+struct LightDataDirectional {
+    float3 direction;
+    float intensity;
+    float4 color;
+};
+
 // Compute the determinant of a 3x3 matrix
 float determinant3x3(float3x3 m) {
     return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) -
@@ -67,21 +78,18 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 }
 
 fragment half4 fragmentMain(VertexOut in [[stage_in]],
-                            texture2d<half, access::sample> tex     [[texture(0)]], 
-                            sampler textureSampler                  [[sampler(0)]], 
-                            constant float4& ambientColor           [[buffer(1)]], 
-                            constant float& ambientIntensity        [[buffer(2)]],
-                            constant float3& directionalDirection   [[buffer(3)]], 
-                            constant float4& directionalColor       [[buffer(4)]], 
-                            constant float& directionalIntensity    [[buffer(5)]]) {
+                            texture2d<half, access::sample> tex             [[texture(0)]], 
+                            sampler textureSampler                          [[sampler(0)]], 
+                            constant LightDataAmbient& ambientData          [[buffer(1)]], 
+                            constant LightDataDirectional& directionalData  [[buffer(2)]]) {
 
     half3 texel =  tex.sample(textureSampler, in.uv).rgb;
     
-    float3 ambient = ambientColor.xyz * ambientIntensity;
+    float3 ambient = ambientData.color.xyz * ambientData.intensity;
 
     float3 n = normalize(in.normal.xyz);
-    float ndotl = saturate(dot(n, directionalDirection));
-    float3 directional = directionalColor.xyz * ndotl * directionalIntensity;
+    float ndotl = saturate(dot(n, directionalData.direction));
+    float3 directional = directionalData.color.xyz * ndotl * directionalData.intensity;
 
     float3 finalLight = ambient + directional;
     half3 finalColor = texel * half3(finalLight);

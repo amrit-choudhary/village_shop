@@ -14,7 +14,7 @@ ME::Scene::~Scene() {
 void ME::Scene::BuildLights() {
     ambientLight = new ME::Light();
     ambientLight->color = ME::Color::White();
-    ambientLight->intensity = 0.1f;
+    ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
     directionalLight->direction = ME::Vec3{1.0f, 1.0f, -1.0f}.Normalised();
