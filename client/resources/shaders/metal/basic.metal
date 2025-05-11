@@ -66,14 +66,23 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 
 fragment half4 fragmentMain(VertexOut in [[stage_in]],
                             texture2d<half, access::sample> tex [[texture(0)]], 
-                            sampler textureSampler [[sampler(0)]]) {
+                            sampler textureSampler [[sampler(0)]], 
+                            constant float3& ambientColor [[buffer(1)]], 
+                            constant float& ambientIntensity [[buffer(2)]],
+                            constant float3& directionalDirection [[buffer(3)]], 
+                            constant float3& directionalColor [[buffer(4)]], 
+                            constant float& directionalIntensity [[buffer(5)]]) {
 
-    
     half3 texel =  tex.sample(textureSampler, in.uv).rgb;
+    
+    float3 ambient = ambientColor * ambientIntensity;
 
-    float3 l = normalize(float3( -1.0f, 0.5f, -0.8f ));
-    float3 n = normalize( in.normal.xyz );
-    float ndotl = saturate( dot( n, l ) );
+    float3 n = normalize(in.normal.xyz);
+    float ndotl = saturate(dot(n, directionalDirection));
+    float3 directional = directionalColor * ndotl * directionalIntensity;
 
-    return half4( ndotl * texel.r, ndotl * texel.g, ndotl * texel.b, 1.0 );
+    float3 finalLight = ambient + directional;
+    half3 finalColor = texel * half3(finalLight);
+
+    return half4(finalColor, 1.0f);
 }

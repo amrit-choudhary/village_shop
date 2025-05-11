@@ -31,6 +31,8 @@ void ME::RendererMetal::End() {
     delete renderPipelineState;
     delete depthStencilState;
     delete mesh;
+    delete ambientLight;
+    delete directionalLight;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -40,6 +42,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     BuildDepthStencilState();
     BuildBuffers();
     BuildTextures();
+    BuildLights();
     view = inView;
 }
 
@@ -61,20 +64,31 @@ void ME::RendererMetal::BuildTextures() {
     samplerState = ME::TextureMetal::GetSamplerStateNearest(device);
 }
 
+void ME::RendererMetal::BuildLights() {
+    ambientLight = new ME::Light();
+    ambientLight->SetColor(ME::Vec3{1.0f, 1.0f, 1.0f});
+    ambientLight->SetIntensity(0.1f);
+
+    directionalLight = new ME::Light();
+    directionalLight->SetDirection(ME::Vec3{1.0f, 1.0f, -1.0f}.Normalised());
+    directionalLight->SetColor(ME::Vec3{1.0f, 1.0f, 1.0f});
+    directionalLight->SetIntensity(1.0f);
+}
+
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
     static float rotation = 0.0f;
     static float translation = 0.0f;
     rotation += 0.01f;
-    // translation += 0.1f;
+    //    translation += 0.1f;
     if (rotation > 360.0f) {
         rotation = 0.0f;
     }
 
     ME::Transform transform;
     transform.SetPosition(0.0f, 0.0f, 0.0f);
-    transform.SetRotation(rotation, rotation, rotation, 1.0f);
+    transform.SetRotation(rotation, rotation, 0.0f, 1.0f);
     transform.SetScale(3.0f, 3.0f, 3.0f);
     Vec16 modelMatVec = transform.GetModelMatrix().GetData();
 
@@ -82,6 +96,12 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     camera.position = ME::Vec3{0.0f, 0, -10.0f + translation};
     camera.viewPosition = ME::Vec3{0.0f, 0.0f, 100.0f};
     Vec16 viewMatVec = camera.GetViewMatrix().GetData();
+
+    ME::Vec3 ambientColor = ambientLight->GetColor();
+    float ambientIntensity = ambientLight->GetIntensity();
+    ME::Vec3 directionalDirection = directionalLight->GetDirection();
+    ME::Vec3 directionalColor = directionalLight->GetColor();
+    float directionalIntensity = directionalLight->GetIntensity();
 
     Vec16 projectionMatVec = camera.GetProjectionMatrix().GetData();
 
@@ -98,6 +118,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
 
     enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
+    enc->setFragmentBytes(&ambientColor, sizeof(ME::Vec3), 1);
+    enc->setFragmentBytes(&ambientIntensity, sizeof(float), 2);
+    enc->setFragmentBytes(&directionalDirection, sizeof(ME::Vec3), 3);
+    enc->setFragmentBytes(&directionalColor, sizeof(ME::Vec3), 4);
+    enc->setFragmentBytes(&directionalIntensity, sizeof(float), 5);
 
     enc->setFragmentSamplerState(samplerState, 0);
 

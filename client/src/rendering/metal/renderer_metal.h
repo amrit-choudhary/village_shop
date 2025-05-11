@@ -10,6 +10,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "../shared/light.h"
 #include "../shared/renderer.h"
 #include "depth_stencil_state_metal.h"
 #include "mesh_metal.h"
@@ -42,6 +43,7 @@ class RendererMetal : public PlatformRenderer {
     void BuildDepthStencilState();
     void BuildBuffers();
     void BuildTextures();
+    void BuildLights();
     void Draw(MTK::View* view);
 
    private:
@@ -53,6 +55,8 @@ class RendererMetal : public PlatformRenderer {
     ME::RenderPipelineStateMetal* renderPipelineState;
     ME::DepthStencilStateMetal* depthStencilState;
     ME::MeshMetal* mesh;
+    ME::Light* ambientLight;
+    ME::Light* directionalLight;
 
     size_t instanceCount = 0;
 };
