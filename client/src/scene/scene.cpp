@@ -17,13 +17,13 @@ void ME::Scene::BuildLights() {
     ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3{1.0f, 1.0f, -1.0f}.Normalised();
+    directionalLight->direction = ME::Vec3(1.0f, 1.0f, -1.0f).Normalised();
     directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }
 
 void ME::Scene::BuildCamera() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3{0.0f, 0.0f, -10.0f};
-    camera->viewPosition = ME::Vec3{0.0f, 0.0f, 100.0f};
+    camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
+    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 100.0f);
 }

@@ -24,7 +24,7 @@ float ME::Vec3i::Length() const {
 Vec3 ME::Vec3i::Normalised() const {
     float len = Length();
     if (len > 0) {
-        return Vec3{static_cast<float>(x) / len, static_cast<float>(y) / len, static_cast<float>(z) / len};
+        return Vec3(static_cast<float>(x) / len, static_cast<float>(y) / len, static_cast<float>(z) / len);
     } else {
         return Vec3::Zero;
     }

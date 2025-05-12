@@ -16,6 +16,15 @@ namespace ME {
  */
 class Vec3 {
    public:
+    // Constructors
+    Vec3();
+    Vec3(float x, float y, float z);
+    Vec3(const Vec3& v);
+    Vec3(const Vec3&& v);
+    Vec3& operator=(const Vec3& v);
+    Vec3& operator=(const Vec3&& v);
+    Vec3(float scalar);
+
     float x;
     float y;
     float z;

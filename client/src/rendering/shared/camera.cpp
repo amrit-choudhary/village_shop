@@ -6,7 +6,7 @@ ME::Camera::Camera() {
     position = ME::Vec3::Zero;
     rotation = ME::Vec4{0.0f, 0.0f, 0.0f, 1.0f};
     up = ME::Vec3::Up;
-    viewPosition = ME::Vec3{0.0f, 0.0f, 1000.0f};
+    viewPosition = ME::Vec3(0.0f, 0.0f, 1000.0f);
 
     fov = 90.0f;
     aspectRatio = 1.3333f;

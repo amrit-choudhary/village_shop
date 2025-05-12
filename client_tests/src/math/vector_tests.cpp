@@ -15,9 +15,9 @@ TEST(Vector, Up) {
 }
 
 TEST(Vector, Norm) {
-    ME::Vec3 vec3{3.0f, 4.0f, 0.0f};
+    ME::Vec3 vec3(3.0f, 4.0f, 0.0f);
     vec3.Normalise();
-    EXPECT_EQ((vec3 == ME::Vec3{0.6f, 0.8f, 0.0f}));
+    EXPECT_EQ((vec3 == ME::Vec3(0.6f, 0.8f, 0.0f)));
 }
 
 TEST(Vector, Dot) {
