@@ -7,16 +7,12 @@
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
 
-ME::RenderPipelineStateMetal::RenderPipelineStateMetal(MTL::Device* device) {
-    CreateDefaultStates(device);
-}
+ME::RenderPipelineStateMetal::RenderPipelineStateMetal() {}
 
-ME::RenderPipelineStateMetal::~RenderPipelineStateMetal() {
-    psoDefault->release();
-}
+ME::RenderPipelineStateMetal::~RenderPipelineStateMetal() {}
 
-void ME::RenderPipelineStateMetal::CreateDefaultStates(MTL::Device* device) {
-    ME::Shader shader(device, "shaders/metal/basic.metal");
+MTL::RenderPipelineState* ME::RenderPipelineStateMetal::GetNewPSO(MTL::Device* device, const char* shaderPath) {
+    ME::Shader shader(device, shaderPath);
 
     MTL::RenderPipelineDescriptor* desc = MTL::RenderPipelineDescriptor::alloc()->init();
     desc->setVertexFunction(shader.GetVertexFunction());
@@ -46,19 +42,18 @@ void ME::RenderPipelineStateMetal::CreateDefaultStates(MTL::Device* device) {
     desc->setDepthAttachmentPixelFormat(MTL::PixelFormat::PixelFormatDepth32Float);
 
     NS::Error* error = nullptr;
-    psoDefault = device->newRenderPipelineState(desc, &error);
-
+    MTL::RenderPipelineState* pso = device->newRenderPipelineState(desc, &error);
     if (error) {
         __builtin_printf("Error creating render pipeline state: %s", error->localizedDescription()->utf8String());
         error->release();
     }
-
-    if (psoDefault == nullptr) {
+    if (pso == nullptr) {
         __builtin_printf("Failed to create render pipeline state.");
     }
-
     vertexDesc->release();
     desc->release();
+
+    return pso;
 }
 
 #endif

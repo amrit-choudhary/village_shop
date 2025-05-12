@@ -40,7 +40,6 @@ class RendererMetal : public PlatformRenderer {
    private:
    protected:
    public:
-    void BuildShaders();
     void BuildDepthStencilState();
     void BuildBuffers();
     void BuildTextures();
@@ -53,7 +52,6 @@ class RendererMetal : public PlatformRenderer {
     MTL::CommandQueue* commandQueue;
     ME::TextureMetal* texture1;
     MTL::SamplerState* samplerState;
-    ME::RenderPipelineStateMetal* renderPipelineState;
     ME::DepthStencilStateMetal* depthStencilState;
     ME::MeshMetal* mesh;
     ME::Scene* scene;

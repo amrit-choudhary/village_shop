@@ -29,7 +29,6 @@ void ME::RendererMetal::End() {
     device->release();
     view->release();
     delete texture1;
-    delete renderPipelineState;
     delete depthStencilState;
     delete mesh;
     delete scene;
@@ -38,16 +37,11 @@ void ME::RendererMetal::End() {
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     device = inDevice->retain();
     commandQueue = device->newCommandQueue();
-    BuildShaders();
     BuildDepthStencilState();
     BuildBuffers();
     BuildTextures();
     BuildScene();
     view = inView;
-}
-
-void ME::RendererMetal::BuildShaders() {
-    renderPipelineState = new ME::RenderPipelineStateMetal(device);
 }
 
 void ME::RendererMetal::BuildDepthStencilState() {
@@ -97,7 +91,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
-    enc->setRenderPipelineState(renderPipelineState->GetPSODefault());
+    enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO(device));
     enc->setDepthStencilState(depthStencilState->GetDSSDefault());
 
     enc->setVertexBuffer(mesh->vertexBuffer, 0, 0);

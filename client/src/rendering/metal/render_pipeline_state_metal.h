@@ -20,17 +20,13 @@ namespace ME {
  */
 class RenderPipelineStateMetal {
    public:
-    RenderPipelineStateMetal(MTL::Device* device);
+    RenderPipelineStateMetal();
     ~RenderPipelineStateMetal();
 
-    MTL::RenderPipelineState* GetPSODefault() {
-        return psoDefault;
-    }
+    static MTL::RenderPipelineState* GetNewPSO(MTL::Device* device,
+                                               const char* shaderPath = "shaders/metal/basic.metal");
 
    private:
-    void CreateDefaultStates(MTL::Device* device);
-
-    MTL::RenderPipelineState* psoDefault;
 };
 
 }  // namespace ME
