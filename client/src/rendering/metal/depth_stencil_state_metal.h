@@ -11,6 +11,8 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "../shared/material.h"
+
 namespace ME {
 
 /**
@@ -19,17 +21,14 @@ namespace ME {
  */
 class DepthStencilStateMetal {
    public:
-    DepthStencilStateMetal(MTL::Device* device);
+    DepthStencilStateMetal();
     ~DepthStencilStateMetal();
 
-    MTL::DepthStencilState* GetDSSDefault() {
-        return dssDefault;
-    }
+    static MTL::DepthStencilState* GetNewDepthStencilState(
+        MTL::Device* device, ME::DepthCompareFunction depthCompareFunction = ME::DepthCompareFunction::Less,
+        bool depthWriteEnabled = true);
 
    private:
-    void CreateDefaultStates(MTL::Device* device);
-
-    MTL::DepthStencilState* dssDefault;
 };
 
 }  // namespace ME
