@@ -18,19 +18,22 @@ enum class DepthCompareFunction : uint8_t { Never, Less, Equal, LessEqual, Great
 
 class Material {
    public:
-    Material();
+    Material() = delete;
     ~Material();
 
-    Material(const char* texturePath, const char* shaderPath, const ME::Color& color)
-        : texturePath(texturePath), shaderPath(shaderPath), color(color) {}
-    Material(const char* texturePath, const char* shaderPath)
-        : texturePath(texturePath), shaderPath(shaderPath), color(ME::Color::White()) {}
+    Material(const char* texturePath, const char* shaderPath, const Color& color = Color::White(),
+             DepthCompareFunction depthCompareFunction = DepthCompareFunction::Less, bool depthWriteEnabled = true)
+        : texturePath(texturePath),
+          shaderPath(shaderPath),
+          color(color),
+          depthCompareFunction(depthCompareFunction),
+          depthWriteEnabled(depthWriteEnabled) {}
 
     const char* texturePath;
     const char* shaderPath;
     ME::Color color;
-    ME::DepthCompareFunction depthCompareFunction = ME::DepthCompareFunction::Less;
-    bool depthWriteEnabled = true;
+    ME::DepthCompareFunction depthCompareFunction;
+    bool depthWriteEnabled;
 };
 
 }  // namespace ME
