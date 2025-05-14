@@ -10,7 +10,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../../src/scene/scene.h"
+#include "../../src/scene/scene_metal.h"
 #include "../shared/light.h"
 #include "../shared/renderer.h"
 #include "depth_stencil_state_metal.h"
@@ -52,7 +52,7 @@ class RendererMetal : public PlatformRenderer {
     ME::TextureMetal* texture1;
     MTL::SamplerState* samplerState;
     ME::MeshMetal* mesh;
-    ME::Scene* scene;
+    ME::SceneMetal* scene;
 };
 
 }  // namespace ME

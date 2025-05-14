@@ -1,6 +1,10 @@
 #include "transform.h"
 
-ME::Transform::Transform() {}
+ME::Transform::Transform() {
+    position = ME::Vec3(0.0f, 0.0f, 0.0f);
+    rotation = ME::Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    scale = ME::Vec3(1.0f, 1.0f, 1.0f);
+}
 
 ME::Transform::~Transform() {}
 

@@ -53,7 +53,7 @@ void ME::RendererMetal::BuildTextures() {
 }
 
 void ME::RendererMetal::BuildScene() {
-    scene = new ME::Scene();
+    scene = new ME::SceneMetal(nullptr, device, commandQueue);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {

@@ -12,6 +12,8 @@
 
 #include "../rendering/shared/camera.h"
 #include "../rendering/shared/light.h"
+#include "../rendering/shared/material.h"
+#include "../rendering/shared/mesh_renderer.h"
 
 namespace ME {
 
@@ -20,14 +22,25 @@ class Scene {
     Scene();
     ~Scene();
 
-    void BuildLights();
-    void BuildCamera();
-
     ME::Light* ambientLight;
     ME::Light* directionalLight;
     ME::Camera* camera;
 
+    /**
+     * List of scene resources like meshes, textures, shaders, etc.
+     * Items index in the list are used to create the mesh renderer.
+     */
+    std::vector<const char*> meshPaths;
+    std::vector<const char*> texturePaths;
+    std::vector<const char*> shaderPaths;
+
+    std::vector<ME::MeshRenderer> meshRenderers;
+
    private:
+    void CreateResources();
+    void BuildLights();
+    void BuildCamera();
+    void BuildMeshRenderers();
 };
 
 }  // namespace ME
