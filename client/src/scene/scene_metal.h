@@ -20,7 +20,7 @@ namespace ME {
 class SceneMetal {
    public:
     SceneMetal() = delete;
-    SceneMetal(ME::Scene* scene, MTL::Device* device, MTL::CommandQueue* cmdQueue);
+    SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue);
     ~SceneMetal();
 
     ME::Light* ambientLight;
@@ -30,6 +30,7 @@ class SceneMetal {
    private:
     MTL::Device* device;
     MTL::CommandQueue* cmdQueue;
+    ME::Scene* scene;
 };
 
 }  // namespace ME
