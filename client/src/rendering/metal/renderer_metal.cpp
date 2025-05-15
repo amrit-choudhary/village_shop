@@ -24,32 +24,17 @@ void ME::RendererMetal::Update() {
 }
 
 void ME::RendererMetal::End() {
-    samplerState->release();
     commandQueue->release();
     device->release();
     view->release();
-    delete texture1;
-    delete mesh;
     delete scene;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     device = inDevice->retain();
     commandQueue = device->newCommandQueue();
-    BuildBuffers();
-    BuildTextures();
     BuildScene();
     view = inView;
-}
-
-void ME::RendererMetal::BuildBuffers() {
-    mesh = new ME::MeshMetal("meshes/cube_unshared.obj", device, commandQueue);
-}
-
-void ME::RendererMetal::BuildTextures() {
-    texture1 = new ME::TextureMetal{"textures/world/cobblestone.png", device, true, commandQueue};
-
-    samplerState = ME::TextureMetal::GetSamplerStateNearest(device);
 }
 
 void ME::RendererMetal::BuildScene() {
@@ -88,23 +73,23 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState(device));
 
-    enc->setVertexBuffer(mesh->vertexBuffer, 0, 0);
+    enc->setVertexBuffer(scene->meshes[0]->vertexBuffer, 0, 0);
     enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
     enc->setVertexBytes(&tint, sizeof(ME::Color), 4);
 
-    enc->setFragmentTexture(texture1->GetTextureMetal(), 0);
+    enc->setFragmentTexture(scene->textures[0]->GetTextureMetal(), 0);
     enc->setFragmentBytes(&lightDataAmbient, sizeof(ME::LightDataAmbient), 1);
     enc->setFragmentBytes(&lightDataDirectional, sizeof(ME::LightDataDirectional), 2);
 
-    enc->setFragmentSamplerState(samplerState, 0);
+    enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
 
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, mesh->indexCount,
-                               MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, 1);
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[0]->indexCount,
+                               MTL::IndexType::IndexTypeUInt32, scene->meshes[0]->indexBuffer, 0, 1);
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());

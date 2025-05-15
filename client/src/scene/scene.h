@@ -8,35 +8,43 @@
 
 #pragma once
 
-#include <vector>
-
 #include "../rendering/shared/camera.h"
 #include "../rendering/shared/light.h"
 #include "../rendering/shared/material.h"
 #include "../rendering/shared/mesh_renderer.h"
+#include "../rendering/shared/texture_sampler.h"
 
 namespace ME {
+
+constexpr uint8_t MaxMeshCount = 128;
+constexpr uint8_t MaxTextureCount = 128;
+constexpr uint8_t MaxShaderCount = 128;
+constexpr uint8_t MaxMaterialCount = 128;
+constexpr uint8_t MaxSamplerCount = 16;
 
 class Scene {
    public:
     Scene();
     ~Scene();
 
+   public:
     ME::Light* ambientLight;
     ME::Light* directionalLight;
     ME::Camera* camera;
-
     /**
-     * List of scene resources like meshes, textures, shaders, etc.
-     * Items index in the list are used to create the mesh renderer.
+     * Array of scene resources like meshes, textures, shaders, etc.
+     * Items index in the array are file names and are used to create the mesh renderer.
      */
-    std::vector<const char*> meshPaths;
-    std::vector<const char*> texturePaths;
-    std::vector<const char*> shaderPaths;
+    const char** meshPaths;
+    const char** texturePaths;
+    const char** shaderPaths;
+    ME::TextureSampler* textureSamplers;
 
-    std::vector<ME::MeshRenderer> meshRenderers;
+    uint8_t meshCount;
+    uint8_t textureCount;
+    uint8_t shaderCount;
+    uint8_t textureSamplerCount;
 
-   private:
     void CreateResources();
     void BuildLights();
     void BuildCamera();

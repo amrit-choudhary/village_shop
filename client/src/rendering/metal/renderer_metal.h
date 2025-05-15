@@ -40,8 +40,6 @@ class RendererMetal : public PlatformRenderer {
    private:
    protected:
    public:
-    void BuildBuffers();
-    void BuildTextures();
     void BuildScene();
     void Draw(MTK::View* view);
 
@@ -49,9 +47,6 @@ class RendererMetal : public PlatformRenderer {
     MTL::Device* device;
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
-    ME::TextureMetal* texture1;
-    MTL::SamplerState* samplerState;
-    ME::MeshMetal* mesh;
     ME::SceneMetal* scene;
 };
 

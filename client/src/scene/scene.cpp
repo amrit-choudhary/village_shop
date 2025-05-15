@@ -11,14 +11,30 @@ ME::Scene::~Scene() {
     delete ambientLight;
     delete directionalLight;
     delete camera;
+
+    delete[] meshPaths;
+    delete[] texturePaths;
+    delete[] shaderPaths;
+    delete[] textureSamplers;
 }
 
 void ME::Scene::CreateResources() {
-    meshPaths.push_back("meshes/cube_unshared.obj");  // 0
+    meshPaths = new const char*[MaxMeshCount];
+    texturePaths = new const char*[MaxTextureCount];
+    shaderPaths = new const char*[MaxShaderCount];
+    textureSamplers = new ME::TextureSampler[MaxSamplerCount];
 
-    texturePaths.push_back("textures/world/cobblestone.png");  // 0
+    meshPaths[0] = "meshes/cube_unshared.obj";
+    meshCount = 1;
 
-    shaderPaths.push_back("shaders/metal/basic.metal");  // 0
+    texturePaths[0] = "textures/world/cobblestone.png";
+    textureCount = 1;
+
+    shaderPaths[0] = "shaders/metal/basic.metal";
+    shaderCount = 1;
+
+    textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
+    textureSamplerCount = 1;
 }
 
 void ME::Scene::BuildLights() {
@@ -41,5 +57,5 @@ void ME::Scene::BuildCamera() {
 void ME::Scene::BuildMeshRenderers() {
     ME::Transform transform;
     ME::MeshRenderer meshRenderer(0, 0, 0, transform);
-    meshRenderers.push_back(meshRenderer);
+    // meshRenderers.push_back(meshRenderer);
 }

@@ -13,6 +13,8 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
+#include "../rendering/metal/mesh_metal.h"
+#include "../rendering/metal/texture_metal.h"
 #include "scene.h"
 
 namespace ME {
@@ -27,10 +29,19 @@ class SceneMetal {
     ME::Light* directionalLight;
     ME::Camera* camera;
 
+    ME::MeshMetal** meshes;
+    ME::TextureMetal** textures;
+    MTL::SamplerState** textureSamplerStates;
+
    private:
     MTL::Device* device;
     MTL::CommandQueue* cmdQueue;
     ME::Scene* scene;
+
+    void MakeMeshes();
+    void MakeTextures();
+    void MakeShaders();
+    void MakeTextureSamplers();
 };
 
 }  // namespace ME
