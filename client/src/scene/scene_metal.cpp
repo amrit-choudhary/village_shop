@@ -15,6 +15,9 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     textures = new ME::TextureMetal*[ME::MaxTextureCount];
     textureSamplerStates = new MTL::SamplerState*[ME::MaxSamplerCount];
 
+    this->transforms = scene->transforms;
+    this->transformCount = scene->transformCount;
+
     MakeMeshes();
     MakeTextures();
     MakeShaders();

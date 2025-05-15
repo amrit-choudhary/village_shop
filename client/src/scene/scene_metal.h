@@ -32,6 +32,9 @@ class SceneMetal {
     ME::MeshMetal** meshes;
     ME::TextureMetal** textures;
     MTL::SamplerState** textureSamplerStates;
+    ME::Transform** transforms;
+
+    uint16_t transformCount;
 
    private:
     MTL::Device* device;

@@ -45,23 +45,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
     ME::Color tint = ME::Color::White();
-
-    static float rotation = 0.0f;
-    static float translation = 0.0f;
-    rotation += 0.01f;
-    //     translation += 0.1f;
-    if (rotation > 360.0f) {
-        rotation = 0.0f;
-    }
-
     ME::LightDataAmbient lightDataAmbient = scene->ambientLight->GetLightDataAmbient();
     ME::LightDataDirectional lightDataDirectional = scene->directionalLight->GetLightDataDirectional();
-
-    ME::Transform transform;
-    transform.SetPosition(0.0f, 0.0f, 0.0f);
-    transform.SetRotation(rotation, rotation, 0.0f, 1.0f);
-    transform.SetScale(3.0f, 3.0f, 3.0f);
-    Vec16 modelMatVec = transform.GetModelMatrix().GetData();
 
     Vec16 viewMatVec = scene->camera->GetViewMatrix().GetData();
     Vec16 projectionMatVec = scene->camera->GetProjectionMatrix().GetData();
@@ -74,7 +59,6 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState(device));
 
     enc->setVertexBuffer(scene->meshes[0]->vertexBuffer, 0, 0);
-    enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
     enc->setVertexBytes(&tint, sizeof(ME::Color), 4);
@@ -88,8 +72,13 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[0]->indexCount,
-                               MTL::IndexType::IndexTypeUInt32, scene->meshes[0]->indexBuffer, 0, 1);
+    for (uint16_t i = 0; i < scene->transformCount; ++i) {
+        Vec16 modelMatVec = scene->transforms[i]->GetModelMatrix().GetData();
+        enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
+
+        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[0]->indexCount,
+                                   MTL::IndexType::IndexTypeUInt32, scene->meshes[0]->indexBuffer, 0, 1);
+    }
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());
