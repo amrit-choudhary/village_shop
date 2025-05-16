@@ -104,7 +104,7 @@ void ME::Scene::BuildMeshRenderers() {
     ME::Random randomColor("Color", true);
     for (uint16_t i = 0; i < meshRendererCount; ++i) {
         uint8_t rndTexId = randomTex.NextRange(0, textureCount - 1);
-        ME::Color color = ME::Color::RandomColor(randomColor);
+        ME::Color color = ME::Color::RandomColorPretty(randomColor);
         meshRenderers[i] = new ME::MeshRenderer{0, 0, rndTexId, color};
     }
 }

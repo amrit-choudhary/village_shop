@@ -108,6 +108,15 @@ class Color {
     // Create a random color using the provided random engine.
     // This is useful for generating random colors in a loop or for specific use cases.
     static Color RandomColor(ME::Random& random);
+
+    // Create a pretty random colors.
+    static Color RandomColorPretty();
+
+    // Create a pretty random color using the provided random engine.
+    static Color RandomColorPretty(ME::Random& random);
+
+    // Creates a ME::Color from HSV values.
+    static ME::Color FromHSV(float h, float s, float v);
 };
 
 }  // namespace ME
