@@ -44,16 +44,15 @@ void ME::RendererMetal::BuildScene() {
 void ME::RendererMetal::Draw(MTK::View* view) {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
-    ME::Color tint = ME::Color::White();
+    MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
+    MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
+    MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
+
     ME::LightDataAmbient lightDataAmbient = scene->ambientLight->GetLightDataAmbient();
     ME::LightDataDirectional lightDataDirectional = scene->directionalLight->GetLightDataDirectional();
 
     Vec16 viewMatVec = scene->camera->GetViewMatrix().GetData();
     Vec16 projectionMatVec = scene->camera->GetProjectionMatrix().GetData();
-
-    MTL::CommandBuffer* cmd = commandQueue->commandBuffer();
-    MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
-    MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState(device));
@@ -61,9 +60,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBuffer(scene->meshes[0]->vertexBuffer, 0, 0);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
-    enc->setVertexBytes(&tint, sizeof(ME::Color), 4);
 
-    enc->setFragmentTexture(scene->textures[0]->GetTextureMetal(), 0);
     enc->setFragmentBytes(&lightDataAmbient, sizeof(ME::LightDataAmbient), 1);
     enc->setFragmentBytes(&lightDataDirectional, sizeof(ME::LightDataDirectional), 2);
 
@@ -72,9 +69,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setCullMode(MTL::CullModeBack);
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
-    for (uint16_t i = 0; i < scene->transformCount; ++i) {
+    for (uint16_t i = 0; i < scene->meshRendererCount; ++i) {
         Vec16 modelMatVec = scene->transforms[i]->GetModelMatrix().GetData();
         enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
+        enc->setVertexBytes(&scene->meshRenderers[i]->color, sizeof(ME::Color), 4);
+        enc->setFragmentTexture(scene->textures[scene->meshRenderers[i]->textureId]->GetTextureMetal(), 0);
 
         enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[0]->indexCount,
                                    MTL::IndexType::IndexTypeUInt32, scene->meshes[0]->indexBuffer, 0, 1);

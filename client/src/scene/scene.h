@@ -22,6 +22,7 @@ constexpr uint8_t MaxShaderCount = 128;
 constexpr uint8_t MaxMaterialCount = 128;
 constexpr uint8_t MaxSamplerCount = 16;
 constexpr uint16_t MaxTransformCount = 9999;
+constexpr uint16_t MaxMeshRendererCount = 9999;
 
 class Scene {
    public:
@@ -41,18 +42,20 @@ class Scene {
     const char** shaderPaths;
     ME::TextureSampler* textureSamplers;
     ME::Transform** transforms;
+    ME::MeshRenderer** meshRenderers;
 
     uint8_t meshCount;
     uint8_t textureCount;
     uint8_t shaderCount;
     uint8_t textureSamplerCount;
     uint16_t transformCount;
+    uint16_t meshRendererCount;
 
     void CreateResources();
     void BuildLights();
     void BuildCamera();
-    void BuildMeshRenderers();
     void BuildTransforms();
+    void BuildMeshRenderers();
 };
 
 }  // namespace ME

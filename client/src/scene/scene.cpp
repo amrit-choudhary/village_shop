@@ -2,12 +2,14 @@
 
 #include <cmath>
 
+#include "../../../shared/src/random/random_engine.h"
+
 ME::Scene::Scene() {
     CreateResources();
     BuildLights();
     BuildCamera();
-    BuildMeshRenderers();
     BuildTransforms();
+    BuildMeshRenderers();
 }
 
 ME::Scene::~Scene() {
@@ -20,10 +22,15 @@ ME::Scene::~Scene() {
     delete[] shaderPaths;
     delete[] textureSamplers;
 
-    for (uint16_t i = 0; i < transformCount; i++) {
+    for (uint16_t i = 0; i < transformCount; ++i) {
         delete transforms[i];
     }
     delete[] transforms;
+
+    for (uint16_t i = 0; i < meshRendererCount; ++i) {
+        delete meshRenderers[i];
+    }
+    delete[] meshRenderers;
 }
 
 void ME::Scene::CreateResources() {
@@ -32,12 +39,16 @@ void ME::Scene::CreateResources() {
     shaderPaths = new const char*[MaxShaderCount];
     textureSamplers = new ME::TextureSampler[MaxSamplerCount];
     transforms = new ME::Transform*[MaxTransformCount];
+    meshRenderers = new ME::MeshRenderer*[MaxMeshRendererCount];
 
     meshPaths[0] = "meshes/cube_unshared.obj";
     meshCount = 1;
 
     texturePaths[0] = "textures/world/cobblestone.png";
-    textureCount = 1;
+    texturePaths[1] = "textures/world/dirt.png";
+    texturePaths[2] = "textures/world/ice.png";
+    texturePaths[3] = "textures/world/grass_block_top.png";
+    textureCount = 4;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderCount = 1;
@@ -59,22 +70,16 @@ void ME::Scene::BuildLights() {
 
 void ME::Scene::BuildCamera() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(0.0f, 0.0f, -50.0f);
-    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 1000.0f);
-}
-
-void ME::Scene::BuildMeshRenderers() {
-    ME::Transform transform;
-    ME::MeshRenderer meshRenderer(0, 0, 0, transform);
-    // meshRenderers.push_back(meshRenderer);
+    camera->position = ME::Vec3(40.0f, 40.0f, -40.0f);
+    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
 }
 
 void ME::Scene::BuildTransforms() {
     transformCount = 3000;
     int gridSize = std::cbrt(transformCount);
-    float spacing = 3.0f;
+    float spacing = 4.5f;
 
-    for (uint16_t i = 0; i < transformCount; i++) {
+    for (uint16_t i = 0; i < transformCount; ++i) {
         int x = i % gridSize;
         int y = (i / gridSize) % gridSize;
         int z = i / (gridSize * gridSize);
@@ -90,5 +95,16 @@ void ME::Scene::BuildTransforms() {
         transforms[i]->SetRotation(0.0f, 1.0f, 0.0f, angle);
 
         transforms[i]->SetScale(1.0f, 1.0f, 1.0f);
+    }
+}
+
+void ME::Scene::BuildMeshRenderers() {
+    meshRendererCount = 3000;
+    ME::Random randomTex("Tex", true);
+    ME::Random randomColor("Color", true);
+    for (uint16_t i = 0; i < meshRendererCount; ++i) {
+        uint8_t rndTexId = randomTex.NextRange(0, textureCount - 1);
+        ME::Color color = ME::Color::RandomColor(randomColor);
+        meshRenderers[i] = new ME::MeshRenderer{0, 0, rndTexId, color};
     }
 }

@@ -18,6 +18,9 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->transforms = scene->transforms;
     this->transformCount = scene->transformCount;
 
+    this->meshRenderers = scene->meshRenderers;
+    this->meshRendererCount = scene->meshRendererCount;
+
     MakeMeshes();
     MakeTextures();
     MakeShaders();

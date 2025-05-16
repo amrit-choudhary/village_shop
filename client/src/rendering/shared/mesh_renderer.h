@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "color.h"
 #include "transform.h"
 
 namespace ME {
@@ -15,14 +16,14 @@ namespace ME {
 class MeshRenderer {
    public:
     MeshRenderer() = delete;
+    MeshRenderer(uint8_t meshId, uint8_t materialId, uint8_t textureId, const Color& color)
+        : meshId(meshId), materialId(materialId), textureId(textureId), color(color) {}
     ~MeshRenderer();
-    MeshRenderer(uint8_t meshId, uint8_t materialId, uint8_t textureId, const Transform& transform)
-        : meshId(meshId), materialId(materialId), textureId(textureId), transform(transform) {}
 
     const uint8_t meshId = 0;
     const uint8_t materialId = 0;
     const uint8_t textureId = 0;
-    ME::Transform transform;
+    ME::Color color;
 };
 
 }  // namespace ME
