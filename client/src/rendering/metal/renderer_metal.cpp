@@ -20,7 +20,7 @@ void ME::RendererMetal::Init() {
 }
 
 void ME::RendererMetal::Update() {
-    // Update.
+    //   Update.
 }
 
 void ME::RendererMetal::End() {
@@ -57,7 +57,6 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState(device));
 
-    enc->setVertexBuffer(scene->meshes[0]->vertexBuffer, 0, 0);
     enc->setVertexBytes(&viewMatVec, sizeof(ME::Vec16), 2);
     enc->setVertexBytes(&projectionMatVec, sizeof(ME::Vec16), 3);
 
@@ -70,13 +69,14 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
     for (uint16_t i = 0; i < scene->meshRendererCount; ++i) {
+        enc->setVertexBuffer(scene->meshes[1]->vertexBuffer, 0, 0);
         Vec16 modelMatVec = scene->transforms[i]->GetModelMatrix().GetData();
         enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
         enc->setVertexBytes(&scene->meshRenderers[i]->color, sizeof(ME::Color), 4);
         enc->setFragmentTexture(scene->textures[scene->meshRenderers[i]->textureId]->GetTextureMetal(), 0);
 
-        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[0]->indexCount,
-                                   MTL::IndexType::IndexTypeUInt32, scene->meshes[0]->indexBuffer, 0, 1);
+        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[1]->indexCount,
+                                   MTL::IndexType::IndexTypeUInt32, scene->meshes[1]->indexBuffer, 0, 1);
     }
 
     enc->endEncoding();

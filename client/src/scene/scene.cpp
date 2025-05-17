@@ -42,13 +42,15 @@ void ME::Scene::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[MaxMeshRendererCount];
 
     meshPaths[0] = "meshes/cube_unshared.obj";
-    meshCount = 1;
+    meshPaths[1] = "meshes/grass.obj";
+    meshCount = 2;
 
     texturePaths[0] = "textures/world/cobblestone.png";
     texturePaths[1] = "textures/world/dirt.png";
     texturePaths[2] = "textures/world/ice.png";
     texturePaths[3] = "textures/world/grass_block_top.png";
-    textureCount = 4;
+    texturePaths[4] = "textures/world/short_grass.png";
+    textureCount = 5;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderCount = 1;
@@ -63,21 +65,21 @@ void ME::Scene::BuildLights() {
     ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(1.0f, 1.0f, -1.0f).Normalised();
+    directionalLight->direction = ME::Vec3(1.0f, 2.0f, -2.0f).Normalised();
     directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }
 
 void ME::Scene::BuildCamera() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(40.0f, 40.0f, -40.0f);
+    camera->position = ME::Vec3(0.0f, 5.0f, -5.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
 }
 
 void ME::Scene::BuildTransforms() {
-    transformCount = 3000;
+    transformCount = 30;
     int gridSize = std::cbrt(transformCount);
-    float spacing = 4.5f;
+    float spacing = 1.0f;
 
     for (uint16_t i = 0; i < transformCount; ++i) {
         int x = i % gridSize;
@@ -92,19 +94,20 @@ void ME::Scene::BuildTransforms() {
         transforms[i]->SetPosition(px, py, pz);
 
         float angle = (i % 360) * 1.0f;
-        transforms[i]->SetRotation(0.0f, 1.0f, 0.0f, angle);
+        transforms[i]->SetRotation(0.0f, 0.0f, 0.0f, angle);
 
         transforms[i]->SetScale(1.0f, 1.0f, 1.0f);
     }
 }
 
 void ME::Scene::BuildMeshRenderers() {
-    meshRendererCount = 3000;
+    meshRendererCount = 30;
     ME::Random randomTex("Tex", true);
     ME::Random randomColor("Color", true);
     for (uint16_t i = 0; i < meshRendererCount; ++i) {
         uint8_t rndTexId = randomTex.NextRange(0, textureCount - 1);
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        meshRenderers[i] = new ME::MeshRenderer{0, 0, rndTexId, color};
+        // meshRenderers[i] = new ME::MeshRenderer{1, 0, rndTexId, color};
+        meshRenderers[i] = new ME::MeshRenderer(1, 0, 4, ME::Color::Green());
     }
 }
