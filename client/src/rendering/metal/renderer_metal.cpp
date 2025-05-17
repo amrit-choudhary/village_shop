@@ -69,14 +69,17 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setFrontFacingWinding(MTL::Winding::WindingCounterClockwise);
 
     for (uint16_t i = 0; i < scene->meshRendererCount; ++i) {
-        enc->setVertexBuffer(scene->meshes[1]->vertexBuffer, 0, 0);
+        ME::MeshMetal* mesh = scene->meshes[scene->meshRenderers[i]->meshId];
+        ME::TextureMetal* texture = scene->textures[scene->meshRenderers[i]->textureId];
+
+        enc->setVertexBuffer(mesh->vertexBuffer, 0, 0);
         Vec16 modelMatVec = scene->transforms[i]->GetModelMatrix().GetData();
         enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
         enc->setVertexBytes(&scene->meshRenderers[i]->color, sizeof(ME::Color), 4);
-        enc->setFragmentTexture(scene->textures[scene->meshRenderers[i]->textureId]->GetTextureMetal(), 0);
+        enc->setFragmentTexture(texture->GetTextureMetal(), 0);
 
-        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, scene->meshes[1]->indexCount,
-                                   MTL::IndexType::IndexTypeUInt32, scene->meshes[1]->indexBuffer, 0, 1);
+        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, mesh->indexCount,
+                                   MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, 1);
     }
 
     enc->endEncoding();

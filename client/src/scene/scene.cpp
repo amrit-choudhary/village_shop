@@ -49,11 +49,17 @@ void ME::Scene::CreateResources() {
     texturePaths[1] = "textures/world/dirt.png";
     texturePaths[2] = "textures/world/ice.png";
     texturePaths[3] = "textures/world/grass_block_top.png";
+
     texturePaths[4] = "textures/world/short_grass.png";
-    textureCount = 5;
+    texturePaths[5] = "textures/world/torchflower.png";
+    texturePaths[6] = "textures/world/poppy.png";
+    texturePaths[7] = "textures/world/peony_top.png";
+
+    textureCount = 8;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
-    shaderCount = 1;
+    shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
+    shaderCount = 2;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -65,49 +71,62 @@ void ME::Scene::BuildLights() {
     ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(1.0f, 2.0f, -2.0f).Normalised();
+    directionalLight->direction = ME::Vec3(1.0f, 2.0f, -4.0f).Normalised();
     directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }
 
 void ME::Scene::BuildCamera() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(0.0f, 5.0f, -5.0f);
-    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
+    camera->position = ME::Vec3(0.0f, 4.0f, -3.0f);
+    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 3.0f);
 }
 
 void ME::Scene::BuildTransforms() {
-    transformCount = 30;
-    int gridSize = std::cbrt(transformCount);
+    int gridSize = 15;
+    int gridCount = gridSize * gridSize;
+    transformCount = gridCount * 3;
     float spacing = 1.0f;
 
-    for (uint16_t i = 0; i < transformCount; ++i) {
-        int x = i % gridSize;
-        int y = (i / gridSize) % gridSize;
-        int z = i / (gridSize * gridSize);
+    for (uint16_t i = 0; i < gridCount; ++i) {
+        int x = i % gridSize - 7;
+        int z = (i / gridSize) % gridSize;
 
-        float px = (x - gridSize / 2) * spacing;
-        float py = (y - gridSize / 2) * spacing;
-        float pz = (z - gridSize / 2) * spacing;
+        float px = x * spacing;
+        float pz = z * spacing;
 
-        transforms[i] = new ME::Transform();
-        transforms[i]->SetPosition(px, py, pz);
+        transforms[i * 3 + 0] = new ME::Transform();
+        transforms[i * 3 + 0]->SetPosition(px, -1, pz);
+        transforms[i * 3 + 0]->SetScale(1.0f, 1.0f, 1.0f);
 
-        float angle = (i % 360) * 1.0f;
-        transforms[i]->SetRotation(0.0f, 0.0f, 0.0f, angle);
+        transforms[i * 3 + 1] = new ME::Transform();
+        transforms[i * 3 + 1]->SetPosition(px, 0, pz);
+        transforms[i * 3 + 1]->SetScale(1.0f, 1.0f, 1.0f);
 
-        transforms[i]->SetScale(1.0f, 1.0f, 1.0f);
+        transforms[i * 3 + 2] = new ME::Transform();
+        transforms[i * 3 + 2]->SetPosition(px, 1, pz);
+        transforms[i * 3 + 2]->SetScale(0.8f, 0.8f, 0.8f);
     }
 }
 
 void ME::Scene::BuildMeshRenderers() {
-    meshRendererCount = 30;
+    meshRendererCount = 15 * 15 * 3;
+    int gridSize = std::cbrt(meshRendererCount);
+
     ME::Random randomTex("Tex", true);
     ME::Random randomColor("Color", true);
     for (uint16_t i = 0; i < meshRendererCount; ++i) {
-        uint8_t rndTexId = randomTex.NextRange(0, textureCount - 1);
+        uint8_t rndTexId = randomTex.NextRange(5, 7);
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        // meshRenderers[i] = new ME::MeshRenderer{1, 0, rndTexId, color};
-        meshRenderers[i] = new ME::MeshRenderer(1, 0, 4, ME::Color::Green());
+
+        int y = transforms[i]->GetPosition().y;
+
+        if (y > 0.5f) {
+            meshRenderers[i] = new ME::MeshRenderer(1, 0, rndTexId, ME::Color::White());
+        } else if (y > -0.5f) {
+            meshRenderers[i] = new ME::MeshRenderer(0, 0, 1, ME::Color(0.0f, 0.6f, 0.0f));
+        } else {
+            meshRenderers[i] = new ME::MeshRenderer(0, 0, 0, ME::Color::White());
+        }
     }
 }

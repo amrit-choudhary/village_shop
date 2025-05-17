@@ -23,10 +23,19 @@ class Transform {
     ~Transform();
 
     void SetPosition(float x, float y, float z);
+    ME::Vec3 GetPosition() const {
+        return position;
+    }
 
     void SetRotation(float x, float y, float z, float w = 1.0f);
+    ME::Vec4 GetRotation() const {
+        return rotation;
+    }
 
     void SetScale(float x, float y, float z);
+    ME::Vec3 GetScale() const {
+        return scale;
+    }
 
     ME::Mat4 GetModelMatrix() const {
         // Create the model matrix using position, rotation, and scale.
