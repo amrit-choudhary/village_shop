@@ -39,7 +39,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 
 void ME::RendererMetal::BuildScene() {
     scene = new ME::SceneMetal(device, commandQueue);
-    vertexBuffer = device->newBuffer(sizeof(ME::Vertex2D) * 3, MTL::ResourceStorageModeManaged);
+    vertexBuffer = device->newBuffer(sizeof(ME::Vertex2D) * 6, MTL::ResourceStorageModeManaged);
     ME::Vertex2D vertices[6] = {ME::Vertex2D{ME::Vec2{-0.3f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
                                 ME::Vertex2D{ME::Vec2{0.3f, 0.0f}, ME::Vec2{1.0f, 0.0f}},
                                 ME::Vertex2D{ME::Vec2{0.3f, 0.3f}, ME::Vec2{1.0f, 1.0f}},
