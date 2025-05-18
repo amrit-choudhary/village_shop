@@ -39,6 +39,16 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 
 void ME::RendererMetal::BuildScene() {
     scene = new ME::SceneMetal(device, commandQueue);
+    vertexBuffer = device->newBuffer(sizeof(ME::Vertex2D) * 3, MTL::ResourceStorageModeShared);
+    ME::Vertex2D vertices[6] = {ME::Vertex2D{ME::Vec3{-0.3f, 0.0f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec3{0.3f, 0.0f, 0.0f}, ME::Vec2{1.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec3{0.3f, 0.3f, 0.0f}, ME::Vec2{1.0f, 1.0f}},
+                                ME::Vertex2D{ME::Vec3{-0.3f, 0.0f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec3{0.3f, 0.3f, 0.0f}, ME::Vec2{1.0f, 1.0f}},
+                                ME::Vertex2D{ME::Vec3{-0.3f, 0.3f, 0.0f}, ME::Vec2{0.0f, 1.0f}}};
+
+    memcpy(vertexBuffer->contents(), vertices, sizeof(ME::Vertex2D) * 6);
+    vertexBuffer->didModifyRange(NS::Range{0, sizeof(ME::Vertex2D) * 6});
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -48,6 +58,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     MTL::RenderPassDescriptor* rpd = view->currentRenderPassDescriptor();
     MTL::RenderCommandEncoder* enc = cmd->renderCommandEncoder(rpd);
 
+    // Draw   3D Items.
     ME::LightDataAmbient lightDataAmbient = scene->ambientLight->GetLightDataAmbient();
     ME::LightDataDirectional lightDataDirectional = scene->directionalLight->GetLightDataDirectional();
 
@@ -81,6 +92,18 @@ void ME::RendererMetal::Draw(MTK::View* view) {
         enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, mesh->indexCount,
                                    MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, 1);
     }
+
+    // Draw   2D Items.
+    enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
+    enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
+
+    enc->setVertexBuffer(vertexBuffer, 0, 0);
+    enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
+    enc->setFragmentTexture(scene->textures[4]->GetTextureMetal(), 0);
+    ME::Color tint2D = ME::Color::Green();
+    enc->setVertexBytes(&tint2D, sizeof(ME::Color), 3);
+
+    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(6));
 
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());

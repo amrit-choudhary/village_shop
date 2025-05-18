@@ -23,8 +23,13 @@ class RenderPipelineStateMetal {
     RenderPipelineStateMetal();
     ~RenderPipelineStateMetal();
 
+    /** 3D PSO */
     static MTL::RenderPipelineState* GetNewPSO(MTL::Device* device,
                                                const char* shaderPath = "shaders/metal/basic.metal");
+
+    /** 2D PSO */
+    static MTL::RenderPipelineState* GetNewPSO2D(MTL::Device* device,
+                                                 const char* shaderPath = "shaders/metal/basic_2D.metal");
 
    private:
 };

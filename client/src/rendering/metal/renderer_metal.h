@@ -48,6 +48,7 @@ class RendererMetal : public PlatformRenderer {
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     ME::SceneMetal* scene;
+    MTL::Buffer* vertexBuffer;
 };
 
 }  // namespace ME

@@ -28,6 +28,8 @@ class DepthStencilStateMetal {
         MTL::Device* device, ME::DepthCompareFunction depthCompareFunction = ME::DepthCompareFunction::Less,
         bool depthWriteEnabled = true);
 
+    static MTL::DepthStencilState* GetNewDepthStencilState2D(MTL::Device* device);
+
    private:
 };
 

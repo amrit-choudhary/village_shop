@@ -12,9 +12,16 @@ namespace ME {
 
 class Vertex {
    public:
-    ME::Vec3 position;  // Position of the vertex in 3D space
-    ME::Vec3 normal;    // Normal vector at the vertex for lighting calculations
-    ME::Vec2 uv;        // Texture coordinates for mapping textures to the vertex
+    ME::Vec3 position;  // Position of the vertex in 3D space.
+    ME::Vec3 normal;    // Normal vector at the vertex for lighting calculations.
+    ME::Vec2 uv;        // Texture coordinates for mapping textures to the vertex.
+   private:
+};
+
+class Vertex2D {
+   public:
+    ME::Vec3 position;  // Position of the vertex in 2D space, Z is only used for depth.
+    ME::Vec2 uv;        // Texture coordinates for mapping textures to the vertex.
    private:
 };
 

@@ -72,7 +72,7 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
     out.position = projectionMatrix * viewMatrix * modelMatrix * float4(in.position, 1.0f);
     out.normal = float4(normalMatrix * in.normal, 1.0);
     out.normal.xyz = normalize(out.normal.xyz);
-    out.uv = in.uv;
+    out.uv = float2(in.uv.x, 1.0f - in.uv.y);
     out.tint = tint;
     return out;
 }

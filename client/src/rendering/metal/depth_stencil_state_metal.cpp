@@ -48,4 +48,8 @@ MTL::DepthStencilState* ME::DepthStencilStateMetal::GetNewDepthStencilState(
     return dss;
 }
 
+MTL::DepthStencilState* ME::DepthStencilStateMetal::GetNewDepthStencilState2D(MTL::Device* device) {
+    return GetNewDepthStencilState(device, ME::DepthCompareFunction::Always, false);
+}
+
 #endif
