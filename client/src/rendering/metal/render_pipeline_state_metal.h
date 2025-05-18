@@ -29,7 +29,7 @@ class RenderPipelineStateMetal {
 
     /** 2D PSO */
     static MTL::RenderPipelineState* GetNewPSO2D(MTL::Device* device,
-                                                 const char* shaderPath = "shaders/metal/basic_2D.metal");
+                                                 const char* shaderPath = "shaders/metal/sprite.metal");
 
    private:
 };

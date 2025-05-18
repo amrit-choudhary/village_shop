@@ -20,7 +20,7 @@ class Vertex {
 
 class Vertex2D {
    public:
-    ME::Vec3 position;  // Position of the vertex in 2D space, Z is only used for depth.
+    ME::Vec2 position;  // Position of the vertex in 2D space.
     ME::Vec2 uv;        // Texture coordinates for mapping textures to the vertex.
    private:
 };

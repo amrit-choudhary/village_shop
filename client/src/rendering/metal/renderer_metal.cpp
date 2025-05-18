@@ -40,12 +40,12 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 void ME::RendererMetal::BuildScene() {
     scene = new ME::SceneMetal(device, commandQueue);
     vertexBuffer = device->newBuffer(sizeof(ME::Vertex2D) * 3, MTL::ResourceStorageModeShared);
-    ME::Vertex2D vertices[6] = {ME::Vertex2D{ME::Vec3{-0.3f, 0.0f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec3{0.3f, 0.0f, 0.0f}, ME::Vec2{1.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec3{0.3f, 0.3f, 0.0f}, ME::Vec2{1.0f, 1.0f}},
-                                ME::Vertex2D{ME::Vec3{-0.3f, 0.0f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec3{0.3f, 0.3f, 0.0f}, ME::Vec2{1.0f, 1.0f}},
-                                ME::Vertex2D{ME::Vec3{-0.3f, 0.3f, 0.0f}, ME::Vec2{0.0f, 1.0f}}};
+    ME::Vertex2D vertices[6] = {ME::Vertex2D{ME::Vec2{-0.3f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec2{0.3f, 0.0f}, ME::Vec2{1.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec2{0.3f, 0.3f}, ME::Vec2{1.0f, 1.0f}},
+                                ME::Vertex2D{ME::Vec2{-0.3f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
+                                ME::Vertex2D{ME::Vec2{0.3f, 0.3f}, ME::Vec2{1.0f, 1.0f}},
+                                ME::Vertex2D{ME::Vec2{-0.3f, 0.3f}, ME::Vec2{0.0f, 1.0f}}};
 
     memcpy(vertexBuffer->contents(), vertices, sizeof(ME::Vertex2D) * 6);
     vertexBuffer->didModifyRange(NS::Range{0, sizeof(ME::Vertex2D) * 6});

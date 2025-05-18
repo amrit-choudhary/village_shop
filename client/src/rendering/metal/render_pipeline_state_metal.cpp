@@ -67,12 +67,12 @@ MTL::RenderPipelineState* ME::RenderPipelineStateMetal::GetNewPSO2D(MTL::Device*
     MTL::VertexDescriptor* vertexDesc = MTL::VertexDescriptor::alloc()->init();
 
     // Position
-    vertexDesc->attributes()->object(0)->setFormat(MTL::VertexFormat::VertexFormatFloat3);
+    vertexDesc->attributes()->object(0)->setFormat(MTL::VertexFormat::VertexFormatFloat2);
     vertexDesc->attributes()->object(0)->setOffset(0);
     vertexDesc->attributes()->object(0)->setBufferIndex(0);
     // UV
     vertexDesc->attributes()->object(1)->setFormat(MTL::VertexFormat::VertexFormatFloat2);
-    vertexDesc->attributes()->object(1)->setOffset(12);
+    vertexDesc->attributes()->object(1)->setOffset(8);
     vertexDesc->attributes()->object(1)->setBufferIndex(0);
 
     vertexDesc->layouts()->object(0)->setStride(sizeof(ME::Vertex2D));

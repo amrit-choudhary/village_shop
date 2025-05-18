@@ -2,7 +2,7 @@
 using namespace metal;
 
 struct VertexIn {
-    float3 position [[attribute(0)]];
+    float2 position [[attribute(0)]];
     float2 uv       [[attribute(1)]];
 };
 
@@ -19,7 +19,7 @@ vertex VertexOut vertexMain(VertexIn in [[stage_in]],
 
     VertexOut out;
     // out.position = projectionMatrix * viewMatrix * modelMatrix * float4(in.position, 1.0f);
-    out.position = float4(in.position, 1.0f);
+    out.position = float4(in.position, 0.0f, 1.0f);
     out.uv = float2(in.uv.x, 1.0f - in.uv.y);
     out.tint = tint;
     return out;
