@@ -28,6 +28,7 @@ void ME::RendererMetal::End() {
     device->release();
     view->release();
     delete scene;
+    delete quad;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -39,16 +40,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 
 void ME::RendererMetal::BuildScene() {
     scene = new ME::SceneMetal(device, commandQueue);
-    vertexBuffer = device->newBuffer(sizeof(ME::Vertex2D) * 6, MTL::ResourceStorageModeManaged);
-    ME::Vertex2D vertices[6] = {ME::Vertex2D{ME::Vec2{-0.3f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec2{0.3f, 0.0f}, ME::Vec2{1.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec2{0.3f, 0.3f}, ME::Vec2{1.0f, 1.0f}},
-                                ME::Vertex2D{ME::Vec2{-0.3f, 0.0f}, ME::Vec2{0.0f, 0.0f}},
-                                ME::Vertex2D{ME::Vec2{0.3f, 0.3f}, ME::Vec2{1.0f, 1.0f}},
-                                ME::Vertex2D{ME::Vec2{-0.3f, 0.3f}, ME::Vec2{0.0f, 1.0f}}};
-
-    memcpy(vertexBuffer->contents(), vertices, sizeof(ME::Vertex2D) * 6);
-    vertexBuffer->didModifyRange(NS::Range{0, sizeof(ME::Vertex2D) * 6});
+    quad = new ME::QuadMetal(device, commandQueue);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -97,14 +89,16 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
 
-    enc->setVertexBuffer(vertexBuffer, 0, 0);
+    enc->setVertexBuffer(quad->vertexBuffer, 0, 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
     enc->setFragmentTexture(scene->textures[4]->GetTextureMetal(), 0);
     ME::Color tint2D = ME::Color::Green();
     enc->setVertexBytes(&tint2D, sizeof(ME::Color), 3);
 
-    enc->drawPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, NS::UInteger(0), NS::UInteger(6));
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
+                               MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, 1);
 
+    // End of drawing.
     enc->endEncoding();
     cmd->presentDrawable(view->currentDrawable());
     cmd->commit();

@@ -6,8 +6,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "src/math/vec2.h"
 #include "src/math/vec3.h"
 #include "src/math/vec4.h"

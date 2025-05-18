@@ -15,6 +15,7 @@
 #include "../shared/renderer.h"
 #include "depth_stencil_state_metal.h"
 #include "mesh_metal.h"
+#include "quad_metal.h"
 #include "render_pipeline_state_metal.h"
 #include "texture_metal.h"
 
@@ -48,7 +49,7 @@ class RendererMetal : public PlatformRenderer {
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     ME::SceneMetal* scene;
-    MTL::Buffer* vertexBuffer;
+    ME::QuadMetal* quad;
 };
 
 }  // namespace ME
