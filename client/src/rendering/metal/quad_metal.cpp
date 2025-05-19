@@ -2,7 +2,7 @@
 
 #include "quad_metal.h"
 
-ME::QuadMetal::QuadMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) : Quad() {
+ME::QuadMetal::QuadMetal(const char* path, MTL::Device* device, MTL::CommandQueue* cmdQueue) : Quad() {
     vertexBuffer = device->newBuffer(verticesSize, MTL::ResourceStorageModeManaged);
     indexBuffer = device->newBuffer(indicesSize, MTL::ResourceStorageModeManaged);
 

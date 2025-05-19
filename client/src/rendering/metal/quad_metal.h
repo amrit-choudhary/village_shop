@@ -24,7 +24,7 @@ class QuadMetal : public Quad {
      * 1. Create Metal buffers for vertex, index and instance data.
      * 2. Upload the data to the GPU.
      */
-    QuadMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue);
+    QuadMetal(const char* path, MTL::Device* device, MTL::CommandQueue* cmdQueue);
     ~QuadMetal() override;
 
     MTL::Buffer* vertexBuffer;

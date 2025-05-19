@@ -10,14 +10,18 @@ ME::Scene::Scene() {
     BuildCamera();
     BuildTransforms();
     BuildMeshRenderers();
+    BuildSpriteTransforms();
+    BuildSpriteRenderers();
 }
 
 ME::Scene::~Scene() {
     delete ambientLight;
     delete directionalLight;
     delete camera;
+    delete spriteCamera;
 
     delete[] meshPaths;
+    delete[] quadPaths;
     delete[] texturePaths;
     delete[] shaderPaths;
     delete[] textureSamplers;
@@ -31,19 +35,36 @@ ME::Scene::~Scene() {
         delete meshRenderers[i];
     }
     delete[] meshRenderers;
+
+    for (uint16_t i = 0; i < spriteTransformCount; ++i) {
+        delete spriteTransforms[i];
+    }
+    delete[] spriteTransforms;
+
+    for (uint16_t i = 0; i < spriteRendererCount; ++i) {
+        delete spriteRenderers[i];
+    }
+    delete[] spriteRenderers;
 }
 
 void ME::Scene::CreateResources() {
     meshPaths = new const char*[MaxMeshCount];
+    quadPaths = new const char*[MaxQuadCount];
     texturePaths = new const char*[MaxTextureCount];
     shaderPaths = new const char*[MaxShaderCount];
     textureSamplers = new ME::TextureSampler[MaxSamplerCount];
     transforms = new ME::Transform*[MaxTransformCount];
     meshRenderers = new ME::MeshRenderer*[MaxMeshRendererCount];
+    spriteTransforms = new ME::Transform*[MaxSpriteTransformCount];
+    spriteRenderers = new ME::SpriteRenderer*[MaxSpriteRendererCount];
 
+    // TODO: Make cubes pivot at center.
     meshPaths[0] = "meshes/cube_unshared.obj";
     meshPaths[1] = "meshes/grass.obj";
     meshCount = 2;
+
+    quadPaths[0] = "meshes/quad.obj";  // First one is default. Not loaded from obj.
+    quadCount = 1;
 
     texturePaths[0] = "textures/world/cobblestone.png";
     texturePaths[1] = "textures/world/dirt.png";
@@ -129,4 +150,27 @@ void ME::Scene::BuildMeshRenderers() {
             meshRenderers[i] = new ME::MeshRenderer(0, 0, 0, ME::Color::White());
         }
     }
+}
+
+void ME::Scene::BuildSpriteTransforms() {
+    spriteTransformCount = 3;
+
+    spriteTransforms[0] = new ME::Transform();
+    spriteTransforms[0]->SetPosition(0.0f, -0.8f, 0.0f);
+    spriteTransforms[0]->SetScale(0.3f, 0.3f, 0.3f);
+
+    spriteTransforms[1] = new ME::Transform();
+    spriteTransforms[1]->SetPosition(-0.6f, -0.8f, 0.0f);
+    spriteTransforms[1]->SetScale(0.3f, 0.3f, 0.3f);
+
+    spriteTransforms[2] = new ME::Transform();
+    spriteTransforms[2]->SetPosition(0.6f, -0.8f, 0.0f);
+    spriteTransforms[2]->SetScale(0.3f, 0.3f, 0.3f);
+}
+
+void ME::Scene::BuildSpriteRenderers() {
+    spriteRendererCount = 3;
+    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 4, ME::Color::White());
+    spriteRenderers[1] = new ME::SpriteRenderer(0, 0, 5, ME::Color::Green());
+    spriteRenderers[2] = new ME::SpriteRenderer(0, 0, 6, ME::Color::Red());
 }

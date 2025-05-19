@@ -49,7 +49,6 @@ class RendererMetal : public PlatformRenderer {
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     ME::SceneMetal* scene;
-    ME::QuadMetal* quad;
 };
 
 }  // namespace ME

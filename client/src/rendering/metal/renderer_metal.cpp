@@ -28,7 +28,6 @@ void ME::RendererMetal::End() {
     device->release();
     view->release();
     delete scene;
-    delete quad;
 }
 
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
@@ -40,7 +39,6 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
 
 void ME::RendererMetal::BuildScene() {
     scene = new ME::SceneMetal(device, commandQueue);
-    quad = new ME::QuadMetal(device, commandQueue);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {
@@ -89,14 +87,21 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
 
-    enc->setVertexBuffer(quad->vertexBuffer, 0, 0);
-    enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
-    enc->setFragmentTexture(scene->textures[4]->GetTextureMetal(), 0);
-    ME::Color tint2D = ME::Color::Green();
-    enc->setVertexBytes(&tint2D, sizeof(ME::Color), 3);
+    for (uint16_t i = 0; i < scene->spriteRendererCount; ++i) {
+        ME::QuadMetal* quad = scene->quads[scene->spriteRenderers[i]->quadId];
+        ME::TextureMetal* texture = scene->textures[scene->spriteRenderers[i]->textureId];
+        ME::Color tint = scene->spriteRenderers[i]->color;
 
-    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
-                               MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, 1);
+        enc->setVertexBuffer(quad->vertexBuffer, 0, 0);
+        Vec16 modelMatVec = scene->spriteTransforms[i]->GetModelMatrix().GetData();
+        enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
+        enc->setVertexBytes(&tint, sizeof(ME::Color), 3);
+        enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
+        enc->setFragmentTexture(texture->GetTextureMetal(), 0);
+
+        enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
+                                   MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, 1);
+    }
 
     // End of drawing.
     enc->endEncoding();

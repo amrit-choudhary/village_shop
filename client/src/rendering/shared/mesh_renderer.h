@@ -23,7 +23,7 @@ class MeshRenderer {
     const uint8_t meshId = 0;
     const uint8_t materialId = 0;
     const uint8_t textureId = 0;
-    ME::Color color;
+    const ME::Color color;
 };
 
 }  // namespace ME

@@ -5,10 +5,10 @@ ME::Quad::Quad() {
     indices = new uint16_t[6];
 
     // Set up the vertices
-    vertices[0].position = ME::Vec2{0.0f, 0.0f};
-    vertices[1].position = ME::Vec2{1.0f, 0.0f};
-    vertices[2].position = ME::Vec2{1.0f, -1.0f};
-    vertices[3].position = ME::Vec2{0.0f, -1.0f};
+    vertices[0].position = ME::Vec2{-0.5f, 0.5f};
+    vertices[1].position = ME::Vec2{0.5f, 0.5f};
+    vertices[2].position = ME::Vec2{0.5f, -0.5f};
+    vertices[3].position = ME::Vec2{-0.5f, -0.5f};
 
     // Set up the texture coordinates
     vertices[0].uv = ME::Vec2{0.0f, 1.0f};
