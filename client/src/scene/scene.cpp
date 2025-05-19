@@ -158,14 +158,17 @@ void ME::Scene::BuildSpriteTransforms() {
     spriteTransforms[0] = new ME::Transform();
     spriteTransforms[0]->SetPosition(0.0f, -0.8f, 0.0f);
     spriteTransforms[0]->SetScale(0.3f, 0.3f, 0.3f);
+    spriteTransforms[0]->SetRotation(0.0f, 0.0f, 1.0f);
 
     spriteTransforms[1] = new ME::Transform();
     spriteTransforms[1]->SetPosition(-0.6f, -0.8f, 0.0f);
     spriteTransforms[1]->SetScale(0.3f, 0.3f, 0.3f);
+    spriteTransforms[1]->SetRotation(0.0f, 0.0f, -1.0f);
 
     spriteTransforms[2] = new ME::Transform();
     spriteTransforms[2]->SetPosition(0.6f, -0.8f, 0.0f);
     spriteTransforms[2]->SetScale(0.3f, 0.3f, 0.3f);
+    spriteTransforms[2]->SetRotation(0.0f, 0.0f, 0.5f);
 }
 
 void ME::Scene::BuildSpriteRenderers() {
