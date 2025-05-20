@@ -83,9 +83,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
                                    MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, 1);
     }
 
-    // Draw   2D Items.
+    // Draw  2D Items.
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
+    Vec16 spriteProjectionMatVec = scene->spriteCamera->GetProjectionMatrix().GetData();
+    enc->setVertexBytes(&spriteProjectionMatVec, sizeof(ME::Vec16), 2);
 
     for (uint16_t i = 0; i < scene->spriteRendererCount; ++i) {
         ME::QuadMetal* quad = scene->quads[scene->spriteRenderers[i]->quadId];

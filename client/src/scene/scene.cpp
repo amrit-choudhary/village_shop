@@ -76,7 +76,9 @@ void ME::Scene::CreateResources() {
     texturePaths[6] = "textures/world/poppy.png";
     texturePaths[7] = "textures/world/peony_top.png";
 
-    textureCount = 8;
+    texturePaths[8] = "textures/sprites/tileGrey_01.png";
+
+    textureCount = 9;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
@@ -101,6 +103,16 @@ void ME::Scene::BuildCamera() {
     camera = new ME::Camera();
     camera->position = ME::Vec3(0.0f, 4.0f, -3.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 3.0f);
+    camera->projectionType = ME::ProjectionType::Perspective;
+    camera->fov = 90.0f;
+    camera->aspectRatio = 1.33f;
+
+    spriteCamera = new ME::Camera();
+    spriteCamera->position = ME::Vec3(0.0f, 0.0f, 0.0f);
+    spriteCamera->viewPosition = ME::Vec3(0.0f, 0.0f, 1.0f);
+    spriteCamera->projectionType = ME::ProjectionType::Orthographic;
+    spriteCamera->orthographicSize = 1000.0f;
+    spriteCamera->aspectRatio = 1.33f;
 }
 
 void ME::Scene::BuildTransforms() {
@@ -156,24 +168,24 @@ void ME::Scene::BuildSpriteTransforms() {
     spriteTransformCount = 3;
 
     spriteTransforms[0] = new ME::Transform();
-    spriteTransforms[0]->SetPosition(0.0f, -0.8f, 0.0f);
-    spriteTransforms[0]->SetScale(0.3f, 0.3f, 0.3f);
-    spriteTransforms[0]->SetRotation(0.0f, 0.0f, 1.0f);
+    spriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
+    spriteTransforms[0]->SetScale(500.0f, 500.0f, 500.0f);
+    spriteTransforms[0]->SetRotation(0.0f, 0.0f, 0.3f);
 
     spriteTransforms[1] = new ME::Transform();
-    spriteTransforms[1]->SetPosition(-0.6f, -0.8f, 0.0f);
-    spriteTransforms[1]->SetScale(0.3f, 0.3f, 0.3f);
-    spriteTransforms[1]->SetRotation(0.0f, 0.0f, -1.0f);
+    spriteTransforms[1]->SetPosition(200.0f, 200.0f, 0.0f);
+    spriteTransforms[1]->SetScale(100.0f, 100.0f, 100.0f);
+    spriteTransforms[1]->SetRotation(0.0f, 0.0f, 0.0f);
 
     spriteTransforms[2] = new ME::Transform();
-    spriteTransforms[2]->SetPosition(0.6f, -0.8f, 0.0f);
-    spriteTransforms[2]->SetScale(0.3f, 0.3f, 0.3f);
-    spriteTransforms[2]->SetRotation(0.0f, 0.0f, 0.5f);
+    spriteTransforms[2]->SetPosition(-200.0f, -200.0f, 0.0f);
+    spriteTransforms[2]->SetScale(100.0f, 100.0f, 100.0f);
+    spriteTransforms[2]->SetRotation(0.0f, 0.0f, 0.0f);
 }
 
 void ME::Scene::BuildSpriteRenderers() {
     spriteRendererCount = 3;
-    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 4, ME::Color::White());
-    spriteRenderers[1] = new ME::SpriteRenderer(0, 0, 5, ME::Color::Green());
-    spriteRenderers[2] = new ME::SpriteRenderer(0, 0, 6, ME::Color::Red());
+    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 8, ME::Color::White());
+    spriteRenderers[1] = new ME::SpriteRenderer(0, 0, 8, ME::Color::Green());
+    spriteRenderers[2] = new ME::SpriteRenderer(0, 0, 8, ME::Color::Red());
 }

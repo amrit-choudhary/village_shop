@@ -3,6 +3,8 @@
 #include <cmath>
 
 ME::Camera::Camera() {
+    projectionType = ProjectionType::Perspective;
+
     position = ME::Vec3::Zero;
     rotation = ME::Vec4{0.0f, 0.0f, 0.0f, 1.0f};
     up = ME::Vec3::Up;
@@ -23,5 +25,12 @@ ME::Mat4 ME::Camera::GetViewMatrix() {
 }
 
 ME::Mat4 ME::Camera::GetProjectionMatrix() {
-    return ME::Mat4::Perspective(fov * (M_PI / 180.0f), aspectRatio, nearPlane, farPlane);
+    if (projectionType == ProjectionType::Perspective) {
+        return ME::Mat4::Perspective(fov * (M_PI / 180.0f), aspectRatio, nearPlane, farPlane);
+    } else if (projectionType == ProjectionType::Orthographic) {
+        return ME::Mat4::Orthographic(-orthographicSize * aspectRatio, orthographicSize * aspectRatio,
+                                      -orthographicSize, orthographicSize, nearPlane, farPlane);
+    } else {
+        return ME::Mat4::Identity;
+    }
 }

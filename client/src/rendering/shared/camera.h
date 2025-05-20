@@ -10,6 +10,11 @@
 
 namespace ME {
 
+enum class ProjectionType {
+    Perspective,
+    Orthographic,
+};
+
 /**
  * Camera class for rendering.
  */
@@ -17,6 +22,8 @@ class Camera {
    public:
     Camera();
     ~Camera();
+
+    ProjectionType projectionType;
 
     ME::Mat4 GetViewMatrix();
     ME::Mat4 GetProjectionMatrix();
@@ -30,6 +37,8 @@ class Camera {
     float aspectRatio;
     float nearPlane;
     float farPlane;
+
+    float orthographicSize;
 
    private:
 };
