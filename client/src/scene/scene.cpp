@@ -165,27 +165,34 @@ void ME::Scene::BuildMeshRenderers() {
 }
 
 void ME::Scene::BuildSpriteTransforms() {
-    spriteTransformCount = 3;
+    spriteTransformCount = 100 * 100;
+    int spriteSize = 20;
+    int gridCount = 100;
+    int gridOffset = -900;
 
-    spriteTransforms[0] = new ME::Transform();
-    spriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
-    spriteTransforms[0]->SetScale(500.0f, 500.0f, 500.0f);
-    spriteTransforms[0]->SetRotation(0.0f, 0.0f, 0.3f);
+    for (uint16_t i = 0; i < spriteTransformCount; ++i) {
+        int x = i % gridCount;
+        int y = (i / gridCount) % gridCount;
 
-    spriteTransforms[1] = new ME::Transform();
-    spriteTransforms[1]->SetPosition(200.0f, 200.0f, 0.0f);
-    spriteTransforms[1]->SetScale(100.0f, 100.0f, 100.0f);
-    spriteTransforms[1]->SetRotation(0.0f, 0.0f, 0.0f);
+        float px = x * spriteSize + gridOffset;
+        float py = y * spriteSize + gridOffset;
 
-    spriteTransforms[2] = new ME::Transform();
-    spriteTransforms[2]->SetPosition(-200.0f, -200.0f, 0.0f);
-    spriteTransforms[2]->SetScale(100.0f, 100.0f, 100.0f);
-    spriteTransforms[2]->SetRotation(0.0f, 0.0f, 0.0f);
+        spriteTransforms[i] = new ME::Transform();
+        spriteTransforms[i]->SetPosition(px, py, 0.0f);
+        spriteTransforms[i]->SetScale(spriteSize, spriteSize);
+    }
 }
 
 void ME::Scene::BuildSpriteRenderers() {
-    spriteRendererCount = 3;
-    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 8, ME::Color::White());
-    spriteRenderers[1] = new ME::SpriteRenderer(0, 0, 8, ME::Color::Green());
-    spriteRenderers[2] = new ME::SpriteRenderer(0, 0, 8, ME::Color::Red());
+    spriteRendererCount = 100 * 100;
+    int gridCount = 100;
+
+    ME::Random randomColor("ColorSprite", true);
+    for (uint16_t i = 0; i < spriteRendererCount; ++i) {
+        int x = i % gridCount;
+        int y = (i / gridCount) % gridCount;
+
+        ME::Color color = ME::Color::RandomColorPretty(randomColor);
+        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 8, color);
+    }
 }

@@ -22,20 +22,26 @@ class Transform {
     Transform();
     ~Transform();
 
-    void SetPosition(float x, float y, float z);
     ME::Vec3 GetPosition() const {
         return position;
     }
+    void SetPosition(float x, float y, float z);
+    // For 2D transforms, set z to 0.0f.
+    void SetPosition(float x, float y);
 
-    void SetRotation(float x, float y, float z, float w = 1.0f);
     ME::Vec4 GetRotation() const {
         return rotation;
     }
+    void SetRotation(float x, float y, float z, float w = 1.0f);
 
-    void SetScale(float x, float y, float z);
     ME::Vec3 GetScale() const {
         return scale;
     }
+    void SetScale(float x, float y, float z);
+    // For 2D transforms, set z to 1.0f.
+    void SetScale(float x, float y);
+    // This will set the scale to the same value for all axes.
+    void SetScale(float scale);
 
     ME::Mat4 GetModelMatrix() const {
         // Create the model matrix using position, rotation, and scale.

@@ -14,6 +14,10 @@ void ME::Transform::SetPosition(float x, float y, float z) {
     position.z = z;
 }
 
+void ME::Transform::SetPosition(float x, float y) {
+    SetPosition(x, y, 0.0f);
+}
+
 void ME::Transform::SetRotation(float x, float y, float z, float w) {
     rotation.x = x;
     rotation.y = y;
@@ -25,4 +29,12 @@ void ME::Transform::SetScale(float x, float y, float z) {
     scale.x = x;
     scale.y = y;
     scale.z = z;
+}
+
+void ME::Transform::SetScale(float x, float y) {
+    SetScale(x, y, 1.0f);
+}
+
+void ME::Transform::SetScale(float scale) {
+    SetScale(scale, scale, scale);
 }
