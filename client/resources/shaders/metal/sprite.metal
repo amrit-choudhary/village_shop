@@ -9,19 +9,19 @@ struct VertexIn {
 struct VertexOut {
     float4 position [[position]];
     float2 uv;
-    float4 tint;
+    float4 color;
 };
 
 vertex VertexOut vertexMain(VertexIn in [[stage_in]], 
                             constant float4x4& modelMatrix      [[buffer(1)]],
-                            constant float4x4& projectionMatrix [[buffer(2)]],
-                            constant float4& tint               [[buffer(3)]]) {
+                            constant float4x4& viewMatrix       [[buffer(2)]],
+                            constant float4x4& projectionMatrix [[buffer(3)]],
+                            constant float4& color              [[buffer(4)]]) {
 
     VertexOut out;
-    // out.position = projectionMatrix * viewMatrix * modelMatrix * float4(in.position, 1.0f);
-    out.position = projectionMatrix * modelMatrix * float4(in.position, 0.0f, 1.0f);
+    out.position = projectionMatrix * viewMatrix * modelMatrix * float4(in.position, 0.0f, 1.0f);
     out.uv = float2(in.uv.x, 1.0f - in.uv.y);
-    out.tint = tint;
+    out.color = color;
     return out;
 }
 
@@ -33,5 +33,5 @@ fragment half4 fragmentMain(VertexOut in [[stage_in]],
     if(texel.a < 0.1f){
         discard_fragment();
     }
-    return texel * half4(in.tint);
+    return texel * half4(in.color);
 }

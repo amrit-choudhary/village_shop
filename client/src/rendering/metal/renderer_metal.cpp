@@ -83,21 +83,23 @@ void ME::RendererMetal::Draw(MTK::View* view) {
                                    MTL::IndexType::IndexTypeUInt32, mesh->indexBuffer, 0, 1);
     }
 
-    // Draw  2D Items.
+    // Draw   2D Items.
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
+    Vec16 spriteViewMatVec = scene->spriteCamera->GetViewMatrix().GetData();
+    enc->setVertexBytes(&spriteViewMatVec, sizeof(ME::Vec16), 2);
     Vec16 spriteProjectionMatVec = scene->spriteCamera->GetProjectionMatrix().GetData();
-    enc->setVertexBytes(&spriteProjectionMatVec, sizeof(ME::Vec16), 2);
+    enc->setVertexBytes(&spriteProjectionMatVec, sizeof(ME::Vec16), 3);
 
     for (uint16_t i = 0; i < scene->spriteRendererCount; ++i) {
         ME::QuadMetal* quad = scene->quads[scene->spriteRenderers[i]->quadId];
         ME::TextureMetal* texture = scene->textures[scene->spriteRenderers[i]->textureId];
-        ME::Color tint = scene->spriteRenderers[i]->color;
+        ME::Color color = scene->spriteRenderers[i]->color;
 
         enc->setVertexBuffer(quad->vertexBuffer, 0, 0);
         Vec16 modelMatVec = scene->spriteTransforms[i]->GetModelMatrix().GetData();
         enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
-        enc->setVertexBytes(&tint, sizeof(ME::Color), 3);
+        enc->setVertexBytes(&color, sizeof(ME::Color), 4);
         enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
         enc->setFragmentTexture(texture->GetTextureMetal(), 0);
 
