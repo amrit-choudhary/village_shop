@@ -34,6 +34,7 @@ class SceneMetal {
     ME::MeshMetal** meshes;
     ME::QuadMetal** quads;
     ME::TextureMetal** textures;
+    ME::TextureMetal** spriteTextures;
     MTL::SamplerState** textureSamplerStates;
     ME::Transform** transforms;
     ME::MeshRenderer** meshRenderers;
@@ -53,6 +54,7 @@ class SceneMetal {
     void MakeMeshes();
     void MakeQuads();
     void MakeTextures();
+    void MakeSpriteTextures();
     void MakeShaders();
     void MakeTextureSamplers();
 };

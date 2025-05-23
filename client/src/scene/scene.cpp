@@ -23,6 +23,7 @@ ME::Scene::~Scene() {
     delete[] meshPaths;
     delete[] quadPaths;
     delete[] texturePaths;
+    delete[] spriteTexturePaths;
     delete[] shaderPaths;
     delete[] textureSamplers;
 
@@ -51,6 +52,7 @@ void ME::Scene::CreateResources() {
     meshPaths = new const char*[MaxMeshCount];
     quadPaths = new const char*[MaxQuadCount];
     texturePaths = new const char*[MaxTextureCount];
+    spriteTexturePaths = new const char*[MaxSpriteTextureCount];
     shaderPaths = new const char*[MaxShaderCount];
     textureSamplers = new ME::TextureSampler[MaxSamplerCount];
     transforms = new ME::Transform*[MaxTransformCount];
@@ -66,6 +68,7 @@ void ME::Scene::CreateResources() {
     quadPaths[0] = "meshes/quad.obj";  // First one is default. Not loaded from obj.
     quadCount = 1;
 
+    // Textures for 3D objects.
     texturePaths[0] = "textures/world/cobblestone.png";
     texturePaths[1] = "textures/world/dirt.png";
     texturePaths[2] = "textures/world/ice.png";
@@ -75,10 +78,12 @@ void ME::Scene::CreateResources() {
     texturePaths[5] = "textures/world/torchflower.png";
     texturePaths[6] = "textures/world/poppy.png";
     texturePaths[7] = "textures/world/peony_top.png";
+    textureCount = 8;
 
-    texturePaths[8] = "textures/sprites/tileGrey_01.png";
-
-    textureCount = 9;
+    // Textures for 2D objects.
+    spriteTexturePaths[0] = "textures/sprites/tileGrey_01.png";
+    spriteTexturePaths[1] = "textures/sprites/monochrome.png";
+    spriteTextureCount = 2;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
@@ -165,10 +170,10 @@ void ME::Scene::BuildMeshRenderers() {
 }
 
 void ME::Scene::BuildSpriteTransforms() {
-    spriteTransformCount = 100 * 100;
+    spriteTransformCount = 10 * 10;
     int spriteSize = 20;
-    int gridCount = 100;
-    int gridOffset = -900;
+    int gridCount = 10;
+    int gridOffset = -90;
 
     for (uint16_t i = 0; i < spriteTransformCount; ++i) {
         int x = i % gridCount;
@@ -184,8 +189,8 @@ void ME::Scene::BuildSpriteTransforms() {
 }
 
 void ME::Scene::BuildSpriteRenderers() {
-    spriteRendererCount = 100 * 100;
-    int gridCount = 100;
+    spriteRendererCount = 10 * 10;
+    int gridCount = 10;
 
     ME::Random randomColor("ColorSprite", true);
     for (uint16_t i = 0; i < spriteRendererCount; ++i) {
@@ -193,6 +198,6 @@ void ME::Scene::BuildSpriteRenderers() {
         int y = (i / gridCount) % gridCount;
 
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 8, color);
+        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, color);
     }
 }

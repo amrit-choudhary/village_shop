@@ -15,6 +15,7 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     meshes = new ME::MeshMetal*[ME::MaxMeshCount];
     quads = new ME::QuadMetal*[ME::MaxQuadCount];
     textures = new ME::TextureMetal*[ME::MaxTextureCount];
+    spriteTextures = new ME::TextureMetal*[ME::MaxSpriteTextureCount];
     textureSamplerStates = new MTL::SamplerState*[ME::MaxSamplerCount];
 
     this->transforms = scene->transforms;
@@ -30,6 +31,7 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     MakeMeshes();
     MakeQuads();
     MakeTextures();
+    MakeSpriteTextures();
     MakeShaders();
     MakeTextureSamplers();
 }
@@ -54,6 +56,11 @@ ME::SceneMetal::~SceneMetal() {
     }
     delete[] textures;
 
+    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
+        delete spriteTextures[i];
+    }
+    delete[] spriteTextures;
+
     for (uint8_t i = 0; i < scene->textureSamplerCount; i++) {
         textureSamplerStates[i]->release();
     }
@@ -77,6 +84,12 @@ void ME::SceneMetal::MakeQuads() {
 void ME::SceneMetal::MakeTextures() {
     for (uint8_t i = 0; i < scene->textureCount; i++) {
         textures[i] = new ME::TextureMetal(scene->texturePaths[i], device, true, cmdQueue);
+    }
+}
+
+void ME::SceneMetal::MakeSpriteTextures() {
+    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
+        spriteTextures[i] = new ME::TextureMetal(scene->spriteTexturePaths[i], device, false, cmdQueue);
     }
 }
 

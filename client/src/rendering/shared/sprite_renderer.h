@@ -16,12 +16,13 @@ namespace ME {
 class SpriteRenderer {
    public:
     SpriteRenderer() = delete;
-    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, const Color& color)
-        : quadId(quadId), materialId(materialId), textureId(textureId), color(color) {}
+    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t atlasIndex, const Color& color)
+        : quadId(quadId), materialId(materialId), textureId(textureId), atlasIndex(atlasIndex), color(color) {}
     ~SpriteRenderer();
 
     const uint8_t quadId = 0;
     const uint8_t textureId = 0;
+    const uint8_t atlasIndex = 0;
     const uint8_t materialId = 0;
     const ME::Color color;
 };
