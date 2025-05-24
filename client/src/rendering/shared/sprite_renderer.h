@@ -9,9 +9,20 @@
 #include <string>
 
 #include "color.h"
+#include "src/math/vec16.h"
 #include "transform.h"
 
 namespace ME {
+
+/**
+ * Data to hold the sprite renderer instance data.
+ * Used for instanced rendering.
+ */
+class SpriteRendererInstanceData {
+   public:
+    ME::Vec16 modelMatrixData;
+    ME::Color color;
+};
 
 class SpriteRenderer {
    public:

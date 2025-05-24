@@ -12,6 +12,8 @@ ME::Scene::Scene() {
     BuildMeshRenderers();
     BuildSpriteTransforms();
     BuildSpriteRenderers();
+    BuildInstancedSpriteTransforms();
+    BuildInstancedSpriteRenderers();
 }
 
 ME::Scene::~Scene() {
@@ -46,6 +48,21 @@ ME::Scene::~Scene() {
         delete spriteRenderers[i];
     }
     delete[] spriteRenderers;
+
+    for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
+        delete instancedSpriteTransforms[i];
+    }
+    delete[] instancedSpriteTransforms;
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        delete instancedSpriteRenderers[i];
+    }
+    delete[] instancedSpriteRenderers;
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        delete spriteInstanceData[i];
+    }
+    delete[] spriteInstanceData;
 }
 
 void ME::Scene::CreateResources() {
@@ -59,6 +76,9 @@ void ME::Scene::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[MaxSpriteRendererCount];
+    instancedSpriteTransforms = new ME::Transform*[MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers = new ME::SpriteRenderer*[MaxInstancedSpriteRendererCount];
+    spriteInstanceData = new ME::SpriteRendererInstanceData*[MaxInstancedSpriteRendererCount];
 
     // TODO: Make cubes pivot at center.
     meshPaths[0] = "meshes/cube_unshared.obj";
@@ -87,7 +107,9 @@ void ME::Scene::CreateResources() {
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
-    shaderCount = 2;
+    shaderPaths[2] = "shaders/metal/sprite.metal";
+    shaderPaths[3] = "shaders/metal/sprite_instanced.metal";
+    shaderCount = 4;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -199,5 +221,42 @@ void ME::Scene::BuildSpriteRenderers() {
 
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
         spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, color);
+    }
+}
+
+void ME::Scene::BuildInstancedSpriteTransforms() {
+    instancedSpriteTransformCount = 300 * 300;
+    int spriteSize = 6;
+    int gridCount = 300;
+    int gridOffset = -900;
+
+    for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
+        int x = i % gridCount;
+        int y = (i / gridCount) % gridCount;
+
+        float px = x * spriteSize + gridOffset;
+        float py = y * spriteSize + gridOffset;
+
+        instancedSpriteTransforms[i] = new ME::Transform();
+        instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
+        instancedSpriteTransforms[i]->SetScale(spriteSize, spriteSize);
+    }
+}
+
+void ME::Scene::BuildInstancedSpriteRenderers() {
+    instancedSpriteRendererCount = 300 * 300;
+    int gridCount = 300;
+
+    ME::Random randomColor("ColorInstancedSprite", true);
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        int x = i % gridCount;
+        int y = (i / gridCount) % gridCount;
+
+        ME::Color color = ME::Color::RandomColorPretty(randomColor);
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, color);
+
+        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
+        spriteInstanceData[i]->color = color;
     }
 }

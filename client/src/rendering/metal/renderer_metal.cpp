@@ -87,26 +87,52 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device));
     enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
 
+    enc->setVertexBuffer(scene->quads[0]->vertexBuffer, 0, 0);
     Vec16 spriteViewMatVec = scene->spriteCamera->GetViewMatrix().GetData();
     enc->setVertexBytes(&spriteViewMatVec, sizeof(ME::Vec16), 2);
     Vec16 spriteProjectionMatVec = scene->spriteCamera->GetProjectionMatrix().GetData();
-    enc->setVertexBuffer(scene->quads[0]->vertexBuffer, 0, 0);
     enc->setVertexBytes(&spriteProjectionMatVec, sizeof(ME::Vec16), 3);
     ME::TextureMetal* texture = scene->spriteTextures[scene->spriteRenderers[0]->textureId];
     enc->setFragmentTexture(texture->GetTextureMetal(), 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
+    ME::QuadMetal* quad = scene->quads[scene->instancedSpriteRenderers[0]->quadId];
 
     for (uint16_t i = 0; i < scene->spriteRendererCount; ++i) {
-        ME::QuadMetal* quad = scene->quads[scene->spriteRenderers[i]->quadId];
         ME::Color color = scene->spriteRenderers[i]->color;
-
+        enc->setVertexBytes(&color, sizeof(ME::Color), 4);
         Vec16 modelMatVec = scene->spriteTransforms[i]->GetModelMatrix().GetData();
         enc->setVertexBytes(&modelMatVec, sizeof(ME::Vec16), 1);
-        enc->setVertexBytes(&color, sizeof(ME::Color), 4);
 
         enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
                                    MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, 1);
     }
+
+    // Draw Instanced 2D Items.
+    const char* insShaderPath = "shaders/metal/sprite_instanced.metal";
+    enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device, insShaderPath));
+    enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
+
+    enc->setVertexBuffer(scene->quads[0]->vertexBuffer, 0, 0);
+    Vec16 spriteViewMatVec2 = scene->spriteCamera->GetViewMatrix().GetData();
+    enc->setVertexBytes(&spriteViewMatVec2, sizeof(ME::Vec16), 2);
+    Vec16 spriteProjectionMatVec2 = scene->spriteCamera->GetProjectionMatrix().GetData();
+    enc->setVertexBytes(&spriteProjectionMatVec2, sizeof(ME::Vec16), 3);
+    ME::TextureMetal* texture2 = scene->spriteTextures[scene->spriteRenderers[0]->textureId];
+    enc->setFragmentTexture(texture2->GetTextureMetal(), 0);
+    enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
+
+    // TODO: Use array of data for sprite instance data, instead of array of pointers.
+    for (uint32_t i = 0; i < scene->instancedSpriteTransformCount; ++i) {
+        ((ME::SpriteRendererInstanceData*)scene->spriteInstanceBuffer->contents())[i] = *(scene->spriteInstanceData[i]);
+    }
+
+    scene->spriteInstanceBuffer->didModifyRange(
+        NS::Range(0, sizeof(ME::SpriteRendererInstanceData) * scene->instancedSpriteTransformCount));
+    enc->setVertexBuffer(scene->spriteInstanceBuffer, 0, 1);
+
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
+                               MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0,
+                               scene->instancedSpriteTransformCount);
 
     // End of drawing.
     enc->endEncoding();

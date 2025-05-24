@@ -22,11 +22,16 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->transformCount = scene->transformCount;
     this->spriteTransforms = scene->spriteTransforms;
     this->spriteTransformCount = scene->spriteTransformCount;
+    this->instancedSpriteTransforms = scene->instancedSpriteTransforms;
+    this->instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
 
     this->meshRenderers = scene->meshRenderers;
     this->meshRendererCount = scene->meshRendererCount;
     this->spriteRenderers = scene->spriteRenderers;
     this->spriteRendererCount = scene->spriteRendererCount;
+    this->instancedSpriteRenderers = scene->instancedSpriteRenderers;
+    this->instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
+    this->spriteInstanceData = scene->spriteInstanceData;
 
     MakeMeshes();
     MakeQuads();
@@ -34,6 +39,8 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     MakeSpriteTextures();
     MakeShaders();
     MakeTextureSamplers();
+
+    MakeSpriteInstanceBuffer();
 }
 
 ME::SceneMetal::~SceneMetal() {
@@ -103,6 +110,11 @@ void ME::SceneMetal::MakeTextureSamplers() {
             textureSamplerStates[i] = ME::TextureMetal::GetSamplerStateLinear(device);
         }
     }
+}
+
+void ME::SceneMetal::MakeSpriteInstanceBuffer() {
+    spriteInstanceBuffer = device->newBuffer(sizeof(ME::SpriteRendererInstanceData) * instancedSpriteRendererCount,
+                                             MTL::ResourceStorageModeManaged);
 }
 
 #endif

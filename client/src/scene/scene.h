@@ -24,10 +24,12 @@ constexpr uint8_t MaxSpriteTextureCount = 128;
 constexpr uint8_t MaxShaderCount = 128;
 constexpr uint8_t MaxMaterialCount = 128;
 constexpr uint8_t MaxSamplerCount = 16;
-constexpr uint16_t MaxTransformCount = 9999;
-constexpr uint16_t MaxMeshRendererCount = 9999;
-constexpr uint16_t MaxSpriteTransformCount = 9999;
-constexpr uint16_t MaxSpriteRendererCount = 9999;
+constexpr uint16_t MaxTransformCount = 1'000;
+constexpr uint16_t MaxMeshRendererCount = 1'000;
+constexpr uint16_t MaxSpriteTransformCount = 1'000;
+constexpr uint16_t MaxSpriteRendererCount = 1'000;
+constexpr uint32_t MaxInstancedSpriteTransformCount = 100'000;
+constexpr uint32_t MaxInstancedSpriteRendererCount = 100'000;
 
 class Scene {
    public:
@@ -54,6 +56,9 @@ class Scene {
     ME::MeshRenderer** meshRenderers;
     ME::Transform** spriteTransforms;
     ME::SpriteRenderer** spriteRenderers;
+    ME::Transform** instancedSpriteTransforms;
+    ME::SpriteRenderer** instancedSpriteRenderers;
+    ME::SpriteRendererInstanceData** spriteInstanceData;
 
     uint8_t meshCount;
     uint8_t quadCount;
@@ -65,6 +70,8 @@ class Scene {
     uint16_t meshRendererCount;
     uint16_t spriteTransformCount;
     uint16_t spriteRendererCount;
+    uint32_t instancedSpriteTransformCount;
+    uint32_t instancedSpriteRendererCount;
 
     void CreateResources();
     void BuildLights();
@@ -73,6 +80,8 @@ class Scene {
     void BuildMeshRenderers();
     void BuildSpriteTransforms();
     void BuildSpriteRenderers();
+    void BuildInstancedSpriteTransforms();
+    void BuildInstancedSpriteRenderers();
 };
 
 }  // namespace ME
