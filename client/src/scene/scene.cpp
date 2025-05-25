@@ -106,7 +106,8 @@ void ME::Scene::CreateResources() {
     spriteTexturePaths[0] = "textures/sprites/tileGrey_01.png";
     spriteTexturePaths[1] = "textures/sprites/monochrome.png";
     spriteTexturePaths[2] = "textures/font/ascii.png";
-    spriteTextureCount = 3;
+    spriteTexturePaths[3] = "textures/font/ascii_ibm_transparent.png";
+    spriteTextureCount = 4;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
@@ -116,7 +117,8 @@ void ME::Scene::CreateResources() {
 
     textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1078, 49, 22, 832, 373};
     textureAtlasProperties[1] = ME::TextureAtlasProperties{8, 8, 0, 224, 16, 14, 128, 128};
-    textureAtlasPropertiesCount = 1;
+    textureAtlasProperties[2] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
+    textureAtlasPropertiesCount = 3;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -267,10 +269,10 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
-        // spriteInstanceData[i]->color = color;
-        spriteInstanceData[i]->color = ME::Color::Black();
+        spriteInstanceData[i]->color = color;
+        // spriteInstanceData[i]->color = ME::Color::White();
         // spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
-        spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(32, 126));
+        // spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(32, 126));
         spriteInstanceData[i]->atlasIndex = ' ';
     }
 

@@ -120,11 +120,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&spriteViewMatVec2, sizeof(ME::Vec16), 2);
     Vec16 spriteProjectionMatVec2 = scene->spriteCamera->GetProjectionMatrix().GetData();
     enc->setVertexBytes(&spriteProjectionMatVec2, sizeof(ME::Vec16), 3);
-    ME::TextureMetal* texture2 = scene->spriteTextures[2];
+    ME::TextureMetal* texture2 = scene->spriteTextures[3];
     enc->setFragmentTexture(texture2->GetTextureMetal(), 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
 
-    ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[1];
+    ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[2];
     enc->setFragmentBytes(&atlasProps, sizeof(ME::TextureAtlasProperties), 1);
 
     // TODO: Use    array of data for sprite instance data, instead of array of pointers.
