@@ -1,6 +1,7 @@
 #include "scene.h"
 
 #include <cmath>
+#include <cstring>
 
 #include "../../../shared/src/random/random_engine.h"
 
@@ -234,12 +235,12 @@ void ME::Scene::BuildSpriteRenderers() {
 }
 
 void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = 2 * 20;
-    int spriteSize = 80;
-    int gridCount = 20;
-    int gridOffsetX = -600;
-    int gridOffsetY = 100;
-    int padding = 8;
+    instancedSpriteTransformCount = 25 * 25;
+    int spriteSize = 60;
+    int gridCount = 25;
+    int gridOffsetX = -725;
+    int gridOffsetY = -500;
+    int padding = 0;
 
     for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
         int x = i % gridCount;
@@ -255,29 +256,37 @@ void ME::Scene::BuildInstancedSpriteTransforms() {
 }
 
 void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = 2 * 20;
-    int gridCount = 20;
+    instancedSpriteRendererCount = 25 * 25;
+    int gridCount = 25;
 
     ME::Random randomColor("ColorInstancedSprite", true);
     ME::Random randomAtlasIndex("AtlasIndex", true);
+    ME::Random randomGround("Ground", true);
     for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
-        ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, color);
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
-        spriteInstanceData[i]->color = color;
-        // spriteInstanceData[i]->color = ME::Color::White();
-        // spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
-        // spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(32, 126));
-        spriteInstanceData[i]->atlasIndex = ' ';
-    }
 
-    const char* name = "AMRIT CHOUDHARY     SWATI THAKUR";
-    for (int i = 0; i < std::strlen(name); ++i) {
-        spriteInstanceData[i]->atlasIndex = name[i];
+        if (x == 0 || x == gridCount - 1 || y == 0 || y == gridCount - 1) {
+            spriteInstanceData[i]->atlasIndex = 16;
+            spriteInstanceData[i]->color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
+        } else {
+            uint32_t val = randomGround.NextRange(0, 3);
+            if (val < 3) {
+                // Ground.
+                spriteInstanceData[i]->atlasIndex = 1;
+                spriteInstanceData[i]->color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
+            } else {
+                // Tiles
+
+                ME::Color color = ME::Color::RandomColorPretty(randomColor);
+                spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
+                spriteInstanceData[i]->color = color;
+            }
+        }
     }
 }

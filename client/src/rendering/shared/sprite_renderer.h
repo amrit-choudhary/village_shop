@@ -6,7 +6,6 @@
 #pragma once
 
 #include <cstdint>
-#include <string>
 
 #include "color.h"
 #include "src/math/vec16.h"
