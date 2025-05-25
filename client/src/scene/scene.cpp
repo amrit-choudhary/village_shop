@@ -105,7 +105,8 @@ void ME::Scene::CreateResources() {
     // Textures for 2D objects.
     spriteTexturePaths[0] = "textures/sprites/tileGrey_01.png";
     spriteTexturePaths[1] = "textures/sprites/monochrome.png";
-    spriteTextureCount = 2;
+    spriteTexturePaths[2] = "textures/font/ascii.png";
+    spriteTextureCount = 3;
 
     shaderPaths[0] = "shaders/metal/basic.metal";
     shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
@@ -114,6 +115,7 @@ void ME::Scene::CreateResources() {
     shaderCount = 4;
 
     textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1078, 49, 22, 832, 373};
+    textureAtlasProperties[1] = ME::TextureAtlasProperties{8, 8, 0, 224, 16, 14, 128, 128};
     textureAtlasPropertiesCount = 1;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
@@ -230,18 +232,19 @@ void ME::Scene::BuildSpriteRenderers() {
 }
 
 void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = 20 * 20;
+    instancedSpriteTransformCount = 2 * 20;
     int spriteSize = 80;
     int gridCount = 20;
-    int gridOffset = -800;
+    int gridOffsetX = -600;
+    int gridOffsetY = 100;
     int padding = 8;
 
     for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
-        float px = x * (spriteSize + padding) + gridOffset;
-        float py = y * (spriteSize + padding) + gridOffset;
+        float px = x * (spriteSize + padding) + gridOffsetX;
+        float py = y * (spriteSize + padding) + gridOffsetY;
 
         instancedSpriteTransforms[i] = new ME::Transform();
         instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
@@ -250,7 +253,7 @@ void ME::Scene::BuildInstancedSpriteTransforms() {
 }
 
 void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = 20 * 20;
+    instancedSpriteRendererCount = 2 * 20;
     int gridCount = 20;
 
     ME::Random randomColor("ColorInstancedSprite", true);
@@ -264,7 +267,15 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
-        spriteInstanceData[i]->color = color;
-        spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
+        // spriteInstanceData[i]->color = color;
+        spriteInstanceData[i]->color = ME::Color::Black();
+        // spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
+        spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(32, 126));
+        spriteInstanceData[i]->atlasIndex = ' ';
+    }
+
+    const char* name = "AMRIT CHOUDHARY     SWATI THAKUR";
+    for (int i = 0; i < std::strlen(name); ++i) {
+        spriteInstanceData[i]->atlasIndex = name[i];
     }
 }

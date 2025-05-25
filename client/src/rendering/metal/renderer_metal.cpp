@@ -109,8 +109,10 @@ void ME::RendererMetal::Draw(MTK::View* view) {
 
     // Draw Instanced 2D Items.
     const char* insShaderPath = "shaders/metal/sprite_instanced.metal";
-    enc->setRenderPipelineState(ME::RenderPipelineStateMetal::GetNewPSO2D(device, insShaderPath));
-    enc->setDepthStencilState(ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device));
+    MTL::RenderPipelineState* pso = ME::RenderPipelineStateMetal::GetNewPSO2D(device, insShaderPath);
+    MTL::DepthStencilState* dss = ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device);
+    enc->setRenderPipelineState(pso);
+    enc->setDepthStencilState(dss);
 
     ME::QuadMetal* quad = scene->quads[scene->instancedSpriteRenderers[0]->quadId];
     enc->setVertexBuffer(scene->quads[0]->vertexBuffer, 0, 0);
@@ -118,11 +120,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&spriteViewMatVec2, sizeof(ME::Vec16), 2);
     Vec16 spriteProjectionMatVec2 = scene->spriteCamera->GetProjectionMatrix().GetData();
     enc->setVertexBytes(&spriteProjectionMatVec2, sizeof(ME::Vec16), 3);
-    ME::TextureMetal* texture2 = scene->spriteTextures[1];
+    ME::TextureMetal* texture2 = scene->spriteTextures[2];
     enc->setFragmentTexture(texture2->GetTextureMetal(), 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
 
-    ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[0];
+    ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[1];
     enc->setFragmentBytes(&atlasProps, sizeof(ME::TextureAtlasProperties), 1);
 
     // TODO: Use    array of data for sprite instance data, instead of array of pointers.
@@ -143,5 +145,8 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     cmd->presentDrawable(view->currentDrawable());
     cmd->commit();
 
+    // Cleanup.
+    pso->release();
+    dss->release();
     pool->release();
 }
