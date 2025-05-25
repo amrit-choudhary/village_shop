@@ -26,6 +26,7 @@ ME::Scene::~Scene() {
     delete[] quadPaths;
     delete[] texturePaths;
     delete[] spriteTexturePaths;
+    delete[] textureAtlasProperties;
     delete[] shaderPaths;
     delete[] textureSamplers;
 
@@ -70,6 +71,7 @@ void ME::Scene::CreateResources() {
     quadPaths = new const char*[MaxQuadCount];
     texturePaths = new const char*[MaxTextureCount];
     spriteTexturePaths = new const char*[MaxSpriteTextureCount];
+    textureAtlasProperties = new ME::TextureAtlasProperties[MaxTextureAtlasPropertiesCount];
     shaderPaths = new const char*[MaxShaderCount];
     textureSamplers = new ME::TextureSampler[MaxSamplerCount];
     transforms = new ME::Transform*[MaxTransformCount];
@@ -110,6 +112,9 @@ void ME::Scene::CreateResources() {
     shaderPaths[2] = "shaders/metal/sprite.metal";
     shaderPaths[3] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 4;
+
+    textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1078, 49, 22, 832, 373};
+    textureAtlasPropertiesCount = 1;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -225,17 +230,18 @@ void ME::Scene::BuildSpriteRenderers() {
 }
 
 void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = 300 * 300;
-    int spriteSize = 6;
-    int gridCount = 300;
-    int gridOffset = -900;
+    instancedSpriteTransformCount = 20 * 20;
+    int spriteSize = 80;
+    int gridCount = 20;
+    int gridOffset = -800;
+    int padding = 8;
 
     for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
-        float px = x * spriteSize + gridOffset;
-        float py = y * spriteSize + gridOffset;
+        float px = x * (spriteSize + padding) + gridOffset;
+        float py = y * (spriteSize + padding) + gridOffset;
 
         instancedSpriteTransforms[i] = new ME::Transform();
         instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
@@ -244,19 +250,21 @@ void ME::Scene::BuildInstancedSpriteTransforms() {
 }
 
 void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = 300 * 300;
-    int gridCount = 300;
+    instancedSpriteRendererCount = 20 * 20;
+    int gridCount = 20;
 
     ME::Random randomColor("ColorInstancedSprite", true);
+    ME::Random randomAtlasIndex("AtlasIndex", true);
     for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, color);
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, color);
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
         spriteInstanceData[i]->color = color;
+        spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
     }
 }

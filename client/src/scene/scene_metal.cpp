@@ -32,6 +32,7 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->instancedSpriteRenderers = scene->instancedSpriteRenderers;
     this->instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
     this->spriteInstanceData = scene->spriteInstanceData;
+    this->textureAtlasProperties = scene->textureAtlasProperties;
 
     MakeMeshes();
     MakeQuads();

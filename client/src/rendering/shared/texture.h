@@ -9,6 +9,22 @@
 
 namespace ME {
 
+/**
+ * Data related to texture atlases.
+ * This is used to hold information about the texture atlas, such as the size, number of textures, etc.
+ */
+class TextureAtlasProperties {
+   public:
+    uint16_t tileSizeX;    // Width of each tile in the atlas
+    uint16_t tileSizeY;    // Size of each tile in the atlas
+    uint16_t padding;      // Padding between tiles in the atlas
+    uint16_t numTextures;  // Number of textures in the atlas
+    uint16_t numTilesX;    // Number of tiles in the X direction
+    uint16_t numTilesY;    // Number of tiles in the Y direction
+    uint16_t width;        // Width of the atlas texture
+    uint16_t height;       // Height of the atlas texture
+};
+
 class Texture {
    public:
     Texture();

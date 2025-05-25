@@ -35,6 +35,7 @@ class SceneMetal {
     ME::QuadMetal** quads;
     ME::TextureMetal** textures;
     ME::TextureMetal** spriteTextures;
+    ME::TextureAtlasProperties* textureAtlasProperties;
     MTL::SamplerState** textureSamplerStates;
     ME::Transform** transforms;
     ME::MeshRenderer** meshRenderers;

@@ -13,6 +13,7 @@
 #include "../rendering/shared/material.h"
 #include "../rendering/shared/mesh_renderer.h"
 #include "../rendering/shared/sprite_renderer.h"
+#include "../rendering/shared/texture.h"
 #include "../rendering/shared/texture_sampler.h"
 
 namespace ME {
@@ -21,6 +22,7 @@ constexpr uint8_t MaxMeshCount = 128;
 constexpr uint8_t MaxQuadCount = 8;
 constexpr uint8_t MaxTextureCount = 128;
 constexpr uint8_t MaxSpriteTextureCount = 128;
+constexpr uint8_t MaxTextureAtlasPropertiesCount = 128;
 constexpr uint8_t MaxShaderCount = 128;
 constexpr uint8_t MaxMaterialCount = 128;
 constexpr uint8_t MaxSamplerCount = 16;
@@ -59,11 +61,13 @@ class Scene {
     ME::Transform** instancedSpriteTransforms;
     ME::SpriteRenderer** instancedSpriteRenderers;
     ME::SpriteRendererInstanceData** spriteInstanceData;
+    ME::TextureAtlasProperties* textureAtlasProperties;
 
     uint8_t meshCount;
     uint8_t quadCount;
     uint8_t textureCount;
     uint8_t spriteTextureCount;
+    uint8_t textureAtlasPropertiesCount;
     uint8_t shaderCount;
     uint8_t textureSamplerCount;
     uint16_t transformCount;
