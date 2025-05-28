@@ -1,7 +1,7 @@
 # The Village Shop
 
 <p align="center">
-<img src="/screenshots/2025_05_25.png" width="700px" />
+<img src="/screenshots/2025-05-29.png" width="700px" />
 </p>
 
 ## Introduction
