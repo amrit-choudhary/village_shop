@@ -29,6 +29,8 @@ class Transform {
     // For 2D transforms, set z to 0.0f.
     void SetPosition(float x, float y);
 
+    void SetPosition(const ME::Vec3& pos);
+
     ME::Vec4 GetRotation() const {
         return rotation;
     }

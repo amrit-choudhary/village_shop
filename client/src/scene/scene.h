@@ -13,6 +13,7 @@
 #include "../rendering/shared/material.h"
 #include "../rendering/shared/mesh_renderer.h"
 #include "../rendering/shared/sprite_renderer.h"
+#include "../rendering/shared/text_renderer.h"
 #include "../rendering/shared/texture.h"
 #include "../rendering/shared/texture_sampler.h"
 
@@ -32,6 +33,9 @@ constexpr uint16_t MaxSpriteTransformCount = 1'000;
 constexpr uint16_t MaxSpriteRendererCount = 1'000;
 constexpr uint32_t MaxInstancedSpriteTransformCount = 100'000;
 constexpr uint32_t MaxInstancedSpriteRendererCount = 100'000;
+constexpr uint16_t MaxTextTransformsCount = 1'000;
+constexpr uint16_t MaxTextRendererCount = 1'000;
+constexpr uint32_t MaxTextInstanceDataCount = 100'000;
 
 class Scene {
    public:
@@ -62,6 +66,9 @@ class Scene {
     ME::SpriteRenderer** instancedSpriteRenderers;
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::TextureAtlasProperties* textureAtlasProperties;
+    ME::Transform** textTransforms;
+    ME::TextRenderer** textRenderers;
+    ME::TextRendererInstanceData** textInstanceData;
 
     uint8_t meshCount;
     uint8_t quadCount;
@@ -76,6 +83,9 @@ class Scene {
     uint16_t spriteRendererCount;
     uint32_t instancedSpriteTransformCount;
     uint32_t instancedSpriteRendererCount;
+    uint16_t textTransformsCount;
+    uint16_t textRendererCount;
+    uint32_t textInstanceDataCount;
 
     void CreateResources();
     void BuildLights();
@@ -86,6 +96,7 @@ class Scene {
     void BuildSpriteRenderers();
     void BuildInstancedSpriteTransforms();
     void BuildInstancedSpriteRenderers();
+    void BuildTextRenderers();
 };
 
 }  // namespace ME

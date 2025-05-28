@@ -107,7 +107,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     //                                MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, 1);
     // }
 
-    // Draw Instanced 2D Items.
+    // Draw Instanced Sprites.
     const char* insShaderPath = "shaders/metal/sprite_instanced.metal";
     MTL::RenderPipelineState* pso = ME::RenderPipelineStateMetal::GetNewPSO2D(device, insShaderPath);
     MTL::DepthStencilState* dss = ME::DepthStencilStateMetal::GetNewDepthStencilState2D(device);
@@ -127,7 +127,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[0];
     enc->setFragmentBytes(&atlasProps, sizeof(ME::TextureAtlasProperties), 1);
 
-    // TODO: Use    array of data for sprite instance data, instead of array of pointers.
+    // TODO: Use array of data for sprite instance data, instead of array of pointers.
     for (uint32_t i = 0; i < scene->instancedSpriteTransformCount; ++i) {
         ((ME::SpriteRendererInstanceData*)scene->spriteInstanceBuffer->contents())[i] = *(scene->spriteInstanceData[i]);
     }
@@ -139,6 +139,25 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
                                MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0,
                                scene->instancedSpriteTransformCount);
+
+    // Draw Text Items.
+    ME::TextureMetal* textureText = scene->spriteTextures[3];
+    enc->setFragmentTexture(textureText->GetTextureMetal(), 0);
+    enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
+
+    ME::TextureAtlasProperties atlasProps2 = scene->textureAtlasProperties[2];
+    enc->setFragmentBytes(&atlasProps2, sizeof(ME::TextureAtlasProperties), 1);
+
+    for (uint32_t i = 0; i < scene->textInstanceDataCount; ++i) {
+        ((ME::TextRendererInstanceData*)scene->textInstanceBuffer->contents())[i] = *(scene->textInstanceData[i]);
+    }
+
+    scene->textInstanceBuffer->didModifyRange(
+        NS::Range(0, sizeof(ME::TextRendererInstanceData) * scene->textInstanceDataCount));
+    enc->setVertexBuffer(scene->textInstanceBuffer, 0, 1);
+
+    enc->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, quad->indexCount,
+                               MTL::IndexType::IndexTypeUInt16, quad->indexBuffer, 0, scene->textInstanceDataCount);
 
     // End of drawing.
     enc->endEncoding();

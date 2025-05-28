@@ -15,6 +15,7 @@ ME::Scene::Scene() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
+    BuildTextRenderers();
 }
 
 ME::Scene::~Scene() {
@@ -65,6 +66,21 @@ ME::Scene::~Scene() {
         delete spriteInstanceData[i];
     }
     delete[] spriteInstanceData;
+
+    for (uint32_t i = 0; i < textTransformsCount; ++i) {
+        delete textTransforms[i];
+    }
+    delete[] textTransforms;
+
+    for (uint32_t i = 0; i < textRendererCount; ++i) {
+        delete textRenderers[i];
+    }
+    delete[] textRenderers;
+
+    for (uint32_t i = 0; i < textInstanceDataCount; ++i) {
+        delete textInstanceData[i];
+    }
+    delete[] textInstanceData;
 }
 
 void ME::Scene::CreateResources() {
@@ -82,6 +98,9 @@ void ME::Scene::CreateResources() {
     instancedSpriteTransforms = new ME::Transform*[MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers = new ME::SpriteRenderer*[MaxInstancedSpriteRendererCount];
     spriteInstanceData = new ME::SpriteRendererInstanceData*[MaxInstancedSpriteRendererCount];
+    textTransforms = new ME::Transform*[MaxTextTransformsCount];
+    textRenderers = new ME::TextRenderer*[MaxTextRendererCount];
+    textInstanceData = new ME::TextRendererInstanceData*[MaxTextInstanceDataCount];
 
     // TODO: Make cubes pivot at center.
     meshPaths[0] = "meshes/cube_unshared.obj";
@@ -289,4 +308,83 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
             }
         }
     }
+}
+
+void ME::Scene::BuildTextRenderers() {
+    textRendererCount = 3;
+    textTransformsCount = 3;
+
+    // Text 1
+    ME::TextRenderer* textRend =
+        new ME::TextRenderer{"\x06 VILLAGE SHOP \x06", 0, 2, 0, ME::Color::Green(), 100, 100, -10, 0, 0};
+    textRenderers[0] = textRend;
+
+    textTransforms[0] = new ME::Transform();
+    textTransforms[0]->SetPosition(-(textRend->GetRenderWidth() / 2.0f), -650.0f, 0.0f);
+    textTransforms[0]->SetScale(textRend->width, textRend->height);
+
+    for (uint32_t i = 0; i < textRend->GetCount(); ++i) {
+        textInstanceData[i] = new ME::TextRendererInstanceData();
+
+        ME::Transform transform;
+        ME::Vec3 position = textTransforms[0]->GetPosition();
+        position.x += (i * (textRend->width + textRend->letterSpacing));
+        transform.SetPosition(position);
+        transform.SetScale(textRend->width, textRend->height);
+        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetData();
+
+        textInstanceData[i]->color = textRend->color;
+        textInstanceData[i]->atlasIndex = textRend->text[i];
+    }
+    textInstanceDataCount = textRend->GetCount();
+
+    // Text 2
+    ME::TextRenderer* textRend2 =
+        new ME::TextRenderer{"\x10 The Game! \x11", 0, 2, 0, ME::Color::Blue(), 60, 60, -8, 0, 0};
+    textRenderers[1] = textRend2;
+
+    textTransforms[1] = new ME::Transform();
+    textTransforms[1]->SetPosition(-(textRend2->GetRenderWidth() / 2.0f), -770.0f, 0.0f);
+    textTransforms[1]->SetScale(textRend2->width, textRend2->height);
+
+    uint32_t j = textInstanceDataCount;
+    for (uint32_t i = 0; i < textRend2->GetCount(); ++i) {
+        textInstanceData[i + j] = new ME::TextRendererInstanceData();
+
+        ME::Transform transform;
+        ME::Vec3 position = textTransforms[1]->GetPosition();
+        position.x += (i * (textRend2->width + textRend2->letterSpacing));
+        transform.SetPosition(position);
+        transform.SetScale(textRend2->width, textRend2->height);
+        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetData();
+
+        textInstanceData[i + j]->color = textRend2->color;
+        textInstanceData[i + j]->atlasIndex = textRend2->text[i];
+    }
+    textInstanceDataCount += textRend2->GetCount();
+
+    // Text 3
+    ME::TextRenderer* textRend3 =
+        new ME::TextRenderer{"Created by Amrit Choudhary", 0, 2, 0, ME::Color::Purple(), 40, 40, -4, 0, 0};
+    textRenderers[2] = textRend3;
+
+    textTransforms[2] = new ME::Transform();
+    textTransforms[2]->SetPosition(-(textRend3->GetRenderWidth() / 2.0f), -880.0f, 0.0f);
+    textTransforms[2]->SetScale(textRend3->width, textRend3->height);
+
+    uint32_t k = textInstanceDataCount;
+    for (uint32_t i = 0; i < textRend3->GetCount(); ++i) {
+        textInstanceData[i + k] = new ME::TextRendererInstanceData();
+
+        ME::Transform transform;
+        ME::Vec3 position = textTransforms[2]->GetPosition();
+        position.x += (i * (textRend3->width + textRend3->letterSpacing));
+        transform.SetPosition(position);
+        transform.SetScale(textRend3->width, textRend3->height);
+        textInstanceData[i + k]->modelMatrixData = transform.GetModelMatrix().GetData();
+
+        textInstanceData[i + k]->color = textRend3->color;
+        textInstanceData[i + k]->atlasIndex = textRend3->text[i];
+    }
+    textInstanceDataCount += textRend3->GetCount();
 }

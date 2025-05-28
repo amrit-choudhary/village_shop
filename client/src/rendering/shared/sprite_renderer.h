@@ -21,7 +21,7 @@ class SpriteRendererInstanceData {
    public:
     ME::Vec16 modelMatrixData;
     ME::Color color;
-    uint16_t atlasIndex;  // Index of the texture atlas, needs 96
+    uint16_t atlasIndex;  // Index of the texture atlas
     uint8_t padding[14];  // Padding to align the structure
 };
 

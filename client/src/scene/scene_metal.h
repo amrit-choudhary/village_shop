@@ -43,6 +43,8 @@ class SceneMetal {
     ME::SpriteRenderer** spriteRenderers;
     ME::Transform** instancedSpriteTransforms;
     ME::SpriteRenderer** instancedSpriteRenderers;
+    ME::Transform** textTransforms;
+    ME::TextRenderer** textRenderers;
 
     uint16_t transformCount;
     uint16_t meshRendererCount;
@@ -50,9 +52,15 @@ class SceneMetal {
     uint16_t spriteRendererCount;
     uint32_t instancedSpriteTransformCount;
     uint32_t instancedSpriteRendererCount;
+    uint32_t textTransformsCount;
+    uint32_t textRendererCount;
+    uint32_t textInstanceDataCount;
 
     ME::SpriteRendererInstanceData** spriteInstanceData;
     MTL::Buffer* spriteInstanceBuffer;
+
+    ME::TextRendererInstanceData** textInstanceData;
+    MTL::Buffer* textInstanceBuffer;
 
    private:
     MTL::Device* device;
@@ -66,6 +74,7 @@ class SceneMetal {
     void MakeShaders();
     void MakeTextureSamplers();
     void MakeSpriteInstanceBuffer();
+    void MakeTextInstanceBuffer();
 };
 
 }  // namespace ME

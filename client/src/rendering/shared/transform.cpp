@@ -18,6 +18,10 @@ void ME::Transform::SetPosition(float x, float y) {
     SetPosition(x, y, 0.0f);
 }
 
+void ME::Transform::SetPosition(const ME::Vec3& pos) {
+    position = pos;
+}
+
 void ME::Transform::SetRotation(float x, float y, float z, float w) {
     rotation.x = x;
     rotation.y = y;

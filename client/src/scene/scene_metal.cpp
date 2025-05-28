@@ -24,6 +24,8 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->spriteTransformCount = scene->spriteTransformCount;
     this->instancedSpriteTransforms = scene->instancedSpriteTransforms;
     this->instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
+    this->textTransforms = scene->textTransforms;
+    this->textTransformsCount = scene->textTransformsCount;
 
     this->meshRenderers = scene->meshRenderers;
     this->meshRendererCount = scene->meshRendererCount;
@@ -33,6 +35,10 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
     this->spriteInstanceData = scene->spriteInstanceData;
     this->textureAtlasProperties = scene->textureAtlasProperties;
+    this->textRenderers = scene->textRenderers;
+    this->textRendererCount = scene->textRendererCount;
+    this->textInstanceData = scene->textInstanceData;
+    this->textInstanceDataCount = scene->textInstanceDataCount;
 
     MakeMeshes();
     MakeQuads();
@@ -42,6 +48,7 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     MakeTextureSamplers();
 
     MakeSpriteInstanceBuffer();
+    MakeTextInstanceBuffer();
 }
 
 ME::SceneMetal::~SceneMetal() {
@@ -116,6 +123,11 @@ void ME::SceneMetal::MakeTextureSamplers() {
 void ME::SceneMetal::MakeSpriteInstanceBuffer() {
     spriteInstanceBuffer = device->newBuffer(sizeof(ME::SpriteRendererInstanceData) * instancedSpriteRendererCount,
                                              MTL::ResourceStorageModeManaged);
+}
+
+void ME::SceneMetal::MakeTextInstanceBuffer() {
+    textInstanceBuffer = device->newBuffer(sizeof(ME::TextRendererInstanceData) * textInstanceDataCount,
+                                           MTL::ResourceStorageModeManaged);
 }
 
 #endif
