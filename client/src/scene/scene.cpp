@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "../../../shared/src/random/random_engine.h"
+#include "../../../shared/src/random/stb_perlin.h"
 
 ME::Scene::Scene() {
     CreateResources();
@@ -254,10 +255,10 @@ void ME::Scene::BuildSpriteRenderers() {
 }
 
 void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = 25 * 25;
-    int spriteSize = 60;
-    int gridCount = 25;
-    int gridOffsetX = -725;
+    instancedSpriteTransformCount = 64 * 64;
+    int spriteSize = 20;
+    int gridCount = 64;
+    int gridOffsetX = -670;
     int gridOffsetY = -500;
     int padding = 0;
 
@@ -275,12 +276,17 @@ void ME::Scene::BuildInstancedSpriteTransforms() {
 }
 
 void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = 25 * 25;
-    int gridCount = 25;
+    instancedSpriteRendererCount = 64 * 64;
+    int gridCount = 64;
 
     ME::Random randomColor("ColorInstancedSprite", true);
     ME::Random randomAtlasIndex("AtlasIndex", true);
     ME::Random randomGround("Ground", true);
+    ME::Random randomPerlinSeed("PerlinSeed", true);
+    uint32_t perlinSeedR = randomPerlinSeed.Next();
+    uint32_t perlinSeedG = randomPerlinSeed.Next();
+    uint32_t perlinSeedB = randomPerlinSeed.Next();
+
     for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
@@ -307,6 +313,16 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
                 spriteInstanceData[i]->color = color;
             }
         }
+
+        float octave = 0.045f;
+        float noiseR = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedR);
+        float noiseG = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedG);
+        float noiseB = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedB);
+        noiseR = (noiseR + 1.0f) / 2.0f;
+        noiseG = (noiseG + 1.0f) / 2.0f;
+        noiseB = (noiseB + 1.0f) / 2.0f;
+        spriteInstanceData[i]->atlasIndex = 253;
+        spriteInstanceData[i]->color = ME::Color{noiseR, noiseG, noiseB};
     }
 }
 
