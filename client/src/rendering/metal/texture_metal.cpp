@@ -10,7 +10,7 @@ ME::TextureMetal::TextureMetal(const char* path, MTL::Device* device, bool hasMi
     MTL::TextureDescriptor* textureDesc = MTL::TextureDescriptor::alloc()->init();
     textureDesc->setWidth(width);
     textureDesc->setHeight(height);
-    textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm);
+    textureDesc->setPixelFormat(MTL::PixelFormat::PixelFormatRGBA8Unorm_sRGB);
     textureDesc->setTextureType(MTL::TextureType2D);
     textureDesc->setStorageMode(MTL::StorageModeShared);
     textureDesc->setUsage(MTL::ResourceUsageSample | MTL::ResourceUsageRead | MTL::ResourceUsageWrite);
