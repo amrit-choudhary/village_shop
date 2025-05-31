@@ -1,5 +1,9 @@
 #include "scene_breakout.h"
 
+#include <cstddef>
+
+#include "../../../shared/src/random/random_engine.h"
+
 ME::SceneBreakout::SceneBreakout() : Scene() {}
 
 void ME::SceneBreakout::Init() {
@@ -79,15 +83,89 @@ void ME::SceneBreakout::BuildSpriteTransforms() {}
 void ME::SceneBreakout::BuildSpriteRenderers() {}
 
 void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
-    ME::Scene::BuildInstancedSpriteTransforms();
+    instancedSpriteTransformCount = gridCount;
+
+    for (uint8_t iy = 0; iy < gridY; ++iy) {
+        for (uint8_t ix = 0; ix < gridX; ++ix) {
+            uint16_t i = (iy * gridX) + ix;
+
+            float px = originX + (ix * (brickWidth + brickPadding));
+            float py = originY + (iy * (brickHeight + brickPadding));
+
+            instancedSpriteTransforms[i] = new ME::Transform();
+            instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
+            instancedSpriteTransforms[i]->SetScale(brickWidth, brickHeight);
+        }
+    }
 }
 
 void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
-    ME::Scene::BuildInstancedSpriteRenderers();
+    instancedSpriteRendererCount = gridCount;
+
+    ME::Random randomColor("ColorInstancedSprite", true);
+
+    for (uint16_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+
+        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
+        spriteInstanceData[i]->atlasIndex = 587;
+        spriteInstanceData[i]->color = ME::Color::RandomColorPretty(randomColor);
+    }
 }
 
 void ME::SceneBreakout::BuildTextRenderers() {
-    ME::Scene::BuildTextRenderers();
+    textRendererCount = 1;
+    textTransformsCount = 1;
+
+    // Text 1
+    ME::TextRenderer* textRend =
+        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, ME::Color::White(), 80, 80, -10, 0, 0};
+    textRenderers[0] = textRend;
+
+    textTransforms[0] = new ME::Transform();
+    textTransforms[0]->SetPosition(-(textRend->GetRenderWidth() / 2.0f), 940.0f, 0.0f);
+    textTransforms[0]->SetScale(textRend->width, textRend->height);
+
+    for (uint32_t i = 0; i < textRend->GetCount(); ++i) {
+        textInstanceData[i] = new ME::TextRendererInstanceData();
+
+        ME::Transform transform;
+        ME::Vec3 position = textTransforms[0]->GetPosition();
+        position.x += (i * (textRend->width + textRend->letterSpacing));
+        transform.SetPosition(position);
+        transform.SetScale(textRend->width, textRend->height);
+        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetData();
+
+        textInstanceData[i]->color = textRend->color;
+        textInstanceData[i]->atlasIndex = textRend->text[i];
+    }
+
+    textInstanceDataCount = textRend->GetCount();
+
+    // Text 2
+    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, ME::Color::White(), 80, 80, -8, 0, 0};
+    textRenderers[1] = textRend2;
+
+    textTransforms[1] = new ME::Transform();
+    textTransforms[1]->SetPosition(-(textRend2->GetRenderWidth() / 2.0f), 860.0f, 0.0f);
+    textTransforms[1]->SetScale(textRend2->width, textRend2->height);
+
+    uint32_t j = textInstanceDataCount;
+    for (uint32_t i = 0; i < textRend2->GetCount(); ++i) {
+        textInstanceData[i + j] = new ME::TextRendererInstanceData();
+
+        ME::Transform transform;
+        ME::Vec3 position = textTransforms[1]->GetPosition();
+        position.x += (i * (textRend2->width + textRend2->letterSpacing));
+        transform.SetPosition(position);
+        transform.SetScale(textRend2->width, textRend2->height);
+        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetData();
+
+        textInstanceData[i + j]->color = textRend2->color;
+        textInstanceData[i + j]->atlasIndex = textRend2->text[i];
+    }
+    textInstanceDataCount += textRend2->GetCount();
 }
 
 void ME::SceneBreakout::CreatePaddle() {
