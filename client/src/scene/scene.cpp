@@ -6,7 +6,9 @@
 #include "../../../shared/src/random/random_engine.h"
 #include "../../../shared/src/random/stb_perlin.h"
 
-ME::Scene::Scene() {
+ME::Scene::Scene() {}
+
+void ME::Scene::Init() {
     CreateResources();
     BuildLights();
     BuildCamera();

@@ -2,11 +2,14 @@
 
 #include "scene_metal.h"
 
+#include "scene_breakout.h"
+
 ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
     this->device = device;
     this->cmdQueue = cmdQueue;
 
-    scene = new ME::Scene();
+    scene = new ME::SceneBreakout();
+    scene->Init();
     this->ambientLight = scene->ambientLight;
     this->directionalLight = scene->directionalLight;
     this->camera = scene->camera;

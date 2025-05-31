@@ -120,7 +120,7 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     enc->setVertexBytes(&spriteViewMatVec2, sizeof(ME::Vec16), 2);
     Vec16 spriteProjectionMatVec2 = scene->spriteCamera->GetProjectionMatrix().GetData();
     enc->setVertexBytes(&spriteProjectionMatVec2, sizeof(ME::Vec16), 3);
-    ME::TextureMetal* texture2 = scene->spriteTextures[1];
+    ME::TextureMetal* texture2 = scene->spriteTextures[0];
     enc->setFragmentTexture(texture2->GetTextureMetal(), 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
 
@@ -141,11 +141,11 @@ void ME::RendererMetal::Draw(MTK::View* view) {
                                scene->instancedSpriteTransformCount);
 
     // Draw Text Items.
-    ME::TextureMetal* textureText = scene->spriteTextures[3];
+    ME::TextureMetal* textureText = scene->spriteTextures[1];
     enc->setFragmentTexture(textureText->GetTextureMetal(), 0);
     enc->setFragmentSamplerState(scene->textureSamplerStates[0], 0);
 
-    ME::TextureAtlasProperties atlasProps2 = scene->textureAtlasProperties[2];
+    ME::TextureAtlasProperties atlasProps2 = scene->textureAtlasProperties[1];
     enc->setFragmentBytes(&atlasProps2, sizeof(ME::TextureAtlasProperties), 1);
 
     for (uint32_t i = 0; i < scene->textInstanceDataCount; ++i) {

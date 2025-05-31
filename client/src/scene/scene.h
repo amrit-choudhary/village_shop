@@ -40,7 +40,7 @@ constexpr uint32_t MaxTextInstanceDataCount = 100'000;
 class Scene {
    public:
     Scene();
-    ~Scene();
+    virtual ~Scene();
 
    public:
     ME::Light* ambientLight;
@@ -87,16 +87,17 @@ class Scene {
     uint16_t textRendererCount;
     uint32_t textInstanceDataCount;
 
-    void CreateResources();
-    void BuildLights();
-    void BuildCamera();
-    void BuildTransforms();
-    void BuildMeshRenderers();
-    void BuildSpriteTransforms();
-    void BuildSpriteRenderers();
-    void BuildInstancedSpriteTransforms();
-    void BuildInstancedSpriteRenderers();
-    void BuildTextRenderers();
+    virtual void Init();
+    virtual void CreateResources();
+    virtual void BuildLights();
+    virtual void BuildCamera();
+    virtual void BuildTransforms();
+    virtual void BuildMeshRenderers();
+    virtual void BuildSpriteTransforms();
+    virtual void BuildSpriteRenderers();
+    virtual void BuildInstancedSpriteTransforms();
+    virtual void BuildInstancedSpriteRenderers();
+    virtual void BuildTextRenderers();
 };
 
 }  // namespace ME
