@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "../../../shared/src/random/random_engine.h"
+#include "level_breakout.h"
 
 ME::SceneBreakout::SceneBreakout() : Scene() {}
 
@@ -112,6 +113,9 @@ void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
 }
 
 void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
+    ME::Level level{};
+    ME::Level::Load(&level, "levels/level_1.lvl");
+
     instancedSpriteRendererCount = gridCount;
 
     ME::Random randomColor("ColorInstancedSprite", true);
@@ -127,11 +131,11 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
         uint8_t ix = i % gridX;
         uint8_t iy = ((i / gridX) % gridY);
         iy = gridY - 1 - iy;
+        uint16_t brickIndex = (iy * gridX) + ix;
 
-        if (iy < 20) {
+        if (brickIndex < level.brickCount) {
             spriteInstanceData[i]->atlasIndex = 587;  // Brick.
-            uint8_t cy = iy / 3;
-            uint8_t colorIndex = (cy % 8);
+            uint8_t colorIndex = static_cast<uint8_t>(level.bricks[brickIndex].type);
             spriteInstanceData[i]->color = colorPalette[colorIndex];
         } else {
             spriteInstanceData[i]->atlasIndex = 0;  // Black.
