@@ -163,7 +163,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
 
     // Text 1
     ME::TextRenderer* textRend =
-        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, ME::Color(0.515f, 0.625f, 0.708f, 1.0f), 80, 80, -10, 0, 0};
+        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, colorPalette[1], 80, 80, -10, 0, 0};
     textRenderers[0] = textRend;
 
     textTransforms[0] = new ME::Transform();
@@ -187,7 +187,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
     textInstanceDataCount = textRend->GetCount();
 
     // Text 2
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, ME::Color::White(), 80, 80, -8, 0, 0};
+    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, colorPalette[0], 80, 80, -8, 0, 0};
     textRenderers[1] = textRend2;
 
     textTransforms[1] = new ME::Transform();

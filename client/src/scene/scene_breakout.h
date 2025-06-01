@@ -48,10 +48,9 @@ class SceneBreakout : public Scene {
     virtual void BuildTextRenderers() override;
 
    private:
-    ME::Color colorPalette[8] = {ME::Color(0.98f, 1.0f, 1.0f, 1.0f),   ME::Color(0.23f, 0.35f, 0.46f, 1.0f),
-                                 ME::Color(0.84f, 0.26f, 0.22f, 1.0f), ME::Color(0.40f, 0.54f, 0.59f, 1.0f),
-                                 ME::Color(0.92f, 0.58f, 0.33f, 1.0f), ME::Color(0.65f, 0.81f, 0.28f, 1.0f),
-                                 ME::Color(0.88f, 0.89f, 0.88f, 1.0f), ME::Color(0.67f, 0.80f, 0.82f, 1.0f)};
+    ME::Color colorPalette[8] = {ME::Color("#fbffff"), ME::Color("#3a5975"), ME::Color("#d74339"),
+                                 ME::Color("#678b97"), ME::Color("#eb9454"), ME::Color("#a7ce47"),
+                                 ME::Color("#e1e3e1"), ME::Color("#accbd2")};
 
     void CreatePaddle();
     void CreateBall();

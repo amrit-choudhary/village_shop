@@ -21,4 +21,14 @@ template <typename T>
 T add(T a, T b) {
     return a + b;
 }
+
+/**
+ * Math class provides common math functions.
+ */
+class Math {
+   public:
+    // Clamps a value between min and max.
+    static float Clamp(float value, float min, float max);
+};
+
 }  // namespace ME

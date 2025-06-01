@@ -17,6 +17,12 @@ class Color {
 
     constexpr Color(float red, float green, float blue, float alpha = 1.0f) : r(red), g(green), b(blue), a(alpha) {}
 
+    /**
+     * Constructor that takes a hexadecimal color string (e.g., "#FF5733").
+     * The string should be in the format "RRGGBB" or "#RRGGBB".
+     */
+    Color(const char* hexColor);
+
     ~Color() = default;
 
     float r;
@@ -117,6 +123,18 @@ class Color {
 
     // Creates a ME::Color from HSV values.
     static ME::Color FromHSV(float h, float s, float v);
+
+    // Converts one color channel from linear to gamma space.
+    static float LinearToGamma(float linear);
+
+    // Converts one color channel from gamma to linear space.
+    static float GammaToLinear(float gamma);
+
+    // Converts a color from linear to gamma space.
+    static Color LinearToGamma(const Color& color);
+
+    // Converts a color from gamma to linear space.
+    static Color GammaToLinear(const Color& color);
 };
 
 }  // namespace ME
