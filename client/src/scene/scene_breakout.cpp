@@ -85,18 +85,30 @@ void ME::SceneBreakout::BuildSpriteRenderers() {}
 void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
     instancedSpriteTransformCount = gridCount;
 
-    for (uint8_t iy = 0; iy < gridY; ++iy) {
-        for (uint8_t ix = 0; ix < gridX; ++ix) {
+    for (size_t iy = 0; iy < gridY; ++iy) {
+        for (size_t ix = 0; ix < gridX; ++ix) {
             uint16_t i = (iy * gridX) + ix;
 
-            float px = originX + (ix * (brickWidth + brickPadding));
-            float py = originY + (iy * (brickHeight + brickPadding));
+            float px = originX + (static_cast<float>(ix) * (brickWidth + brickPadding));
+            float py = originY + (static_cast<float>(iy) * (brickHeight + brickPadding));
 
             instancedSpriteTransforms[i] = new ME::Transform();
             instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
             instancedSpriteTransforms[i]->SetScale(brickWidth, brickHeight);
         }
     }
+
+    // Ball.
+    ++instancedSpriteTransformCount;
+    instancedSpriteTransforms[ballIndex] = new ME::Transform();
+    instancedSpriteTransforms[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
+    instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
+
+    // Paddle.
+    ++instancedSpriteTransformCount;
+    instancedSpriteTransforms[paddleIndex] = new ME::Transform();
+    instancedSpriteTransforms[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
+    instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
 }
 
 void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
@@ -104,14 +116,45 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
 
     ME::Random randomColor("ColorInstancedSprite", true);
 
-    for (uint16_t i = 0; i < instancedSpriteRendererCount; ++i) {
+    // Fill the bricks only.
+    for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
         instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
-        spriteInstanceData[i]->atlasIndex = 587;
         spriteInstanceData[i]->color = ME::Color::RandomColorPretty(randomColor);
+
+        uint8_t ix = i % gridX;
+        uint8_t iy = ((i / gridX) % gridY);
+        iy = gridY - 1 - iy;
+
+        if (iy < 20) {
+            spriteInstanceData[i]->atlasIndex = 587;  // Brick.
+            uint8_t cy = iy / 3;
+            uint8_t colorIndex = (cy % 8);
+            spriteInstanceData[i]->color = colorPalette[colorIndex];
+        } else {
+            spriteInstanceData[i]->atlasIndex = 0;  // Black.
+            spriteInstanceData[i]->color = ME::Color::Black();
+        }
     }
+
+    // Ball.
+    ++instancedSpriteRendererCount;
+    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
+    spriteInstanceData[ballIndex]->modelMatrixData = instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetData();
+    spriteInstanceData[ballIndex]->atlasIndex = 631;
+    spriteInstanceData[ballIndex]->color = colorPalette[6];
+
+    // Paddle.
+    ++instancedSpriteRendererCount;
+    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
+    spriteInstanceData[paddleIndex]->modelMatrixData =
+        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetData();
+    spriteInstanceData[paddleIndex]->atlasIndex = 253;
+    spriteInstanceData[paddleIndex]->color = colorPalette[7];
 }
 
 void ME::SceneBreakout::BuildTextRenderers() {
@@ -120,7 +163,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
 
     // Text 1
     ME::TextRenderer* textRend =
-        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, ME::Color::White(), 80, 80, -10, 0, 0};
+        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, ME::Color(0.515f, 0.625f, 0.708f, 1.0f), 80, 80, -10, 0, 0};
     textRenderers[0] = textRend;
 
     textTransforms[0] = new ME::Transform();
