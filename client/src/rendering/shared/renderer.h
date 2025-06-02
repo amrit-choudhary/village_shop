@@ -20,6 +20,10 @@ class PlatformRenderer {
     virtual void Init() = 0;
     virtual void Update() = 0;
     virtual void End() = 0;
+
+    // Sets the scene for the renderer.
+    // This will be called by the game to set the scene for the renderer.
+    virtual void SetScene(ME::Scene *gameScene) = 0;
 };
 
 /**

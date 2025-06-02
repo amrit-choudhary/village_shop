@@ -4,12 +4,11 @@
 
 #include "scene_breakout.h"
 
-ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue) {
+ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME::Scene* gameScene) {
     this->device = device;
     this->cmdQueue = cmdQueue;
 
-    scene = new ME::SceneBreakout();
-    scene->Init();
+    scene = gameScene;
     this->ambientLight = scene->ambientLight;
     this->directionalLight = scene->directionalLight;
     this->camera = scene->camera;
@@ -83,8 +82,6 @@ ME::SceneMetal::~SceneMetal() {
         textureSamplerStates[i]->release();
     }
     delete[] textureSamplerStates;
-
-    delete scene;
 }
 
 void ME::SceneMetal::MakeMeshes() {

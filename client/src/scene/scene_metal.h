@@ -23,7 +23,7 @@ namespace ME {
 class SceneMetal {
    public:
     SceneMetal() = delete;
-    SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue);
+    SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME::Scene* gameScene);
     ~SceneMetal();
 
     ME::Light* ambientLight;

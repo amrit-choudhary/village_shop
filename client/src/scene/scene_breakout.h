@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../../../shared/src/math/vec2.h"
 #include "scene.h"
 
 namespace ME {
@@ -25,7 +26,8 @@ class SceneBreakout : public Scene {
     const int16_t originX = -640;
     const int16_t originY = -900;
     const uint8_t ballSize = 50;
-    const uint8_t ballSpeed = 5;
+    const uint16_t ballSpeed = 1000;
+    const Vec2 ballVelocity{1.0f, 1.0f};   // Initial velocity of the ball.
     const uint16_t ballIndex = gridCount;  // Index for the ball in instancedSpriteTransforms.
     const float ballInitX = 0.0f;
     const float ballInitY = -600.0f;

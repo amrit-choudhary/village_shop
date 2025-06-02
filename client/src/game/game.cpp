@@ -37,3 +37,7 @@ void ME::Game::SetInputManagerRef(ME::Input::InputManager* ptrInput) {
 void ME::Game::SetConnectionRef(ME::Connection* ptrConnection) {
     connection = ptrConnection;
 }
+
+ME::Scene* ME::Game::GetScene() {
+    return scene;
+}

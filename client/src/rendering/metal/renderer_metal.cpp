@@ -19,6 +19,15 @@ void ME::RendererMetal::Init() {
     ME::Log("RendererMetal::Init");
 }
 
+void ME::RendererMetal::SetScene(ME::Scene* gameScene) {
+    // Delete the old scene if it exists.
+    if (scene != nullptr) {
+        delete scene;
+    }
+    // Create a new scene with the provided game scene.
+    scene = new ME::SceneMetal(device, commandQueue, gameScene);
+}
+
 void ME::RendererMetal::Update() {
     //     Update.
 }
@@ -33,12 +42,7 @@ void ME::RendererMetal::End() {
 void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     device = inDevice->retain();
     commandQueue = device->newCommandQueue();
-    BuildScene();
     view = inView;
-}
-
-void ME::RendererMetal::BuildScene() {
-    scene = new ME::SceneMetal(device, commandQueue);
 }
 
 void ME::RendererMetal::Draw(MTK::View* view) {

@@ -15,6 +15,7 @@
 #include <MetalKit/MetalKit.hpp>
 
 #include "../game/game.h"
+#include "../game/game_breakout.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
 #include "../misc/global_vars.h"
@@ -48,7 +49,7 @@ class GameMain : public MTK::ViewDelegate {
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;  // Needs adaptation for NSEvent
     ME::Connection connection;
-    ME::VillageGame game;
+    ME::GameBreakout game;
     ME::RendererMetal renderer;
 
     int fps = 0;
@@ -204,8 +205,8 @@ bool GameMain::InitGameSystems(MTL::Device* device, MTK::View* view) {
     game.SetConnectionRef(&connection);
     game.Init(&timeManager);
 
-    renderer.Init();
     renderer.InitMTL(device, view);
+    renderer.SetScene(game.GetScene());
 
     return true;
 }

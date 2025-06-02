@@ -30,6 +30,9 @@ class RendererMetal : public PlatformRenderer {
     // Init game
     void Init() override;
 
+    // Sets scene for the renderer.
+    void SetScene(ME::Scene* gameScene) override;
+
     // Will return true if game should tick based on FFR.
     void Update() override;
 
@@ -41,7 +44,6 @@ class RendererMetal : public PlatformRenderer {
    private:
    protected:
    public:
-    void BuildScene();
     void Draw(MTK::View* view);
 
    private:

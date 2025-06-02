@@ -11,6 +11,7 @@
 
 #include "../input/input_manager.h"
 #include "../net/connection.h"
+#include "../scene/scene.h"
 #include "src/datastructure/ring_buffer.h"
 #include "src/logging.h"
 #include "src/math/math.h"
@@ -39,9 +40,12 @@ class Game {
     void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);
 
+    ME::Scene *GetScene();
+
    protected:
     ME::Time::TimeManager *timeManager;
     ME::Connection *connection;
     ME::Input::InputManager *inputManager;
+    ME::Scene *scene = nullptr;  // Scene for the game.
 };
 }  // namespace ME

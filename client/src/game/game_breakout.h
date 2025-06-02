@@ -1,0 +1,35 @@
+/**
+ * Breakout Game
+ */
+
+#pragma once
+
+#include "../scene/scene_breakout.h"
+#include "game.h"
+
+namespace ME {
+
+class GameBreakout : public Game {
+   public:
+    GameBreakout();
+    ~GameBreakout();
+
+    // Game control functions.
+
+    // Init game
+    virtual void Init(ME::Time::TimeManager *currentTimeManager) override;
+
+    // Update game.
+    virtual void Update(double deltaTime) override;
+
+    // End game.
+    virtual void End() override;
+
+   private:
+    SceneBreakout *brkScene = nullptr;                       // Scene for the game.
+    Transform *ballTransform = nullptr;                      // Transform for the ball.
+    SpriteRendererInstanceData *ballInstanceData = nullptr;  // Instance data for the ball.
+    Vec2 ballVelocity{1.0f, 1.0f};                           // Initial velocity of the ball.
+};
+
+}  // namespace ME
