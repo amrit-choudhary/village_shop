@@ -14,7 +14,7 @@ class SceneBreakout : public Scene {
     virtual ~SceneBreakout() override;
 
    public:
-    const uint8_t gridX = 30;
+    const uint8_t gridX = 32;
     const uint8_t gridY = 42;
     const uint8_t gridXby2 = gridX / 2;
     const uint8_t gridYby2 = gridY / 2;
@@ -22,7 +22,7 @@ class SceneBreakout : public Scene {
     const uint8_t brickWidth = 40;
     const uint8_t brickHeight = 40;
     const uint8_t brickPadding = 0;
-    const int16_t originX = -600;
+    const int16_t originX = -640;
     const int16_t originY = -900;
     const uint8_t ballSize = 50;
     const uint8_t ballSpeed = 5;
