@@ -15,27 +15,37 @@ class SceneBreakout : public Scene {
     virtual ~SceneBreakout() override;
 
    public:
-    const uint8_t gridX = 32;
-    const uint8_t gridY = 42;
-    const uint8_t gridXby2 = gridX / 2;
-    const uint8_t gridYby2 = gridY / 2;
+    const uint16_t gridX = 32;
+    const uint16_t gridY = 42;
+    const uint16_t gridXby2 = gridX / 2;
+    const uint16_t gridYby2 = gridY / 2;
     const uint32_t gridCount = gridX * gridY;
-    const uint8_t brickWidth = 40;
-    const uint8_t brickHeight = 40;
-    const uint8_t brickPadding = 0;
+    const uint16_t brickWidth = 40;
+    const uint16_t brickWidthby2 = brickWidth / 2;
+    const uint16_t brickHeight = 40;
+    const uint16_t brickHeightby2 = brickHeight / 2;
+    const uint16_t brickPadding = 0;
     const int16_t originX = -640;
     const int16_t originY = -900;
-    const uint8_t ballSize = 50;
+    const uint16_t ballSize = 50;
     const uint16_t ballSpeed = 1000;
-    const Vec2 ballVelocity{1.0f, 1.0f};   // Initial velocity of the ball.
-    const uint16_t ballIndex = gridCount;  // Index for the ball in instancedSpriteTransforms.
+    const Vec2 ballVelocity{1.0f, 1.0f};       // Initial velocity of the ball.
+    const uint16_t ballIndex = gridCount + 4;  // Index for the ball in instancedSpriteTransforms.
     const float ballInitX = 0.0f;
     const float ballInitY = -600.0f;
-    const uint16_t paddleIndex = gridCount + 1;  // Index for the paddle in instancedSpriteTransforms.
+    const uint16_t paddleIndex = gridCount + 5;  // Index for the paddle in instancedSpriteTransforms.
     const uint16_t paddleSizeX = 250;
     const uint16_t paddleSizeY = 40;
     const float paddleInitX = 0.0f;
-    const float paddleInitY = -900.0f;
+    const float paddleInitY = -880.0f;
+    const uint16_t wallIndexBottom = gridCount + 0;  // Bottom wall index.
+    const uint16_t wallIndexRight = gridCount + 1;   // Right wall index.
+    const uint16_t wallIndexTop = gridCount + 2;     // Top wall index.
+    const uint16_t wallIndexLeft = gridCount + 3;    // Left wall index.
+    const uint16_t wallHeight = 30;
+    const uint16_t wallHeightby2 = wallHeight / 2;
+    const uint16_t wallSizeX = (gridX * brickWidth) + (2 * wallHeight);   // Width of the walls.
+    const uint16_t wallSizeY = (gridY * brickHeight) + (2 * wallHeight);  // Height of the walls.
 
     virtual void Init() override;
     virtual void CreateResources() override;
@@ -54,6 +64,7 @@ class SceneBreakout : public Scene {
                                  ME::Color("#678b97"), ME::Color("#eb9454"), ME::Color("#a7ce47"),
                                  ME::Color("#e1e3e1"), ME::Color("#accbd2")};
 
+    void CreateWalls();
     void CreatePaddle();
     void CreateBall();
 };

@@ -19,6 +19,7 @@ void ME::SceneBreakout::Init() {
     BuildInstancedSpriteRenderers();
     BuildTextRenderers();
 
+    CreateWalls();
     CreatePaddle();
     CreateBall();
 }
@@ -84,32 +85,21 @@ void ME::SceneBreakout::BuildSpriteTransforms() {}
 void ME::SceneBreakout::BuildSpriteRenderers() {}
 
 void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
+    // Create Bricks Transforms.
     instancedSpriteTransformCount = gridCount;
 
     for (size_t iy = 0; iy < gridY; ++iy) {
         for (size_t ix = 0; ix < gridX; ++ix) {
             uint16_t i = (iy * gridX) + ix;
 
-            float px = originX + (static_cast<float>(ix) * (brickWidth + brickPadding));
-            float py = originY + (static_cast<float>(iy) * (brickHeight + brickPadding));
+            float px = originX + brickWidthby2 + (static_cast<float>(ix) * (brickWidth + brickPadding));
+            float py = originY + brickHeightby2 + (static_cast<float>(iy) * (brickHeight + brickPadding));
 
             instancedSpriteTransforms[i] = new ME::Transform();
             instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
             instancedSpriteTransforms[i]->SetScale(brickWidth, brickHeight);
         }
     }
-
-    // Ball.
-    ++instancedSpriteTransformCount;
-    instancedSpriteTransforms[ballIndex] = new ME::Transform();
-    instancedSpriteTransforms[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
-    instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
-
-    // Paddle.
-    ++instancedSpriteTransformCount;
-    instancedSpriteTransforms[paddleIndex] = new ME::Transform();
-    instancedSpriteTransforms[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
-    instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
 }
 
 void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
@@ -142,23 +132,6 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
             spriteInstanceData[i]->color = ME::Color::Black();
         }
     }
-
-    // Ball.
-    ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
-    spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[ballIndex]->modelMatrixData = instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetData();
-    spriteInstanceData[ballIndex]->atlasIndex = 631;
-    spriteInstanceData[ballIndex]->color = colorPalette[6];
-
-    // Paddle.
-    ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
-    spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[paddleIndex]->modelMatrixData =
-        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetData();
-    spriteInstanceData[paddleIndex]->atlasIndex = 253;
-    spriteInstanceData[paddleIndex]->color = colorPalette[7];
 }
 
 void ME::SceneBreakout::BuildTextRenderers() {
@@ -191,7 +164,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
     textInstanceDataCount = textRend->GetCount();
 
     // Text 2
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, colorPalette[0], 80, 80, -8, 0, 0};
+    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, colorPalette[0], 70, 70, -8, 0, 0};
     textRenderers[1] = textRend2;
 
     textTransforms[1] = new ME::Transform();
@@ -215,19 +188,65 @@ void ME::SceneBreakout::BuildTextRenderers() {
     textInstanceDataCount += textRend2->GetCount();
 }
 
-void ME::SceneBreakout::CreatePaddle() {
-    // // Paddle
-    // paddleTransform = new ME::Transform();
-    // paddleTransform->SetPosition(0.0f, -800.0f, 0.0f);
-    // paddleTransform->SetScale(200.0f, 20.0f);
+void ME::SceneBreakout::CreateWalls() {
+    int indices[4] = {wallIndexBottom, wallIndexRight, wallIndexTop, wallIndexLeft};
 
-    // paddleRenderer = new ME::SpriteRenderer(0, 0, 0, 1, ME::Color::White());
+    float xValues[4];
+    xValues[0] = 0.0f;
+    xValues[1] = originX + (gridX * brickWidth) + wallHeightby2;
+    xValues[2] = 0.0f;
+    xValues[3] = originX - wallHeightby2;
+
+    float yValues[4];
+    yValues[0] = originY - wallHeightby2;
+    yValues[1] = originY + (gridYby2 * brickHeight);
+    yValues[2] = originY + (gridY * brickHeight) + wallHeightby2;
+    yValues[3] = originY + (gridYby2 * brickHeight);
+
+    uint16_t sizeXValues[4] = {wallSizeX, wallHeight, wallSizeX, wallHeight};
+    uint16_t sizeYValues[4] = {wallHeight, wallSizeY, wallHeight, wallSizeY};
+
+    for (int i = 0; i < 4; ++i) {
+        ++instancedSpriteTransformCount;
+        instancedSpriteTransforms[indices[i]] = new ME::Transform();
+        instancedSpriteTransforms[indices[i]]->SetPosition(xValues[i], yValues[i], 0.0f);
+        instancedSpriteTransforms[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
+
+        ++instancedSpriteRendererCount;
+        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+        spriteInstanceData[indices[i]] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData[indices[i]]->modelMatrixData =
+            instancedSpriteTransforms[indices[i]]->GetModelMatrix().GetData();
+        spriteInstanceData[indices[i]]->atlasIndex = 253;
+        spriteInstanceData[indices[i]]->color = colorPalette[7];
+    }
 }
-void ME::SceneBreakout::CreateBall() {
-    // // Ball
-    // ballTransform = new ME::Transform();
-    // ballTransform->SetPosition(0.0f, -780.0f, 0.0f);
-    // ballTransform->SetScale(20.0f, 20.0f);
 
-    // ballRenderer = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+void ME::SceneBreakout::CreatePaddle() {
+    ++instancedSpriteTransformCount;
+    instancedSpriteTransforms[paddleIndex] = new ME::Transform();
+    instancedSpriteTransforms[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
+    instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
+
+    ++instancedSpriteRendererCount;
+    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
+    spriteInstanceData[paddleIndex]->modelMatrixData =
+        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetData();
+    spriteInstanceData[paddleIndex]->atlasIndex = 253;
+    spriteInstanceData[paddleIndex]->color = colorPalette[0];
+}
+
+void ME::SceneBreakout::CreateBall() {
+    ++instancedSpriteTransformCount;
+    instancedSpriteTransforms[ballIndex] = new ME::Transform();
+    instancedSpriteTransforms[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
+    instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
+
+    ++instancedSpriteRendererCount;
+    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
+    spriteInstanceData[ballIndex]->modelMatrixData = instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetData();
+    spriteInstanceData[ballIndex]->atlasIndex = 631;
+    spriteInstanceData[ballIndex]->color = colorPalette[6];
 }
