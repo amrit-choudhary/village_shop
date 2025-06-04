@@ -70,22 +70,22 @@ class Scene {
     ME::TextRenderer** textRenderers;
     ME::TextRendererInstanceData** textInstanceData;
 
-    uint8_t meshCount;
-    uint8_t quadCount;
-    uint8_t textureCount;
-    uint8_t spriteTextureCount;
-    uint8_t textureAtlasPropertiesCount;
-    uint8_t shaderCount;
-    uint8_t textureSamplerCount;
-    uint16_t transformCount;
-    uint16_t meshRendererCount;
-    uint16_t spriteTransformCount;
-    uint16_t spriteRendererCount;
-    uint32_t instancedSpriteTransformCount;
-    uint32_t instancedSpriteRendererCount;
-    uint16_t textTransformsCount;
-    uint16_t textRendererCount;
-    uint32_t textInstanceDataCount;
+    uint8_t meshCount = 0;
+    uint8_t quadCount = 0;
+    uint8_t textureCount = 0;
+    uint8_t spriteTextureCount = 0;
+    uint8_t textureAtlasPropertiesCount = 0;
+    uint8_t shaderCount = 0;
+    uint8_t textureSamplerCount = 0;
+    uint16_t transformCount = 0;
+    uint16_t meshRendererCount = 0;
+    uint16_t spriteTransformCount = 0;
+    uint16_t spriteRendererCount = 0;
+    uint32_t instancedSpriteTransformCount = 0;
+    uint32_t instancedSpriteRendererCount = 0;
+    uint16_t textTransformsCount = 0;
+    uint16_t textRendererCount = 0;
+    uint32_t textInstanceDataCount = 0;
 
     virtual void Init();
     virtual void CreateResources();
