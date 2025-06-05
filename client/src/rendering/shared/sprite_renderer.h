@@ -34,7 +34,7 @@ class SpriteRenderer {
 
     const uint8_t quadId = 0;
     const uint8_t textureId = 0;
-    const uint8_t atlasIndex = 0;
+    const uint16_t atlasIndex = 0;
     const uint8_t materialId = 0;
     const ME::Color color;
 };

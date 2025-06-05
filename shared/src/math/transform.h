@@ -22,7 +22,7 @@ class Transform {
     Transform();
     ~Transform();
 
-    ME::Vec3 GetPosition() const {
+    inline ME::Vec3 GetPosition() const {
         return position;
     }
     void SetPosition(float x, float y, float z);
@@ -31,12 +31,12 @@ class Transform {
 
     void SetPosition(const ME::Vec3& pos);
 
-    ME::Vec4 GetRotation() const {
+    inline ME::Vec4 GetRotation() const {
         return rotation;
     }
     void SetRotation(float x, float y, float z, float w = 1.0f);
 
-    ME::Vec3 GetScale() const {
+    inline ME::Vec3 GetScale() const {
         return scale;
     }
     void SetScale(float x, float y, float z);

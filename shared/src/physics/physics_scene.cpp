@@ -13,3 +13,5 @@ void ME::PhysicsScene::Init() {
     staticColliders = new ME::ColliderAABB[MaxStaticColliders];
     dynamicColliders = new ME::ColliderAABB[MaxDynamicColliders];
 }
+
+void ME::PhysicsScene::Init(const ME::Scene* scene) {}

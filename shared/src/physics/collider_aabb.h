@@ -28,6 +28,12 @@ class ColliderAABB : public Collider {
     float minY = 0.0f;  // Minimum Y coordinate of the AABB.
     float maxX = 0.0f;  // Maximum X coordinate of the AABB.
     float maxY = 0.0f;  // Maximum Y coordinate of the AABB.
+
+    void UpdateTransform(const ME::Transform& transform);
+
+    inline bool CheckCollision(const ColliderAABB& other) const {
+        return !(other.minX > maxX || other.maxX < minX || other.minY > maxY || other.maxY < minY);
+    }
 };
 
 }  // namespace ME

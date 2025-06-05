@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../../../client/src/scene/scene.h"
 #include "collider_aabb.h"
 
 namespace ME {
@@ -21,7 +22,10 @@ class PhysicsScene {
     virtual ~PhysicsScene();
 
     // Initializes the physics scene with collider objects.
-    void Init();
+    virtual void Init();
+
+    // Initializes the physics scene with a given scene.
+    virtual void Init(const ME::Scene* scene);
 
     ME::ColliderAABB* staticColliders = nullptr;   // Array of static colliders.
     ME::ColliderAABB* dynamicColliders = nullptr;  // Array of dynamic colliders.

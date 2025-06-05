@@ -1,5 +1,7 @@
 #include "game_breakout.h"
 
+#include "physics_scene_breakout.h"
+
 ME::GameBreakout::GameBreakout() : Game() {}
 
 ME::GameBreakout::~GameBreakout() {}
@@ -12,6 +14,13 @@ void ME::GameBreakout::Init(ME::Time::TimeManager* currentTimeManager) {
     ballTransform = brkScene->instancedSpriteTransforms[brkScene->ballIndex];
     ballInstanceData = brkScene->spriteInstanceData[brkScene->ballIndex];
     ballVelocity = brkScene->ballVelocity;
+
+    // Initialize the physics scene for Breakout.
+    ME::PhysicsScene* physicsScene = new ME::PhysicsSceneBreakout();
+    physicsScene->Init(scene);
+
+    ballCollider = &(physicsScene->dynamicColliders[0]);
+
     ME::Log("Breakout Game Start!");
 }
 
@@ -29,6 +38,7 @@ void ME::GameBreakout::Update(double deltaTime) {
         ballTransform->GetPosition().y > brkScene->originY + (brkScene->gridY * brkScene->brickHeight)) {
         ballVelocity.y *= -1.0f;  // Bounce off the top and bottom.
     }
+    ballCollider->UpdateTransform(*ballTransform);
 }
 
 void ME::GameBreakout::End() {
