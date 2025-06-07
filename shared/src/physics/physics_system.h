@@ -12,6 +12,9 @@
 
 namespace ME {
 
+// Forward declarations.
+class Game;
+
 class PhysicsSystem {
    public:
     // Initializes the physics system.
@@ -24,14 +27,18 @@ class PhysicsSystem {
     void End();
 
     // Set Scene for the physics system.
-    void SetScene(ME::PhysicsScene* physicsScene);
+    void SetScene(PhysicsScene* physicsScene);
+
+    // Set the current game instance, if needed.
+    void SetGame(Game* game);
 
     // Report collision between two colliders. Other systems can hook to this function to handle collisions.
-    void ReportCollision(ME::ColliderAABB* colliderA, ME::ColliderAABB* colliderB);
+    void ReportCollision(ColliderAABB* a, ColliderAABB* b);
 
    private:
-    bool isInitialized = false;         // Flag to check if the system is initialized.
-    ME::PhysicsScene* scene = nullptr;  // Current physics scene being managed.
+    bool isInitialized = false;     // Flag to check if the system is initialized.
+    PhysicsScene* scene = nullptr;  // Current physics scene being managed.
+    Game* game = nullptr;           // Reference to the game instance, if needed.
 };
 
 }  // namespace ME

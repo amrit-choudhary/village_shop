@@ -42,6 +42,9 @@ class Game {
     void SetConnectionRef(ME::Connection *ptrConnection);
     void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
 
+    // This will be called from the PhysicsSystem when a collision is detected.
+    virtual void CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *b);
+
     ME::Scene *GetScene();
 
    protected:

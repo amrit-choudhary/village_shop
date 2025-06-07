@@ -4,8 +4,11 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "../../../client/src/scene/scene.h"
 #include "collider_aabb.h"
+#include "src/misc/game_constants.h"
 
 namespace ME {
 
@@ -24,11 +27,18 @@ class PhysicsScene {
     // Initializes the physics scene with a given scene.
     virtual void Init(const ME::Scene* scene);
 
-    ME::ColliderAABB* staticColliders;
-    ME::ColliderAABB* dynamicColliders;
+    ColliderAABB* staticColliders;
+    ColliderAABB* dynamicColliders;
 
     uint32_t staticColliderCount = 0;
     uint8_t dynamicColliderCount = 0;
+
+    Collider* GetStaticColliderById(uint32_t id) const;
+    Collider* GetDynamicColliderById(uint32_t id) const;
+
+   private:
+    uint32_t* mapStaticIdToIndex;
+    uint32_t* mapDynamicIdToIndex;
 };
 
 }  // namespace ME

@@ -3,6 +3,7 @@
 #include "scene_metal.h"
 
 #include "scene_breakout.h"
+#include "src/misc/game_constants.h"
 
 ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME::Scene* gameScene) {
     this->device = device;
@@ -14,11 +15,11 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME:
     this->camera = scene->camera;
     this->spriteCamera = scene->spriteCamera;
 
-    meshes = new ME::MeshMetal*[ME::MaxMeshCount];
-    quads = new ME::QuadMetal*[ME::MaxQuadCount];
-    textures = new ME::TextureMetal*[ME::MaxTextureCount];
-    spriteTextures = new ME::TextureMetal*[ME::MaxSpriteTextureCount];
-    textureSamplerStates = new MTL::SamplerState*[ME::MaxSamplerCount];
+    meshes = new ME::MeshMetal*[Constants::MaxMeshCount];
+    quads = new ME::QuadMetal*[Constants::MaxQuadCount];
+    textures = new ME::TextureMetal*[Constants::MaxTextureCount];
+    spriteTextures = new ME::TextureMetal*[Constants::MaxSpriteTextureCount];
+    textureSamplerStates = new MTL::SamplerState*[Constants::MaxSamplerCount];
 
     this->transforms = scene->transforms;
     this->transformCount = scene->transformCount;

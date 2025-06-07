@@ -3,8 +3,9 @@
 #include <cmath>
 #include <cstring>
 
-#include "../../../shared/src/random/random_engine.h"
-#include "../../../shared/src/random/stb_perlin.h"
+#include "src/misc/game_constants.h"
+#include "src/random/random_engine.h"
+#include "src/random/stb_perlin.h"
 
 ME::Scene::Scene() {}
 
@@ -90,26 +91,26 @@ ME::Scene::~Scene() {
 }
 
 void ME::Scene::CreateResources() {
-    meshPaths = new const char*[MaxMeshCount];
-    quadPaths = new const char*[MaxQuadCount];
-    texturePaths = new const char*[MaxTextureCount];
-    spriteTexturePaths = new const char*[MaxSpriteTextureCount];
-    textureAtlasProperties = new ME::TextureAtlasProperties[MaxTextureAtlasPropertiesCount];
-    shaderPaths = new const char*[MaxShaderCount];
-    textureSamplers = new ME::TextureSampler[MaxSamplerCount];
-    transforms = new ME::Transform*[MaxTransformCount];
-    meshRenderers = new ME::MeshRenderer*[MaxMeshRendererCount];
-    spriteTransforms = new ME::Transform*[MaxSpriteTransformCount];
-    spriteRenderers = new ME::SpriteRenderer*[MaxSpriteRendererCount];
-    instancedSpriteTransforms = new ME::Transform*[MaxInstancedSpriteTransformCount];
-    instancedSpriteRenderers = new ME::SpriteRenderer*[MaxInstancedSpriteRendererCount];
-    spriteInstanceData = new ME::SpriteRendererInstanceData*[MaxInstancedSpriteRendererCount];
-    textTransforms = new ME::Transform*[MaxTextTransformsCount];
-    textRenderers = new ME::TextRenderer*[MaxTextRendererCount];
-    textInstanceData = new ME::TextRendererInstanceData*[MaxTextInstanceDataCount];
+    meshPaths = new const char*[Constants::MaxMeshCount];
+    quadPaths = new const char*[Constants::MaxQuadCount];
+    texturePaths = new const char*[Constants::MaxTextureCount];
+    spriteTexturePaths = new const char*[Constants::MaxSpriteTextureCount];
+    textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    shaderPaths = new const char*[Constants::MaxShaderCount];
+    textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
+    transforms = new ME::Transform*[Constants::MaxTransformCount];
+    meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
+    spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
+    spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+    instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
+    textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
+    textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
 
-    staticColliders = new ME::ColliderAABB[MaxStaticColliderCount];
-    dynamicColliders = new ME::ColliderAABB[MaxDynamicColliderCount];
+    staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
+    dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
 
     // TODO: Make cubes pivot at center.
     meshPaths[0] = "meshes/cube_unshared.obj";

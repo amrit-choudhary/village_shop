@@ -15,3 +15,10 @@ endif()
 # End Set preprocessor options.
 
 target_include_directories(VillageShop_Shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Link libraries
+target_link_libraries(
+    VillageShop_Shared
+    PRIVATE
+    VillageShop_Logging
+    )
