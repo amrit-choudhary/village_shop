@@ -45,6 +45,9 @@ void ME::SceneBreakout::CreateResources() {
     textRenderers = new ME::TextRenderer*[MaxTextRendererCount];
     textInstanceData = new ME::TextRendererInstanceData*[MaxTextInstanceDataCount];
 
+    staticColliders = new ME::ColliderAABB[MaxStaticColliderCount];
+    dynamicColliders = new ME::ColliderAABB[MaxDynamicColliderCount];
+
     meshCount = 0;
 
     quadPaths[0] = "meshes/quad.obj";
@@ -127,6 +130,9 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
             spriteInstanceData[i]->atlasIndex = 587;  // Brick.
             uint8_t colorIndex = static_cast<uint8_t>(level.bricks[brickIndex].type);
             spriteInstanceData[i]->color = colorPalette[colorIndex];
+
+            staticColliders[staticColliderCount] = ME::ColliderAABB(i, true, true, *instancedSpriteTransforms[i]);
+            ++staticColliderCount;
         } else {
             spriteInstanceData[i]->atlasIndex = 0;  // Black.
             spriteInstanceData[i]->color = ME::Color::Black();
@@ -219,6 +225,10 @@ void ME::SceneBreakout::CreateWalls() {
             instancedSpriteTransforms[indices[i]]->GetModelMatrix().GetData();
         spriteInstanceData[indices[i]]->atlasIndex = 253;
         spriteInstanceData[indices[i]]->color = colorPalette[7];
+
+        staticColliders[staticColliderCount] =
+            ME::ColliderAABB(indices[i], true, true, *instancedSpriteTransforms[indices[i]]);
+        ++staticColliderCount;
     }
 }
 
@@ -235,6 +245,10 @@ void ME::SceneBreakout::CreatePaddle() {
         instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetData();
     spriteInstanceData[paddleIndex]->atlasIndex = 253;
     spriteInstanceData[paddleIndex]->color = colorPalette[0];
+
+    staticColliders[staticColliderCount] =
+        ME::ColliderAABB(paddleIndex, true, true, *instancedSpriteTransforms[paddleIndex]);
+    ++staticColliderCount;
 }
 
 void ME::SceneBreakout::CreateBall() {
@@ -249,4 +263,8 @@ void ME::SceneBreakout::CreateBall() {
     spriteInstanceData[ballIndex]->modelMatrixData = instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetData();
     spriteInstanceData[ballIndex]->atlasIndex = 631;
     spriteInstanceData[ballIndex]->color = colorPalette[6];
+
+    dynamicColliders[dynamicColliderCount] =
+        ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms[ballIndex]);
+    ++dynamicColliderCount;
 }

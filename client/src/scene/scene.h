@@ -16,6 +16,7 @@
 #include "../rendering/shared/text_renderer.h"
 #include "../rendering/shared/texture.h"
 #include "../rendering/shared/texture_sampler.h"
+#include "src/physics/collider_aabb.h"
 
 namespace ME {
 
@@ -36,6 +37,8 @@ constexpr uint32_t MaxInstancedSpriteRendererCount = 100'000;
 constexpr uint16_t MaxTextTransformsCount = 1'000;
 constexpr uint16_t MaxTextRendererCount = 1'000;
 constexpr uint32_t MaxTextInstanceDataCount = 100'000;
+constexpr uint32_t MaxStaticColliderCount = 100'000;
+constexpr uint32_t MaxDynamicColliderCount = 32;
 
 class Scene {
    public:
@@ -70,6 +73,9 @@ class Scene {
     ME::TextRenderer** textRenderers;
     ME::TextRendererInstanceData** textInstanceData;
 
+    ME::ColliderAABB* staticColliders;
+    ME::ColliderAABB* dynamicColliders;
+
     uint8_t meshCount = 0;
     uint8_t quadCount = 0;
     uint8_t textureCount = 0;
@@ -86,6 +92,9 @@ class Scene {
     uint16_t textTransformsCount = 0;
     uint16_t textRendererCount = 0;
     uint32_t textInstanceDataCount = 0;
+
+    uint32_t staticColliderCount = 0;
+    uint8_t dynamicColliderCount = 0;
 
     virtual void Init();
     virtual void CreateResources();

@@ -6,6 +6,7 @@
 
 #include "../scene/scene_breakout.h"
 #include "game.h"
+#include "physics_scene_breakout.h"
 #include "src/physics/collider_aabb.h"
 
 namespace ME {
@@ -28,6 +29,7 @@ class GameBreakout : public Game {
 
    private:
     SceneBreakout *brkScene = nullptr;                       // Scene for the game.
+    PhysicsScene *physicsScene = nullptr;                    // Physics scene for the game.
     Transform *ballTransform = nullptr;                      // Transform for the ball.
     SpriteRendererInstanceData *ballInstanceData = nullptr;  // Instance data for the ball.
     Vec2 ballVelocity{1.0f, 1.0f};                           // Initial velocity of the ball.

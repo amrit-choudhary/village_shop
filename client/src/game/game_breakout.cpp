@@ -1,7 +1,5 @@
 #include "game_breakout.h"
 
-#include "physics_scene_breakout.h"
-
 ME::GameBreakout::GameBreakout() : Game() {}
 
 ME::GameBreakout::~GameBreakout() {}
@@ -16,7 +14,7 @@ void ME::GameBreakout::Init(ME::Time::TimeManager* currentTimeManager) {
     ballVelocity = brkScene->ballVelocity;
 
     // Initialize the physics scene for Breakout.
-    ME::PhysicsScene* physicsScene = new ME::PhysicsSceneBreakout();
+    physicsScene = new ME::PhysicsSceneBreakout();
     physicsScene->Init(scene);
 
     ballCollider = &(physicsScene->dynamicColliders[0]);
@@ -44,4 +42,5 @@ void ME::GameBreakout::Update(double deltaTime) {
 void ME::GameBreakout::End() {
     Game::End();
     delete scene;
+    delete physicsScene;
 }

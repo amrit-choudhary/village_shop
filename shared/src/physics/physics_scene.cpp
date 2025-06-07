@@ -2,16 +2,14 @@
 
 ME::PhysicsScene::PhysicsScene() {}
 
-ME::PhysicsScene::~PhysicsScene() {
-    // Clean up the static and dynamic colliders.
-    delete[] staticColliders;
-    delete[] dynamicColliders;
-}
+ME::PhysicsScene::~PhysicsScene() {}
 
-void ME::PhysicsScene::Init() {
-    // Initialize the static and dynamic colliders.
-    staticColliders = new ME::ColliderAABB[MaxStaticColliders];
-    dynamicColliders = new ME::ColliderAABB[MaxDynamicColliders];
-}
+void ME::PhysicsScene::Init() {}
 
-void ME::PhysicsScene::Init(const ME::Scene* scene) {}
+void ME::PhysicsScene::Init(const ME::Scene* scene) {
+    staticColliders = scene->staticColliders;
+    dynamicColliders = scene->dynamicColliders;
+
+    staticColliderCount = scene->staticColliderCount;
+    dynamicColliderCount = scene->dynamicColliderCount;
+}

@@ -35,6 +35,9 @@ ME::Scene::~Scene() {
     delete[] shaderPaths;
     delete[] textureSamplers;
 
+    delete[] staticColliders;
+    delete[] dynamicColliders;
+
     for (uint16_t i = 0; i < transformCount; ++i) {
         delete transforms[i];
     }
@@ -104,6 +107,9 @@ void ME::Scene::CreateResources() {
     textTransforms = new ME::Transform*[MaxTextTransformsCount];
     textRenderers = new ME::TextRenderer*[MaxTextRendererCount];
     textInstanceData = new ME::TextRendererInstanceData*[MaxTextInstanceDataCount];
+
+    staticColliders = new ME::ColliderAABB[MaxStaticColliderCount];
+    dynamicColliders = new ME::ColliderAABB[MaxDynamicColliderCount];
 
     // TODO: Make cubes pivot at center.
     meshPaths[0] = "meshes/cube_unshared.obj";
