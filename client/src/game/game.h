@@ -15,6 +15,7 @@
 #include "src/datastructure/ring_buffer.h"
 #include "src/logging.h"
 #include "src/math/math.h"
+#include "src/physics/physics_system.h"
 #include "src/random/random_engine.h"
 #include "src/time/time_manager.h"
 #include "villager.h"
@@ -39,13 +40,15 @@ class Game {
 
     void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);
+    void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
 
     ME::Scene *GetScene();
 
    protected:
-    ME::Time::TimeManager *timeManager;
-    ME::Connection *connection;
-    ME::Input::InputManager *inputManager;
-    ME::Scene *scene = nullptr;  // Scene for the game.
+    ME::Time::TimeManager *timeManager = nullptr;
+    ME::Connection *connection = nullptr;
+    ME::Input::InputManager *inputManager = nullptr;
+    ME::Scene *scene = nullptr;
+    ME::PhysicsSystem *physicsSystem = nullptr;
 };
 }  // namespace ME

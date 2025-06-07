@@ -38,6 +38,10 @@ void ME::Game::SetConnectionRef(ME::Connection* ptrConnection) {
     connection = ptrConnection;
 }
 
+void ME::Game::SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem) {
+    physicsSystem = ptrPhysicsSystem;
+}
+
 ME::Scene* ME::Game::GetScene() {
     return scene;
 }

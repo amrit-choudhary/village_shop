@@ -24,6 +24,7 @@
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"
+#include "src/physics/physics_system.h"
 #include "src/time/time_manager.h"
 
 class GameMain : public MTK::ViewDelegate {
@@ -51,6 +52,7 @@ class GameMain : public MTK::ViewDelegate {
     ME::Connection connection;
     ME::GameBreakout game;
     ME::RendererMetal renderer;
+    ME::PhysicsSystem physicsSystem;
 
     int fps = 0;
     int maxRunTime = 0;
@@ -200,9 +202,11 @@ bool GameMain::InitGameSystems(MTL::Device* device, MTK::View* view) {
 
     inputManager.Init();
     connection.Init();
+    physicsSystem.Init();
 
     game.SetInputManagerRef(&inputManager);
     game.SetConnectionRef(&connection);
+    game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
 
     renderer.InitMTL(device, view);
@@ -232,6 +236,8 @@ void GameMain::drawInMTKView(MTK::View* view) {
         renderer.Draw(view);
 
         connection.Update(deltaTime);
+
+        physicsSystem.Update(deltaTime);
     }
 
     // Perform Rendering
@@ -255,4 +261,5 @@ void GameMain::ShutDownGameSystems() {
     inputManager.End();
     timeManager.End();
     renderer.End();
+    physicsSystem.End();
 }

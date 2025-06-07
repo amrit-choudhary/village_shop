@@ -2,7 +2,11 @@
 
 void ME::PhysicsSystem::Init() {}
 
-void ME::PhysicsSystem::Update(double deltaTime) {}
+void ME::PhysicsSystem::Update(double deltaTime) {
+    if (scene == nullptr || !isInitialized) {
+        return;
+    }
+}
 
 void ME::PhysicsSystem::End() {}
 
