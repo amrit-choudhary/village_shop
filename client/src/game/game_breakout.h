@@ -38,6 +38,7 @@ class GameBreakout : public Game {
     Vec2 ballVelocity{1.0f, 1.0f};                           // Initial velocity of the ball.
     ColliderAABB *ballCollider = nullptr;                    // Collider for the ball.
     uint32_t ballIndex = 0;
+    uint32_t score = 0;
 
     bool IsDestructible(uint32_t index) const;
 };

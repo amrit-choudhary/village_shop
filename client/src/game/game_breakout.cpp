@@ -55,6 +55,7 @@ void ME::GameBreakout::CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *
         if (IsDestructible(b->GetID())) {
             b->isEnabled = false;
             brkScene->spriteInstanceData[b->GetID()]->atlasIndex = 0;  // Set to black if hit.
+            ++score;
         }
     }
 
@@ -62,6 +63,7 @@ void ME::GameBreakout::CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *
         if (IsDestructible(a->GetID())) {
             a->isEnabled = false;
             brkScene->spriteInstanceData[a->GetID()]->atlasIndex = 0;  // Set to black if hit.
+            ++score;
         }
     }
 }
