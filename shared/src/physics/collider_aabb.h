@@ -22,14 +22,17 @@ class ColliderAABB : public Collider {
     ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, float minX, float minY, float maxX, float maxY)
         : Collider(id, isEnabled, isStatic), minX(minX), minY(minY), maxX(maxX), maxY(maxY) {}
 
-    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, const ME::Transform& transform);
+    // Constructor to initialize the AABB collider with a transform and scale multiplier.
+    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, const ME::Transform& transform, float scaleMult = 1.0f);
 
     float minX = 0.0f;  // Minimum X coordinate of the AABB.
     float minY = 0.0f;  // Minimum Y coordinate of the AABB.
     float maxX = 0.0f;  // Maximum X coordinate of the AABB.
     float maxY = 0.0f;  // Maximum Y coordinate of the AABB.
 
-    void UpdateTransform(const ME::Transform& transform);
+    // Change the transform of the AABB collider based on a new transform.
+    // scaleMult is a multiplier for the scale, this can make collider bigger or smaller than the sprite.
+    void UpdateTransform(const ME::Transform& transform, float scaleMult = 1.0f);
 
     inline bool CheckCollision(const ColliderAABB& other) const {
         return !(other.minX > maxX || other.maxX < minX || other.minY > maxY || other.maxY < minY);

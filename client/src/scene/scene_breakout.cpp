@@ -266,6 +266,6 @@ void ME::SceneBreakout::CreateBall() {
     spriteInstanceData[ballIndex]->color = colorPalette[6];
 
     dynamicColliders[dynamicColliderCount] =
-        ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms[ballIndex]);
+        ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms[ballIndex], ballCollScaleMult);
     ++dynamicColliderCount;
 }

@@ -1,20 +1,20 @@
 #include "collider_aabb.h"
 
-ME::ColliderAABB::ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, const ME::Transform& transform)
+ME::ColliderAABB::ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, const ME::Transform& transform,
+                               float scaleMult)
     : Collider(id, isEnabled, isStatic) {
-    // Initialize the AABB based on the transform's position and scale.
-    ME::Vec3 pos = transform.GetPosition();
-    ME::Vec3 scale = transform.GetScale();
+    Vec3 pos = transform.GetPosition();
+    Vec3 scale = transform.GetScale() * scaleMult;
     minX = pos.x - (scale.x / 2.0f);
     minY = pos.y - (scale.y / 2.0f);
     maxX = pos.x + (scale.x / 2.0f);
     maxY = pos.y + (scale.y / 2.0f);
 }
 
-void ME::ColliderAABB::UpdateTransform(const ME::Transform& transform) {
+void ME::ColliderAABB::UpdateTransform(const ME::Transform& transform, float scaleMult) {
     {
-        ME::Vec3 pos = transform.GetPosition();
-        ME::Vec3 scale = transform.GetScale();
+        Vec3 pos = transform.GetPosition();
+        Vec3 scale = transform.GetScale() * scaleMult;
         minX = pos.x - (scale.x / 2.0f);
         minY = pos.y - (scale.y / 2.0f);
         maxX = pos.x + (scale.x / 2.0f);

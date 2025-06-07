@@ -33,6 +33,7 @@ class SceneBreakout : public Scene {
     const uint16_t ballIndex = gridCount + 4;  // Index for the ball in instancedSpriteTransforms.
     const float ballInitX = 0.0f;
     const float ballInitY = -600.0f;
+    const float ballCollScaleMult = 0.80f;       // Scale multiplier for the ball collider.
     const uint16_t paddleIndex = gridCount + 5;  // Index for the paddle in instancedSpriteTransforms.
     const uint16_t paddleSizeX = 250;
     const uint16_t paddleSizeY = 40;

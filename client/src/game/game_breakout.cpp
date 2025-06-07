@@ -39,7 +39,8 @@ void ME::GameBreakout::Update(double deltaTime) {
         ballTransform->GetPosition().y > brkScene->originY + (brkScene->gridY * brkScene->brickHeight)) {
         ballVelocity.y *= -1.0f;  // Bounce off the top and bottom.
     }
-    ballCollider->UpdateTransform(*ballTransform);
+
+    ballCollider->UpdateTransform(*ballTransform, brkScene->ballCollScaleMult);
 }
 
 void ME::GameBreakout::End() {
