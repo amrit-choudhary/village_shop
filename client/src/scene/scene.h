@@ -87,6 +87,9 @@ class Scene {
     virtual void BuildInstancedSpriteTransforms();
     virtual void BuildInstancedSpriteRenderers();
     virtual void BuildTextRenderers();
+
+    // Can update fixed width texts.
+    virtual void UpdateTextInstanceData();
 };
 
 }  // namespace ME

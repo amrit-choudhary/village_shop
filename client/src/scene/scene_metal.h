@@ -26,6 +26,15 @@ class SceneMetal {
     SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME::Scene* gameScene);
     ~SceneMetal();
 
+    // Init game
+    void Init();
+
+    // Update scene. Mostly used to update the transforms and instance count. Actual scene change is done in the
+    // ME::Scene class.
+    void Update();
+
+    void End();
+
     ME::Light* ambientLight;
     ME::Light* directionalLight;
     ME::Camera* camera;

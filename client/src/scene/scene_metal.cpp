@@ -21,27 +21,27 @@ ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME:
     spriteTextures = new ME::TextureMetal*[Constants::MaxSpriteTextureCount];
     textureSamplerStates = new MTL::SamplerState*[Constants::MaxSamplerCount];
 
-    this->transforms = scene->transforms;
-    this->transformCount = scene->transformCount;
-    this->spriteTransforms = scene->spriteTransforms;
-    this->spriteTransformCount = scene->spriteTransformCount;
-    this->instancedSpriteTransforms = scene->instancedSpriteTransforms;
-    this->instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
-    this->textTransforms = scene->textTransforms;
-    this->textTransformsCount = scene->textTransformsCount;
+    transforms = scene->transforms;
+    transformCount = scene->transformCount;
+    spriteTransforms = scene->spriteTransforms;
+    spriteTransformCount = scene->spriteTransformCount;
+    instancedSpriteTransforms = scene->instancedSpriteTransforms;
+    instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
+    textTransforms = scene->textTransforms;
+    textTransformsCount = scene->textTransformsCount;
 
-    this->meshRenderers = scene->meshRenderers;
-    this->meshRendererCount = scene->meshRendererCount;
-    this->spriteRenderers = scene->spriteRenderers;
-    this->spriteRendererCount = scene->spriteRendererCount;
-    this->instancedSpriteRenderers = scene->instancedSpriteRenderers;
-    this->instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
-    this->spriteInstanceData = scene->spriteInstanceData;
-    this->textureAtlasProperties = scene->textureAtlasProperties;
-    this->textRenderers = scene->textRenderers;
-    this->textRendererCount = scene->textRendererCount;
-    this->textInstanceData = scene->textInstanceData;
-    this->textInstanceDataCount = scene->textInstanceDataCount;
+    meshRenderers = scene->meshRenderers;
+    meshRendererCount = scene->meshRendererCount;
+    spriteRenderers = scene->spriteRenderers;
+    spriteRendererCount = scene->spriteRendererCount;
+    instancedSpriteRenderers = scene->instancedSpriteRenderers;
+    instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
+    spriteInstanceData = scene->spriteInstanceData;
+    textureAtlasProperties = scene->textureAtlasProperties;
+    textRenderers = scene->textRenderers;
+    textRendererCount = scene->textRendererCount;
+    textInstanceData = scene->textInstanceData;
+    textInstanceDataCount = scene->textInstanceDataCount;
 
     MakeMeshes();
     MakeQuads();
@@ -130,5 +130,7 @@ void ME::SceneMetal::MakeTextInstanceBuffer() {
     textInstanceBuffer = device->newBuffer(sizeof(ME::TextRendererInstanceData) * textInstanceDataCount,
                                            MTL::ResourceStorageModeManaged);
 }
+
+void ME::SceneMetal::Update() {}
 
 #endif

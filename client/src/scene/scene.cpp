@@ -413,3 +413,13 @@ void ME::Scene::BuildTextRenderers() {
     }
     textInstanceDataCount += textRend3->GetCount();
 }
+
+void ME::Scene::UpdateTextInstanceData() {
+    int count = 0;
+    for (uint32_t i = 0; i < textRendererCount; ++i) {
+        for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
+            textInstanceData[count]->atlasIndex = textRenderers[i]->text[j];
+            count++;
+        }
+    }
+}

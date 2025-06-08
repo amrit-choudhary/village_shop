@@ -142,8 +142,8 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
 }
 
 void ME::SceneBreakout::BuildTextRenderers() {
-    textRendererCount = 1;
-    textTransformsCount = 1;
+    textRendererCount = 2;
+    textTransformsCount = 2;
 
     // Text 1
     ME::TextRenderer* textRend =
@@ -171,7 +171,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
     textInstanceDataCount = textRend->GetCount();
 
     // Text 2
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:00", 0, 2, 0, colorPalette[0], 70, 70, -8, 0, 0};
+    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score:000", 0, 2, 0, colorPalette[0], 70, 70, -8, 0, 0};
     textRenderers[1] = textRend2;
 
     textTransforms[1] = new ME::Transform();

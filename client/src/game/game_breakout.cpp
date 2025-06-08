@@ -66,6 +66,10 @@ void ME::GameBreakout::CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *
             ++score;
         }
     }
+    char scoreText[32];
+    snprintf(scoreText, sizeof(scoreText), "Score:%03u", score);
+    brkScene->textRenderers[1]->SetText(scoreText);
+    brkScene->UpdateTextInstanceData();
 }
 
 bool ME::GameBreakout::IsDestructible(uint32_t index) const {

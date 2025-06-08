@@ -29,7 +29,10 @@ void ME::RendererMetal::SetScene(ME::Scene* gameScene) {
 }
 
 void ME::RendererMetal::Update() {
-    //     Update.
+    if (scene == nullptr) {
+        return;
+    }
+    scene->Update();
 }
 
 void ME::RendererMetal::End() {
