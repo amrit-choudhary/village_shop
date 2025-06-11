@@ -42,7 +42,9 @@ void ME::Game::SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem) {
     physicsSystem = ptrPhysicsSystem;
 }
 
-void ME::Game::CollisionCallback(ME::ColliderAABB* a, ME::ColliderAABB* b) {}
+void ME::Game::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
+    delete result;
+}
 
 ME::Scene* ME::Game::GetScene() {
     return scene;

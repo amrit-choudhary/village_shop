@@ -21,3 +21,11 @@ void ME::ColliderAABB::UpdateTransform(const ME::Transform& transform, float sca
         maxY = pos.y + (scale.y / 2.0f);
     }
 }
+
+ME::CollisionResultAABB* ME::ColliderAABB::GetCollisionResult(const ColliderAABB& other) const {
+    if (!CheckCollision(other)) return nullptr;
+
+    CollisionResultAABB* result = new CollisionResultAABB();
+
+    return result;
+}

@@ -32,8 +32,13 @@ class PhysicsSystem {
     // Set the current game instance, if needed.
     void SetGame(Game* game);
 
-    // Report collision between two colliders. Other systems can hook to this function to handle collisions.
-    void ReportCollision(ColliderAABB* a, ColliderAABB* b);
+    /**
+     * Report collision between two colliders. Other systems can hook to this function to handle collisions.
+     * By convention, the first collider is always the dynamic one (e.g., a ball), and the second is static.
+     * result will store the collision result, such as penetration depth, normal vector, etc.
+     * Remember to delete the result after use.
+     */
+    void ReportCollision(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result);
 
    private:
     bool isInitialized = false;     // Flag to check if the system is initialized.

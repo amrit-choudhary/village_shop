@@ -49,27 +49,19 @@ void ME::GameBreakout::End() {
     delete physicsScene;
 }
 
-void ME::GameBreakout::CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *b) {
-    uint32_t ballIndex = brkScene->ballIndex;
-    if (a->GetID() == ballIndex) {
-        if (IsDestructible(b->GetID())) {
-            b->isEnabled = false;
-            brkScene->spriteInstanceData[b->GetID()]->atlasIndex = 0;  // Set to black if hit.
-            ++score;
-        }
-    }
-
-    if (b->GetID() == ballIndex) {
-        if (IsDestructible(a->GetID())) {
-            a->isEnabled = false;
-            brkScene->spriteInstanceData[a->GetID()]->atlasIndex = 0;  // Set to black if hit.
-            ++score;
-        }
+void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) {
+    // By convention, the ball is always the first collider.
+    if (IsDestructible(b->GetID())) {
+        b->isEnabled = false;
+        brkScene->spriteInstanceData[b->GetID()]->atlasIndex = 0;  // Set to black if hit.
+        ++score;
     }
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%03u", score);
     brkScene->textRenderers[1]->SetText(scoreText);
     brkScene->UpdateTextInstanceData();
+
+    delete result;
 }
 
 bool ME::GameBreakout::IsDestructible(uint32_t index) const {

@@ -11,6 +11,19 @@
 namespace ME {
 
 /**
+ * Collision result for AABB colliders.
+ * Will contain results such as penetration depth, normal vector, etc.
+ */
+class CollisionResultAABB {
+   public:
+    float penX = 0.0f;      // Penetration in X axis.
+    float penY = 0.0f;      // Penetration in Y axis.
+    float penDepth = 0.0f;  // Total penetration depth, calculated as the minimum of penX and penY.
+    float normalX = 0.0f;   // Normal vector X component, indicating the direction of the collision.
+    float normalY = 0.0f;   // Normal vector Y component, indicating the direction of the collision.
+};
+
+/**
  * AABB Collider class representing a 2D Axis-Aligned Bounding Box collider.
  * It contains the minimum and maximum points of the AABB.
  */
@@ -34,9 +47,32 @@ class ColliderAABB : public Collider {
     // scaleMult is a multiplier for the scale, this can make collider bigger or smaller than the sprite.
     void UpdateTransform(const ME::Transform& transform, float scaleMult = 1.0f);
 
+    inline float GetCenterX() const {
+        return (minX + maxX) / 2.0f;
+    }
+
+    inline float GetCenterY() const {
+        return (minY + maxY) / 2.0f;
+    }
+
+    inline float GetWidth() const {
+        return maxX - minX;
+    }
+
+    inline float GetHeight() const {
+        return maxY - minY;
+    }
+
     inline bool CheckCollision(const ColliderAABB& other) const {
         return !(other.minX > maxX || other.maxX < minX || other.minY > maxY || other.maxY < minY);
     }
+
+    // Get more detailed collision result with another AABB collider. Only valid if CheckCollision returns true.
+    // This returns a pointer to a CollisionResultAABB object, which contains the collision details.
+    // This must be deleted by the caller to avoid memory leaks.
+    // If there is no collision, this will return nullptr.
+    // ME::Game should handle the deletion of this object after the collision callback.
+    CollisionResultAABB* GetCollisionResult(const ColliderAABB& other) const;
 };
 
 }  // namespace ME

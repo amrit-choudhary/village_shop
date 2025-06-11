@@ -20,8 +20,11 @@ void ME::PhysicsSystem::Update(double deltaTime) {
             if (!dynamicCollider->isEnabled || dynamicCollider->isStatic) {
                 continue;
             }
-            if (staticCollider->CheckCollision(*dynamicCollider)) {
-                ReportCollision(staticCollider, dynamicCollider);
+            CollisionResultAABB* result = dynamicCollider->GetCollisionResult(*staticCollider);
+            if (result == nullptr) {
+                continue;  // No collision detected.
+            } else {
+                ReportCollision(dynamicCollider, staticCollider, result);
             }
         }
     }
@@ -38,9 +41,9 @@ void ME::PhysicsSystem::SetGame(ME::Game* game) {
     this->game = game;
 }
 
-void ME::PhysicsSystem::ReportCollision(ColliderAABB* a, ColliderAABB* b) {
+void ME::PhysicsSystem::ReportCollision(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
     if (game != nullptr) {
-        game->CollisionCallback(a, b);
+        game->CollisionCallback(a, b, result);
     } else {
         __builtin_printf("Collision detected between colliders %u and %u\n", a->GetID(), b->GetID());
     }

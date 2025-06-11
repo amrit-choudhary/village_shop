@@ -28,7 +28,7 @@ class GameBreakout : public Game {
     virtual void End() override;
 
     // This will be called from the PhysicsSystem when a collision is detected.
-    void CollisionCallback(ME::ColliderAABB *a, ME::ColliderAABB *b) override;
+    void CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) override;
 
    private:
     SceneBreakout *brkScene = nullptr;                       // Scene for the game.
