@@ -28,7 +28,24 @@ T add(T a, T b) {
 class Math {
    public:
     // Clamps a value between min and max.
-    static float Clamp(float value, float min, float max);
+    static inline float Clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        }
+        return value;
+    }
+
+    // Minimum of two values.
+    static inline float Min(float a, float b) {
+        return (a < b) ? a : b;
+    }
+
+    // Maximum of two values.
+    static inline float Max(float a, float b) {
+        return (a > b) ? a : b;
+    }
 };
 
 }  // namespace ME

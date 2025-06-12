@@ -25,22 +25,20 @@ void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
     ME::Log("Breakout Game Start!");
 }
 
-void ME::GameBreakout::Update(double deltaTime) {
-    Game::Update(deltaTime);
-    ballTransform->SetPosition(ballTransform->GetPosition().x + brkScene->ballSpeed * ballVelocity.x * deltaTime,
-                               ballTransform->GetPosition().y + brkScene->ballSpeed * ballVelocity.y * deltaTime, 0.0f);
+void ME::GameBreakout::TranslateBall(Vec2 delta) {
+    Vec3 newBallPosition = ballTransform->GetPosition() + Vec3(delta.x, delta.y, 0.0f);
+    ballTransform->SetPosition(newBallPosition);
+
     ballInstanceData->modelMatrixData = ballTransform->GetModelMatrix().GetData();
 
-    if (ballTransform->GetPosition().x < brkScene->originX ||
-        ballTransform->GetPosition().x > brkScene->originX + (brkScene->gridX * brkScene->brickWidth)) {
-        ballVelocity.x *= -1.0f;  // Bounce off the walls.
-    }
-    if (ballTransform->GetPosition().y < brkScene->originY ||
-        ballTransform->GetPosition().y > brkScene->originY + (brkScene->gridY * brkScene->brickHeight)) {
-        ballVelocity.y *= -1.0f;  // Bounce off the top and bottom.
-    }
-
     ballCollider->UpdateTransform(*ballTransform, brkScene->ballCollScaleMult);
+}
+
+void ME::GameBreakout::Update(double deltaTime) {
+    Game::Update(deltaTime);
+
+    TranslateBall(
+        Vec2(ballVelocity.x * deltaTime * brkScene->ballSpeed, ballVelocity.y * deltaTime * brkScene->ballSpeed));
 }
 
 void ME::GameBreakout::End() {
@@ -51,11 +49,21 @@ void ME::GameBreakout::End() {
 
 void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) {
     // By convention, the ball is always the first collider.
+    TranslateBall(result->seperation);
+
+    if (result->normal == Vec2::Up || result->normal == Vec2::Down) {
+        ballVelocity.y = -ballVelocity.y;
+    }
+    if (result->normal == Vec2::Left || result->normal == Vec2::Right) {
+        ballVelocity.x = -ballVelocity.x;
+    }
+
     if (IsDestructible(b->GetID())) {
         b->isEnabled = false;
         brkScene->spriteInstanceData[b->GetID()]->atlasIndex = 0;  // Set to black if hit.
         ++score;
     }
+
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%03u", score);
     brkScene->textRenderers[1]->SetText(scoreText);

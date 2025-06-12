@@ -41,6 +41,9 @@ class GameBreakout : public Game {
     uint32_t score = 0;
 
     bool IsDestructible(uint32_t index) const;
+
+    // Translate the ball by a given delta.
+    void TranslateBall(Vec2 delta);
 };
 
 }  // namespace ME

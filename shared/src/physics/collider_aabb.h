@@ -6,21 +6,34 @@
 #pragma once
 
 #include "../math/transform.h"
+#include "../math/vec2.h"
 #include "collider.h"
 
 namespace ME {
 
 /**
  * Collision result for AABB colliders.
- * Will contain results such as penetration depth, normal vector, etc.
+ * Will contain results such as penetration, separation and normal.
+ * These values are wrt to the first collider. Flip them for the second collider.
  */
 class CollisionResultAABB {
    public:
-    float penX = 0.0f;      // Penetration in X axis.
-    float penY = 0.0f;      // Penetration in Y axis.
-    float penDepth = 0.0f;  // Total penetration depth, calculated as the minimum of penX and penY.
-    float normalX = 0.0f;   // Normal vector X component, indicating the direction of the collision.
-    float normalY = 0.0f;   // Normal vector Y component, indicating the direction of the collision.
+    /**
+     * How much the two colliders overlap in the X and Y directions.
+     */
+    Vec2 penetration;
+    /**
+     * The minimum displacement needed to separate the two colliders.
+     * This will be either in the X or Y direction, depending on which is smaller.
+     * This applied to the first collider will separate it from the second collider.
+     */
+    Vec2 seperation;
+    /**
+     * The normal vector for the collision.
+     * If a ball coming from right hits a stationary wall, normal will be Left (-1, 0).
+     * Possible values are: Right: (1, 0), Up: (0,1), Left: (-1, 0), Down: (0, -1).
+     */
+    Vec2 normal;
 };
 
 /**
@@ -63,6 +76,10 @@ class ColliderAABB : public Collider {
         return maxY - minY;
     }
 
+    inline bool CheckCollision(const Vec2& point) const {
+        return (point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY);
+    }
+
     inline bool CheckCollision(const ColliderAABB& other) const {
         return !(other.minX > maxX || other.maxX < minX || other.minY > maxY || other.maxY < minY);
     }
@@ -71,7 +88,6 @@ class ColliderAABB : public Collider {
     // This returns a pointer to a CollisionResultAABB object, which contains the collision details.
     // This must be deleted by the caller to avoid memory leaks.
     // If there is no collision, this will return nullptr.
-    // ME::Game should handle the deletion of this object after the collision callback.
     CollisionResultAABB* GetCollisionResult(const ColliderAABB& other) const;
 };
 
