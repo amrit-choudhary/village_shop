@@ -59,9 +59,3 @@ static std::string GetCurrentTime() {
     strftime(buffer, sizeof(buffer), "%H:%M:%S", localtime(&in_time_t));
     return buffer;
 }
-
-void ME::Log(const char *input) {
-    std::ostringstream oss;
-    oss << red << '[' << GetCurrentTime() << "] " << input << '\n' << white;
-    std::cout << oss.str();
-}
