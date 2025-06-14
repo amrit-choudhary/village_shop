@@ -11,8 +11,8 @@ file(GLOB_RECURSE CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/
 list(REMOVE_ITEM CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/main.cpp")
 set(CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/client/src CACHE INTERNAL "Client include directory")
 
+add_subdirectory(logging)
 add_subdirectory(shared)
 add_subdirectory(client)
 add_subdirectory(server)
 #add_subdirectory(client_tests)
-add_subdirectory(logging)
