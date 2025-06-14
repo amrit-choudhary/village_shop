@@ -10,7 +10,6 @@
 #include <thread>
 #include <unordered_map>
 
-
 namespace ME::Input {
 enum class KeyState : uint8_t {
     None = 0,
@@ -18,7 +17,17 @@ enum class KeyState : uint8_t {
     Down = 2,
 };
 
-enum class KeyCode : uint16_t { None = 0, W = 1, A = 2, S = 3, D = 4, LArrow = 5, RArrow = 6, UArrow = 7, DArrow = 8 };
+enum class KeyCode : uint16_t {
+    None = 0,
+    W = 1,
+    A = 2,
+    S = 3,
+    D = 4,
+    LArrow = 5,
+    RArrow = 6,
+    UArrow = 7,
+    DArrow = 8
+};
 
 /**
  * Base class for platform specific Input implementation.

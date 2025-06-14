@@ -14,7 +14,16 @@
 namespace ME {
 
 // Enum class for depth compare functions
-enum class DepthCompareFunction : uint8_t { Never, Less, Equal, LessEqual, Greater, NotEqual, GreaterEqual, Always };
+enum class DepthCompareFunction : uint8_t {
+    Never,
+    Less,
+    Equal,
+    LessEqual,
+    Greater,
+    NotEqual,
+    GreaterEqual,
+    Always
+};
 
 class Material {
    public:

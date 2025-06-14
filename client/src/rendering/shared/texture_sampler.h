@@ -9,7 +9,10 @@
 namespace ME {
 
 // Enum class for texture filtering modes for shaders.
-enum class TextureFilter : uint8_t { Nearest = 0, Linear = 1 };
+enum class TextureFilter : uint8_t {
+    Nearest = 0,
+    Linear = 1
+};
 
 // Enum class for texture wrapping modes for shaders.
 enum class TextureWrap : uint8_t {
@@ -22,7 +25,11 @@ enum class TextureWrap : uint8_t {
 };
 
 // Enum class for texture border color for shaders.
-enum class TextureBorderColor : uint8_t { TransparentBlack = 0, OpaqueBlack = 1, OpaqueWhite = 2 };
+enum class TextureBorderColor : uint8_t {
+    TransparentBlack = 0,
+    OpaqueBlack = 1,
+    OpaqueWhite = 2
+};
 
 class TextureSampler {
    public:

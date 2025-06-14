@@ -62,7 +62,6 @@ enum class Verb : uint8_t {
     CHAT_RECV = 0x61,
     DATA_SEND = 0x62,
     DATA_RECV = 0x63,
-
 };
 
 /**
