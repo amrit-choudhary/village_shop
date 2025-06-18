@@ -16,6 +16,9 @@
     {
         self.view = view;
         self.device = device;
+
+        self.gameMain = new ME::GameMain();
+        self.gameMain->Init();
     }
     return self;
 }
@@ -27,6 +30,7 @@
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
+    self.gameMain->Update();
     // std::cout << "Drawing frame..." << std::endl;
 }
 

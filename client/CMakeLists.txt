@@ -2,6 +2,7 @@
 include(CMakePrintHelpers)
 
 file(GLOB_RECURSE SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.mm"
 )
 

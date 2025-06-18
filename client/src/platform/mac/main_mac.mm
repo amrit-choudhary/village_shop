@@ -4,16 +4,18 @@
 */
 
 #ifdef VG_MAC
-#ifdef __OBJC__
 
 #import "app_delegate.h"
 
 #import <Cocoa/Cocoa.h>
 
 #include <iostream>
+#include "src/misc/utils.h"
 
-int main(int argc, const char * argv[]) {
+
+int main(int argc, char* argv[]) {
     @autoreleasepool {
+        ME::SetPaths(argv[0], argv[1]);
         NSApplication *app = [NSApplication sharedApplication];
         MEAppDelegate *delegate = [[NSClassFromString(@"MEAppDelegate") alloc] init];
         [app setDelegate:delegate];
@@ -22,5 +24,4 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-#endif  // __OBJC__
 #endif  // VG_MAC
