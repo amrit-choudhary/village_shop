@@ -6,7 +6,7 @@
 #ifdef VG_MAC
 #ifdef __OBJC__
 
-#import "../platform/mac/app_delegate.h"
+#import "app_delegate.h"
 
 #import <Cocoa/Cocoa.h>
 
