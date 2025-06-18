@@ -1,7 +1,9 @@
 # CMake for the client application.
 include(CMakePrintHelpers)
 
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.mm"
+)
 
 if(APPLE)
     # Add metal headers.
