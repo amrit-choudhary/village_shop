@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include <src/math/math.h>
+
 #include <cmath>
 
 ME::Camera::Camera() {
@@ -26,7 +28,7 @@ ME::Mat4 ME::Camera::GetViewMatrix() {
 
 ME::Mat4 ME::Camera::GetProjectionMatrix() {
     if (projectionType == ProjectionType::Perspective) {
-        return ME::Mat4::Perspective(fov * (M_PI / 180.0f), aspectRatio, nearPlane, farPlane);
+        return ME::Mat4::Perspective(fov * (ME::PI / 180.0f), aspectRatio, nearPlane, farPlane);
     } else if (projectionType == ProjectionType::Orthographic) {
         return ME::Mat4::Orthographic(-orthographicSize * aspectRatio, orthographicSize * aspectRatio,
                                       -orthographicSize, orthographicSize, nearPlane, farPlane);

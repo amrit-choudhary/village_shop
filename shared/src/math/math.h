@@ -16,6 +16,13 @@ namespace ME {
 
 using FP = ME::FP_24_8;
 
+// Math constants
+inline constexpr double PI = 3.14159f;
+inline constexpr double TAU = 2.0f * PI;
+inline constexpr double HALF_PI = PI * 0.5f;
+inline constexpr double DEG2RAD = PI / 180.0f;
+inline constexpr double RAD2DEG = 180.0f / PI;
+
 // Test add function.
 template <typename T>
 T add(T a, T b) {

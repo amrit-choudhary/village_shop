@@ -1,3 +1,5 @@
+#ifdef VG_MAC
+
 /**
  * Rendering for Metal platform.
  */
@@ -54,3 +56,5 @@ class RendererMetal : public PlatformRenderer {
 };
 
 }  // namespace ME
+
+#endif  // VG_MAC

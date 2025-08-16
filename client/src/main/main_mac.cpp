@@ -1,3 +1,5 @@
+#ifdef VG_MAC
+
 #include "main_mac.h"
 
 #include <iostream>
@@ -92,3 +94,5 @@ void ME::GameMain::ShutDownGameSystems() {
     // renderer.End();
     physicsSystem.End();
 }
+
+#endif  // VG_MAC

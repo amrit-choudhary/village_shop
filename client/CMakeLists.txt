@@ -1,6 +1,8 @@
 # CMake for the client application.
 include(CMakePrintHelpers)
 
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 file(GLOB_RECURSE SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.mm"
@@ -12,16 +14,22 @@ if(APPLE)
 endif()
 
 # Add zlib
-set(ZLIB_BUILD_TESTS OFF CACHE BOOL "Disable zlib tests" FORCE)
-set(INSTALL_PKGCONFIG_DIR OFF CACHE BOOL "" FORCE)
-set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
 add_subdirectory(third_party/zlib-1.3.1)
 
 # Add libpng
-set(PNG_SHARED OFF CACHE BOOL "Build libpng shared library" FORCE)
-set(PNG_STATIC ON CACHE BOOL "Build libpng static library" FORCE) # Be explicit
-set(PNG_TESTS OFF CACHE BOOL "Build libpng tests" FORCE)
-set(PNG_TOOLS OFF CACHE BOOL "Build libpng tools" FORCE)
+# Disable all libpng install/export logic
+set(SKIP_INSTALL_ALL          ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_EXPORT       ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_LIBRARIES    ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_HEADERS      ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_FILES        ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_PROGRAMS     ON CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_CONFIG_FILE  ON CACHE BOOL "" FORCE)
+
+set(PNG_SHARED OFF  CACHE BOOL "" FORCE)
+set(PNG_STATIC  ON  CACHE BOOL "" FORCE)
+set(PNG_TESTS   OFF CACHE BOOL "" FORCE)
+set(PNG_TOOLS   OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/libpng-1.6.47)
 
 # Executable
@@ -42,19 +50,9 @@ target_link_libraries(
     VillageShop_Client
     PRIVATE
     VillageShop_Logging
-    )
-
-target_link_libraries(
-    VillageShop_Client
-    PRIVATE
     VillageShop_Shared
-    )
-
-target_link_libraries(
-    VillageShop_Client
-    PRIVATE
     png_static
-    zlibstatic
+    ZLIB::ZLIB
     )
 
 if(APPLE)

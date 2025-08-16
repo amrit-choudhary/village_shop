@@ -45,6 +45,6 @@ void ME::PhysicsSystem::ReportCollision(ColliderAABB* a, ColliderAABB* b, Collis
     if (game != nullptr) {
         game->CollisionCallback(a, b, result);
     } else {
-        __builtin_printf("Collision detected between colliders %u and %u\n", a->GetID(), b->GetID());
+        // __builtin_printf("Collision detected between colliders %u and %u\n", a->GetID(), b->GetID());
     }
 }

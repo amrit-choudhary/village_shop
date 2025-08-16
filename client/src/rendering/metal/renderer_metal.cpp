@@ -1,3 +1,5 @@
+#ifdef VG_MAC
+
 #include "renderer_metal.h"
 
 #include <cmath>
@@ -176,3 +178,5 @@ void ME::RendererMetal::Draw(MTK::View* view) {
     dss->release();
     pool->release();
 }
+
+#endif  // VG_MAC
