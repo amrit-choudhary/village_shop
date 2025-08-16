@@ -35,6 +35,11 @@ add_subdirectory(third_party/libpng-1.6.47)
 # Executable
 add_executable(VillageShop_Client ${SOURCES})
 
+# Define that this is a Windows application not a CLI.
+if(WIN32)
+    set_target_properties(VillageShop_Client PROPERTIES WIN32_EXECUTABLE TRUE)
+endif()
+
 # Set preprocessor options.
 if(WIN32)
     target_compile_definitions(VillageShop_Client PRIVATE VG_WIN)
@@ -64,6 +69,7 @@ endif()
 if(WIN32)
     # Link against Winsock library
     target_link_libraries(VillageShop_Client PRIVATE Ws2_32)
+    target_link_libraries(VillageShop_Client PRIVATE d3d12 dxgi)
 endif()
 
 #End link libraries

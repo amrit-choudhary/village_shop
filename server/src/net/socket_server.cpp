@@ -12,7 +12,9 @@
 #include "src/net/net_protocol.h"
 #include "src/net/net_utils.h"
 
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Wswitch"
+#endif
 
 void ME::SocketServer::Init() {
 #ifdef VG_MAC
