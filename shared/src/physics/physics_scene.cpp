@@ -21,12 +21,14 @@ void ME::PhysicsScene::Init(const ME::Scene* scene) {
     staticColliderCount = scene->staticColliderCount;
     dynamicColliderCount = scene->dynamicColliderCount;
 
-    for (uint32_t i = 0; i < staticColliderCount; ++i) {
-        mapStaticIdToIndex[staticColliders[i].GetID()] = i;
-    }
-    for (uint8_t i = 0; i < dynamicColliderCount; ++i) {
-        mapDynamicIdToIndex[dynamicColliders[i].GetID()] = i;
-    }
+    // TODO FIX sparse array.
+
+    // for (uint32_t i = 0; i < staticColliderCount; ++i) {
+    //     mapStaticIdToIndex[staticColliders[i].GetID()] = i;
+    // }
+    // for (uint8_t i = 0; i < dynamicColliderCount; ++i) {
+    //     mapDynamicIdToIndex[dynamicColliders[i].GetID()] = i;
+    // }
 }
 
 ME::Collider* ME::PhysicsScene::GetStaticColliderById(uint32_t id) const {

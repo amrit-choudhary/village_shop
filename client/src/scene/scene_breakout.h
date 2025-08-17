@@ -28,7 +28,7 @@ class SceneBreakout : public Scene {
     const int16_t originX = -640;
     const int16_t originY = -900;
     const uint16_t ballSize = 50;
-    const uint16_t ballSpeed = 800;
+    const uint16_t ballSpeed = 100;
     const Vec2 ballVelocity{1.0f, 1.0f};       // Initial velocity of the ball.
     const uint16_t ballIndex = gridCount + 4;  // Index for the ball in instancedSpriteTransforms.
     const float ballInitX = 0.0f;
