@@ -141,6 +141,15 @@ Mat4 ME::Mat4::View(const Vec4& position, const Vec4& target, const Vec4& up) {
         0.0f, 0.0f, 0.0f, 1.0f};
 }
 
+Mat4 ME::Mat4::GetTranspose() const
+{
+    return Mat4{
+        m00, m10, m20, m30,
+        m01, m11, m21, m31,
+        m02, m12, m22, m32,
+        m03, m13, m23, m33};
+}
+
 Mat4 Mat4::operator*(const Mat4& other) const {
     Mat4 result;
 

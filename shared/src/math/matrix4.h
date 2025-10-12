@@ -55,6 +55,9 @@ class Mat4 {
     // Create a View matrix based on the camera position, target position and up vector.
     static Mat4 View(const Vec4& position, const Vec4& target, const Vec4& up);
 
+    // Returns a new matrix that is the transpose of this matrix.
+    Mat4 GetTranspose() const;
+
     // Multiplies this matrix by another matrix and returns the result.
     Mat4 operator*(const Mat4& other) const;
 };
