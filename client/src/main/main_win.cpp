@@ -11,7 +11,7 @@ ME::GameMain::~GameMain() {
     connection.End();
     inputManager.End();
     timeManager.End();
-    // renderer.End();
+    renderer.End();
     physicsSystem.End();
 }
 
@@ -34,6 +34,8 @@ void ME::GameMain::Init() {
     game.SetConnectionRef(&connection);
     game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
+
+    renderer.Init();
 }
 
 void ME::GameMain::Update() {
@@ -47,8 +49,8 @@ void ME::GameMain::Update() {
 
         game.Update(deltaTime);
 
-        // renderer.Update();
-        // renderer.Draw(view);
+        renderer.Update();
+        renderer.Draw();
 
         connection.Update(deltaTime);
 
@@ -68,12 +70,16 @@ void ME::GameMain::Exit() {
     std::cout << "Game exited." << std::endl;
 }
 
+void ME::GameMain::InitDirectX(HWND hWnd) {
+    renderer.InitDirectX(hWnd);
+}
+
 void ME::GameMain::ShutDownGameSystems() {
     game.End();
     connection.End();
     inputManager.End();
     timeManager.End();
-    // renderer.End();
+    renderer.End();
     physicsSystem.End();
 }
 

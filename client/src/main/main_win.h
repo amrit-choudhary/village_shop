@@ -15,6 +15,7 @@
 #include "../input/input_manager.h"
 #include "../misc/global_vars.h"
 #include "../net/connection.h"
+#include "../rendering/directx/renderer_directx.h"
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"
@@ -28,11 +29,12 @@ class GameMain {
     GameMain();
     virtual ~GameMain();
 
-    // void SetViewAndDevice(void* view, void* device);
     void Init();
     void Update();
     void Exit();
     void ShutDownGameSystems();
+
+    void InitDirectX(HWND hWnd);
 
    private:
     ME::Time::TimeManager timeManager;
@@ -40,6 +42,7 @@ class GameMain {
     ME::Connection connection;
     ME::GameBreakout game;
     ME::PhysicsSystem physicsSystem;
+    ME::RendererDirectX renderer;
 
     int fps = 0;
     int maxRunTime = 0;
