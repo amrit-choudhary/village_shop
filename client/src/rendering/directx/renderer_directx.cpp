@@ -125,6 +125,31 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     clearValue.Format = DXGI_FORMAT_D32_FLOAT;
     clearValue.DepthStencil.Depth = 1.0f;
     clearValue.DepthStencil.Stencil = 0;
+    CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+    device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON,
+                                    &clearValue, IID_PPV_ARGS(&depthStencilBuffer));
+
+    D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.Texture2D.MipSlice = 0;
+
+    device->CreateDepthStencilView(depthStencilBuffer.Get(), &dsvDesc,
+                                   dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+    CD3DX12_RESOURCE_BARRIER depthStencilBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    commandList->ResourceBarrier(1, &depthStencilBarrier);
+
+    screenViewport.TopLeftX = 0;
+    screenViewport.TopLeftY = 0;
+    screenViewport.Width = static_cast<float>(clientWidth);
+    screenViewport.Height = static_cast<float>(clientHeight);
+    screenViewport.MinDepth = 0.0f;
+    screenViewport.MaxDepth = 1.0f;
+
+    scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
     return true;
 }
