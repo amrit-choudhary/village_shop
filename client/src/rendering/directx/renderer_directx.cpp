@@ -73,7 +73,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     scDesc.BufferCount = 2;
     scDesc.Width = clientWidth;
     scDesc.Height = clientHeight;
-    scDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // This does not support sRGB. Render view format is set as sRGB.
+    scDesc.Format = backBufferFormat;
     scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     scDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     scDesc.SampleDesc.Count = 1;
@@ -138,10 +138,6 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     device->CreateDepthStencilView(depthStencilBuffer.Get(), &dsvDesc,
                                    dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
-    CD3DX12_RESOURCE_BARRIER depthStencilBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-    commandList->ResourceBarrier(1, &depthStencilBarrier);
-
     screenViewport.TopLeftX = 0;
     screenViewport.TopLeftY = 0;
     screenViewport.Width = static_cast<float>(clientWidth);
@@ -154,6 +150,58 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     return true;
 }
 
-void ME::RendererDirectX::Draw() {}
+void ME::RendererDirectX::Draw() {
+    WaitForPreviousFrame();
+
+    directCmdListAlloc->Reset();
+    commandList->Reset(directCmdListAlloc.Get(), nullptr);
+
+    CD3DX12_RESOURCE_BARRIER presentToRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    commandList->ResourceBarrier(1, &presentToRenderTargetBarrier);
+
+    commandList->RSSetViewports(1, &screenViewport);
+    commandList->RSSetScissorRects(1, &scissorRect);
+
+    tempColor = fmod(tempColor + tempColorIncrement, 1.0f);
+    float clearColor[4] = {tempColor, 1 - tempColor, 0.0f, 1.0f};
+
+    commandList->ClearRenderTargetView(
+        CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
+                                      rtvDescriptorSize),
+        &clearColor[0], 0, nullptr);
+
+    commandList->ClearDepthStencilView(dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH,
+                                       1.0f, 0, 0, nullptr);
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
+                                            rtvDescriptorSize);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+    commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+
+    CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    commandList->ResourceBarrier(1, &renderTargetToPresentBarrier);
+
+    commandList->Close();
+
+    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
+    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+    swapChain->Present(0, 0);
+    currentBackBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
+}
+
+void ME::RendererDirectX::WaitForPreviousFrame() {
+    ++currentFence;
+    commandQueue->Signal(fence.Get(), currentFence);
+    if (fence->GetCompletedValue() < currentFence) {
+        HANDLE fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        fence->SetEventOnCompletion(currentFence, fenceEvent);
+        WaitForSingleObject(fenceEvent, INFINITE);
+        CloseHandle(fenceEvent);
+    }
+}
 
 #endif  // VG_WIN

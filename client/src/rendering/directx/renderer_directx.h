@@ -37,6 +37,8 @@ class RendererDirectX : public PlatformRenderer {
 
     void Draw();
 
+    void WaitForPreviousFrame();
+
    private:
     HWND hWnd;
     ComPtr<IDXGIFactory4> factory;
@@ -68,10 +70,14 @@ class RendererDirectX : public PlatformRenderer {
     ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
 
     D3D_DRIVER_TYPE d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
-    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    // TODO: Make this SRGB later.
+    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     uint32_t clientWidth = 1024;
     uint32_t clientHeight = 768;
+
+    float tempColor = 0.0f;
+    float tempColorIncrement = 0.01f;
 };
 
 }  // namespace ME
