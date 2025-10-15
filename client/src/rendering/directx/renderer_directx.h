@@ -37,8 +37,6 @@ class RendererDirectX : public PlatformRenderer {
 
     void Draw();
 
-    void WaitForPreviousFrame();
-
    private:
     HWND hWnd;
     ComPtr<IDXGIFactory4> factory;
@@ -52,12 +50,9 @@ class RendererDirectX : public PlatformRenderer {
     ComPtr<ID3D12GraphicsCommandList> commandList;
 
     static const uint8_t swapChainBufferCount = 2;
-    uint32_t currentBackBuffer = 0;
+    uint8_t currentBackBuffer = 0;
     ComPtr<ID3D12Resource> swapChainBuffers[swapChainBufferCount];
     ComPtr<ID3D12Resource> depthStencilBuffer;
-
-    ComPtr<ID3D12DescriptorHeap> rtvHeap;
-    ComPtr<ID3D12DescriptorHeap> dsvHeap;
 
     D3D12_VIEWPORT screenViewport;
     D3D12_RECT scissorRect;
@@ -66,18 +61,24 @@ class RendererDirectX : public PlatformRenderer {
     uint32_t dsvDescriptorSize = 0;
     uint32_t cbvSrvUavDescriptorSize = 0;
 
-    ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap;
-    ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap;
+    ComPtr<ID3D12DescriptorHeap> rtvDescHeap;
+    ComPtr<ID3D12DescriptorHeap> dsvDescHeap;
 
     D3D_DRIVER_TYPE d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
     // TODO: Make this SRGB later.
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
-    uint32_t clientWidth = 1024;
-    uint32_t clientHeight = 768;
+    const uint32_t clientWidth = 768;
+    const uint32_t clientHeight = 1024;
 
     float tempColor = 0.0f;
     float tempColorIncrement = 0.01f;
+
+    void FlushCommandQueue();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferHandle() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrontBufferHandle() const;
+    D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilHandle() const;
 };
 
 }  // namespace ME

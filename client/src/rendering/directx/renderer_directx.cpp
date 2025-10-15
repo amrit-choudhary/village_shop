@@ -58,6 +58,12 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
         return false;
     }
 
+    device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+
+    rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    dsvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    cbvSrvUavDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
     D3D12_COMMAND_QUEUE_DESC cqDesc = {};
     cqDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
     cqDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -81,20 +87,14 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     factory->CreateSwapChainForHwnd(commandQueue.Get(), hWnd, &scDesc, nullptr, nullptr,
                                     swapChain.ReleaseAndGetAddressOf());
 
-    device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
-
-    rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    dsvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-    cbvSrvUavDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
     D3D12_DESCRIPTOR_HEAP_DESC rtvDescHeapDesc;
     rtvDescHeapDesc.NumDescriptors = swapChainBufferCount;
     rtvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     rtvDescHeapDesc.NodeMask = 0;
-    device->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap));
+    device->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&rtvDescHeap));
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
     for (size_t i = 0; i < swapChainBufferCount; ++i) {
         swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainBuffers[i]));
         device->CreateRenderTargetView(swapChainBuffers[i].Get(), nullptr, rtvHeapHandle);
@@ -106,7 +106,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     dsvDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
     dsvDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     dsvDescHeapDesc.NodeMask = 0;
-    device->CreateDescriptorHeap(&dsvDescHeapDesc, IID_PPV_ARGS(&dsvDescriptorHeap));
+    device->CreateDescriptorHeap(&dsvDescHeapDesc, IID_PPV_ARGS(&dsvDescHeap));
 
     D3D12_RESOURCE_DESC depthStencilDesc = {};
     depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -136,7 +136,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     dsvDesc.Texture2D.MipSlice = 0;
 
     device->CreateDepthStencilView(depthStencilBuffer.Get(), &dsvDesc,
-                                   dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+                                   dsvDescHeap->GetCPUDescriptorHandleForHeapStart());
 
     screenViewport.TopLeftX = 0;
     screenViewport.TopLeftY = 0;
@@ -151,8 +151,6 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 }
 
 void ME::RendererDirectX::Draw() {
-    WaitForPreviousFrame();
-
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), nullptr);
 
@@ -166,19 +164,12 @@ void ME::RendererDirectX::Draw() {
     tempColor = fmod(tempColor + tempColorIncrement, 1.0f);
     float clearColor[4] = {tempColor, 1 - tempColor, 0.0f, 1.0f};
 
-    commandList->ClearRenderTargetView(
-        CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
-                                      rtvDescriptorSize),
-        &clearColor[0], 0, nullptr);
+    commandList->ClearRenderTargetView(GetCurrentBackBufferHandle(), &clearColor[0], 0, nullptr);
+    commandList->ClearDepthStencilView(GetDepthStencilHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-    commandList->ClearDepthStencilView(dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH,
-                                       1.0f, 0, 0, nullptr);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
-                                            rtvDescriptorSize);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-    commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+    D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = GetCurrentBackBufferHandle();
+    D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
+    commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
 
     CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -191,9 +182,11 @@ void ME::RendererDirectX::Draw() {
 
     swapChain->Present(0, 0);
     currentBackBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
+
+    FlushCommandQueue();
 }
 
-void ME::RendererDirectX::WaitForPreviousFrame() {
+void ME::RendererDirectX::FlushCommandQueue() {
     ++currentFence;
     commandQueue->Signal(fence.Get(), currentFence);
     if (fence->GetCompletedValue() < currentFence) {
@@ -202,6 +195,21 @@ void ME::RendererDirectX::WaitForPreviousFrame() {
         WaitForSingleObject(fenceEvent, INFINITE);
         CloseHandle(fenceEvent);
     }
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetCurrentBackBufferHandle() const {
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
+                                         rtvDescriptorSize);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetCurrentFrontBufferHandle() const {
+    uint8_t currentFrontBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescHeap->GetCPUDescriptorHandleForHeapStart(), currentFrontBuffer,
+                                         rtvDescriptorSize);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
+    return dsvDescHeap->GetCPUDescriptorHandleForHeapStart();
 }
 
 #endif  // VG_WIN
