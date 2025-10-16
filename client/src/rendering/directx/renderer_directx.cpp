@@ -12,6 +12,7 @@
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
+#include "shader_directx.h"
 #include "src/logging.h"
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
@@ -146,6 +147,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     screenViewport.MaxDepth = 1.0f;
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
+
+    Shader shader{"sprite.hlsl"};
 
     return true;
 }

@@ -1,3 +1,4 @@
+#pragma once
 #ifdef VG_WIN
 
 /**

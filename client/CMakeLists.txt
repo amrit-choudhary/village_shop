@@ -69,7 +69,8 @@ endif()
 if(WIN32)
     # Link against Winsock library
     target_link_libraries(VillageShop_Client PRIVATE Ws2_32)
-    target_link_libraries(VillageShop_Client PRIVATE d3d12 dxgi)
+    # Link against DirectX 12 libraries
+    target_link_libraries(VillageShop_Client PRIVATE d3d12 dxgi d3dcompiler)
 endif()
 
 #End link libraries

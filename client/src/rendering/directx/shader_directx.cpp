@@ -1,0 +1,40 @@
+#ifdef VG_WIN
+
+#include "shader_directx.h"
+
+#include <D3Dcompiler.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <src/misc/utils.h>
+
+#include <string>
+
+ME::Shader::Shader(const char* shaderName) {
+    CompileShader(shaderName);
+}
+
+ME::Shader::~Shader() {
+    // ComPtr will automatically release resources.
+}
+
+void ME::Shader::CompileShader(const char* shaderName) {
+    std::string filePath = ME::GetResourcesPath() + "shaders/hlsl/" + shaderName;
+    std::wstring wFilePath(filePath.begin(), filePath.end());
+
+    HRESULT hr = S_OK;
+    ComPtr<ID3DBlob> errorBlob = nullptr;
+
+    // Compile Vertex Shader
+    hr = D3DCompileFromFile(wFilePath.c_str(), nullptr, nullptr, "VS", "vs_5_0", 0, 0, &vsBlob, &errorBlob);
+    if (FAILED(hr)) {
+        throw std::runtime_error("Failed to compile vertex shader: " + filePath);
+    }
+
+    // Compile Pixel Shader
+    hr = D3DCompileFromFile(wFilePath.c_str(), nullptr, nullptr, "PS", "ps_5_0", 0, 0, &psBlob, &errorBlob);
+    if (FAILED(hr)) {
+        throw std::runtime_error("Failed to compile pixel shader: " + filePath);
+    }
+}
+
+#endif  // VG_WIN
