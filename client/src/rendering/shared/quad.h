@@ -1,9 +1,9 @@
+#pragma once
+
 /**
  * Quad class for rendering 2D.
  * Based on the Mesh class.
  */
-
-#pragma once
 
 #include <stdint.h>
 

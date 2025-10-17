@@ -8,11 +8,8 @@
  */
 
 #include <d3d12.h>
-#include <wrl.h>
 
 #include "../shared/renderer.h"
-
-using Microsoft::WRL::ComPtr;
 
 namespace ME {
 
@@ -25,8 +22,8 @@ class Shader {
     void Unbind() const;
 
    private:
-    ComPtr<ID3DBlob> vsBlob = nullptr;
-    ComPtr<ID3DBlob> psBlob = nullptr;
+    ID3DBlob* vsBlob = nullptr;
+    ID3DBlob* psBlob = nullptr;
 
     void CompileShader(const char* shaderName);
 };

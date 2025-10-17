@@ -1,3 +1,4 @@
+#pragma once
 #ifdef VG_MAC
 
 /**
@@ -5,8 +6,6 @@
  * Has MTL buffers for vertex, index and instance data.
  * This class is used to load and manage quads using Metal.
  */
-
-#pragma once
 
 #include <simd/simd.h>
 

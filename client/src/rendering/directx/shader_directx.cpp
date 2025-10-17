@@ -14,7 +14,14 @@ ME::Shader::Shader(const char* shaderName) {
 }
 
 ME::Shader::~Shader() {
-    // ComPtr will automatically release resources.
+    if (vsBlob) {
+        vsBlob->Release();
+        vsBlob = nullptr;
+    }
+    if (psBlob) {
+        psBlob->Release();
+        psBlob = nullptr;
+    }
 }
 
 void ME::Shader::CompileShader(const char* shaderName) {
@@ -22,7 +29,7 @@ void ME::Shader::CompileShader(const char* shaderName) {
     std::wstring wFilePath(filePath.begin(), filePath.end());
 
     HRESULT hr = S_OK;
-    ComPtr<ID3DBlob> errorBlob = nullptr;
+    ID3DBlob* errorBlob = nullptr;
 
     // Compile Vertex Shader
     hr = D3DCompileFromFile(wFilePath.c_str(), nullptr, nullptr, "VS", "vs_5_0", 0, 0, &vsBlob, &errorBlob);
@@ -34,6 +41,10 @@ void ME::Shader::CompileShader(const char* shaderName) {
     hr = D3DCompileFromFile(wFilePath.c_str(), nullptr, nullptr, "PS", "ps_5_0", 0, 0, &psBlob, &errorBlob);
     if (FAILED(hr)) {
         throw std::runtime_error("Failed to compile pixel shader: " + filePath);
+    }
+
+    if (errorBlob) {
+        errorBlob->Release();
     }
 }
 
