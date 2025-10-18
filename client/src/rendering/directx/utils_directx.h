@@ -16,9 +16,8 @@ namespace UtilsDirectX {
 /**
  * Creates a default buffer resource in DirectX 12. Used for vertex and index buffers.
  */
-static ID3D12Resource* CreateDefaultBufferResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
-                                                   const void* initData, uint32_t byteSize,
-                                                   ID3D12Resource** uploadBuffer);
+ID3D12Resource* CreateDefaultBufferResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
+                                            const void* initData, uint32_t byteSize, ID3D12Resource** uploadBuffer);
 
 }  // namespace UtilsDirectX
 }  // namespace ME

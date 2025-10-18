@@ -16,6 +16,10 @@ using Microsoft::WRL::ComPtr;
 
 namespace ME {
 
+// Forward declarations to avoid including shader/quad headers here.
+class Shader;
+class QuadDirectX;
+
 /**
  * Renderer class for DirectX 12 on Windows.
  */
@@ -80,6 +84,9 @@ class RendererDirectX : public PlatformRenderer {
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferHandle() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrontBufferHandle() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilHandle() const;
+
+    ME::Shader* shader = nullptr;
+    ME::QuadDirectX* quad = nullptr;
 };
 
 }  // namespace ME

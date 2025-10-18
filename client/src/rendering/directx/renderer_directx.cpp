@@ -12,11 +12,13 @@
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
+#include "quad_directx.h"
 #include "shader_directx.h"
 #include "src/logging.h"
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
+#include "utils_directx.h"
 
 void ME::RendererDirectX::Init() {
     ME::Log("RendererDirectX::Init");
@@ -148,7 +150,33 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
-    Shader shader{"sprite.hlsl"};
+    // Do Initilization that need command list.
+    directCmdListAlloc->Reset();
+    commandList->Reset(directCmdListAlloc.Get(), nullptr);
+
+    shader = new Shader{"sprite.hlsl"};
+
+    quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
+
+    quad->vertexBuffer = ME::UtilsDirectX::CreateDefaultBufferResource(device.Get(), commandList.Get(), quad->vertices,
+                                                                       quad->verticesSize, &quad->vertexBufferUpload);
+    quad->indexBuffer = ME::UtilsDirectX::CreateDefaultBufferResource(device.Get(), commandList.Get(), quad->indices,
+                                                                      quad->indicesSize, &quad->indexBufferUpload);
+
+    commandList->Close();
+    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
+    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+    FlushCommandQueue();
+
+    if (quad->vertexBufferUpload) {
+        quad->vertexBufferUpload->Release();
+        quad->vertexBufferUpload = nullptr;
+    }
+    if (quad->indexBufferUpload) {
+        quad->indexBufferUpload->Release();
+        quad->indexBufferUpload = nullptr;
+    }
 
     return true;
 }
