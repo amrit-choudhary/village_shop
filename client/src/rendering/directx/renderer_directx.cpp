@@ -152,7 +152,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
     rootSignature = UtilsDirectX::CreateSimpleRootSignature(device.Get());
-    PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", &pso, rootSignature);
+    pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();

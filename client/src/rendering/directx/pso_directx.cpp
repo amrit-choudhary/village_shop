@@ -9,9 +9,9 @@ ME::PSODirectX::~PSODirectX() {}
 
 void ME::PSODirectX::CreatePSO(ID3D12Device* device, const char* shaderName) {}
 
-void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, ID3D12PipelineState** outPso,
-                                 ID3D12RootSignature* rootSignature) {
-    *outPso = nullptr;
+ID3D12PipelineState* ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName,
+                                                 ID3D12RootSignature* rootSignature) {
+    ID3D12PipelineState* pso = nullptr;
     Shader shader(shaderName);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -38,7 +38,8 @@ void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, I
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     psoDesc.SampleDesc.Count = 1;
     psoDesc.SampleDesc.Quality = 0;
-    device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPso));
+    device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+    return pso;
 }
 
 #endif  // VG_WIN
