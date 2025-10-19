@@ -48,4 +48,11 @@ void ME::Shader::CompileShader(const char* shaderName) {
     }
 }
 
+ID3DBlob* ME::Shader::GetVSBlob() const {
+    return vsBlob;
+}
+ID3DBlob* ME::Shader::GetPSBlob() const {
+    return psBlob;
+}
+
 #endif  // VG_WIN

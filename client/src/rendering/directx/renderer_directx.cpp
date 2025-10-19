@@ -12,6 +12,7 @@
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
+#include "pso_directx.h"
 #include "quad_directx.h"
 #include "shader_directx.h"
 #include "src/logging.h"
@@ -150,6 +151,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
+    PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", pso);
+
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), nullptr);
@@ -157,33 +160,21 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     shader = new Shader{"sprite.hlsl"};
 
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
-
-    quad->vertexBuffer = ME::UtilsDirectX::CreateDefaultBufferResource(device.Get(), commandList.Get(), quad->vertices,
-                                                                       quad->verticesSize, &quad->vertexBufferUpload);
-    quad->indexBuffer = ME::UtilsDirectX::CreateDefaultBufferResource(device.Get(), commandList.Get(), quad->indices,
-                                                                      quad->indicesSize, &quad->indexBufferUpload);
+    quad->CreateBuffers(device.Get(), commandList.Get());
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
     commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
     FlushCommandQueue();
 
-    if (quad->vertexBufferUpload) {
-        quad->vertexBufferUpload->Release();
-        quad->vertexBufferUpload = nullptr;
-    }
-    if (quad->indexBufferUpload) {
-        quad->indexBufferUpload->Release();
-        quad->indexBufferUpload = nullptr;
-    }
+    quad->ReleaseUploadBuffers();
 
     return true;
 }
 
 void ME::RendererDirectX::Draw() {
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), nullptr);
+    commandList->Reset(directCmdListAlloc.Get(), pso);
 
     CD3DX12_RESOURCE_BARRIER presentToRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -201,6 +192,19 @@ void ME::RendererDirectX::Draw() {
     D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = GetCurrentBackBufferHandle();
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
     commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
+
+    // Actual drawing.
+
+    // commandList->SetPipelineState(pso);
+    commandList->SetGraphicsRootSignature(nullptr);
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
+    D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+    commandList->IASetVertexBuffers(0, 1, &vbView);
+    commandList->IASetIndexBuffer(&ibView);
+    commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+
+    // End drawing.
 
     CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

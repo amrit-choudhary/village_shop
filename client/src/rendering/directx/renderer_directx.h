@@ -62,6 +62,8 @@ class RendererDirectX : public PlatformRenderer {
     D3D12_VIEWPORT screenViewport;
     D3D12_RECT scissorRect;
 
+    ID3D12PipelineState* pso = nullptr;
+
     uint32_t rtvDescriptorSize = 0;
     uint32_t dsvDescriptorSize = 0;
     uint32_t cbvSrvUavDescriptorSize = 0;

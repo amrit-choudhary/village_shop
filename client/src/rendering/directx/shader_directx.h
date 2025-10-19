@@ -20,6 +20,8 @@ class Shader {
 
     void Bind() const;
     void Unbind() const;
+    ID3DBlob* GetVSBlob() const;
+    ID3DBlob* GetPSBlob() const;
 
    private:
     ID3DBlob* vsBlob = nullptr;
