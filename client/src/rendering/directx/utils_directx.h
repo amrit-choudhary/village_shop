@@ -19,6 +19,9 @@ namespace UtilsDirectX {
 ID3D12Resource* CreateDefaultBufferResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
                                             const void* initData, uint32_t byteSize, ID3D12Resource** uploadBuffer);
 
+/** Creates a simple root signature for 2D sprite rendering. */
+ID3D12RootSignature* CreateSimpleRootSignature(ID3D12Device* device);
+
 }  // namespace UtilsDirectX
 }  // namespace ME
 

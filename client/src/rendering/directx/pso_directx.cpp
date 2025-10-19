@@ -9,8 +9,9 @@ ME::PSODirectX::~PSODirectX() {}
 
 void ME::PSODirectX::CreatePSO(ID3D12Device* device, const char* shaderName) {}
 
-void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, ID3D12PipelineState* pso) {
-    pso = nullptr;
+void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, ID3D12PipelineState** outPso,
+                                 ID3D12RootSignature* rootSignature) {
+    *outPso = nullptr;
     Shader shader(shaderName);
 
     D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
@@ -18,8 +19,8 @@ void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, I
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
     };
 
-    ID3D12RootSignature* rootSignature = nullptr;
-    // root
+    CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
+    rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;  // Disable culling for 2D
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
     ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
@@ -27,7 +28,7 @@ void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, I
     psoDesc.pRootSignature = rootSignature;
     psoDesc.VS = {shader.GetVSBlob()->GetBufferPointer(), shader.GetVSBlob()->GetBufferSize()};
     psoDesc.PS = {shader.GetPSBlob()->GetBufferPointer(), shader.GetPSBlob()->GetBufferSize()};
-    psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    psoDesc.RasterizerState = rasterizerDesc;
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
@@ -37,7 +38,7 @@ void ME::PSODirectX::CreatePSO2D(ID3D12Device* device, const char* shaderName, I
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     psoDesc.SampleDesc.Count = 1;
     psoDesc.SampleDesc.Quality = 0;
-    device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&pso));
+    device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(outPso));
 }
 
 #endif  // VG_WIN

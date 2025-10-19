@@ -151,11 +151,12 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
-    PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", pso);
+    rootSignature = UtilsDirectX::CreateSimpleRootSignature(device.Get());
+    PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", &pso, rootSignature);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), nullptr);
+    commandList->Reset(directCmdListAlloc.Get(), pso);
 
     shader = new Shader{"sprite.hlsl"};
 
@@ -176,18 +177,18 @@ void ME::RendererDirectX::Draw() {
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
 
+    commandList->RSSetViewports(1, &screenViewport);
+    commandList->RSSetScissorRects(1, &scissorRect);
+
     CD3DX12_RESOURCE_BARRIER presentToRenderTargetBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     commandList->ResourceBarrier(1, &presentToRenderTargetBarrier);
 
-    commandList->RSSetViewports(1, &screenViewport);
-    commandList->RSSetScissorRects(1, &scissorRect);
-
-    tempColor = fmod(tempColor + tempColorIncrement, 1.0f);
-    float clearColor[4] = {tempColor, 1 - tempColor, 0.0f, 1.0f};
+    float clearColor[4] = {0.01f, 0.01f, 0.01f, 1.0f};
 
     commandList->ClearRenderTargetView(GetCurrentBackBufferHandle(), &clearColor[0], 0, nullptr);
-    commandList->ClearDepthStencilView(GetDepthStencilHandle(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+    commandList->ClearDepthStencilView(GetDepthStencilHandle(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f,
+                                       0, 0, nullptr);
 
     D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = GetCurrentBackBufferHandle();
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
@@ -195,8 +196,8 @@ void ME::RendererDirectX::Draw() {
 
     // Actual drawing.
 
-    // commandList->SetPipelineState(pso);
-    commandList->SetGraphicsRootSignature(nullptr);
+    commandList->SetPipelineState(pso);
+    commandList->SetGraphicsRootSignature(rootSignature);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();

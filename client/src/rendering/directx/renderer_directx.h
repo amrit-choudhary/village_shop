@@ -63,6 +63,7 @@ class RendererDirectX : public PlatformRenderer {
     D3D12_RECT scissorRect;
 
     ID3D12PipelineState* pso = nullptr;
+    ID3D12RootSignature* rootSignature = nullptr;
 
     uint32_t rtvDescriptorSize = 0;
     uint32_t dsvDescriptorSize = 0;
@@ -77,9 +78,6 @@ class RendererDirectX : public PlatformRenderer {
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     const uint32_t clientWidth = 768;
     const uint32_t clientHeight = 1024;
-
-    float tempColor = 0.0f;
-    float tempColorIncrement = 0.01f;
 
     void FlushCommandQueue();
 

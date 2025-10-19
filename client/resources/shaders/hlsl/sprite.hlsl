@@ -19,7 +19,7 @@ VertexOut VS(VertexIn input)
 
     output.position = float4(input.position, 1.0f);
     output.uv = input.uv;
-    output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    output.color = float4(1.0f * input.uv.x, 1.0f * input.uv.y, 1.0f, 1.0f);
     return output;
 }
 

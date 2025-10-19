@@ -48,4 +48,30 @@ ID3D12Resource* ME::UtilsDirectX::CreateDefaultBufferResource(ID3D12Device* devi
     return defaultBuffer;
 }
 
+ID3D12RootSignature* ME::UtilsDirectX::CreateSimpleRootSignature(ID3D12Device* device) {
+    if (!device) return nullptr;
+
+    D3D12_ROOT_SIGNATURE_DESC desc = {};
+    desc.NumParameters = 0;
+    desc.pParameters = nullptr;
+    desc.NumStaticSamplers = 0;
+    desc.pStaticSamplers = nullptr;
+    desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    ID3DBlob* serialized;
+    ID3DBlob* error;
+    HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &error);
+    if (FAILED(hr)) {
+        if (error) OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+        return nullptr;
+    }
+
+    ID3D12RootSignature* rootSig;
+    hr = device->CreateRootSignature(0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
+                                     IID_PPV_ARGS(&rootSig));
+    if (FAILED(hr)) return nullptr;
+
+    return rootSig;
+}
+
 #endif  // VG_WIN
