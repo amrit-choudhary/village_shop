@@ -20,6 +20,7 @@ namespace ME {
 class Shader;
 class QuadDirectX;
 class UploadBufferDX;
+class MeshDx;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -90,6 +91,7 @@ class RendererDirectX : public PlatformRenderer {
     ME::Shader* shader = nullptr;
     ME::QuadDirectX* quad = nullptr;
     ME::UploadBufferDX* constantBuffer = nullptr;
+    ME::MeshDx* mesh = nullptr;
 
     uint32_t frameCounter = 0;
 };

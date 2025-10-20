@@ -12,6 +12,7 @@
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
+#include "mesh_dx.h"
 #include "pso_dx.h"
 #include "quad_dx.h"
 #include "root_sig_dx.h"
@@ -161,7 +162,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
 
     rootSignature = RootSigDx::CreateRootSignature2D(device.Get());
-    pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
+    // pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
+    pso = PSODirectX::CreatePSO3D(device.Get(), "unlit.hlsl", rootSignature);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
@@ -176,6 +178,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
+    mesh = new MeshDx{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
+    mesh->CreateBuffers(device.Get(), commandList.Get());
+
     constantBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(ConstantBufferData));
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
     cbvDesc.BufferLocation = constantBuffer->GetResource()->GetGPUVirtualAddress();
@@ -188,6 +193,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     FlushCommandQueue();
 
     quad->ReleaseUploadBuffers();
+    mesh->ReleaseUploadBuffers();
 
     return true;
 }
@@ -222,15 +228,29 @@ void ME::RendererDirectX::Draw() {
     constantData.rotation = angle;
     constantBuffer->CopyData(0, &constantData);
 
+    // 2D Drawing
+    // commandList->SetPipelineState(pso);
+    // commandList->SetGraphicsRootSignature(rootSignature);
+    // commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    // commandList->SetGraphicsRootDescriptorTable(0, cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart());
+
+    // D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
+    // D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+    // commandList->IASetVertexBuffers(0, 1, &vbView);
+    // commandList->IASetIndexBuffer(&ibView);
+    // commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+
+    // 3D Drawing
     commandList->SetPipelineState(pso);
     commandList->SetGraphicsRootSignature(rootSignature);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->SetGraphicsRootDescriptorTable(0, cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart());
-    D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
-    D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+
+    D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
+    D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
     commandList->IASetVertexBuffers(0, 1, &vbView);
     commandList->IASetIndexBuffer(&ibView);
-    commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+    commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
 
     // End drawing.
 
