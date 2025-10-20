@@ -18,7 +18,7 @@ ID3D12Resource* ME::UtilsDirectX::CreateDefaultBufferResource(ID3D12Device* devi
     CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
     HRESULT hr = device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc,
-                                                 D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&defaultBuffer));
+                                                 D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&defaultBuffer));
 
     if (FAILED(hr)) {
         return nullptr;
@@ -37,11 +37,15 @@ ID3D12Resource* ME::UtilsDirectX::CreateDefaultBufferResource(ID3D12Device* devi
     subResourceData.RowPitch = byteSize;
     subResourceData.SlicePitch = subResourceData.RowPitch;
 
+    CD3DX12_RESOURCE_BARRIER barrier1 = CD3DX12_RESOURCE_BARRIER::Transition(defaultBuffer, D3D12_RESOURCE_STATE_COMMON,
+                                                                             D3D12_RESOURCE_STATE_COPY_DEST);
+    cmdList->ResourceBarrier(1, &barrier1);
+
     UpdateSubresources<1>(cmdList, defaultBuffer, *uploadBuffer, 0, 0, 1, &subResourceData);
 
-    CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+    CD3DX12_RESOURCE_BARRIER barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(
         defaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
-    cmdList->ResourceBarrier(1, &barrier);
+    cmdList->ResourceBarrier(1, &barrier2);
 
     // Note: caller must execute the command list and ensure GPU finishes the copy before
     // releasing the uploadBuffer (or keep uploadBuffer alive until the fence signals).
@@ -51,9 +55,15 @@ ID3D12Resource* ME::UtilsDirectX::CreateDefaultBufferResource(ID3D12Device* devi
 ID3D12RootSignature* ME::UtilsDirectX::CreateSimpleRootSignature(ID3D12Device* device) {
     if (!device) return nullptr;
 
+    CD3DX12_ROOT_PARAMETER rootParameters[1];
+
+    CD3DX12_DESCRIPTOR_RANGE cbvRange;
+    cbvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+    rootParameters[0].InitAsDescriptorTable(1, &cbvRange);
+
     D3D12_ROOT_SIGNATURE_DESC desc = {};
-    desc.NumParameters = 0;
-    desc.pParameters = nullptr;
+    desc.NumParameters = _countof(rootParameters);
+    desc.pParameters = rootParameters;
     desc.NumStaticSamplers = 0;
     desc.pStaticSamplers = nullptr;
     desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;

@@ -1,5 +1,13 @@
 // Simple sprite shader for instanced rendering.
 
+cbuffer cbPerObject : register(b0)
+{
+    float4x4 modelMatrix;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+    float rotation;
+};
+
 struct VertexIn
 {
 	float3 position  : POSITION;
@@ -19,7 +27,7 @@ VertexOut VS(VertexIn input)
 
     output.position = float4(input.position, 1.0f);
     output.uv = input.uv;
-    output.color = float4(1.0f * input.uv.x, 1.0f * input.uv.y, 1.0f, 1.0f);
+    output.color = float4(1.0f * input.uv.x, 1.0f * input.uv.y, rotation, 1.0f);
     return output;
 }
 

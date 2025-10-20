@@ -19,6 +19,7 @@
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
+#include "upload_buffer_directx.h"
 #include "utils_directx.h"
 
 void ME::RendererDirectX::Init() {
@@ -151,6 +152,13 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
+    D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavDescHeapDesc;
+    cbvSrvUavDescHeapDesc.NumDescriptors = 1;
+    cbvSrvUavDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+    cbvSrvUavDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+    cbvSrvUavDescHeapDesc.NodeMask = 0;
+    device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
+
     rootSignature = UtilsDirectX::CreateSimpleRootSignature(device.Get());
     pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
 
@@ -158,10 +166,20 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
 
+    CD3DX12_RESOURCE_BARRIER depthBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+    commandList->ResourceBarrier(1, &depthBarrier);
+
     shader = new Shader{"sprite.hlsl"};
 
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
+
+    constantBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(ConstantBufferData));
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+    cbvDesc.BufferLocation = constantBuffer->GetResource()->GetGPUVirtualAddress();
+    cbvDesc.SizeInBytes = constantBuffer->GetElementSize();
+    device->CreateConstantBufferView(&cbvDesc, cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart());
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
@@ -193,12 +211,20 @@ void ME::RendererDirectX::Draw() {
     D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = GetCurrentBackBufferHandle();
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
     commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
+    ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
+    commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Actual drawing.
+    ++frameCounter;
+    float angle = std::abs(std::sin(frameCounter * 0.05f));
+    ConstantBufferData constantData{};
+    constantData.rotation = angle;
+    constantBuffer->CopyData(0, &constantData);
 
     commandList->SetPipelineState(pso);
     commandList->SetGraphicsRootSignature(rootSignature);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->SetGraphicsRootDescriptorTable(0, cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart());
     D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
     commandList->IASetVertexBuffers(0, 1, &vbView);

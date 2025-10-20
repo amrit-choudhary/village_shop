@@ -19,6 +19,7 @@ namespace ME {
 // Forward declarations to avoid including shader/quad headers here.
 class Shader;
 class QuadDirectX;
+class UploadBufferDX;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -71,10 +72,11 @@ class RendererDirectX : public PlatformRenderer {
 
     ComPtr<ID3D12DescriptorHeap> rtvDescHeap;
     ComPtr<ID3D12DescriptorHeap> dsvDescHeap;
+    ComPtr<ID3D12DescriptorHeap> cbvSrvUavDescHeap;
 
     D3D_DRIVER_TYPE d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
     // TODO: Make this SRGB later.
-    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     const uint32_t clientWidth = 768;
     const uint32_t clientHeight = 1024;
@@ -87,6 +89,9 @@ class RendererDirectX : public PlatformRenderer {
 
     ME::Shader* shader = nullptr;
     ME::QuadDirectX* quad = nullptr;
+    ME::UploadBufferDX* constantBuffer = nullptr;
+
+    uint32_t frameCounter = 0;
 };
 
 }  // namespace ME

@@ -11,6 +11,14 @@
 
 namespace ME {
 
+/** Constant buffer structure for shaders. */
+struct ConstantBufferData {
+    Mat4 modelMatrix;
+    Mat4 viewMatrix;
+    Mat4 projectionMatrix;
+    float rotation;
+};
+
 class PSODirectX {
    public:
     PSODirectX();
