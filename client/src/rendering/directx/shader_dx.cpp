@@ -1,6 +1,6 @@
 #ifdef VG_WIN
 
-#include "shader_directx.h"
+#include "shader_dx.h"
 
 #include <D3Dcompiler.h>
 #include <d3d12.h>

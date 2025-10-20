@@ -7,7 +7,7 @@
 
 #include <d3d12.h>
 
-#include "shader_directx.h"
+#include "shader_dx.h"
 
 namespace ME {
 

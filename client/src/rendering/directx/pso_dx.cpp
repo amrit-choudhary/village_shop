@@ -1,5 +1,5 @@
 #ifdef VG_WIN
-#include "pso_directx.h"
+#include "pso_dx.h"
 
 #include "d3dx12.h"
 

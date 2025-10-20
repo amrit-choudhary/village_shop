@@ -15,7 +15,7 @@
 #include "../input/input_manager.h"
 #include "../misc/global_vars.h"
 #include "../net/connection.h"
-#include "../rendering/directx/renderer_directx.h"
+#include "../rendering/directx/renderer_dx.h"
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"

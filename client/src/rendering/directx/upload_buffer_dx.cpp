@@ -1,6 +1,6 @@
 #ifdef VG_WIN
 
-#include "upload_buffer_directx.h"
+#include "upload_buffer_dx.h"
 
 #include "d3dx12.h"
 

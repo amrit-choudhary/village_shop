@@ -1,6 +1,6 @@
 #if VG_WIN
 
-#include "renderer_directx.h"
+#include "renderer_dx.h"
 
 #include <cmath>
 
@@ -12,15 +12,16 @@
 #include "../shared/mesh_parser_obj.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
-#include "pso_directx.h"
-#include "quad_directx.h"
-#include "shader_directx.h"
+#include "pso_dx.h"
+#include "quad_dx.h"
+#include "root_sig_dx.h"
+#include "shader_dx.h"
 #include "src/logging.h"
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
-#include "upload_buffer_directx.h"
-#include "utils_directx.h"
+#include "upload_buffer_dx.h"
+#include "utils_dx.h"
 
 void ME::RendererDirectX::Init() {
     ME::Log("RendererDirectX::Init");
@@ -159,7 +160,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvSrvUavDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
 
-    rootSignature = UtilsDirectX::CreateSimpleRootSignature(device.Get());
+    rootSignature = RootSigDx::CreateRootSignature2D(device.Get());
     pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
 
     // Do Initilization that need command list.

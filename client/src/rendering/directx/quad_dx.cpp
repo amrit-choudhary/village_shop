@@ -1,8 +1,8 @@
 #ifdef VG_WIN
 
-#include "quad_directx.h"
+#include "quad_dx.h"
 
-#include "utils_directx.h"
+#include "utils_dx.h"
 
 ME::QuadDirectX::QuadDirectX(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) : Quad() {}
 
