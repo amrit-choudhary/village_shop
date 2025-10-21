@@ -178,7 +178,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh = new MeshDx{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
+    mesh = new MeshDx{"meshes/icosahedron.obj", device.Get(), commandList.Get()};
     mesh->CreateBuffers(device.Get(), commandList.Get());
 
     constantBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(ConstantBufferData));
@@ -223,7 +223,8 @@ void ME::RendererDirectX::Draw() {
 
     // Actual drawing.
     ++frameCounter;
-    float angle = std::abs(std::sin(frameCounter * 0.05f));
+    // float angle = std::abs(std::sin(frameCounter * 0.05f));
+    float angle = frameCounter * 0.02f;
     ConstantBufferData constantData{};
     constantData.rotation = angle;
     constantBuffer->CopyData(0, &constantData);
