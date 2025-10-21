@@ -21,6 +21,8 @@ class Shader;
 class QuadDirectX;
 class UploadBufferDX;
 class MeshDx;
+class Camera;
+class Light;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -79,8 +81,8 @@ class RendererDirectX : public PlatformRenderer {
     // TODO: Make this SRGB later.
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
-    const uint32_t clientWidth = 768;
-    const uint32_t clientHeight = 1024;
+    const uint32_t clientWidth = 1024;
+    const uint32_t clientHeight = 768;
 
     void FlushCommandQueue();
 
@@ -94,6 +96,11 @@ class RendererDirectX : public PlatformRenderer {
     ME::MeshDx* mesh = nullptr;
 
     uint32_t frameCounter = 0;
+
+    ME::Camera* camera = nullptr;
+    ME::Light* directionalLight = nullptr;
+    ME::Light* ambientLight = nullptr;
+    void CreateCameraAndLights();
 };
 
 }  // namespace ME

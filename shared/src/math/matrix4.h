@@ -49,8 +49,18 @@ class Mat4 {
     // Creates an Orthographic matrix based on provided left, right, bottom, top, near and far planes.
     static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
 
-    // Creates a Perspective matrix based on provided field of view, aspect ratio, near and far planes.
+    /**
+     * Creates a platform dependent Perspective matrix based on provided field of view, aspect ratio, near and far
+     * planes. For Metal and Vulkan, the resulting matrix will have a clip space of z: [0, 1]. For DirectX, the
+     * resulting matrix will have a clip space of z: [0, 1].
+     */
     static Mat4 Perspective(float fov, float aspect, float near, float far);
+
+    // Creates a Perspective matrix based on provided field of view, aspect ratio, near and far planes.
+    static Mat4 PerspectiveMTL(float fov, float aspect, float near, float far);
+
+    // Creates a Perspective matrix based on provided field of view, aspect ratio, near and far planes.
+    static Mat4 PerspectiveDX(float fov, float aspect, float near, float far);
 
     // Create a View matrix based on the camera position, target position and up vector.
     static Mat4 View(const Vec4& position, const Vec4& target, const Vec4& up);

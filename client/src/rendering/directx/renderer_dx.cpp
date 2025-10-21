@@ -5,8 +5,6 @@
 #include <cmath>
 
 #include "../shared/camera.h"
-#include "../shared/color.h"
-#include "../shared/image_loader_png.h"
 #include "../shared/light.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
@@ -165,6 +163,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     // pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
     pso = PSODirectX::CreatePSO3D(device.Get(), "unlit.hlsl", rootSignature);
 
+    CreateCameraAndLights();
+
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
@@ -178,7 +178,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh = new MeshDx{"meshes/icosahedron.obj", device.Get(), commandList.Get()};
+    mesh = new MeshDx{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
     mesh->CreateBuffers(device.Get(), commandList.Get());
 
     constantBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(ConstantBufferData));
@@ -225,7 +225,19 @@ void ME::RendererDirectX::Draw() {
     ++frameCounter;
     // float angle = std::abs(std::sin(frameCounter * 0.05f));
     float angle = frameCounter * 0.02f;
+    float disp = std::sin(frameCounter * 0.1f) * 3.5f;
+    ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
+    ME::Vec16 projectionMatrix = camera->GetProjectionMatrix().GetDataRowMajor();
+    ME::Transform modelTransform;
+    modelTransform.SetPosition(ME::Vec3(0.0f, disp, disp / 2.0f));
+    modelTransform.SetRotation(0, angle, 0.0f);
+    modelTransform.SetScale(3.0f, 3.0f, 3.0f);
+    ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
+
     ConstantBufferData constantData{};
+    constantData.viewMatrix = viewMatrix;
+    constantData.projectionMatrix = projectionMatrix;
+    constantData.modelMatrix = modelMatrix;
     constantData.rotation = angle;
     constantBuffer->CopyData(0, &constantData);
 
@@ -294,6 +306,24 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetCurrentFrontBufferHandle() c
 
 D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
     return dsvDescHeap->GetCPUDescriptorHandleForHeapStart();
+}
+
+void ME::RendererDirectX::CreateCameraAndLights() {
+    camera = new ME::Camera();
+    camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
+    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 10.0f);
+    camera->projectionType = ME::ProjectionType::Perspective;
+    camera->fov = 90.0f;
+    camera->aspectRatio = 1.33f;
+
+    ambientLight = new ME::Light();
+    ambientLight->color = ME::Color::White();
+    ambientLight->intensity = 0.04f;
+
+    directionalLight = new ME::Light();
+    directionalLight->direction = ME::Vec3(1.0f, 2.0f, -4.0f).Normalised();
+    directionalLight->color = ME::Color::White();
+    directionalLight->intensity = 1.0f;
 }
 
 #endif  // VG_WIN

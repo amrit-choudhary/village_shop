@@ -110,11 +110,32 @@ Mat4 ME::Mat4::Scale(const Vec4 & scale)
 }
 
 Mat4 ME::Mat4::Perspective(float fov, float aspect, float near, float far) {
+    #ifdef VG_MAC
+    return PerspectiveMTL(fov, aspect, near, far);
+    #endif
+
+    #ifdef VG_WIN
+    return PerspectiveDX(fov, aspect, near, far);
+    #endif
+
+    return Mat4::Identity;
+}
+
+Mat4 ME::Mat4::PerspectiveMTL(float fov, float aspect, float near, float far) {
     float f = 1.0f / std::tan(fov / 2.0f);
     return Mat4{
         f / aspect, 0.0f, 0.0f, 0.0f,
         0.0f, f, 0.0f, 0.0f,
         0.0f, 0.0f, far / (far - near), - far * near / (far - near),
+        0.0f, 0.0f, 1.0f, 0.0f};
+}
+
+Mat4 ME::Mat4::PerspectiveDX(float fov, float aspect, float near, float far) {
+    float f = 1.0f / std::tan(fov / 2.0f);
+    return Mat4{
+        f / aspect, 0.0f, 0.0f, 0.0f,
+        0.0f, f, 0.0f, 0.0f,
+        0.0f, 0.0f, far / (far - near), -near * far / (far - near),
         0.0f, 0.0f, 1.0f, 0.0f};
 }
 

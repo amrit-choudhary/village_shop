@@ -13,9 +13,9 @@ namespace ME {
 
 /** Constant buffer structure for shaders. */
 struct ConstantBufferData {
-    Mat4 modelMatrix;
-    Mat4 viewMatrix;
-    Mat4 projectionMatrix;
+    ME::Vec16 modelMatrix;
+    ME::Vec16 viewMatrix;
+    ME::Vec16 projectionMatrix;
     float rotation;
 };
 
