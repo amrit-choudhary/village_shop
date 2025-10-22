@@ -19,7 +19,7 @@ ID3D12PipelineState* ME::PSODirectX::CreatePSO3D(ID3D12Device* device, const cha
     };
 
     CD3DX12_RASTERIZER_DESC rasterizerDesc(D3D12_DEFAULT);
-    rasterizerDesc.FrontCounterClockwise = false;
+    rasterizerDesc.FrontCounterClockwise = true;
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
     ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));

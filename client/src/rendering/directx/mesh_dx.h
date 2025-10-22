@@ -13,10 +13,10 @@
 
 namespace ME {
 
-class MeshDx : public Mesh {
+class MeshDX : public Mesh {
    public:
-    MeshDx(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
-    ~MeshDx() override;
+    MeshDX(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
+    ~MeshDX() override;
 
     /** Create the vertex and index buffer on GPU.*/
     void CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);

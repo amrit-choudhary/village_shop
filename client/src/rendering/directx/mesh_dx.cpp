@@ -4,11 +4,11 @@
 
 #include "utils_dx.h"
 
-ME::MeshDx::MeshDx(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) {
+ME::MeshDX::MeshDX(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) {
     LoadFromFile(path);
 }
 
-ME::MeshDx::~MeshDx() {
+ME::MeshDX::~MeshDX() {
     if (vertexBuffer) {
         vertexBuffer->Release();
         vertexBuffer = nullptr;
@@ -27,14 +27,14 @@ ME::MeshDx::~MeshDx() {
     }
 }
 
-void ME::MeshDx::CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) {
+void ME::MeshDX::CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) {
     vertexBuffer =
         ME::UtilsDirectX::CreateDefaultBufferResource(device, cmdList, vertices, verticesSize, &vertexBufferUpload);
     indexBuffer =
         ME::UtilsDirectX::CreateDefaultBufferResource(device, cmdList, indices, indicesSize, &indexBufferUpload);
 }
 
-void ME::MeshDx::ReleaseUploadBuffers() {
+void ME::MeshDX::ReleaseUploadBuffers() {
     if (vertexBufferUpload) {
         vertexBufferUpload->Release();
         vertexBufferUpload = nullptr;
@@ -45,7 +45,7 @@ void ME::MeshDx::ReleaseUploadBuffers() {
     }
 }
 
-D3D12_VERTEX_BUFFER_VIEW ME::MeshDx::GetVertexBufferView() const {
+D3D12_VERTEX_BUFFER_VIEW ME::MeshDX::GetVertexBufferView() const {
     D3D12_VERTEX_BUFFER_VIEW vbv;
     vbv.BufferLocation = vertexBuffer->GetGPUVirtualAddress();
     vbv.StrideInBytes = sizeof(ME::Vertex);
@@ -53,7 +53,7 @@ D3D12_VERTEX_BUFFER_VIEW ME::MeshDx::GetVertexBufferView() const {
     return vbv;
 }
 
-D3D12_INDEX_BUFFER_VIEW ME::MeshDx::GetIndexBufferView() const {
+D3D12_INDEX_BUFFER_VIEW ME::MeshDX::GetIndexBufferView() const {
     D3D12_INDEX_BUFFER_VIEW ibv;
     ibv.BufferLocation = indexBuffer->GetGPUVirtualAddress();
     ibv.SizeInBytes = indicesSize;

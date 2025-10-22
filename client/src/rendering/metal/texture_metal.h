@@ -16,8 +16,6 @@
 
 namespace ME {
 
-constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
-
 /**
  * Texture class for handling textures in Metal.
  * This class is used to load and manage textures using Metal.

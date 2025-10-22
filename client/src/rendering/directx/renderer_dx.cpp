@@ -19,6 +19,7 @@
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
 #include "src/math/vec3.h"
+#include "texture_dx.h"
 #include "upload_buffer_dx.h"
 #include "utils_dx.h"
 
@@ -113,7 +114,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     dsvDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&dsvDescHeapDesc, IID_PPV_ARGS(&dsvDescHeap));
 
-    D3D12_RESOURCE_DESC depthStencilDesc = {};
+    D3D12_RESOURCE_DESC depthStencilDesc{};
     depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
     depthStencilDesc.Alignment = 0;
     depthStencilDesc.Width = clientWidth;
@@ -134,7 +135,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON,
                                     &clearValue, IID_PPV_ARGS(&depthStencilBuffer));
 
-    D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
     dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
     dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
     dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -152,9 +153,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
-    D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavDescHeapDesc;
+    D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavDescHeapDesc{};
     // PerPass + some objects.
-    cbvSrvUavDescHeapDesc.NumDescriptors = (1 + cbvPerObjectCount);
+    cbvSrvUavDescHeapDesc.NumDescriptors = (1 + cbvPerObjectCount + srvCount);
     cbvSrvUavDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     cbvSrvUavDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     cbvSrvUavDescHeapDesc.NodeMask = 0;
@@ -179,13 +180,13 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh1 = new MeshDx{"meshes/cars/race.obj", device.Get(), commandList.Get()};
+    mesh1 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
     mesh1->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh2 = new MeshDx{"meshes/cars/sedan-sports.obj", device.Get(), commandList.Get()};
+    mesh2 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
     mesh2->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh3 = new MeshDx{"meshes/cars/delivery-flat.obj", device.Get(), commandList.Get()};
+    mesh3 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
     mesh3->CreateBuffers(device.Get(), commandList.Get());
 
     constantBuffer = new UploadBufferDX(device.Get(), true, (1 + cbvPerObjectCount), sizeof(CBPerPass));
@@ -199,6 +200,21 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
         device->CreateConstantBufferView(&cbvDesc, cbvHandle);
     }
 
+    texture1 = new TextureDX{"textures/sprites/tileGrey_01.png", device.Get(), commandList.Get()};
+    texture1->CreateBuffers(device.Get(), commandList.Get());
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = -1;
+
+    int srvOffset = (1 + cbvPerObjectCount);  // SRV starts after CBVs
+    D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    srvHandle.ptr += srvOffset * cbvSrvUavDescriptorSize;
+    device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
+
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
     commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -208,6 +224,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     mesh1->ReleaseUploadBuffers();
     mesh2->ReleaseUploadBuffers();
     mesh3->ReleaseUploadBuffers();
+    texture1->ReleaseUploadBuffers();
 
     return true;
 }
@@ -215,6 +232,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 void ME::RendererDirectX::Draw() {
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
+    commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     commandList->RSSetViewports(1, &screenViewport);
     commandList->RSSetScissorRects(1, &scissorRect);
@@ -232,8 +252,6 @@ void ME::RendererDirectX::Draw() {
     D3D12_CPU_DESCRIPTOR_HANDLE backBufferHandle = GetCurrentBackBufferHandle();
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
     commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
-    ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
-    commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Actual drawing.
 
@@ -269,17 +287,21 @@ void ME::RendererDirectX::Draw() {
     D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
     commandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
 
+    D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    srvGpuHandle.ptr += (1 + cbvPerObjectCount) * cbvSrvUavDescriptorSize;
+    commandList->SetGraphicsRootDescriptorTable(2, srvGpuHandle);
+
     // Starting from 1 since 0 is reserved for per-pass data.
     int objIdx = 1;
-    for (int i = 0; i < 5; ++i) {
-        for (int j = 0; j < 5; ++j) {
-            for (int k = 0; k < 5; ++k) {
-                float dispX = (i - 2) * 4.0f;
-                float dispY = (j - 2) * 4.0f;
-                float dispZ = (k - 2) * 4.0f;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            for (int k = 0; k < 3; ++k) {
+                float dispX = (i - 1) * 6.0f;
+                float dispY = (j - 1) * 6.0f;
+                float dispZ = (k - 1) * 6.0f;
 
                 ME::Transform modelTransform;
-                modelTransform.SetScale(1.0f, 1.0f, 1.0f);
+                modelTransform.SetScale(2.0f, 2.0f, 2.0f);
                 modelTransform.SetRotation(0, angle, 0.0f);
                 modelTransform.SetPosition(ME::Vec3(dispX, dispY, dispZ));
                 ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
@@ -368,11 +390,11 @@ void ME::RendererDirectX::CreateCameraAndLights() {
 
     ambientLight = new ME::Light();
     ambientLight->color = ME::Color::White();
-    ambientLight->intensity = 0.04f;
+    ambientLight->intensity = 0.1f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(-4.0f, -4.0f, 4.0f).Normalised();
-    directionalLight->color = ME::Color::White();
+    directionalLight->direction = ME::Vec3(-4.0f, -10.0f, 4.0f).Normalised();
+    directionalLight->color = ME::Color::Orange();
     directionalLight->intensity = 1.0f;
 }
 

@@ -9,6 +9,9 @@
 
 namespace ME {
 
+// Constants.
+constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
+
 /**
  * Data related to texture atlases.
  * This is used to hold information about the texture atlas, such as the size, number of textures, etc.

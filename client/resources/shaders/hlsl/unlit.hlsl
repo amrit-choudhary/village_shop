@@ -15,18 +15,22 @@ cbuffer CBPerObject : register(b1)
     float4x4 modelMatrix;
 };
 
+Texture2D tex : register(t0);
+
+SamplerState texSampler : register(s0);
+
 struct VertexIn
 {
 	float3 position  : POSITION;
     float3 normal    : NORMAL;
-    float4 uv : TEXCOORD0;
+    float2 uv : TEXCOORD0;
 };
 
 struct VertexOut
 {
 	float4 position  : SV_POSITION;
     float3 normal    : NORMAL;
-    float4 uv : TEXCOORD0;
+    float2 uv : TEXCOORD0;
     float4 color : COLOR0;
 };
 
@@ -56,5 +60,6 @@ VertexOut VS(VertexIn input)
 
 float4 PS(VertexOut input) : SV_Target
 {
-    return input.color;
+    float4 texColor = tex.Sample(texSampler, input.uv.xy);
+    return input.color * texColor;
 }

@@ -20,9 +20,10 @@ namespace ME {
 class Shader;
 class QuadDirectX;
 class UploadBufferDX;
-class MeshDx;
+class MeshDX;
 class Camera;
 class Light;
+class TextureDX;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -93,10 +94,10 @@ class RendererDirectX : public PlatformRenderer {
     ME::Shader* shader = nullptr;
     ME::QuadDirectX* quad = nullptr;
     ME::UploadBufferDX* constantBuffer = nullptr;
-    ME::MeshDx* mesh = nullptr;
-    ME::MeshDx* mesh1 = nullptr;
-    ME::MeshDx* mesh2 = nullptr;
-    ME::MeshDx* mesh3 = nullptr;
+    ME::MeshDX* mesh = nullptr;
+    ME::MeshDX* mesh1 = nullptr;
+    ME::MeshDX* mesh2 = nullptr;
+    ME::MeshDX* mesh3 = nullptr;
 
     uint32_t frameCounter = 0;
 
@@ -106,6 +107,9 @@ class RendererDirectX : public PlatformRenderer {
     void CreateCameraAndLights();
 
     uint32_t cbvPerObjectCount = 16'000;
+    uint32_t srvCount = 16;
+
+    ME::TextureDX* texture1 = nullptr;
 };
 
 }  // namespace ME
