@@ -252,8 +252,7 @@ void ME::RendererDirectX::Draw() {
     commandList->IASetIndexBuffer(&ibView);
 
     ++frameCounter;
-    // float angle = std::abs(std::sin(frameCounter * 0.05f));
-    float angle = frameCounter * 0.02f;
+    float angle = frameCounter * 0.01f;
     ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
     ME::Vec16 projectionMatrix = camera->GetProjectionMatrix().GetDataRowMajor();
 
@@ -269,12 +268,12 @@ void ME::RendererDirectX::Draw() {
 
     // Starting from 1 since 0 is reserved for per-pass data.
     int objIdx = 1;
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 9; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                float dispX = (i - 4) * 4.0f;
-                float dispY = (j - 4) * 4.0f;
-                float dispZ = (k - 4) * 4.0f;
+    for (int i = 0; i < 5; ++i) {
+        for (int j = 0; j < 5; ++j) {
+            for (int k = 0; k < 5; ++k) {
+                float dispX = (i - 2) * 4.0f;
+                float dispY = (j - 2) * 4.0f;
+                float dispZ = (k - 2) * 4.0f;
 
                 ME::Transform modelTransform;
                 modelTransform.SetScale(1.0f, 1.0f, 1.0f);
@@ -341,7 +340,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
 
 void ME::RendererDirectX::CreateCameraAndLights() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(20.0f, 20.0f, -20.0f);
+    camera->position = ME::Vec3(10.0f, 10.0f, -10.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
     camera->projectionType = ME::ProjectionType::Perspective;
     camera->fov = 90.0f;
@@ -352,7 +351,7 @@ void ME::RendererDirectX::CreateCameraAndLights() {
     ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(-4.0f, -4.0f, -4.0f).Normalised();
+    directionalLight->direction = ME::Vec3(-4.0f, -4.0f, 4.0f).Normalised();
     directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }

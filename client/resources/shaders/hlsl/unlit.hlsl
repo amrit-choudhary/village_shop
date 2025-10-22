@@ -38,12 +38,14 @@ VertexOut VS(VertexIn input)
     outputPos = mul(outputPos, viewMatrix);
     outputPos = mul(outputPos, projectionMatrix);
     output.position = outputPos;
-    output.normal = input.normal;
+    // This only works for uniform scaling.
+    float3 transformedNormal = mul(input.normal, (float3x3)modelMatrix);
+    output.normal = normalize(transformedNormal);
     output.uv = input.uv;
 
     // Color calculations
     float3 ambientColor = ambientLightData.color.rgb * ambientLightData.intensity;
-    float3 n = normalize(input.normal);
+    float3 n = normalize(transformedNormal);
     float3 l = normalize(-directionalLightData.direction);
     float ndotl = max(dot(n, l), 0.0f);
     float3 directionalColor = ndotl * directionalLightData.color.rgb * directionalLightData.intensity;
