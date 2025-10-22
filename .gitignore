@@ -39,4 +39,4 @@
 /.vscode
 
 # Exceptions
-!client/resources/meshes/*.obj
+!client/resources/meshes/**/*.obj
