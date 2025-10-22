@@ -179,8 +179,14 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh = new MeshDx{"meshes/cars/race.obj", device.Get(), commandList.Get()};
-    mesh->CreateBuffers(device.Get(), commandList.Get());
+    mesh1 = new MeshDx{"meshes/cars/race.obj", device.Get(), commandList.Get()};
+    mesh1->CreateBuffers(device.Get(), commandList.Get());
+
+    mesh2 = new MeshDx{"meshes/cars/sedan-sports.obj", device.Get(), commandList.Get()};
+    mesh2->CreateBuffers(device.Get(), commandList.Get());
+
+    mesh3 = new MeshDx{"meshes/cars/delivery-flat.obj", device.Get(), commandList.Get()};
+    mesh3->CreateBuffers(device.Get(), commandList.Get());
 
     constantBuffer = new UploadBufferDX(device.Get(), true, (1 + cbvPerObjectCount), sizeof(CBPerPass));
     for (int objIdx = 0; objIdx < (1 + cbvPerObjectCount); ++objIdx) {
@@ -199,7 +205,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     FlushCommandQueue();
 
     quad->ReleaseUploadBuffers();
-    mesh->ReleaseUploadBuffers();
+    mesh1->ReleaseUploadBuffers();
+    mesh2->ReleaseUploadBuffers();
+    mesh3->ReleaseUploadBuffers();
 
     return true;
 }
@@ -246,11 +254,6 @@ void ME::RendererDirectX::Draw() {
     commandList->SetGraphicsRootSignature(rootSignature);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
-    D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
-    commandList->IASetVertexBuffers(0, 1, &vbView);
-    commandList->IASetIndexBuffer(&ibView);
-
     ++frameCounter;
     float angle = frameCounter * 0.01f;
     ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
@@ -288,6 +291,23 @@ void ME::RendererDirectX::Draw() {
                 D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
                 cbvHandle.ptr += objIdx * cbvSrvUavDescriptorSize;
                 commandList->SetGraphicsRootDescriptorTable(1, cbvHandle);
+
+                switch (objIdx % 3) {
+                    case 0:
+                        mesh = this->mesh1;
+                        break;
+                    case 1:
+                        mesh = this->mesh2;
+                        break;
+                    case 2:
+                        mesh = this->mesh3;
+                        break;
+                }
+
+                D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
+                D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
+                commandList->IASetVertexBuffers(0, 1, &vbView);
+                commandList->IASetIndexBuffer(&ibView);
 
                 commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
                 ++objIdx;
@@ -340,7 +360,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
 
 void ME::RendererDirectX::CreateCameraAndLights() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(10.0f, 10.0f, -10.0f);
+    camera->position = ME::Vec3(15.0f, 15.0f, -15.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
     camera->projectionType = ME::ProjectionType::Perspective;
     camera->fov = 90.0f;

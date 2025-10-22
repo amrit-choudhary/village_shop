@@ -94,6 +94,9 @@ class RendererDirectX : public PlatformRenderer {
     ME::QuadDirectX* quad = nullptr;
     ME::UploadBufferDX* constantBuffer = nullptr;
     ME::MeshDx* mesh = nullptr;
+    ME::MeshDx* mesh1 = nullptr;
+    ME::MeshDx* mesh2 = nullptr;
+    ME::MeshDx* mesh3 = nullptr;
 
     uint32_t frameCounter = 0;
 
