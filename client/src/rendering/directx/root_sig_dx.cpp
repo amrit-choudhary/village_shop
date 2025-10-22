@@ -7,11 +7,17 @@
 ID3D12RootSignature* ME::RootSigDx::CreateRootSignature2D(ID3D12Device* device) {
     if (!device) return nullptr;
 
-    CD3DX12_ROOT_PARAMETER rootParameters[1];
+    CD3DX12_ROOT_PARAMETER rootParameters[2];
 
-    CD3DX12_DESCRIPTOR_RANGE cbvRange;
-    cbvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-    rootParameters[0].InitAsDescriptorTable(1, &cbvRange);
+    // Per Pass at register(b0)
+    CD3DX12_DESCRIPTOR_RANGE cbvRangePass;
+    cbvRangePass.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+    rootParameters[0].InitAsDescriptorTable(1, &cbvRangePass);
+
+    // Per Object at register(b1)
+    CD3DX12_DESCRIPTOR_RANGE cbvRangeObject;
+    cbvRangeObject.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+    rootParameters[1].InitAsDescriptorTable(1, &cbvRangeObject);
 
     D3D12_ROOT_SIGNATURE_DESC desc = {};
     desc.NumParameters = _countof(rootParameters);

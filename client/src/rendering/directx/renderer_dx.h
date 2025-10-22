@@ -101,6 +101,8 @@ class RendererDirectX : public PlatformRenderer {
     ME::Light* directionalLight = nullptr;
     ME::Light* ambientLight = nullptr;
     void CreateCameraAndLights();
+
+    uint32_t cbvPerObjectCount = 16'000;
 };
 
 }  // namespace ME

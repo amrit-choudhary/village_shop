@@ -153,7 +153,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     scissorRect = {0, 0, static_cast<LONG>(clientWidth), static_cast<LONG>(clientHeight)};
 
     D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavDescHeapDesc;
-    cbvSrvUavDescHeapDesc.NumDescriptors = 1;
+    // PerPass + some objects.
+    cbvSrvUavDescHeapDesc.NumDescriptors = (1 + cbvPerObjectCount);
     cbvSrvUavDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     cbvSrvUavDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     cbvSrvUavDescHeapDesc.NodeMask = 0;
@@ -178,14 +179,19 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh = new MeshDx{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
+    mesh = new MeshDx{"meshes/cars/race.obj", device.Get(), commandList.Get()};
     mesh->CreateBuffers(device.Get(), commandList.Get());
 
-    constantBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(ConstantBufferData));
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = constantBuffer->GetResource()->GetGPUVirtualAddress();
-    cbvDesc.SizeInBytes = constantBuffer->GetElementSize();
-    device->CreateConstantBufferView(&cbvDesc, cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart());
+    constantBuffer = new UploadBufferDX(device.Get(), true, (1 + cbvPerObjectCount), sizeof(CBPerPass));
+    for (int objIdx = 0; objIdx < (1 + cbvPerObjectCount); ++objIdx) {
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+        cbvDesc.BufferLocation =
+            constantBuffer->GetResource()->GetGPUVirtualAddress() + objIdx * constantBuffer->GetElementSize();
+        cbvDesc.SizeInBytes = constantBuffer->GetElementSize();
+        D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+        cbvHandle.ptr += objIdx * cbvSrvUavDescriptorSize;
+        device->CreateConstantBufferView(&cbvDesc, cbvHandle);
+    }
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
@@ -222,24 +228,6 @@ void ME::RendererDirectX::Draw() {
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
     // Actual drawing.
-    ++frameCounter;
-    // float angle = std::abs(std::sin(frameCounter * 0.05f));
-    float angle = frameCounter * 0.02f;
-    float disp = std::sin(frameCounter * 0.1f) * 3.5f;
-    ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
-    ME::Vec16 projectionMatrix = camera->GetProjectionMatrix().GetDataRowMajor();
-    ME::Transform modelTransform;
-    modelTransform.SetPosition(ME::Vec3(0.0f, disp, disp / 2.0f));
-    modelTransform.SetRotation(0, angle, 0.0f);
-    modelTransform.SetScale(3.0f, 3.0f, 3.0f);
-    ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
-
-    ConstantBufferData constantData{};
-    constantData.viewMatrix = viewMatrix;
-    constantData.projectionMatrix = projectionMatrix;
-    constantData.modelMatrix = modelMatrix;
-    constantData.rotation = angle;
-    constantBuffer->CopyData(0, &constantData);
 
     // 2D Drawing
     // commandList->SetPipelineState(pso);
@@ -257,13 +245,56 @@ void ME::RendererDirectX::Draw() {
     commandList->SetPipelineState(pso);
     commandList->SetGraphicsRootSignature(rootSignature);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->SetGraphicsRootDescriptorTable(0, cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart());
 
     D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
     commandList->IASetVertexBuffers(0, 1, &vbView);
     commandList->IASetIndexBuffer(&ibView);
-    commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
+
+    ++frameCounter;
+    // float angle = std::abs(std::sin(frameCounter * 0.05f));
+    float angle = frameCounter * 0.02f;
+    ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
+    ME::Vec16 projectionMatrix = camera->GetProjectionMatrix().GetDataRowMajor();
+
+    CBPerPass constantData{};
+    constantData.viewMatrix = viewMatrix;
+    constantData.projectionMatrix = projectionMatrix;
+    constantData.ambientLightData = ambientLight->GetLightDataAmbient();
+    constantData.directionalLightData = directionalLight->GetLightDataDirectional();
+    constantBuffer->CopyData(0, &constantData);
+
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    commandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
+
+    // Starting from 1 since 0 is reserved for per-pass data.
+    int objIdx = 1;
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            for (int k = 0; k < 9; ++k) {
+                float dispX = (i - 4) * 4.0f;
+                float dispY = (j - 4) * 4.0f;
+                float dispZ = (k - 4) * 4.0f;
+
+                ME::Transform modelTransform;
+                modelTransform.SetScale(1.0f, 1.0f, 1.0f);
+                modelTransform.SetRotation(0, angle, 0.0f);
+                modelTransform.SetPosition(ME::Vec3(dispX, dispY, dispZ));
+                ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
+
+                CBPerObject constantData{};
+                constantData.modelMatrix = modelMatrix;
+                constantBuffer->CopyData(objIdx, &constantData);
+
+                D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+                cbvHandle.ptr += objIdx * cbvSrvUavDescriptorSize;
+                commandList->SetGraphicsRootDescriptorTable(1, cbvHandle);
+
+                commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
+                ++objIdx;
+            }
+        }
+    }
 
     // End drawing.
 
@@ -310,8 +341,8 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
 
 void ME::RendererDirectX::CreateCameraAndLights() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
-    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 10.0f);
+    camera->position = ME::Vec3(20.0f, 20.0f, -20.0f);
+    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
     camera->projectionType = ME::ProjectionType::Perspective;
     camera->fov = 90.0f;
     camera->aspectRatio = 1.33f;
@@ -321,7 +352,7 @@ void ME::RendererDirectX::CreateCameraAndLights() {
     ambientLight->intensity = 0.04f;
 
     directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(1.0f, 2.0f, -4.0f).Normalised();
+    directionalLight->direction = ME::Vec3(-4.0f, -4.0f, -4.0f).Normalised();
     directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }

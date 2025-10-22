@@ -40,7 +40,15 @@ VertexOut VS(VertexIn input)
     output.position = outputPos;
     output.normal = input.normal;
     output.uv = input.uv;
-    output.color = float4(abs(input.normal), 1.0f);
+
+    // Color calculations
+    float3 ambientColor = ambientLightData.color.rgb * ambientLightData.intensity;
+    float3 n = normalize(input.normal);
+    float3 l = normalize(-directionalLightData.direction);
+    float ndotl = max(dot(n, l), 0.0f);
+    float3 directionalColor = ndotl * directionalLightData.color.rgb * directionalLightData.intensity;
+    output.color = float4((directionalColor + ambientColor), 1.0f);
+
     return output;
 }
 

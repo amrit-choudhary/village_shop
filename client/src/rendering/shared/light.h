@@ -41,6 +41,7 @@ class Light {
     LightDataDirectional GetLightDataDirectional();
 
     ME::Vec3 position;
+    // Direction the light is pointing to. For directional and spotlight lights.
     ME::Vec3 direction;
     ME::Color color;
     float intensity;
