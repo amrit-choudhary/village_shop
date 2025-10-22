@@ -1,11 +1,18 @@
 // Simple sprite shader for instanced rendering.
 
-cbuffer cbPerObject : register(b0)
+#include "structs.hlsl"
+
+cbuffer CBPerPass : register(b0)
 {
-    float4x4 modelMatrix;
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
-    float rotation;
+    LightDataAmbient ambientLightData;
+    LightDataDirectional directionalLightData;
+};
+
+cbuffer CBPerObject : register(b1)
+{
+    float4x4 modelMatrix;
 };
 
 struct VertexIn

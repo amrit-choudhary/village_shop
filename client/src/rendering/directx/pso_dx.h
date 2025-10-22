@@ -12,11 +12,16 @@
 namespace ME {
 
 /** Constant buffer structure for shaders. */
-struct ConstantBufferData {
-    ME::Vec16 modelMatrix;
+struct CBPerPass {
     ME::Vec16 viewMatrix;
     ME::Vec16 projectionMatrix;
-    float rotation;
+    ME::LightDataAmbient ambientLightData;
+    ME::LightDataDirectional directionalLightData;
+};
+
+/** Constant buffer structure for shaders. */
+struct CBPerObject {
+    ME::Vec16 modelMatrix;
 };
 
 class PSODirectX {
