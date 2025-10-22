@@ -81,8 +81,8 @@ class RendererDirectX : public PlatformRenderer {
     // TODO: Make this SRGB later.
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
-    const uint32_t clientWidth = 1024;
-    const uint32_t clientHeight = 768;
+    const uint32_t clientWidth = 720;
+    const uint32_t clientHeight = 1280;
 
     void FlushCommandQueue();
 

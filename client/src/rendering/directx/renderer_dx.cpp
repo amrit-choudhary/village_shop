@@ -344,7 +344,7 @@ void ME::RendererDirectX::CreateCameraAndLights() {
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
     camera->projectionType = ME::ProjectionType::Perspective;
     camera->fov = 90.0f;
-    camera->aspectRatio = 1.33f;
+    camera->aspectRatio = static_cast<float>(clientWidth) / static_cast<float>(clientHeight);
 
     ambientLight = new ME::Light();
     ambientLight->color = ME::Color::White();
