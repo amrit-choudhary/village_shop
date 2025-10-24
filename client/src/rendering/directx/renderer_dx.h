@@ -18,7 +18,7 @@ namespace ME {
 
 // Forward declarations to avoid including shader/quad headers here.
 class Shader;
-class QuadDirectX;
+class QuadDX;
 class UploadBufferDX;
 class MeshDX;
 class Camera;
@@ -92,12 +92,13 @@ class RendererDirectX : public PlatformRenderer {
     D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilHandle() const;
 
     ME::Shader* shader = nullptr;
-    ME::QuadDirectX* quad = nullptr;
-    ME::UploadBufferDX* constantBuffer = nullptr;
+    ME::QuadDX* quad = nullptr;
+    // Per pass constant buffer
+    ME::UploadBufferDX* perPassCB = nullptr;
+    // Per object constant buffer
+    ME::UploadBufferDX* perObjCB = nullptr;
+
     ME::MeshDX* mesh = nullptr;
-    ME::MeshDX* mesh1 = nullptr;
-    ME::MeshDX* mesh2 = nullptr;
-    ME::MeshDX* mesh3 = nullptr;
 
     uint32_t frameCounter = 0;
 

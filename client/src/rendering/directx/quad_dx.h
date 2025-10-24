@@ -11,10 +11,10 @@
 
 namespace ME {
 
-class QuadDirectX : public Quad {
+class QuadDX : public Quad {
    public:
-    QuadDirectX(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
-    ~QuadDirectX() override;
+    QuadDX(const char* path, ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);
+    ~QuadDX() override;
 
     /** Create the vertex and index buffer on GPU.*/
     void CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList);

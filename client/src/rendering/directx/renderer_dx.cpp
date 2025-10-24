@@ -163,7 +163,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     rootSignature = RootSigDx::CreateRootSignature2D(device.Get());
     // pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
-    pso = PSODirectX::CreatePSO3D(device.Get(), "unlit.hlsl", rootSignature);
+    pso = PSODirectX::CreatePSO3D(device.Get(), "lit.hlsl", rootSignature);
 
     CreateCameraAndLights();
 
@@ -177,42 +177,40 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     shader = new Shader{"sprite.hlsl"};
 
-    quad = new QuadDirectX{"quad", device.Get(), commandList.Get()};
+    quad = new QuadDX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh1 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
-    mesh1->CreateBuffers(device.Get(), commandList.Get());
+    mesh = new MeshDX{"meshes/grass.obj", device.Get(), commandList.Get()};
+    mesh->CreateBuffers(device.Get(), commandList.Get());
 
-    mesh2 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
-    mesh2->CreateBuffers(device.Get(), commandList.Get());
+    perPassCB = new UploadBufferDX(device.Get(), true, 1, sizeof(CBPerPass));
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+    cbvDesc.BufferLocation = perPassCB->GetResource()->GetGPUVirtualAddress();
+    cbvDesc.SizeInBytes = perPassCB->GetElementSize();
+    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    cbvHandle.ptr += 0 * cbvSrvUavDescriptorSize;
+    device->CreateConstantBufferView(&cbvDesc, cbvHandle);
 
-    mesh3 = new MeshDX{"meshes/cube_unshared.obj", device.Get(), commandList.Get()};
-    mesh3->CreateBuffers(device.Get(), commandList.Get());
+    perObjCB = new UploadBufferDX(device.Get(), true, 1, sizeof(CBPerObject));
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc2 = {};
+    cbvDesc2.BufferLocation = perObjCB->GetResource()->GetGPUVirtualAddress();
+    cbvDesc2.SizeInBytes = perObjCB->GetElementSize();
+    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle2 = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    cbvHandle2.ptr += 1 * cbvSrvUavDescriptorSize;
+    device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    constantBuffer = new UploadBufferDX(device.Get(), true, (1 + cbvPerObjectCount), sizeof(CBPerPass));
-    for (int objIdx = 0; objIdx < (1 + cbvPerObjectCount); ++objIdx) {
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-        cbvDesc.BufferLocation =
-            constantBuffer->GetResource()->GetGPUVirtualAddress() + objIdx * constantBuffer->GetElementSize();
-        cbvDesc.SizeInBytes = constantBuffer->GetElementSize();
-        D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-        cbvHandle.ptr += objIdx * cbvSrvUavDescriptorSize;
-        device->CreateConstantBufferView(&cbvDesc, cbvHandle);
-    }
-
-    texture1 = new TextureDX{"textures/sprites/tileGrey_01.png", device.Get(), commandList.Get()};
+    texture1 = new TextureDX{"textures/world/torchflower128.png", device.Get(), commandList.Get()};
     texture1->CreateBuffers(device.Get(), commandList.Get());
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = -1;
 
-    int srvOffset = (1 + cbvPerObjectCount);  // SRV starts after CBVs
     D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += srvOffset * cbvSrvUavDescriptorSize;
+    srvHandle.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
 
     commandList->Close();
@@ -221,9 +219,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     FlushCommandQueue();
 
     quad->ReleaseUploadBuffers();
-    mesh1->ReleaseUploadBuffers();
-    mesh2->ReleaseUploadBuffers();
-    mesh3->ReleaseUploadBuffers();
+    mesh->ReleaseUploadBuffers();
     texture1->ReleaseUploadBuffers();
 
     return true;
@@ -232,6 +228,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 void ME::RendererDirectX::Draw() {
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
+
+    commandList->SetPipelineState(pso);
+    commandList->SetGraphicsRootSignature(rootSignature);
 
     ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -268,9 +267,6 @@ void ME::RendererDirectX::Draw() {
     // commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
 
     // 3D Drawing
-    commandList->SetPipelineState(pso);
-    commandList->SetGraphicsRootSignature(rootSignature);
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     ++frameCounter;
     float angle = frameCounter * 0.01f;
@@ -282,60 +278,34 @@ void ME::RendererDirectX::Draw() {
     constantData.projectionMatrix = projectionMatrix;
     constantData.ambientLightData = ambientLight->GetLightDataAmbient();
     constantData.directionalLightData = directionalLight->GetLightDataDirectional();
-    constantBuffer->CopyData(0, &constantData);
+    perPassCB->CopyData(0, &constantData);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    commandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
+    ME::Transform modelTransform;
+    modelTransform.SetScale(12.0f);
+    modelTransform.SetRotation(0, angle, 0.0f);
+    modelTransform.SetPosition(ME::Vec3(0.0f, -3.0f, 0.0f));
+    ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
 
-    D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    srvGpuHandle.ptr += (1 + cbvPerObjectCount) * cbvSrvUavDescriptorSize;
-    commandList->SetGraphicsRootDescriptorTable(2, srvGpuHandle);
+    CBPerObject objConstantData{};
+    objConstantData.modelMatrix = modelMatrix;
+    perObjCB->CopyData(0, &objConstantData);
 
-    // Starting from 1 since 0 is reserved for per-pass data.
-    int objIdx = 1;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            for (int k = 0; k < 3; ++k) {
-                float dispX = (i - 1) * 6.0f;
-                float dispY = (j - 1) * 6.0f;
-                float dispZ = (k - 1) * 6.0f;
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerPass = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    commandList->SetGraphicsRootDescriptorTable(0, cbvHandlePerPass);
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerObject = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    cbvHandlePerObject.ptr += 1 * cbvSrvUavDescriptorSize;
+    commandList->SetGraphicsRootDescriptorTable(1, cbvHandlePerObject);
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    cbvHandleTex.ptr += 2 * cbvSrvUavDescriptorSize;
+    commandList->SetGraphicsRootDescriptorTable(2, cbvHandleTex);
 
-                ME::Transform modelTransform;
-                modelTransform.SetScale(2.0f, 2.0f, 2.0f);
-                modelTransform.SetRotation(0, angle, 0.0f);
-                modelTransform.SetPosition(ME::Vec3(dispX, dispY, dispZ));
-                ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
+    D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
+    D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
+    commandList->IASetVertexBuffers(0, 1, &vbView);
+    commandList->IASetIndexBuffer(&ibView);
+    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-                CBPerObject constantData{};
-                constantData.modelMatrix = modelMatrix;
-                constantBuffer->CopyData(objIdx, &constantData);
-
-                D3D12_GPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-                cbvHandle.ptr += objIdx * cbvSrvUavDescriptorSize;
-                commandList->SetGraphicsRootDescriptorTable(1, cbvHandle);
-
-                switch (objIdx % 3) {
-                    case 0:
-                        mesh = this->mesh1;
-                        break;
-                    case 1:
-                        mesh = this->mesh2;
-                        break;
-                    case 2:
-                        mesh = this->mesh3;
-                        break;
-                }
-
-                D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
-                D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
-                commandList->IASetVertexBuffers(0, 1, &vbView);
-                commandList->IASetIndexBuffer(&ibView);
-
-                commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
-                ++objIdx;
-            }
-        }
-    }
+    commandList->DrawIndexedInstanced(mesh->indexCount, 1, 0, 0, 0);
 
     // End drawing.
 
@@ -382,7 +352,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
 
 void ME::RendererDirectX::CreateCameraAndLights() {
     camera = new ME::Camera();
-    camera->position = ME::Vec3(15.0f, 15.0f, -15.0f);
+    camera->position = ME::Vec3(10.0f, 10.0f, -10.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
     camera->projectionType = ME::ProjectionType::Perspective;
     camera->fov = 90.0f;
@@ -394,7 +364,7 @@ void ME::RendererDirectX::CreateCameraAndLights() {
 
     directionalLight = new ME::Light();
     directionalLight->direction = ME::Vec3(-4.0f, -10.0f, 4.0f).Normalised();
-    directionalLight->color = ME::Color::Orange();
+    directionalLight->color = ME::Color::White();
     directionalLight->intensity = 1.0f;
 }
 
