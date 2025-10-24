@@ -47,6 +47,14 @@ VertexOut VS(VertexIn input)
     output.normal = normalize(transformedNormal);
     output.uv = input.uv;
 
+    // Color calculations
+    float3 ambientColor = ambientLightData.color.rgb * ambientLightData.intensity;
+    float3 n = normalize(transformedNormal);
+    float3 l = normalize(-directionalLightData.direction);
+    float ndotl = max(dot(n, l), 0.0f);
+    float3 directionalColor = ndotl * directionalLightData.color.rgb * directionalLightData.intensity;
+    output.color = float4((directionalColor + ambientColor), 1.0f);
+
     return output;
 }
 
@@ -55,5 +63,8 @@ float4 PS(VertexOut input) : SV_Target
     // flipping y in uv is directx specific.
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
     float4 texColor = tex.Sample(texSampler, flippedUV);
-    return texColor;
+    if (texColor.a < 0.1f)
+        clip(-1);
+
+    return input.color * texColor;
 }

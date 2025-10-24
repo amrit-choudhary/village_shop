@@ -55,5 +55,8 @@ float4 PS(VertexOut input) : SV_Target
     // flipping y in uv is directx specific.
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
     float4 texColor = tex.Sample(texSampler, flippedUV);
+    if (texColor.a < 0.1f)
+        clip(-1);
+    
     return texColor;
 }
