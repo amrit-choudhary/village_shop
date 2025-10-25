@@ -8,6 +8,9 @@
 
 #include <d3d12.h>
 
+// Forward declaration
+class CD3DX12_STATIC_SAMPLER_DESC;
+
 namespace ME {
 
 class RootSigDx {
@@ -20,6 +23,10 @@ class RootSigDx {
 
     /** Create root signature for 3D rendering */
     static ID3D12RootSignature* CreateRootSignature3D(ID3D12Device* device);
+
+   private:
+    // Create and return 6 common static sampler descriptors.
+    static CD3DX12_STATIC_SAMPLER_DESC* GetStaticSamplerDescriptors();
 };
 
 }  // namespace ME

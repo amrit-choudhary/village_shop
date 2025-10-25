@@ -24,22 +24,13 @@ ID3D12RootSignature* ME::RootSigDx::CreateRootSignature2D(ID3D12Device* device) 
     srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[2].InitAsDescriptorTable(1, &srvRange);
 
-    // Add a static sampler at register(s0)
-    CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0,  // register s0
-                                            D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-                                            D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-                                            0.0f,  // mipLODBias
-                                            16,    // maxAnisotropy
-                                            D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
-                                            0.0f,              // minLOD
-                                            D3D12_FLOAT32_MAX  // maxLOD
-    );
+    CD3DX12_STATIC_SAMPLER_DESC* staticSamplers = GetStaticSamplerDescriptors();
 
     D3D12_ROOT_SIGNATURE_DESC desc = {};
     desc.NumParameters = _countof(rootParameters);
     desc.pParameters = rootParameters;
-    desc.NumStaticSamplers = 1;
-    desc.pStaticSamplers = &samplerDesc;
+    desc.NumStaticSamplers = 6;
+    desc.pStaticSamplers = staticSamplers;
     desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
     ID3DBlob* serialized;
@@ -78,22 +69,13 @@ ID3D12RootSignature* ME::RootSigDx::CreateRootSignature3D(ID3D12Device* device) 
     srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
     rootParameters[2].InitAsDescriptorTable(1, &srvRange);
 
-    // Add a static sampler at register(s0)
-    CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0,  // register s0
-                                            D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-                                            D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
-                                            0.0f,  // mipLODBias
-                                            16,    // maxAnisotropy
-                                            D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
-                                            0.0f,              // minLOD
-                                            D3D12_FLOAT32_MAX  // maxLOD
-    );
+    CD3DX12_STATIC_SAMPLER_DESC* staticSamplers = GetStaticSamplerDescriptors();
 
     D3D12_ROOT_SIGNATURE_DESC desc = {};
     desc.NumParameters = _countof(rootParameters);
     desc.pParameters = rootParameters;
-    desc.NumStaticSamplers = 1;
-    desc.pStaticSamplers = &samplerDesc;
+    desc.NumStaticSamplers = 6;
+    desc.pStaticSamplers = staticSamplers;
     desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
     ID3DBlob* serialized;
@@ -110,6 +92,80 @@ ID3D12RootSignature* ME::RootSigDx::CreateRootSignature3D(ID3D12Device* device) 
     if (FAILED(hr)) return nullptr;
 
     return rootSig;
+}
+
+CD3DX12_STATIC_SAMPLER_DESC* ME::RootSigDx::GetStaticSamplerDescriptors() {
+    static CD3DX12_STATIC_SAMPLER_DESC staticSamplers[6];
+
+    // Point Wrap Sampler
+    staticSamplers[0] =
+        CD3DX12_STATIC_SAMPLER_DESC(0,  // register s0
+                                    D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+
+    // Point Clamp Sampler
+    staticSamplers[1] =
+        CD3DX12_STATIC_SAMPLER_DESC(1,  // register s1
+                                    D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+    // Linear Wrap Sampler
+    staticSamplers[2] =
+        CD3DX12_STATIC_SAMPLER_DESC(2,  // register s2
+                                    D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+    // Linear Clamp Sampler
+    staticSamplers[3] =
+        CD3DX12_STATIC_SAMPLER_DESC(3,  // register s3
+                                    D3D12_FILTER_MIN_MAG_MIP_LINEAR, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+    // Anisotropic Wrap Sampler
+    staticSamplers[4] =
+        CD3DX12_STATIC_SAMPLER_DESC(4,  // register s4
+                                    D3D12_FILTER_ANISOTROPIC, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+    // Anisotropic Clamp Sampler
+    staticSamplers[5] =
+        CD3DX12_STATIC_SAMPLER_DESC(5,  // register s5
+                                    D3D12_FILTER_ANISOTROPIC, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    D3D12_TEXTURE_ADDRESS_MODE_CLAMP, D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+                                    0.0f,  // mipLODBias
+                                    16,    // maxAnisotropy
+                                    D3D12_COMPARISON_FUNC_ALWAYS, D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+                                    0.0f,              // minLOD
+                                    D3D12_FLOAT32_MAX  // maxLOD
+        );
+
+    return staticSamplers;
 }
 
 #endif  // VG_WIN
