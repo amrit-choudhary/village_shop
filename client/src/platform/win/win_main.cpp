@@ -58,8 +58,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     windowClass.lpszClassName = L"VillageGame";
     RegisterClassExW(&windowClass);
 
+    // Desired client area size
+    int clientWidth = 600;
+    int clientHeight = 800;
+
+    RECT rect = {0, 0, clientWidth, clientHeight};
+    AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, 0);
+
+    int windowWidth = rect.right - rect.left;
+    int windowHeight = rect.bottom - rect.top;
+
     HWND hWnd = CreateWindowExW(0, windowClass.lpszClassName, L"VillageGame", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
-                                CW_USEDEFAULT, 720, 1280, nullptr, nullptr, hInstance, nullptr);
+                                CW_USEDEFAULT, windowWidth, windowHeight, nullptr, nullptr, hInstance, nullptr);
 
     ShowWindow(hWnd, nCmdShow);
     game.InitDirectX(hWnd);

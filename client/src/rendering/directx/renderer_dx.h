@@ -82,8 +82,8 @@ class RendererDirectX : public PlatformRenderer {
     // TODO: Make this SRGB later.
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
-    const uint32_t clientWidth = 720;
-    const uint32_t clientHeight = 1280;
+    const uint32_t clientWidth = 600;
+    const uint32_t clientHeight = 800;
 
     void FlushCommandQueue();
 
@@ -98,8 +98,6 @@ class RendererDirectX : public PlatformRenderer {
     // Per object constant buffer
     ME::UploadBufferDX* perObjCB = nullptr;
 
-    ME::MeshDX* mesh = nullptr;
-
     uint32_t frameCounter = 0;
 
     ME::Camera* camera = nullptr;
@@ -111,6 +109,8 @@ class RendererDirectX : public PlatformRenderer {
     uint32_t srvCount = 16;
 
     ME::TextureDX* texture1 = nullptr;
+    ME::TextureDX* texture2 = nullptr;
+    ME::TextureDX* texture3 = nullptr;
 };
 
 }  // namespace ME

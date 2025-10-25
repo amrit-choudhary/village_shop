@@ -17,6 +17,9 @@ class RootSigDx {
 
     /** Create root signature for 2D rendering */
     static ID3D12RootSignature* CreateRootSignature2D(ID3D12Device* device);
+
+    /** Create root signature for 3D rendering */
+    static ID3D12RootSignature* CreateRootSignature3D(ID3D12Device* device);
 };
 
 }  // namespace ME
