@@ -31,6 +31,8 @@ class TextureDX : public Texture {
     /** Release the upload buffers after data has been copied to GPU. */
     void ReleaseUploadBuffers();
 
+    D3D12_GPU_DESCRIPTOR_HANDLE srvHandle{};
+
    private:
     ID3D12Resource* textureBuffer = nullptr;
     ID3D12Resource* uploadBuffer = nullptr;

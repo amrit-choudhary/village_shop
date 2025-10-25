@@ -212,6 +212,9 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
     srvHandle.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    cbvHandleTex.ptr += 2 * cbvSrvUavDescriptorSize;
+    texture1->srvHandle = cbvHandleTex;
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
@@ -295,9 +298,8 @@ void ME::RendererDirectX::Draw() {
     D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerObject = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
     cbvHandlePerObject.ptr += 1 * cbvSrvUavDescriptorSize;
     commandList->SetGraphicsRootDescriptorTable(1, cbvHandlePerObject);
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleTex.ptr += 2 * cbvSrvUavDescriptorSize;
-    commandList->SetGraphicsRootDescriptorTable(2, cbvHandleTex);
+
+    commandList->SetGraphicsRootDescriptorTable(2, texture1->srvHandle);
 
     D3D12_VERTEX_BUFFER_VIEW vbView = mesh->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = mesh->GetIndexBufferView();
