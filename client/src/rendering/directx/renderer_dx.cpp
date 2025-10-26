@@ -162,8 +162,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvSrvUavDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
 
-    rootSignature = RootSigDx::CreateRootSignature2DInstanced(device.Get());
-    pso = PSODirectX::CreatePSO2DInstanced(device.Get(), "sprite_instanced.hlsl", rootSignature);
+    rootSignature = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
+    pso = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSignature);
 
     CreateCameraAndLights();
 
@@ -188,15 +188,24 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvHandle.ptr += 0 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc, cbvHandle);
 
+    textureAtlasPropsBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(TextureAtlasProperties));
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDescAtlas = {};
+    cbvDescAtlas.BufferLocation = textureAtlasPropsBuffer->GetResource()->GetGPUVirtualAddress();
+    cbvDescAtlas.SizeInBytes = textureAtlasPropsBuffer->GetElementSize();
+    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandleAtlas = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    cbvHandleAtlas.ptr += 1 * cbvSrvUavDescriptorSize;
+    device->CreateConstantBufferView(&cbvDescAtlas, cbvHandleAtlas);
+
     perObjCB = new UploadBufferDX(device.Get(), true, 1, sizeof(CBPerObject));
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc2 = {};
     cbvDesc2.BufferLocation = perObjCB->GetResource()->GetGPUVirtualAddress();
     cbvDesc2.SizeInBytes = perObjCB->GetElementSize();
     D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle2 = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    cbvHandle2.ptr += 1 * cbvSrvUavDescriptorSize;
+    cbvHandle2.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    texture1 = new TextureDX{"textures/wheat/wheat_stage4_128.png", device.Get(), commandList.Get()};
+    texture1 =
+        new TextureDX{"textures/characters/character_femaleAdventurer_sheetHD.png", device.Get(), commandList.Get()};
     texture1->CreateBuffers(device.Get(), commandList.Get());
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -208,27 +217,32 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     // texture 1 SRV
     D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += 2 * cbvSrvUavDescriptorSize;
+    srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
     device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
     D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleTex.ptr += 2 * cbvSrvUavDescriptorSize;
+    cbvHandleTex.ptr += 3 * cbvSrvUavDescriptorSize;
     texture1->srvHandle = cbvHandleTex;
 
     // Sprite Instance Data
     spriteInstanceData = new ME::SpriteRendererInstanceData[spriteInstanceCount];
     for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
-        float length = 4.5f;
-        float xIndex = (i % 7);
-        float yIndex = (i / 7);
-        float xPos = (xIndex - 3) * length;
-        float yPos = (yIndex - 8) * length;
+        float length = 6.4f;
+        float xIndex = (i % 2);
+        float yIndex = (i / 2);
+        float xPos = (xIndex - 0.5f) * length;
+        float yPos = (yIndex - 1) * length;
         ME::Transform modelTransform;
-        modelTransform.SetScale(4.0f);
+        if (i % 2 == 0) {
+            modelTransform.SetScale(5.0f, 5.0f, 5.0f);
+        } else {
+            modelTransform.SetScale(-5.0f, 5.0f, 5.0f);
+        }
+        // modelTransform.SetScale(5.0f);
         modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
         modelTransform.SetPosition(ME::Vec3(xPos, yPos, 0.0f));
         spriteInstanceData[i].modelMatrixData = modelTransform.GetModelMatrix().GetDataRowMajor();
         spriteInstanceData[i].color = ME::Color::White();
-        spriteInstanceData[i].atlasIndex = 0;
+        spriteInstanceData[i].atlasIndex = 36 + i;
     }
 
     spriteInstanceBuffer =
@@ -245,11 +259,11 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     instanceSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
     srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
+    srvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
     device->CreateShaderResourceView(spriteInstanceBuffer->GetResource(), &instanceSrvDesc, srvHandle);
 
     spriteInstanceBufferSrvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    spriteInstanceBufferSrvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
+    spriteInstanceBufferSrvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
 
     // End of Initilization that need command list.
 
@@ -319,6 +333,17 @@ void ME::RendererDirectX::Draw() {
     constantData.directionalLightData = directionalLight->GetLightDataDirectional();
     perPassCB->CopyData(0, &constantData);
 
+    ME::TextureAtlasProperties atlasProps{};
+    atlasProps.tileSizeX = 192;
+    atlasProps.tileSizeY = 256;
+    atlasProps.padding = 0;
+    atlasProps.numTextures = 45;
+    atlasProps.numTilesX = 9;
+    atlasProps.numTilesY = 5;
+    atlasProps.width = 1728;
+    atlasProps.height = 1280;
+    textureAtlasPropsBuffer->CopyData(0, &atlasProps);
+
     ME::Transform modelTransform;
     modelTransform.SetScale(8.0f, 8.0f, 1.0f);
     modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
@@ -329,17 +354,34 @@ void ME::RendererDirectX::Draw() {
     objConstantData.modelMatrix = modelMatrix;
     perObjCB->CopyData(0, &objConstantData);
 
+    static uint32_t animCounter = 0;
+    ++animCounter;
+    if (animCounter >= 6) {
+        animCounter = 0;
+
+        for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
+            uint32_t atlasIndex = spriteInstanceData[i].atlasIndex;
+            ++atlasIndex;
+            if (atlasIndex >= 44) {
+                atlasIndex = 36;
+            }
+            spriteInstanceData[i].atlasIndex = atlasIndex;
+        }
+        spriteInstanceBuffer->CopyData(0, spriteInstanceData);
+    }
+
     D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerPass = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
     commandList->SetGraphicsRootDescriptorTable(0, cbvHandlePerPass);
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerObject = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandlePerObject.ptr += 1 * cbvSrvUavDescriptorSize;
-    commandList->SetGraphicsRootDescriptorTable(2, spriteInstanceBufferSrvHandle);
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleAtlas = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    cbvHandleAtlas.ptr += 1 * cbvSrvUavDescriptorSize;
+    commandList->SetGraphicsRootDescriptorTable(1, cbvHandleAtlas);
+    commandList->SetGraphicsRootDescriptorTable(3, spriteInstanceBufferSrvHandle);
 
     int currentTexture = (frameCounter / 16) % 8;  // Change texture every 8 frames
 
     D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = texture1->srvHandle;
 
-    commandList->SetGraphicsRootDescriptorTable(1, textureHandle);
+    commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
     D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
@@ -396,7 +438,8 @@ void ME::RendererDirectX::CreateCameraAndLights() {
     camera = new ME::Camera();
     camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
-    camera->projectionType = ME::ProjectionType::Perspective;
+    camera->projectionType = ME::ProjectionType::Orthographic;
+    camera->orthographicSize = 10.0f;
     camera->fov = 90.0f;
     camera->aspectRatio = static_cast<float>(clientWidth) / static_cast<float>(clientHeight);
 

@@ -100,6 +100,8 @@ class RendererDirectX : public PlatformRenderer {
     ME::UploadBufferDX* perObjCB = nullptr;
     // Instance buffer for sprite renderer.
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
+    // Texture atlas properties buffer.
+    ME::UploadBufferDX* textureAtlasPropsBuffer = nullptr;
 
     uint32_t frameCounter = 0;
 
@@ -114,7 +116,7 @@ class RendererDirectX : public PlatformRenderer {
     ME::TextureDX* texture1 = nullptr;
 
     ME::SpriteRendererInstanceData* spriteInstanceData = nullptr;
-    uint32_t spriteInstanceCount = 256;
+    uint32_t spriteInstanceCount = 6;
     D3D12_GPU_DESCRIPTOR_HANDLE spriteInstanceBufferSrvHandle;
 };
 

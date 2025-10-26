@@ -12,7 +12,8 @@
 namespace ME {
 
 /** Constant buffer structure for shaders. */
-struct CBPerPass {
+class CBPerPass {
+   public:
     ME::Vec16 viewMatrix;
     ME::Vec16 projectionMatrix;
     ME::LightDataAmbient ambientLightData;
@@ -20,7 +21,8 @@ struct CBPerPass {
 };
 
 /** Constant buffer structure for shaders. */
-struct CBPerObject {
+class CBPerObject {
+   public:
     ME::Vec16 modelMatrix;
 };
 
@@ -40,6 +42,10 @@ class PSODirectX {
     /** Create PSO for 2D rendering with instancing. */
     static ID3D12PipelineState* CreatePSO2DInstanced(ID3D12Device* device, const char* shaderName,
                                                      ID3D12RootSignature* rootSignature);
+
+    /** Create PSO for 2D rendering with instancing and texture atlases. */
+    static ID3D12PipelineState* CreatePSO2DInstancedAtlas(ID3D12Device* device, const char* shaderName,
+                                                          ID3D12RootSignature* rootSignature);
 
    private:
 };
