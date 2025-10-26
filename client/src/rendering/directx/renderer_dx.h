@@ -24,6 +24,7 @@ class MeshDX;
 class Camera;
 class Light;
 class TextureDX;
+class SpriteRendererInstanceData;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -83,7 +84,7 @@ class RendererDirectX : public PlatformRenderer {
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     const uint32_t clientWidth = 600;
-    const uint32_t clientHeight = 800;
+    const uint32_t clientHeight = 900;
 
     void FlushCommandQueue();
 
@@ -93,10 +94,12 @@ class RendererDirectX : public PlatformRenderer {
 
     ME::Shader* shader = nullptr;
     ME::QuadDX* quad = nullptr;
-    // Per pass constant buffer
+    // Per pass constant buffer.
     ME::UploadBufferDX* perPassCB = nullptr;
-    // Per object constant buffer
+    // Per object constant buffer.
     ME::UploadBufferDX* perObjCB = nullptr;
+    // Instance buffer for sprite renderer.
+    ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
 
     uint32_t frameCounter = 0;
 
@@ -109,8 +112,10 @@ class RendererDirectX : public PlatformRenderer {
     uint32_t srvCount = 16;
 
     ME::TextureDX* texture1 = nullptr;
-    ME::TextureDX* texture2 = nullptr;
-    ME::TextureDX* texture3 = nullptr;
+
+    ME::SpriteRendererInstanceData* spriteInstanceData = nullptr;
+    uint32_t spriteInstanceCount = 256;
+    D3D12_GPU_DESCRIPTOR_HANDLE spriteInstanceBufferSrvHandle;
 };
 
 }  // namespace ME

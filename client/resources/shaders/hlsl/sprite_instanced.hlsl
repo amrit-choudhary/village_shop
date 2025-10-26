@@ -1,4 +1,4 @@
-// Simple sprite shader for non instanced rendering.
+// Simple sprite shader for instanced rendering.
 
 #include "structs.hlsl"
 
@@ -10,14 +10,11 @@ cbuffer CBPerPass : register(b0)
     LightDataDirectional directionalLightData;
 };
 
-cbuffer CBPerObject : register(b1)
-{
-    float4x4 modelMatrix;
-};
-
 Texture2D tex : register(t0);
 
 SamplerState texSampler : register(s0);
+
+StructuredBuffer<SpriteInstanceData> instanceBuffer : register(t1);
 
 struct VertexIn
 {
@@ -32,11 +29,13 @@ struct VertexOut
     float4 color : COLOR0;
 };
 
-VertexOut VS(VertexIn input)
+VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
 {
 	VertexOut output;
 
-    float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), modelMatrix);
+    SpriteInstanceData instanceData = instanceBuffer[instanceID];
+
+    float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), instanceData.modelMatrix);
     outputPos = mul(outputPos, viewMatrix);
     outputPos = mul(outputPos, projectionMatrix);
     output.position = outputPos;

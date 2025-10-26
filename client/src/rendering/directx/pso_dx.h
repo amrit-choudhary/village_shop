@@ -37,6 +37,10 @@ class PSODirectX {
     static ID3D12PipelineState* CreatePSO2D(ID3D12Device* device, const char* shaderName,
                                             ID3D12RootSignature* rootSignature);
 
+    /** Create PSO for 2D rendering with instancing. */
+    static ID3D12PipelineState* CreatePSO2DInstanced(ID3D12Device* device, const char* shaderName,
+                                                     ID3D12RootSignature* rootSignature);
+
    private:
 };
 

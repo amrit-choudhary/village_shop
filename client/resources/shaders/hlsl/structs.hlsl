@@ -16,3 +16,12 @@ struct LightDataDirectional {
     float3 padding2;
     float4 color;
 };
+
+// Per Instance Data for Sprite Renderer
+// uint32_t in c++ because uint16_t is not well supported in HLSL.
+struct SpriteInstanceData {
+    float4x4 modelMatrix;
+    float4 color;
+    uint atlasIndex;
+    uint3 padding; 
+};

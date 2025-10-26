@@ -45,7 +45,7 @@ uint32_t ME::UploadBufferDX::GetElementSize() const {
 
 void ME::UploadBufferDX::CopyData(uint32_t elementIndex, const void* data) {
     if (mappedData && data) {
-        memcpy(&mappedData[elementIndex * elementSize], data, elementSize);
+        memcpy(&mappedData[elementIndex * elementSize], data, elementSize * elementCount);
     }
 }
 

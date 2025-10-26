@@ -8,6 +8,7 @@
 #include "../shared/light.h"
 #include "../shared/mesh.h"
 #include "../shared/mesh_parser_obj.h"
+#include "../shared/sprite_renderer.h"
 #include "../shared/texture.h"
 #include "d3dx12.h"
 #include "mesh_dx.h"
@@ -161,9 +162,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvSrvUavDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
 
-    rootSignature = RootSigDx::CreateRootSignature2D(device.Get());
-    pso = PSODirectX::CreatePSO2D(device.Get(), "sprite.hlsl", rootSignature);
-    // pso = PSODirectX::CreatePSO3D(device.Get(), "lit_alpha.hlsl", rootSignature);
+    rootSignature = RootSigDx::CreateRootSignature2DInstanced(device.Get());
+    pso = PSODirectX::CreatePSO2DInstanced(device.Get(), "sprite_instanced.hlsl", rootSignature);
 
     CreateCameraAndLights();
 
@@ -196,14 +196,8 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvHandle2.ptr += 1 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    texture1 = new TextureDX{"textures/world/poppy128.png", device.Get(), commandList.Get()};
+    texture1 = new TextureDX{"textures/wheat/wheat_stage4_128.png", device.Get(), commandList.Get()};
     texture1->CreateBuffers(device.Get(), commandList.Get());
-
-    texture2 = new TextureDX{"textures/world/torchflower128.png", device.Get(), commandList.Get()};
-    texture2->CreateBuffers(device.Get(), commandList.Get());
-
-    texture3 = new TextureDX{"textures/world/peony_top128.png", device.Get(), commandList.Get()};
-    texture3->CreateBuffers(device.Get(), commandList.Get());
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -220,21 +214,44 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvHandleTex.ptr += 2 * cbvSrvUavDescriptorSize;
     texture1->srvHandle = cbvHandleTex;
 
-    // texture 2 SRV
+    // Sprite Instance Data
+    spriteInstanceData = new ME::SpriteRendererInstanceData[spriteInstanceCount];
+    for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
+        float length = 4.5f;
+        float xIndex = (i % 7);
+        float yIndex = (i / 7);
+        float xPos = (xIndex - 3) * length;
+        float yPos = (yIndex - 8) * length;
+        ME::Transform modelTransform;
+        modelTransform.SetScale(4.0f);
+        modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
+        modelTransform.SetPosition(ME::Vec3(xPos, yPos, 0.0f));
+        spriteInstanceData[i].modelMatrixData = modelTransform.GetModelMatrix().GetDataRowMajor();
+        spriteInstanceData[i].color = ME::Color::White();
+        spriteInstanceData[i].atlasIndex = 0;
+    }
+
+    spriteInstanceBuffer =
+        new ME::UploadBufferDX(device.Get(), false, spriteInstanceCount, sizeof(ME::SpriteRendererInstanceData));
+    spriteInstanceBuffer->CopyData(0, spriteInstanceData);
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC instanceSrvDesc = {};
+    instanceSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    instanceSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    instanceSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+    instanceSrvDesc.Buffer.FirstElement = 0;
+    instanceSrvDesc.Buffer.NumElements = spriteInstanceCount;
+    instanceSrvDesc.Buffer.StructureByteStride = sizeof(ME::SpriteRendererInstanceData);
+    instanceSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+
     srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
     srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
-    device->CreateShaderResourceView(texture2->GetTextureBuffer(), &srvDesc, srvHandle);
-    cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleTex.ptr += 3 * cbvSrvUavDescriptorSize;
-    texture2->srvHandle = cbvHandleTex;
+    device->CreateShaderResourceView(spriteInstanceBuffer->GetResource(), &instanceSrvDesc, srvHandle);
 
-    // texture 3 SRV
-    srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
-    device->CreateShaderResourceView(texture3->GetTextureBuffer(), &srvDesc, srvHandle);
-    cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleTex.ptr += 4 * cbvSrvUavDescriptorSize;
-    texture3->srvHandle = cbvHandleTex;
+    spriteInstanceBufferSrvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    spriteInstanceBufferSrvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
+
+    // End of Initilization that need command list.
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
@@ -243,8 +260,6 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
 
     quad->ReleaseUploadBuffers();
     texture1->ReleaseUploadBuffers();
-    texture2->ReleaseUploadBuffers();
-    texture3->ReleaseUploadBuffers();
 
     return true;
 }
@@ -318,26 +333,13 @@ void ME::RendererDirectX::Draw() {
     commandList->SetGraphicsRootDescriptorTable(0, cbvHandlePerPass);
     D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerObject = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
     cbvHandlePerObject.ptr += 1 * cbvSrvUavDescriptorSize;
-    commandList->SetGraphicsRootDescriptorTable(1, cbvHandlePerObject);
+    commandList->SetGraphicsRootDescriptorTable(2, spriteInstanceBufferSrvHandle);
 
-    int currentTexture = (frameCounter / 24) % 3;  // Change texture every 24 frames
+    int currentTexture = (frameCounter / 16) % 8;  // Change texture every 8 frames
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle;
-    switch (currentTexture) {
-        case 0:
-            textureHandle = texture1->srvHandle;
-            break;
-        case 1:
-            textureHandle = texture2->srvHandle;
-            break;
-        case 2:
-            textureHandle = texture3->srvHandle;
-            break;
-        default:
-            textureHandle = texture1->srvHandle;
-            break;
-    }
-    commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
+    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = texture1->srvHandle;
+
+    commandList->SetGraphicsRootDescriptorTable(1, textureHandle);
 
     D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
@@ -345,7 +347,7 @@ void ME::RendererDirectX::Draw() {
     commandList->IASetIndexBuffer(&ibView);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+    commandList->DrawIndexedInstanced(quad->indexCount, spriteInstanceCount, 0, 0, 0);
 
     // End drawing.
 
