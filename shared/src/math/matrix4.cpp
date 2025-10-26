@@ -121,6 +121,18 @@ Mat4 ME::Mat4::Perspective(float fov, float aspect, float near, float far) {
     return Mat4::Identity;
 }
 
+Mat4 ME::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
+    #ifdef VG_MAC
+    return OrthographicMTL(left, right, bottom, top, near, far);
+    #endif
+
+    #ifdef VG_WIN
+    return OrthographicDX(left, right, bottom, top, near, far);
+    #endif
+
+    return Mat4::Identity;
+}
+
 Mat4 ME::Mat4::PerspectiveMTL(float fov, float aspect, float near, float far) {
     float f = 1.0f / std::tan(fov / 2.0f);
     return Mat4{
@@ -139,12 +151,20 @@ Mat4 ME::Mat4::PerspectiveDX(float fov, float aspect, float near, float far) {
         0.0f, 0.0f, 1.0f, 0.0f};
 }
 
-Mat4 ME::Mat4::Orthographic(float left, float right, float bottom, float top, float near, float far) {
+Mat4 ME::Mat4::OrthographicMTL(float left, float right, float bottom, float top, float near, float far) {
     return Mat4{
         2.0f / (right - left), 0.0f, 0.0f, 0.0f,
         0.0f, 2.0f / (top - bottom), 0.0f, 0.0f,
         0.0f, 0.0f, -2.0f / (far - near), 0.0f,
         -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1.0f};
+}
+
+Mat4 ME::Mat4::OrthographicDX(float left, float right, float bottom, float top, float near, float far) {
+    return Mat4{
+        2.0f / (right - left), 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / (top - bottom), 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f / (far - near), 0.0f,
+        -(right + left) / (right - left), -(top + bottom) / (top - bottom), -near / (far - near), 1.0f};
 }
 
 Mat4 ME::Mat4::View(const Vec4& position, const Vec4& target, const Vec4& up) {

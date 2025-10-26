@@ -15,17 +15,18 @@ constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
 /**
  * Data related to texture atlases.
  * This is used to hold information about the texture atlas, such as the size, number of textures, etc.
+ * fields are uint32_t because this goes to shaders as a constant buffer, where 4-byte alignment is preferred.
  */
 class TextureAtlasProperties {
    public:
-    uint16_t tileSizeX;    // Width of each tile in the atlas
-    uint16_t tileSizeY;    // Size of each tile in the atlas
-    uint16_t padding;      // Padding between tiles in the atlas
-    uint16_t numTextures;  // Number of textures in the atlas
-    uint16_t numTilesX;    // Number of tiles in the X direction
-    uint16_t numTilesY;    // Number of tiles in the Y direction
-    uint16_t width;        // Width of the atlas texture
-    uint16_t height;       // Height of the atlas texture
+    uint32_t tileSizeX;    // Width of each tile in the atlas
+    uint32_t tileSizeY;    // Size of each tile in the atlas
+    uint32_t padding;      // Padding between tiles in the atlas
+    uint32_t numTextures;  // Number of textures in the atlas
+    uint32_t numTilesX;    // Number of tiles in the X direction
+    uint32_t numTilesY;    // Number of tiles in the Y direction
+    uint32_t width;        // Width of the atlas texture
+    uint32_t height;       // Height of the atlas texture
 };
 
 class Texture {

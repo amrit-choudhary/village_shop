@@ -46,8 +46,16 @@ class Mat4 {
     // Creates a Scale matrix based on provided scale vector.
     static Mat4 Scale(const Vec4& scale);
 
-    // Creates an Orthographic matrix based on provided left, right, bottom, top, near and far planes.
+    // Creates a platform dependent Orthographic matrix based on provided left, right, bottom, top, near and far planes.
+    // For Metal and Vulkan, the resulting matrix will have a clip space of z: [0, 1]. For DirectX, the resulting matrix
+    // will have a clip space of z: [0, 1].
     static Mat4 Orthographic(float left, float right, float bottom, float top, float near, float far);
+
+    // Creates an Orthographic matrix based on provided left, right, bottom, top, near and far planes.
+    static Mat4 OrthographicMTL(float left, float right, float bottom, float top, float near, float far);
+
+    // Creates an Orthographic matrix based on provided left, right, bottom, top, near and far planes.
+    static Mat4 OrthographicDX(float left, float right, float bottom, float top, float near, float far);
 
     /**
      * Creates a platform dependent Perspective matrix based on provided field of view, aspect ratio, near and far

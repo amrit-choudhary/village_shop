@@ -16,13 +16,14 @@ namespace ME {
 /**
  * Data to hold the sprite renderer instance data.
  * Used for instanced rendering.
+ * This structure is sent to the GPU as a constant buffer, so some hlsl padding rules apply.
  */
 class SpriteRendererInstanceData {
    public:
     ME::Vec16 modelMatrixData;
     ME::Color color;
-    uint16_t atlasIndex;  // Index of the texture atlas
-    uint8_t padding[14];  // Padding to align the structure
+    uint32_t atlasIndex;  // Index of the texture atlas
+    uint32_t padding[3];  // Padding to align the structure
 };
 
 class SpriteRenderer {
