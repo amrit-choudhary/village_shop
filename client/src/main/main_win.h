@@ -29,20 +29,20 @@ class GameMain {
     GameMain();
     virtual ~GameMain();
 
-    void Init();
+    void Init(HWND hwnd);
     void Update();
     void Exit();
     void ShutDownGameSystems();
 
-    void InitDirectX(HWND hWnd);
-
    private:
+    HWND hWnd;
+
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;
     ME::Connection connection;
     ME::GameBreakout game;
     ME::PhysicsSystem physicsSystem;
-    ME::RendererDirectX renderer;
+    ME::RendererDX renderer;
 
     int fps = 0;
     int maxRunTime = 0;

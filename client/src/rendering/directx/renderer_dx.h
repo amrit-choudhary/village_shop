@@ -29,7 +29,7 @@ class SpriteRendererInstanceData;
 /**
  * Renderer class for DirectX 12 on Windows.
  */
-class RendererDirectX : public PlatformRenderer {
+class RendererDX : public PlatformRenderer {
    public:
     // Init game
     void Init() override;
@@ -44,7 +44,7 @@ class RendererDirectX : public PlatformRenderer {
     void End() override;
 
     // Initialize DirectX 12.
-    bool InitDirectX(HWND hwnd);
+    bool InitDX(HWND hwnd);
 
     void Draw();
 

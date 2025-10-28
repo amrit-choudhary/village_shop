@@ -46,7 +46,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     ME::SetPaths(exePath, nullptr);
 
     ME::GameMain game;
-    game.Init();
 
     // Initialize the window class.
     WNDCLASSEXW windowClass = {0};
@@ -71,8 +70,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     HWND hWnd = CreateWindowExW(0, windowClass.lpszClassName, L"VillageGame", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                                 CW_USEDEFAULT, windowWidth, windowHeight, nullptr, nullptr, hInstance, nullptr);
 
+    game.Init(hWnd);
     ShowWindow(hWnd, nCmdShow);
-    game.InitDirectX(hWnd);
 
     MSG msg = {};
     while (msg.message != WM_QUIT) {

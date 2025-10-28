@@ -24,11 +24,11 @@
 #include "upload_buffer_dx.h"
 #include "utils_dx.h"
 
-void ME::RendererDirectX::Init() {
+void ME::RendererDX::Init() {
     ME::Log("RendererDirectX::Init");
 }
 
-void ME::RendererDirectX::SetScene(ME::Scene* gameScene) {
+void ME::RendererDX::SetScene(ME::Scene* gameScene) {
     // Delete the old scene if it exists.
     // if (scene != nullptr) {
     //     delete scene;
@@ -37,15 +37,15 @@ void ME::RendererDirectX::SetScene(ME::Scene* gameScene) {
     // scene = new ME::SceneMetal(device, commandQueue, gameScene);
 }
 
-void ME::RendererDirectX::Update() {
+void ME::RendererDX::Update() {
     // if (scene == nullptr) {
-    //    return;
+    //     return;
     // }
 }
 
-void ME::RendererDirectX::End() {}
+void ME::RendererDX::End() {}
 
-bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
+bool ME::RendererDX::InitDX(HWND currenthWnd) {
 #ifdef _DEBUG
     // Enable the D3D12 debug layer.
     ComPtr<ID3D12Debug> debugController;
@@ -284,7 +284,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     return true;
 }
 
-void ME::RendererDirectX::Draw() {
+void ME::RendererDX::Draw() {
     directCmdListAlloc->Reset();
     commandList->Reset(directCmdListAlloc.Get(), pso);
 
@@ -406,7 +406,7 @@ void ME::RendererDirectX::Draw() {
     FlushCommandQueue();
 }
 
-void ME::RendererDirectX::FlushCommandQueue() {
+void ME::RendererDX::FlushCommandQueue() {
     ++currentFence;
     commandQueue->Signal(fence.Get(), currentFence);
     if (fence->GetCompletedValue() < currentFence) {
@@ -417,22 +417,22 @@ void ME::RendererDirectX::FlushCommandQueue() {
     }
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetCurrentBackBufferHandle() const {
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDX::GetCurrentBackBufferHandle() const {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescHeap->GetCPUDescriptorHandleForHeapStart(), currentBackBuffer,
                                          rtvDescriptorSize);
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetCurrentFrontBufferHandle() const {
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDX::GetCurrentFrontBufferHandle() const {
     uint8_t currentFrontBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
     return CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvDescHeap->GetCPUDescriptorHandleForHeapStart(), currentFrontBuffer,
                                          rtvDescriptorSize);
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDirectX::GetDepthStencilHandle() const {
+D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDX::GetDepthStencilHandle() const {
     return dsvDescHeap->GetCPUDescriptorHandleForHeapStart();
 }
 
-void ME::RendererDirectX::CreateCameraAndLights() {
+void ME::RendererDX::CreateCameraAndLights() {
     camera = new ME::Camera();
     camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
     camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);

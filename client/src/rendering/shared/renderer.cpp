@@ -14,7 +14,7 @@ void ME::Renderer::Init() {
 #ifdef VG_MAC
     platformRenderer = new ME::RendererMetal();
 #elif VG_WIN
-    platformRenderer = new ME::RendererDirectX();
+    platformRenderer = new ME::RendererDX();
 #endif
     platformRenderer->Init();
 }

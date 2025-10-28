@@ -15,7 +15,9 @@ ME::GameMain::~GameMain() {
     physicsSystem.End();
 }
 
-void ME::GameMain::Init() {
+void ME::GameMain::Init(HWND hWnd) {
+    this->hWnd = hWnd;
+
     // Read game params from file.
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
@@ -35,7 +37,8 @@ void ME::GameMain::Init() {
     game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
 
-    renderer.Init();
+    renderer.InitDX(hWnd);
+    renderer.SetScene(game.GetScene());
 }
 
 void ME::GameMain::Update() {
@@ -68,10 +71,6 @@ void ME::GameMain::Update() {
 void ME::GameMain::Exit() {
     // Clean up game systems here
     std::cout << "Game exited." << std::endl;
-}
-
-void ME::GameMain::InitDirectX(HWND hWnd) {
-    renderer.InitDirectX(hWnd);
 }
 
 void ME::GameMain::ShutDownGameSystems() {
