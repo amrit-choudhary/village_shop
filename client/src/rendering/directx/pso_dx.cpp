@@ -121,6 +121,18 @@ ID3D12PipelineState* ME::PSODirectX::CreatePSO2DInstancedAtlas(ID3D12Device* dev
     rasterizerDesc.FrontCounterClockwise = true;
     rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 
+    D3D12_BLEND_DESC blendDesc = {};
+    blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
     ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
     psoDesc.InputLayout = {inputLayout, _countof(inputLayout)};
@@ -128,7 +140,7 @@ ID3D12PipelineState* ME::PSODirectX::CreatePSO2DInstancedAtlas(ID3D12Device* dev
     psoDesc.VS = {shader.GetVSBlob()->GetBufferPointer(), shader.GetVSBlob()->GetBufferSize()};
     psoDesc.PS = {shader.GetPSBlob()->GetBufferPointer(), shader.GetPSBlob()->GetBufferSize()};
     psoDesc.RasterizerState = rasterizerDesc;
-    psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    psoDesc.BlendState = blendDesc;
     psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

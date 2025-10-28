@@ -116,7 +116,9 @@ class RendererDirectX : public PlatformRenderer {
     ME::TextureDX* texture1 = nullptr;
 
     ME::SpriteRendererInstanceData* spriteInstanceData = nullptr;
-    uint32_t spriteInstanceCount = 6;
+    uint32_t countX = 15;
+    uint32_t countY = 30;
+    uint32_t spriteInstanceCount = countX * countY;
     D3D12_GPU_DESCRIPTOR_HANDLE spriteInstanceBufferSrvHandle;
 };
 

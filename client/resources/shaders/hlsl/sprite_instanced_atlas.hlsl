@@ -49,6 +49,7 @@ VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
     // flipping y in uv is directx specific.
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
     output.uv = GetAtlasUV(flippedUV, instanceData.atlasIndex, atlasProps);
+    output.color = instanceData.color;
 
     return output;
 }
@@ -58,6 +59,6 @@ float4 PS(VertexOut input) : SV_Target
     float4 texColor = tex.Sample(texSampler, input.uv);
     if (texColor.a < 0.1f)
         clip(-1);
-    
-    return texColor;
+
+    return texColor * input.color;
 }

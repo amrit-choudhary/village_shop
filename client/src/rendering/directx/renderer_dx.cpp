@@ -204,8 +204,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvHandle2.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    texture1 =
-        new TextureDX{"textures/characters/character_femaleAdventurer_sheetHD.png", device.Get(), commandList.Get()};
+    texture1 = new TextureDX{"textures/font/ascii_ibm_transparent_hd.png", device.Get(), commandList.Get()};
     texture1->CreateBuffers(device.Get(), commandList.Get());
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -224,25 +223,32 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     texture1->srvHandle = cbvHandleTex;
 
     // Sprite Instance Data
+    ME::Random random;
+    float initialAlpha = random.NextDouble();
     spriteInstanceData = new ME::SpriteRendererInstanceData[spriteInstanceCount];
     for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
-        float length = 6.4f;
-        float xIndex = (i % 2);
-        float yIndex = (i / 2);
-        float xPos = (xIndex - 0.5f) * length;
-        float yPos = (yIndex - 1) * length;
+        float lengthX = 0.8f;
+        float lengthY = 0.5f;
+        float xIndex = (i / countY);
+        float yIndex = (i % countY);
+        float xPos = (xIndex - (countX / 2)) * lengthX;
+        float yPos = ((countY / 2) - yIndex) * lengthY;
         ME::Transform modelTransform;
-        if (i % 2 == 0) {
-            modelTransform.SetScale(5.0f, 5.0f, 5.0f);
-        } else {
-            modelTransform.SetScale(-5.0f, 5.0f, 5.0f);
-        }
-        // modelTransform.SetScale(5.0f);
+        modelTransform.SetScale(0.4f);
         modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
         modelTransform.SetPosition(ME::Vec3(xPos, yPos, 0.0f));
         spriteInstanceData[i].modelMatrixData = modelTransform.GetModelMatrix().GetDataRowMajor();
-        spriteInstanceData[i].color = ME::Color::White();
-        spriteInstanceData[i].atlasIndex = 36 + i;
+
+        if (yIndex == 0) {
+            initialAlpha = random.NextDouble();
+        }
+        float finalAlpha = initialAlpha + (yIndex * 0.02f);
+        if (finalAlpha > 1.0f) {
+            finalAlpha = 0.1f;
+        }
+
+        spriteInstanceData[i].color = ME::Color{0.21f, 0.73f, 0.01f, finalAlpha};
+        spriteInstanceData[i].atlasIndex = i % 90;
     }
 
     spriteInstanceBuffer =
@@ -333,15 +339,7 @@ void ME::RendererDirectX::Draw() {
     constantData.directionalLightData = directionalLight->GetLightDataDirectional();
     perPassCB->CopyData(0, &constantData);
 
-    ME::TextureAtlasProperties atlasProps{};
-    atlasProps.tileSizeX = 192;
-    atlasProps.tileSizeY = 256;
-    atlasProps.padding = 0;
-    atlasProps.numTextures = 45;
-    atlasProps.numTilesX = 9;
-    atlasProps.numTilesY = 5;
-    atlasProps.width = 1728;
-    atlasProps.height = 1280;
+    ME::TextureAtlasProperties atlasProps{10, 10, 0, 256, 16, 16, 160, 160};
     textureAtlasPropsBuffer->CopyData(0, &atlasProps);
 
     ME::Transform modelTransform;
@@ -356,14 +354,14 @@ void ME::RendererDirectX::Draw() {
 
     static uint32_t animCounter = 0;
     ++animCounter;
-    if (animCounter >= 6) {
+    if (animCounter >= 8) {
         animCounter = 0;
 
         for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
             uint32_t atlasIndex = spriteInstanceData[i].atlasIndex;
-            ++atlasIndex;
-            if (atlasIndex >= 44) {
-                atlasIndex = 36;
+            --atlasIndex;
+            if (atlasIndex <= 0) {
+                atlasIndex = 90;
             }
             spriteInstanceData[i].atlasIndex = atlasIndex;
         }
