@@ -19,7 +19,12 @@ ID3D12Resource* ME::TextureDX::GetTextureBuffer() const {
 void ME::TextureDX::CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList) {
     CD3DX12_HEAP_PROPERTIES defaultHeapProps(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_HEAP_PROPERTIES uploadHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-    const uint32_t uploadBufferSize = GetSize();
+
+    // Calculate padded row pitch because every row must be aligned to D3D12_TEXTURE_DATA_PITCH_ALIGNMENT (256 bytes).
+    UINT64 rowPitch =
+        (width * channels + D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1) & ~(D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1);
+    UINT64 uploadBufferSize = rowPitch * height;
+
     CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
 
     // Create the texture buffer resource in the default heap.
@@ -31,18 +36,21 @@ void ME::TextureDX::CreateBuffers(ID3D12Device* device, ID3D12GraphicsCommandLis
     device->CreateCommittedResource(&uploadHeapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc,
                                     D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&uploadBuffer));
 
-    // Copy data to the upload buffer.
+    // Copy data to the upload buffer with row padding.
     uint8_t* mappedData = nullptr;
-    CD3DX12_RANGE readRange(0, 0);  // We do not intend to read from this resource on the CPU.
+    CD3DX12_RANGE readRange(0, 0);
     uploadBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mappedData));
-    std::memcpy(mappedData, data, GetSize());
+    for (uint32_t y = 0; y < height; ++y) {
+        std::memcpy(mappedData + y * rowPitch, data + y * width * channels, width * channels);
+        std::memset(mappedData + y * rowPitch + width * channels, 0, rowPitch - width * channels);
+    }
     uploadBuffer->Unmap(0, nullptr);
 
-    // Copy data from the upload buffer to the texture buffer.
+    // Prepare subresource data
     D3D12_SUBRESOURCE_DATA textureData = {};
-    textureData.pData = data;
-    textureData.RowPitch = width * channels;
-    textureData.SlicePitch = textureData.RowPitch * height;
+    textureData.pData = mappedData;
+    textureData.RowPitch = rowPitch;
+    textureData.SlicePitch = rowPitch * height;
 
     UpdateSubresources<1>(cmdList, textureBuffer, uploadBuffer, 0, 0, 1, &textureData);
 

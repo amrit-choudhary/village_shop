@@ -204,7 +204,7 @@ bool ME::RendererDirectX::InitDirectX(HWND currenthWnd) {
     cbvHandle2.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    texture1 = new TextureDX{"textures/font/ascii_ibm_transparent_hd.png", device.Get(), commandList.Get()};
+    texture1 = new TextureDX{"textures/font/ascii_ibm_transparent.png", device.Get(), commandList.Get()};
     texture1->CreateBuffers(device.Get(), commandList.Get());
 
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
