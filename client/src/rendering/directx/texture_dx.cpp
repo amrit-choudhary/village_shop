@@ -67,4 +67,23 @@ void ME::TextureDX::ReleaseUploadBuffers() {
     }
 }
 
+void ME::TextureDX::CreateGPUHandle(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap, uint32_t index) {
+    uint32_t handleSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+    D3D12_SHADER_RESOURCE_VIEW_DESC handleDesc{};
+    handleDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    handleDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    handleDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    handleDesc.Texture2D.MostDetailedMip = 0;
+    handleDesc.Texture2D.MipLevels = -1;
+
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+    cpuHandle.ptr += index * handleSize;
+    device->CreateShaderResourceView(textureBuffer, &handleDesc, cpuHandle);
+
+    D3D12_GPU_DESCRIPTOR_HANDLE tempGPUHandle = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+    tempGPUHandle.ptr += index * handleSize;
+    gpuHandle = tempGPUHandle;
+}
+
 #endif  // VG_WIN

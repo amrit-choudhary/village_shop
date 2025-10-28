@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include "../../src/scene/scene_dx.h"
 #include "../shared/camera.h"
 #include "../shared/light.h"
 #include "../shared/mesh.h"
@@ -30,11 +31,25 @@ void ME::RendererDX::Init() {
 
 void ME::RendererDX::SetScene(ME::Scene* gameScene) {
     // Delete the old scene if it exists.
-    // if (scene != nullptr) {
-    //     delete scene;
-    // }
+    if (scene != nullptr) {
+        delete scene;
+    }
+
+    // Do Initilization that need command list.
+    directCmdListAlloc->Reset();
+    commandList->Reset(directCmdListAlloc.Get(), pso);
+
     // Create a new scene with the provided game scene.
-    // scene = new ME::SceneMetal(device, commandQueue, gameScene);
+    scene = new ME::SceneDX(device.Get(), cbvSrvUavDescHeap.Get(), commandList.Get(), gameScene);
+
+    commandList->Close();
+    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
+    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+    FlushCommandQueue();
+
+    // TODO: Do Cleanup after upload is done.
+    // scene->PostInitCleanup();
 }
 
 void ME::RendererDX::Update() {
@@ -204,23 +219,23 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     cbvHandle2.ptr += 2 * cbvSrvUavDescriptorSize;
     device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
 
-    texture1 = new TextureDX{"textures/font/ascii_ibm_transparent.png", device.Get(), commandList.Get()};
-    texture1->CreateBuffers(device.Get(), commandList.Get());
+    // texture1 = new TextureDX{"textures/font/ascii_ibm_transparent.png", device.Get(), commandList.Get()};
+    // texture1->CreateBuffers(device.Get(), commandList.Get());
 
-    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = -1;
+    // D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    // srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    // srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    // srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    // srvDesc.Texture2D.MostDetailedMip = 0;
+    // srvDesc.Texture2D.MipLevels = -1;
 
-    // texture 1 SRV
-    D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
-    device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleTex.ptr += 3 * cbvSrvUavDescriptorSize;
-    texture1->srvHandle = cbvHandleTex;
+    // // texture 1 SRV
+    // D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    // srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
+    // device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
+    // D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
+    // cbvHandleTex.ptr += 3 * cbvSrvUavDescriptorSize;
+    // texture1->gpuHandle = cbvHandleTex;
 
     // Sprite Instance Data
     ME::Random random;
@@ -248,7 +263,7 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
         }
 
         spriteInstanceData[i].color = ME::Color{0.21f, 0.73f, 0.01f, finalAlpha};
-        spriteInstanceData[i].atlasIndex = i % 90;
+        spriteInstanceData[i].atlasIndex = i % 1000;
     }
 
     spriteInstanceBuffer =
@@ -264,7 +279,7 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     instanceSrvDesc.Buffer.StructureByteStride = sizeof(ME::SpriteRendererInstanceData);
     instanceSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 
-    srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
+    D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
     srvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
     device->CreateShaderResourceView(spriteInstanceBuffer->GetResource(), &instanceSrvDesc, srvHandle);
 
@@ -279,7 +294,7 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     FlushCommandQueue();
 
     quad->ReleaseUploadBuffers();
-    texture1->ReleaseUploadBuffers();
+    // texture1->ReleaseUploadBuffers();
 
     return true;
 }
@@ -339,7 +354,9 @@ void ME::RendererDX::Draw() {
     constantData.directionalLightData = directionalLight->GetLightDataDirectional();
     perPassCB->CopyData(0, &constantData);
 
-    ME::TextureAtlasProperties atlasProps{10, 10, 0, 256, 16, 16, 160, 160};
+    // ME::TextureAtlasProperties atlasProps{10, 10, 0, 256, 16, 16, 160, 160};
+    ME::TextureAtlasProperties atlasProps{17, 17, 1, 1078, 49, 22, 832, 373};
+
     textureAtlasPropsBuffer->CopyData(0, &atlasProps);
 
     ME::Transform modelTransform;
@@ -361,7 +378,7 @@ void ME::RendererDX::Draw() {
             uint32_t atlasIndex = spriteInstanceData[i].atlasIndex;
             --atlasIndex;
             if (atlasIndex <= 0) {
-                atlasIndex = 90;
+                atlasIndex = 1000;
             }
             spriteInstanceData[i].atlasIndex = atlasIndex;
         }
@@ -377,7 +394,8 @@ void ME::RendererDX::Draw() {
 
     int currentTexture = (frameCounter / 16) % 8;  // Change texture every 8 frames
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = texture1->srvHandle;
+    // D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = texture1->gpuHandle;
+    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = scene->spriteTextures[0]->gpuHandle;
 
     commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 

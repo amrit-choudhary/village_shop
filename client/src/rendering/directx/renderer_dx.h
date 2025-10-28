@@ -17,6 +17,7 @@ using Microsoft::WRL::ComPtr;
 namespace ME {
 
 // Forward declarations to avoid including shader/quad headers here.
+class SceneDX;
 class Shader;
 class QuadDX;
 class UploadBufferDX;
@@ -50,6 +51,7 @@ class RendererDX : public PlatformRenderer {
 
    private:
     HWND hWnd;
+    ME::SceneDX* scene = nullptr;
     ComPtr<IDXGIFactory4> factory;
     ComPtr<ID3D12Device> device;
     ComPtr<ID3D12CommandQueue> commandQueue;
