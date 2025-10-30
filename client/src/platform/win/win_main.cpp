@@ -58,7 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     RegisterClassExW(&windowClass);
 
     // Desired client area size
-    int clientWidth = 600;
+    int clientWidth = 1200;
     int clientHeight = 900;
 
     RECT rect = {0, 0, clientWidth, clientHeight};

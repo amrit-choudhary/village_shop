@@ -27,6 +27,7 @@ constexpr uint32_t MaxInstancedSpriteRendererCount = 100'000;
 constexpr uint16_t MaxTextTransformsCount = 1'000;
 constexpr uint16_t MaxTextRendererCount = 1'000;
 constexpr uint32_t MaxTextInstanceDataCount = 100'000;
+constexpr uint32_t MaxConstantBuffersCount = 256;
 
 // Physics constants
 constexpr uint32_t MaxStaticColliderCount = 100'000;

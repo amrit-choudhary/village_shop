@@ -37,6 +37,13 @@ class Mat4 {
     // Returns the matrix as a Vec16. Column major order.
     Vec16 GetDataColumnMajor() const;
 
+    /*
+     * Returns the matrix as a Vec16 formatted for shader usage.
+     * DirectX: Row Major
+     * Metal/Vulkan: Column Major
+     */
+    Vec16 GetDataForShader() const;
+
     // Creates a Translation matrix based on provided translation vector.
     static Mat4 Translation(const Vec4& translation);
 

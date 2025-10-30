@@ -64,7 +64,7 @@ void ME::SceneBreakout::CreateResources() {
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1078, 49, 22, 832, 373};
+    textureAtlasProperties[0] = ME::TextureAtlasProperties{17, 17, 1, 1078, 49, 22, 832, 373};
     textureAtlasProperties[1] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
     textureAtlasPropertiesCount = 2;
 
@@ -100,7 +100,7 @@ void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
             float py = originY + brickHeightby2 + (static_cast<float>(iy) * (brickHeight + brickPadding));
 
             instancedSpriteTransforms[i] = new ME::Transform();
-            instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
+            instancedSpriteTransforms[i]->SetPosition(px, py, 1.0f);
             instancedSpriteTransforms[i]->SetScale(brickWidth, brickHeight);
         }
     }
@@ -119,7 +119,7 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
         instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
+        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
         spriteInstanceData[i]->color = ME::Color::RandomColorPretty(randomColor);
 
         uint8_t ix = i % gridX;
@@ -162,7 +162,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
         position.x += (i * (textRend->width + textRend->letterSpacing));
         transform.SetPosition(position);
         transform.SetScale(textRend->width, textRend->height);
-        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetData();
+        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetDataForShader();
 
         textInstanceData[i]->color = textRend->color;
         textInstanceData[i]->atlasIndex = textRend->text[i];
@@ -187,7 +187,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
         position.x += (i * (textRend2->width + textRend2->letterSpacing));
         transform.SetPosition(position);
         transform.SetScale(textRend2->width, textRend2->height);
-        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetData();
+        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetDataForShader();
 
         textInstanceData[i + j]->color = textRend2->color;
         textInstanceData[i + j]->atlasIndex = textRend2->text[i];
@@ -223,7 +223,7 @@ void ME::SceneBreakout::CreateWalls() {
         instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
         spriteInstanceData[indices[i]] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[indices[i]]->modelMatrixData =
-            instancedSpriteTransforms[indices[i]]->GetModelMatrix().GetData();
+            instancedSpriteTransforms[indices[i]]->GetModelMatrix().GetDataForShader();
         spriteInstanceData[indices[i]]->atlasIndex = 253;
         spriteInstanceData[indices[i]]->color = colorPalette[7];
 
@@ -243,7 +243,7 @@ void ME::SceneBreakout::CreatePaddle() {
     instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
     spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
     spriteInstanceData[paddleIndex]->modelMatrixData =
-        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetData();
+        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetDataForShader();
     spriteInstanceData[paddleIndex]->atlasIndex = 253;
     spriteInstanceData[paddleIndex]->color = colorPalette[0];
 
@@ -261,7 +261,8 @@ void ME::SceneBreakout::CreateBall() {
     ++instancedSpriteRendererCount;
     instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
     spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[ballIndex]->modelMatrixData = instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetData();
+    spriteInstanceData[ballIndex]->modelMatrixData =
+        instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetDataForShader();
     spriteInstanceData[ballIndex]->atlasIndex = 631;
     spriteInstanceData[ballIndex]->color = colorPalette[6];
 

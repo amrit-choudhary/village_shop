@@ -75,6 +75,18 @@ Vec16 ME::Mat4::GetDataColumnMajor() const {
         m03, m13, m23, m33};
 }
 
+Vec16 ME::Mat4::GetDataForShader() const {
+    #ifdef VG_MAC
+    return GetDataColumnMajor();
+    #endif
+
+    #ifdef VG_WIN
+    return GetDataRowMajor();
+    #endif
+
+    return GetDataColumnMajor();
+}
+
 Mat4 ME::Mat4::Translation(const Vec4 & translation)
 {
     return Mat4{

@@ -31,10 +31,8 @@ class TextureDX : public Texture {
     /** Release the upload buffers after data has been copied to GPU. */
     void ReleaseUploadBuffers();
 
-    /** Creates a GPU handle for the texture. This is used for binding the texture to the pipeline. */
-    void CreateGPUHandle(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap, uint32_t index);
-
-    D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle{};
+    /** Index of the descriptor in the descriptor heap. This is used to return the GPU & CPU handle. */
+    uint32_t descHeapIndex;
 
    private:
     ID3D12Resource* textureBuffer = nullptr;

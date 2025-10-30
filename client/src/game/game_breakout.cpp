@@ -29,7 +29,7 @@ void ME::GameBreakout::TranslateBall(Vec2 delta) {
     Vec3 newBallPosition = ballTransform->GetPosition() + Vec3(delta.x, delta.y, 0.0f);
     ballTransform->SetPosition(newBallPosition);
 
-    ballInstanceData->modelMatrixData = ballTransform->GetModelMatrix().GetData();
+    ballInstanceData->modelMatrixData = ballTransform->GetModelMatrix().GetDataForShader();
 
     ballCollider->UpdateTransform(*ballTransform, brkScene->ballCollScaleMult);
 }
