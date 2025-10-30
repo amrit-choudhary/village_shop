@@ -250,16 +250,16 @@ void ME::RendererDX::Draw() {
     D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(1);
     commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
 
-    for (uint32_t i = 0; i < scene->instancedSpriteRendererCount; ++i) {
-        scene->spriteInstanceBuffer->CopyData(i, scene->spriteInstanceData[i]);
-    }
-    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData = descHeapManager->GetGPUDescriptorHandleForIndex(4);
-    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
-
     D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
         descHeapManager->GetGPUDescriptorHandleForIndex(scene->spriteTextures[0]->descHeapIndex);
 
     commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
+
+    for (uint32_t i = 0; i < scene->instancedSpriteRendererCount; ++i) {
+        scene->spriteInstanceBuffer->CopyData(i, scene->spriteInstanceData[i]);
+    }
+    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData = descHeapManager->GetGPUDescriptorHandleForIndex(5);
+    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
 
     D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
     D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
@@ -272,6 +272,29 @@ void ME::RendererDX::Draw() {
     // End Sprite Drawing.
 
     // Start Text Drawing.
+
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPassText = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+    commandList->SetGraphicsRootDescriptorTable(0, cbvPerPassText);
+
+    ME::TextureAtlasProperties atlasPropsText = scene->textureAtlasProperties[1];
+    scene->perPassCBs[2]->CopyData(&atlasPropsText);
+
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlasText = descHeapManager->GetGPUDescriptorHandleForIndex(2);
+    commandList->SetGraphicsRootDescriptorTable(1, cbvAtlasText);
+
+    D3D12_GPU_DESCRIPTOR_HANDLE textureHandleText =
+        descHeapManager->GetGPUDescriptorHandleForIndex(scene->spriteTextures[1]->descHeapIndex);
+
+    commandList->SetGraphicsRootDescriptorTable(2, textureHandleText);
+
+    for (uint32_t i = 0; i < scene->textInstanceDataCount; ++i) {
+        scene->textInstanceBuffer->CopyData(i, scene->textInstanceData[i]);
+    }
+
+    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataText = descHeapManager->GetGPUDescriptorHandleForIndex(6);
+    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceDataText);
+
+    commandList->DrawIndexedInstanced(quad->indexCount, scene->textInstanceDataCount, 0, 0, 0);
 
     // End Text Drawing.
 

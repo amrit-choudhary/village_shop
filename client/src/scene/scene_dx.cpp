@@ -139,7 +139,7 @@ void ME::SceneDX::MakeTextures() {
 }
 
 void ME::SceneDX::MakeSpriteTextures() {
-    for (uint8_t i = 0; i < scene->spriteTextureCount - 1; i++) {
+    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
         spriteTextures[i] = new ME::TextureDX(scene->spriteTexturePaths[i], device, cmdList);
         spriteTextures[i]->CreateBuffers(device, cmdList);
         spriteTextures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(spriteTextures[i]->GetTextureBuffer());
@@ -172,6 +172,11 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
                                            instancedSpriteRendererCount);
 }
 
-void ME::SceneDX::MakeTextInstanceBuffer() {}
+void ME::SceneDX::MakeTextInstanceBuffer() {
+    textInstanceBuffer =
+        new ME::UploadBufferDX(device, false, textInstanceDataCount, sizeof(ME::TextRendererInstanceData));
+    descHeapManager->CreateSRVInstanceData(textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData),
+                                           textInstanceDataCount);
+}
 
 #endif  // VG_WIN

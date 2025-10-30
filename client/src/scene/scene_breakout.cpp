@@ -147,7 +147,7 @@ void ME::SceneBreakout::BuildTextRenderers() {
 
     // Text 1
     ME::TextRenderer* textRend =
-        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, colorPalette[1], 80, 80, -10, 0, 0};
+        new ME::TextRenderer{"\x0F BREAKOUT \x0F", 0, 2, 0, colorPalette[4], 80, 80, -10, 0, 0};
     textRenderers[0] = textRend;
 
     textTransforms[0] = new ME::Transform();
