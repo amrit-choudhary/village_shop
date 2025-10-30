@@ -23,6 +23,18 @@ class UploadBufferDX {
     ID3D12Resource* GetResource() const;
     uint8_t* GetMappedData() const;
     uint32_t GetElementSize() const;
+
+    /**
+     * Copies an array of data to the upload buffer.
+     * Data should be of the same size as elementSize * elementCount.
+     * Use the mapped cpu side data pointer here.
+     */
+    void CopyData(const void* data);
+
+    /**
+     * Copies a single element's data to the upload buffer at the given index.
+     * Used for partial or specific update.
+     */
     void CopyData(uint32_t elementIndex, const void* data);
 
    private:

@@ -40,7 +40,7 @@ void ME::RendererDX::SetScene(ME::Scene* gameScene) {
     commandList->Reset(directCmdListAlloc.Get(), pso);
 
     // Create a new scene with the provided game scene.
-    scene = new ME::SceneDX(device.Get(), cbvSrvUavDescHeap.Get(), commandList.Get(), gameScene);
+    scene = new ME::SceneDX(device.Get(), commandList.Get(), descHeapManager, gameScene);
 
     commandList->Close();
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
@@ -171,16 +171,16 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 
     D3D12_DESCRIPTOR_HEAP_DESC cbvSrvUavDescHeapDesc{};
     // PerPass + some objects.
-    cbvSrvUavDescHeapDesc.NumDescriptors = (1 + cbvPerObjectCount + srvCount);
+    cbvSrvUavDescHeapDesc.NumDescriptors = Constants::MaxDescriptorsOnDescriptorHeap;
     cbvSrvUavDescHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     cbvSrvUavDescHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
     cbvSrvUavDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&cbvSrvUavDescHeapDesc, IID_PPV_ARGS(&cbvSrvUavDescHeap));
 
+    descHeapManager = new ME::DescHeapManagerDX(device.Get(), cbvSrvUavDescHeap.Get());
+
     rootSignature = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
     pso = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSignature);
-
-    CreateCameraAndLights();
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
@@ -190,101 +190,8 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
         depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     commandList->ResourceBarrier(1, &depthBarrier);
 
-    shader = new Shader{"sprite.hlsl"};
-
     quad = new QuadDX{"quad", device.Get(), commandList.Get()};
     quad->CreateBuffers(device.Get(), commandList.Get());
-
-    perPassCB = new UploadBufferDX(device.Get(), true, 1, sizeof(CBPerPass));
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = perPassCB->GetResource()->GetGPUVirtualAddress();
-    cbvDesc.SizeInBytes = perPassCB->GetElementSize();
-    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    cbvHandle.ptr += 0 * cbvSrvUavDescriptorSize;
-    device->CreateConstantBufferView(&cbvDesc, cbvHandle);
-
-    textureAtlasPropsBuffer = new UploadBufferDX(device.Get(), true, 1, sizeof(TextureAtlasProperties));
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDescAtlas = {};
-    cbvDescAtlas.BufferLocation = textureAtlasPropsBuffer->GetResource()->GetGPUVirtualAddress();
-    cbvDescAtlas.SizeInBytes = textureAtlasPropsBuffer->GetElementSize();
-    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandleAtlas = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    cbvHandleAtlas.ptr += 1 * cbvSrvUavDescriptorSize;
-    device->CreateConstantBufferView(&cbvDescAtlas, cbvHandleAtlas);
-
-    perObjCB = new UploadBufferDX(device.Get(), true, 1, sizeof(CBPerObject));
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc2 = {};
-    cbvDesc2.BufferLocation = perObjCB->GetResource()->GetGPUVirtualAddress();
-    cbvDesc2.SizeInBytes = perObjCB->GetElementSize();
-    D3D12_CPU_DESCRIPTOR_HANDLE cbvHandle2 = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    cbvHandle2.ptr += 2 * cbvSrvUavDescriptorSize;
-    device->CreateConstantBufferView(&cbvDesc2, cbvHandle2);
-
-    // texture1 = new TextureDX{"textures/font/ascii_ibm_transparent.png", device.Get(), commandList.Get()};
-    // texture1->CreateBuffers(device.Get(), commandList.Get());
-
-    // D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    // srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    // srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    // srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-    // srvDesc.Texture2D.MostDetailedMip = 0;
-    // srvDesc.Texture2D.MipLevels = -1;
-
-    // // texture 1 SRV
-    // D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    // srvHandle.ptr += 3 * cbvSrvUavDescriptorSize;
-    // device->CreateShaderResourceView(texture1->GetTextureBuffer(), &srvDesc, srvHandle);
-    // D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleTex = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    // cbvHandleTex.ptr += 3 * cbvSrvUavDescriptorSize;
-    // texture1->gpuHandle = cbvHandleTex;
-
-    // Sprite Instance Data
-    ME::Random random;
-    float initialAlpha = random.NextDouble();
-    spriteInstanceData = new ME::SpriteRendererInstanceData[spriteInstanceCount];
-    for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
-        float lengthX = 0.8f;
-        float lengthY = 0.5f;
-        float xIndex = (i / countY);
-        float yIndex = (i % countY);
-        float xPos = (xIndex - (countX / 2)) * lengthX;
-        float yPos = ((countY / 2) - yIndex) * lengthY;
-        ME::Transform modelTransform;
-        modelTransform.SetScale(0.4f);
-        modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
-        modelTransform.SetPosition(ME::Vec3(xPos, yPos, 0.0f));
-        spriteInstanceData[i].modelMatrixData = modelTransform.GetModelMatrix().GetDataRowMajor();
-
-        if (yIndex == 0) {
-            initialAlpha = random.NextDouble();
-        }
-        float finalAlpha = initialAlpha + (yIndex * 0.02f);
-        if (finalAlpha > 1.0f) {
-            finalAlpha = 0.1f;
-        }
-
-        spriteInstanceData[i].color = ME::Color{0.21f, 0.73f, 0.01f, finalAlpha};
-        spriteInstanceData[i].atlasIndex = i % 1000;
-    }
-
-    spriteInstanceBuffer =
-        new ME::UploadBufferDX(device.Get(), false, spriteInstanceCount, sizeof(ME::SpriteRendererInstanceData));
-    spriteInstanceBuffer->CopyData(0, spriteInstanceData);
-
-    D3D12_SHADER_RESOURCE_VIEW_DESC instanceSrvDesc = {};
-    instanceSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    instanceSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-    instanceSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-    instanceSrvDesc.Buffer.FirstElement = 0;
-    instanceSrvDesc.Buffer.NumElements = spriteInstanceCount;
-    instanceSrvDesc.Buffer.StructureByteStride = sizeof(ME::SpriteRendererInstanceData);
-    instanceSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-
-    D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = cbvSrvUavDescHeap->GetCPUDescriptorHandleForHeapStart();
-    srvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
-    device->CreateShaderResourceView(spriteInstanceBuffer->GetResource(), &instanceSrvDesc, srvHandle);
-
-    spriteInstanceBufferSrvHandle = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    spriteInstanceBufferSrvHandle.ptr += 4 * cbvSrvUavDescriptorSize;
 
     // End of Initilization that need command list.
 
@@ -294,7 +201,6 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     FlushCommandQueue();
 
     quad->ReleaseUploadBuffers();
-    // texture1->ReleaseUploadBuffers();
 
     return true;
 }
@@ -326,76 +232,32 @@ void ME::RendererDX::Draw() {
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
     commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
 
-    // Actual drawing.
+    // Sprite Drawing.
 
-    // 2D Drawing
-    // commandList->SetPipelineState(pso);
-    // commandList->SetGraphicsRootSignature(rootSignature);
-    // commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    // commandList->SetGraphicsRootDescriptorTable(0, cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart());
+    CBPerPass perPassData{};
+    perPassData.viewMatrix = scene->spriteCamera->GetViewMatrix().GetDataRowMajor();
+    perPassData.projectionMatrix = scene->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
+    perPassData.ambientLightData = scene->ambientLight->GetLightDataAmbient();
+    perPassData.directionalLightData = scene->directionalLight->GetLightDataDirectional();
+    scene->perPassCBs[0]->CopyData(&perPassData);
 
-    // D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
-    // D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
-    // commandList->IASetVertexBuffers(0, 1, &vbView);
-    // commandList->IASetIndexBuffer(&ibView);
-    // commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+    ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[0];
+    scene->perPassCBs[1]->CopyData(&atlasProps);
 
-    // 3D Drawing
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+    commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-    ++frameCounter;
-    float angle = frameCounter * 0.01f;
-    ME::Vec16 viewMatrix = camera->GetViewMatrix().GetDataRowMajor();
-    ME::Vec16 projectionMatrix = camera->GetProjectionMatrix().GetDataRowMajor();
+    D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(1);
+    commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
 
-    CBPerPass constantData{};
-    constantData.viewMatrix = viewMatrix;
-    constantData.projectionMatrix = projectionMatrix;
-    constantData.ambientLightData = ambientLight->GetLightDataAmbient();
-    constantData.directionalLightData = directionalLight->GetLightDataDirectional();
-    perPassCB->CopyData(0, &constantData);
-
-    // ME::TextureAtlasProperties atlasProps{10, 10, 0, 256, 16, 16, 160, 160};
-    ME::TextureAtlasProperties atlasProps{17, 17, 1, 1078, 49, 22, 832, 373};
-
-    textureAtlasPropsBuffer->CopyData(0, &atlasProps);
-
-    ME::Transform modelTransform;
-    modelTransform.SetScale(8.0f, 8.0f, 1.0f);
-    modelTransform.SetRotation(0.0f, 0.0f, 0.0f);
-    modelTransform.SetPosition(ME::Vec3(0.0f, 0.0f, 0.0f));
-    ME::Vec16 modelMatrix = modelTransform.GetModelMatrix().GetDataRowMajor();
-
-    CBPerObject objConstantData{};
-    objConstantData.modelMatrix = modelMatrix;
-    perObjCB->CopyData(0, &objConstantData);
-
-    static uint32_t animCounter = 0;
-    ++animCounter;
-    if (animCounter >= 8) {
-        animCounter = 0;
-
-        for (uint32_t i = 0; i < spriteInstanceCount; ++i) {
-            uint32_t atlasIndex = spriteInstanceData[i].atlasIndex;
-            --atlasIndex;
-            if (atlasIndex <= 0) {
-                atlasIndex = 1000;
-            }
-            spriteInstanceData[i].atlasIndex = atlasIndex;
-        }
-        spriteInstanceBuffer->CopyData(0, spriteInstanceData);
+    for (uint32_t i = 0; i < scene->instancedSpriteRendererCount; ++i) {
+        scene->spriteInstanceBuffer->CopyData(i, scene->spriteInstanceData[i]);
     }
+    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData = descHeapManager->GetGPUDescriptorHandleForIndex(4);
+    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandlePerPass = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    commandList->SetGraphicsRootDescriptorTable(0, cbvHandlePerPass);
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvHandleAtlas = cbvSrvUavDescHeap->GetGPUDescriptorHandleForHeapStart();
-    cbvHandleAtlas.ptr += 1 * cbvSrvUavDescriptorSize;
-    commandList->SetGraphicsRootDescriptorTable(1, cbvHandleAtlas);
-    commandList->SetGraphicsRootDescriptorTable(3, spriteInstanceBufferSrvHandle);
-
-    int currentTexture = (frameCounter / 16) % 8;  // Change texture every 8 frames
-
-    // D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = texture1->gpuHandle;
-    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = scene->spriteTextures[0]->gpuHandle;
+    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
+        descHeapManager->GetGPUDescriptorHandleForIndex(scene->spriteTextures[0]->descHeapIndex);
 
     commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
@@ -405,9 +267,13 @@ void ME::RendererDX::Draw() {
     commandList->IASetIndexBuffer(&ibView);
     commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    commandList->DrawIndexedInstanced(quad->indexCount, spriteInstanceCount, 0, 0, 0);
+    commandList->DrawIndexedInstanced(quad->indexCount, scene->instancedSpriteRendererCount, 0, 0, 0);
 
-    // End drawing.
+    // End Sprite Drawing.
+
+    // Start Text Drawing.
+
+    // End Text Drawing.
 
     CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
@@ -448,25 +314,6 @@ D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDX::GetCurrentFrontBufferHandle() const 
 
 D3D12_CPU_DESCRIPTOR_HANDLE ME::RendererDX::GetDepthStencilHandle() const {
     return dsvDescHeap->GetCPUDescriptorHandleForHeapStart();
-}
-
-void ME::RendererDX::CreateCameraAndLights() {
-    camera = new ME::Camera();
-    camera->position = ME::Vec3(0.0f, 0.0f, -10.0f);
-    camera->viewPosition = ME::Vec3(0.0f, 0.0f, 0.0f);
-    camera->projectionType = ME::ProjectionType::Orthographic;
-    camera->orthographicSize = 10.0f;
-    camera->fov = 90.0f;
-    camera->aspectRatio = static_cast<float>(clientWidth) / static_cast<float>(clientHeight);
-
-    ambientLight = new ME::Light();
-    ambientLight->color = ME::Color::White();
-    ambientLight->intensity = 0.1f;
-
-    directionalLight = new ME::Light();
-    directionalLight->direction = ME::Vec3(-4.0f, -10.0f, 4.0f).Normalised();
-    directionalLight->color = ME::Color::White();
-    directionalLight->intensity = 1.0f;
 }
 
 #endif  // VG_WIN

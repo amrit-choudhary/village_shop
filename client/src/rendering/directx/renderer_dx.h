@@ -11,6 +11,7 @@
 #include <wrl.h>
 
 #include "../shared/renderer.h"
+#include "desc_heap_manager_dx.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -18,14 +19,7 @@ namespace ME {
 
 // Forward declarations to avoid including shader/quad headers here.
 class SceneDX;
-class Shader;
 class QuadDX;
-class UploadBufferDX;
-class MeshDX;
-class Camera;
-class Light;
-class TextureDX;
-class SpriteRendererInstanceData;
 
 /**
  * Renderer class for DirectX 12 on Windows.
@@ -85,7 +79,7 @@ class RendererDX : public PlatformRenderer {
     // TODO: Make this SRGB later.
     DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
-    const uint32_t clientWidth = 600;
+    const uint32_t clientWidth = 1200;
     const uint32_t clientHeight = 900;
 
     void FlushCommandQueue();
@@ -94,34 +88,9 @@ class RendererDX : public PlatformRenderer {
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrontBufferHandle() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilHandle() const;
 
-    ME::Shader* shader = nullptr;
+    ME::DescHeapManagerDX* descHeapManager = nullptr;
+
     ME::QuadDX* quad = nullptr;
-    // Per pass constant buffer.
-    ME::UploadBufferDX* perPassCB = nullptr;
-    // Per object constant buffer.
-    ME::UploadBufferDX* perObjCB = nullptr;
-    // Instance buffer for sprite renderer.
-    ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
-    // Texture atlas properties buffer.
-    ME::UploadBufferDX* textureAtlasPropsBuffer = nullptr;
-
-    uint32_t frameCounter = 0;
-
-    ME::Camera* camera = nullptr;
-    ME::Light* directionalLight = nullptr;
-    ME::Light* ambientLight = nullptr;
-    void CreateCameraAndLights();
-
-    uint32_t cbvPerObjectCount = 16'000;
-    uint32_t srvCount = 16;
-
-    ME::TextureDX* texture1 = nullptr;
-
-    ME::SpriteRendererInstanceData* spriteInstanceData = nullptr;
-    uint32_t countX = 15;
-    uint32_t countY = 30;
-    uint32_t spriteInstanceCount = countX * countY;
-    D3D12_GPU_DESCRIPTOR_HANDLE spriteInstanceBufferSrvHandle;
 };
 
 }  // namespace ME

@@ -2,13 +2,14 @@
 
 #include "scene_dx.h"
 
+#include "../rendering/directx/pso_dx.h"
 #include "src/misc/game_constants.h"
 
-ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap, ID3D12GraphicsCommandList* cmdList,
+ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, ME::DescHeapManagerDX* descHeapManager,
                      ME::Scene* gameScene) {
     this->device = device;
-    this->descriptorHeap = descriptorHeap;
     this->cmdList = cmdList;
+    this->descHeapManager = descHeapManager;
 
     scene = gameScene;
     this->ambientLight = scene->ambientLight;
@@ -21,6 +22,7 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap,
     textures = new ME::TextureDX*[Constants::MaxTextureCount];
     spriteTextures = new ME::TextureDX*[Constants::MaxSpriteTextureCount];
     // textureSamplerStates = new MTL::SamplerState*[Constants::MaxSamplerCount];
+    perPassCBs = new ME::UploadBufferDX*[Constants::MaxConstantBuffersCount];
 
     transforms = scene->transforms;
     transformCount = scene->transformCount;
@@ -46,6 +48,7 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap,
 
     MakeMeshes();
     MakeQuads();
+    MakeConstantBuffers();
     MakeTextures();
     MakeSpriteTextures();
     MakeShaders();
@@ -85,6 +88,10 @@ ME::SceneDX::~SceneDX() {
         // textureSamplerStates[i]->release();
     }
     // delete[] textureSamplerStates;
+
+    for (uint32_t i = 0; i < perPassCBCount; i++) {
+        delete perPassCBs[i];
+    }
 }
 
 void ME::SceneDX::PostInitCleanup() {
@@ -105,6 +112,10 @@ void ME::SceneDX::PostInitCleanup() {
     }
 }
 
+void ME::SceneDX::Update() {}
+
+void ME::SceneDX::End() {}
+
 void ME::SceneDX::MakeMeshes() {
     for (uint8_t i = 0; i < scene->meshCount; i++) {
         meshes[i] = new ME::MeshDX(scene->meshPaths[i], device, cmdList);
@@ -123,7 +134,7 @@ void ME::SceneDX::MakeTextures() {
     for (uint8_t i = 0; i < scene->textureCount; i++) {
         textures[i] = new ME::TextureDX(scene->texturePaths[i], device, cmdList);
         textures[i]->CreateBuffers(device, cmdList);
-        textures[i]->CreateGPUHandle(device, descriptorHeap, i);
+        textures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(textures[i]->GetTextureBuffer());
     }
 }
 
@@ -131,7 +142,7 @@ void ME::SceneDX::MakeSpriteTextures() {
     for (uint8_t i = 0; i < scene->spriteTextureCount - 1; i++) {
         spriteTextures[i] = new ME::TextureDX(scene->spriteTexturePaths[i], device, cmdList);
         spriteTextures[i]->CreateBuffers(device, cmdList);
-        spriteTextures[i]->CreateGPUHandle(device, descriptorHeap, 3 + i);
+        spriteTextures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(spriteTextures[i]->GetTextureBuffer());
     }
 }
 
@@ -139,7 +150,27 @@ void ME::SceneDX::MakeShaders() {}
 
 void ME::SceneDX::MakeTextureSamplers() {}
 
-void ME::SceneDX::MakeSpriteInstanceBuffer() {}
+void ME::SceneDX::MakeConstantBuffers() {
+    perPassCBCount = 3;
+
+    perPassCBs[0] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPass));
+    perPassCBs[1] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::TextureAtlasProperties));
+    perPassCBs[2] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::TextureAtlasProperties));
+
+    // Per Pass CBVs
+    descHeapManager->CreateCBV(perPassCBs[0]->GetResource(), perPassCBs[0]->GetElementSize());
+    // Texture Atlas 1
+    descHeapManager->CreateCBV(perPassCBs[1]->GetResource(), perPassCBs[1]->GetElementSize());
+    // Texture Atlas 2
+    descHeapManager->CreateCBV(perPassCBs[2]->GetResource(), perPassCBs[2]->GetElementSize());
+}
+
+void ME::SceneDX::MakeSpriteInstanceBuffer() {
+    spriteInstanceBuffer =
+        new ME::UploadBufferDX(device, false, instancedSpriteRendererCount, sizeof(ME::SpriteRendererInstanceData));
+    descHeapManager->CreateSRVInstanceData(spriteInstanceBuffer->GetResource(), sizeof(ME::SpriteRendererInstanceData),
+                                           instancedSpriteRendererCount);
+}
 
 void ME::SceneDX::MakeTextInstanceBuffer() {}
 

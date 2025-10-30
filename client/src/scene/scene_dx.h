@@ -9,6 +9,7 @@
 #include <d3d12.h>
 
 #include "../rendering/directx/d3dx12.h"
+#include "../rendering/directx/desc_heap_manager_dx.h"
 #include "../rendering/directx/mesh_dx.h"
 #include "../rendering/directx/quad_dx.h"
 #include "../rendering/directx/texture_dx.h"
@@ -20,7 +21,7 @@ namespace ME {
 class SceneDX {
    public:
     SceneDX() = delete;
-    SceneDX(ID3D12Device* device, ID3D12DescriptorHeap* descriptorHeap, ID3D12GraphicsCommandList* cmdList,
+    SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, ME::DescHeapManagerDX* descHeapManager,
             ME::Scene* gameScene);
     ~SceneDX();
 
@@ -65,23 +66,22 @@ class SceneDX {
     uint32_t textTransformsCount;
     uint32_t textRendererCount;
     uint32_t textInstanceDataCount;
+    uint32_t perPassCBCount;
 
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
-    D3D12_GPU_DESCRIPTOR_HANDLE spriteInstanceBufferHandle;
 
     ME::TextRendererInstanceData** textInstanceData;
     ME::UploadBufferDX* textInstanceBuffer = nullptr;
     D3D12_GPU_DESCRIPTOR_HANDLE textInstanceBufferHandle;
 
-    ME::UploadBufferDX* perPassCB = nullptr;
-    ME::UploadBufferDX* textureAtlasPropsBuffer = nullptr;
+    ME::UploadBufferDX** perPassCBs = nullptr;
 
    private:
-    ID3D12Device* device;
-    ID3D12DescriptorHeap* descriptorHeap;
-    ID3D12GraphicsCommandList* cmdList;
-    ME::Scene* scene;
+    ID3D12Device* device = nullptr;
+    ID3D12GraphicsCommandList* cmdList = nullptr;
+    ME::DescHeapManagerDX* descHeapManager = nullptr;
+    ME::Scene* scene = nullptr;
 
     void MakeMeshes();
     void MakeQuads();
@@ -89,6 +89,8 @@ class SceneDX {
     void MakeSpriteTextures();
     void MakeShaders();
     void MakeTextureSamplers();
+    void MakeConstantBuffers();
+
     void MakeSpriteInstanceBuffer();
     void MakeTextInstanceBuffer();
 };
