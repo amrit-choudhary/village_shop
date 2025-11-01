@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 
 namespace ME {
 /**
@@ -29,8 +30,14 @@ template <typename T>
 class Grid {
    public:
     Grid() = delete;
+
+    /**
+     * Constructor for creating a grid of specified dimensions.
+     * Initializes all elements to default value of T.
+     * Cell type should be default-constructible or POD.
+     */
     Grid(size_t width, size_t height) : width(width), height(height) {
-        data = new T[width * height];
+        data = new T[width * height]();
     }
 
     ~Grid() {
@@ -168,6 +175,17 @@ class Grid {
         for (size_t i = 0; i < width * height; ++i) {
             data[i] = value;
         }
+    }
+
+    /**
+     * Copy data from source grid.
+     * No resizing is done. Grids must be of the same size.
+     */
+    void CopyFrom(const Grid<T>& source) {
+        if (source.GetWidth() != width || source.GetHeight() != height) {
+            return;
+        }
+        std::memcpy(data, source.data, GetSizeBytes());
     }
 
    private:

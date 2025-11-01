@@ -11,6 +11,7 @@
 
 #include "../game/game.h"
 #include "../game/game_breakout.h"
+#include "../game/game_game_of_life.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
 #include "../misc/global_vars.h"
@@ -40,7 +41,8 @@ class GameMain {
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;
     ME::Connection connection;
-    ME::GameBreakout game;
+    // ME::GameBreakout game;
+    ME::GameOfLife game;
     ME::PhysicsSystem physicsSystem;
     ME::RendererDX renderer;
 

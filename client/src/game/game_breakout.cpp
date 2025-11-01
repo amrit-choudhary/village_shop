@@ -42,9 +42,9 @@ void ME::GameBreakout::Update(double deltaTime) {
 }
 
 void ME::GameBreakout::End() {
-    Game::End();
     delete scene;
     delete physicsScene;
+    Game::End();
 }
 
 void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) {
