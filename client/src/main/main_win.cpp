@@ -23,11 +23,6 @@ void ME::GameMain::Init(HWND hWnd) {
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
     maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
-    // Init global variables.
-    timeManager.Init(fps, false);
-    bool shouldTick = false;
-    double deltaTime = 0.0f;
-
     inputManager.Init();
     connection.Init();
     physicsSystem.Init();
@@ -39,6 +34,11 @@ void ME::GameMain::Init(HWND hWnd) {
 
     renderer.InitDX(hWnd);
     renderer.SetScene(game.GetScene());
+
+    // Clock init after all systems are initialized.
+    timeManager.Init(fps, false);
+    bool shouldTick = false;
+    double deltaTime = 0.0f;
 }
 
 void ME::GameMain::Update() {
