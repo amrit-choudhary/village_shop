@@ -30,7 +30,11 @@ void ME::GameOfLife::Update(double deltaTime) {
     if (frameCounter > updateIntervalFrames) {
         frameCounter = 0;
 
-        UpdateGameOfLifeLogic();
+        if (bBriansBrainMode) {
+            UpdateGameOfLifeLogicBriansBrain();
+        } else {
+            UpdateGameOfLifeLogic();
+        }
     }
 }
 
@@ -48,10 +52,21 @@ void ME::GameOfLife::InitializeGameOfLifeLogic() {
     for (size_t y = 0; y < gridHeight; y++) {
         for (size_t x = 0; x < gridWidth; x++) {
             float r = rnd.NextDouble();
-            if (r < 0.3f) {
-                *(currentGen->GetUnsafe(x, y)) = 1;
+
+            if (bBriansBrainMode) {
+                // Brian's Brain initialization: Randomly set cells to "on" (2) or "off" (0).
+                if (r < 0.25f) {
+                    *(currentGen->GetUnsafe(x, y)) = 2;
+                } else {
+                    *(currentGen->GetUnsafe(x, y)) = 0;
+                }
+                continue;
             } else {
-                *(currentGen->GetUnsafe(x, y)) = 0;
+                if (r < 0.3f) {
+                    *(currentGen->GetUnsafe(x, y)) = 1;
+                } else {
+                    *(currentGen->GetUnsafe(x, y)) = 0;
+                }
             }
         }
     }
@@ -104,6 +119,60 @@ void ME::GameOfLife::UpdateGameOfLifeLogic() {
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 1) {
             golScene->spriteInstanceData[i]->color = ME::Color("#a7ce47");
+        } else {
+            golScene->spriteInstanceData[i]->color = ME::Color::Black();
+        }
+    }
+}
+
+void ME::GameOfLife::UpdateGameOfLifeLogicBriansBrain() {
+    uint8_t *currentGenPtr = currentGen->GetData();
+    uint8_t *nextGenPtr = nextGen->GetData();
+
+    for (size_t y = 0; y < gridHeight; y++) {
+        for (size_t x = 0; x < gridWidth; x++) {
+            uint8_t *neighs[8];
+            currentGen->GetNeighbors8(x, y, neighs);
+
+            size_t liveNeighbors = 0;
+            for (size_t n = 0; n < 8; n++) {
+                if (neighs[n] != nullptr && *(neighs[n]) == 2) {
+                    liveNeighbors++;
+                }
+            }
+
+            uint8_t currentCell = *(currentGen->GetUnsafe(x, y));
+            // All living cell go to dying.
+            if (currentCell == 2) {
+                *(nextGen->GetUnsafe(x, y)) = 1;
+            }
+            // All dying cells go to dead.
+            else if (currentCell == 1) {
+                *(nextGen->GetUnsafe(x, y)) = 0;
+            } else {
+                // Any dead cell with exactly two live neighbours becomes a living cell.
+                if (liveNeighbors == birthNumber) {
+                    *(nextGen->GetUnsafe(x, y)) = 2;
+                } else {
+                    // All other dead cells stay dead.
+                    *(nextGen->GetUnsafe(x, y)) = 0;
+                }
+            }
+        }
+    }
+
+    // Swap grids.
+    tempGrid = currentGen;
+    currentGen = nextGen;
+    nextGen = tempGrid;
+
+    // Update drawing.
+    uint8_t *cellPtr = currentGen->GetData();
+    for (size_t i = 0; i < gridCount; ++i) {
+        if (*(cellPtr + i) == 2) {
+            golScene->spriteInstanceData[i]->color = ME::Color("#deeff3");
+        } else if (*(cellPtr + i) == 1) {
+            golScene->spriteInstanceData[i]->color = ME::Color("#f0532c");
         } else {
             golScene->spriteInstanceData[i]->color = ME::Color::Black();
         }

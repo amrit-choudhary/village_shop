@@ -41,9 +41,14 @@ class GameOfLife : public Game {
     uint32_t frameCounter = 0;
     uint32_t updateIntervalFrames = 4;
 
+    // Implementation of Brian's Brain variation.
+    bool bBriansBrainMode = false;
+    uint8_t birthNumber = 2;
+
     // Game of life logic.
     void InitializeGameOfLifeLogic();
     void UpdateGameOfLifeLogic();
+    void UpdateGameOfLifeLogicBriansBrain();
 };
 
 }  // namespace ME
