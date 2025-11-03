@@ -80,7 +80,7 @@ class Grid {
     }
 
     /** Get neighbor in specified grid direction. Returns nullptr if out of bounds. */
-    T* GetNeighbor(size_t x, size_t y, GridDirection direction) const {
+    const T* GetNeighbor(size_t x, size_t y, GridDirection direction) const {
         switch (direction) {
             case GridDirection::E:
                 return GetInternal(x + 1, y);

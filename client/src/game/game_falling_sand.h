@@ -1,19 +1,19 @@
 #pragma once
 
 /**
- * Game of Life.
+ * Falling Sand.
  */
 
 #include <src/datastructure/grid.h>
 
-#include "../scene/scene_game_of_life.h"
+#include "../scene/scene_falling_sand.h"
 #include "game.h"
 
 namespace ME {
-class GameOfLife : public Game {
+class GameFallingSand : public Game {
    public:
-    GameOfLife();
-    ~GameOfLife();
+    GameFallingSand();
+    ~GameFallingSand();
 
     // Game control functions.
 
@@ -27,8 +27,8 @@ class GameOfLife : public Game {
     virtual void End() override;
 
    private:
-    SceneGameOfLife *golScene = nullptr;   // Scene for the game.
-    PhysicsScene *physicsScene = nullptr;  // Physics scene for the game.
+    SceneFallingSand *sandScene = nullptr;  // Scene for the game.
+    PhysicsScene *physicsScene = nullptr;   // Physics scene for the game.
     const size_t gridWidth = 100;
     const size_t gridHeight = 100;
     const size_t gridCount = gridWidth * gridHeight;
@@ -39,16 +39,11 @@ class GameOfLife : public Game {
     ME::Grid<uint8_t> *tempGrid;
 
     uint32_t frameCounter = 0;
-    uint32_t updateIntervalFrames = 2;
+    uint32_t updateIntervalFrames = 1;
 
-    // Implementation of Brian's Brain variation.
-    bool bBriansBrainMode = false;
-    uint8_t birthNumber = 2;
-
-    // Game of life logic.
-    void InitializeGameOfLifeLogic();
-    void UpdateGameOfLifeLogic();
-    void UpdateGameOfLifeLogicBriansBrain();
+    // Falling sand logic.
+    void InitializeFallingSandLogic();
+    void UpdateFallingSandLogic();
 };
 
 }  // namespace ME

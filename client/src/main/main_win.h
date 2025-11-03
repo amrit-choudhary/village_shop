@@ -11,6 +11,7 @@
 
 #include "../game/game.h"
 #include "../game/game_breakout.h"
+#include "../game/game_falling_sand.h"
 #include "../game/game_game_of_life.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
@@ -42,7 +43,8 @@ class GameMain {
     ME::Input::InputManager inputManager;
     ME::Connection connection;
     // ME::GameBreakout game;
-    ME::GameOfLife game;
+    // ME::GameOfLife game;
+    ME::GameFallingSand game;
     ME::PhysicsSystem physicsSystem;
     ME::RendererDX renderer;
 
