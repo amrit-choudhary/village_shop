@@ -10,6 +10,7 @@
 #include "game.h"
 
 namespace ME {
+
 class GameOfLife : public Game {
    public:
     GameOfLife();
