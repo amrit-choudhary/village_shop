@@ -1,18 +1,21 @@
+#pragma once
 #ifdef VG_WIN
 /**
- * Input manager or Mac
+ * Input manager for Windows
  */
 
-#pragma once
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 
 #include <windows.h>
 
-#include <atomic>
-#include <chrono>
-#include <iostream>
-#include <thread>
-
 #include "input_manager.h"
+
+namespace ME::Input {
 
 class InputManagerWin : public ME::Input::PlatformInputManager {
    public:
@@ -22,9 +25,11 @@ class InputManagerWin : public ME::Input::PlatformInputManager {
     void Update(double deltaTime) override;
     void End() override;
 
+    // Handle Windows-specific input messages.
+    void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam);
+
    private:
-    std::thread inputThread;
-    void InputCallback(HANDLE hInput);
 };
+}  // namespace ME::Input
 
 #endif  // VG_WIN

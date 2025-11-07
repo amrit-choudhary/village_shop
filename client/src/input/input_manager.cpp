@@ -25,7 +25,7 @@ void InputManager::Init() {
     platformInputManager = new InputManagerCLIMac();
 #endif
 #ifdef VG_WIN
-    platformInputManager = new InputManagerCLIWin();
+    platformInputManager = new InputManagerWin();
 #endif
 
     platformInputManager->Init();
@@ -49,6 +49,10 @@ bool InputManager::GetKeyUp(KeyCode keyCode) {
 
 bool InputManager::GetCLIInputString(std::string& input) {
     return platformInputManager->GetCLIInputString(input);
+}
+
+PlatformInputManager* ME::Input::InputManager::GetPlatformInputManager() {
+    return platformInputManager;
 }
 
 PlatformInputManager::PlatformInputManager() {}

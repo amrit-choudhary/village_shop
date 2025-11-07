@@ -16,6 +16,7 @@
 #include "../game/game_rpg.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
+#include "../input/input_manager_win.h"
 #include "../misc/global_vars.h"
 #include "../net/connection.h"
 #include "../rendering/directx/renderer_dx.h"
@@ -37,11 +38,16 @@ class GameMain {
     void Exit();
     void ShutDownGameSystems();
 
+    /** This feeds the windows OS input events to the game.
+     * Game will dispatch it to Input System. */
+    void HandleInput(UINT msg, WPARAM wParam, LPARAM lParam);
+
    private:
     HWND hWnd;
 
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;
+    ME::Input::InputManagerWin* winInputManager = nullptr;
     ME::Connection connection;
     // ME::GameBreakout game;
     // ME::GameOfLife game;

@@ -7,6 +7,14 @@
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include <windows.h>
 #include <wrl.h>
 
@@ -28,10 +36,31 @@ void AttachDebugConsole() {
 using Microsoft::WRL::ComPtr;
 
 LRESULT CALLBACK WindowProcW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    if (msg == WM_DESTROY) {
-        PostQuitMessage(0);
-        return 0;
+    switch (msg) {
+        case WM_NCCREATE: {
+            CREATESTRUCTW* pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
+            ME::GameMain* pGame = reinterpret_cast<ME::GameMain*>(pCreate->lpCreateParams);
+            SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pGame));
+            break;
+        }
+
+        case WM_DESTROY: {
+            PostQuitMessage(0);
+            return 0;
+        }
+
+        case WM_SYSKEYUP:
+        case WM_SYSKEYDOWN:
+        case WM_KEYUP:
+        case WM_KEYDOWN: {
+            ME::GameMain* pGame = reinterpret_cast<ME::GameMain*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+            if (pGame) {
+                pGame->HandleInput(msg, wParam, lParam);
+            }
+            return 0;
+        }
     }
+
     return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
@@ -68,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     int windowHeight = rect.bottom - rect.top;
 
     HWND hWnd = CreateWindowExW(0, windowClass.lpszClassName, L"VillageGame", WS_OVERLAPPEDWINDOW, 60, 60, windowWidth,
-                                windowHeight, nullptr, nullptr, hInstance, nullptr);
+                                windowHeight, nullptr, nullptr, hInstance, &game);
 
     game.Init(hWnd);
     ShowWindow(hWnd, nCmdShow);

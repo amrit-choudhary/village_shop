@@ -66,6 +66,8 @@ class InputManager {
 
     bool GetCLIInputString(std::string& input);
 
+    PlatformInputManager* GetPlatformInputManager();
+
    private:
     PlatformInputManager* platformInputManager;
 };

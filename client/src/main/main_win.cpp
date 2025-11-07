@@ -24,6 +24,7 @@ void ME::GameMain::Init(HWND hWnd) {
     maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     inputManager.Init();
+    winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
     connection.Init();
     physicsSystem.Init();
 
@@ -39,6 +40,12 @@ void ME::GameMain::Init(HWND hWnd) {
     timeManager.Init(fps, false);
     bool shouldTick = false;
     double deltaTime = 0.0f;
+}
+
+void ME::GameMain::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (winInputManager != nullptr) {
+        winInputManager->HandleInput(msg, wParam, lParam);
+    }
 }
 
 void ME::GameMain::Update() {
