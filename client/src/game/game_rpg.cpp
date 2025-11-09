@@ -38,11 +38,24 @@ void ME::GameRPG::Update(double deltaTime) {
         // Update game logic here.
     }
 
-    scene->spriteCamera->position.x += 8.0f * static_cast<float>(deltaTime);
-    scene->spriteCamera->position.y += 3.0f * static_cast<float>(deltaTime);
+    const float speed = 20.0f * deltaTime;
+    ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
-    scene->spriteCamera->viewPosition.x += 8.0f * static_cast<float>(deltaTime);
-    scene->spriteCamera->viewPosition.y += 3.0f * static_cast<float>(deltaTime);
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::W) || inputManager->GetKeyDown(ME::Input::KeyCode::UArrow)) {
+        movementVector.y += speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::S) || inputManager->GetKeyDown(ME::Input::KeyCode::DArrow)) {
+        movementVector.y -= speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::A) || inputManager->GetKeyDown(ME::Input::KeyCode::LArrow)) {
+        movementVector.x -= speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::D) || inputManager->GetKeyDown(ME::Input::KeyCode::RArrow)) {
+        movementVector.x += speed;
+    }
+
+    scene->spriteCamera->position += movementVector;
+    scene->spriteCamera->viewPosition += movementVector;
 }
 
 void ME::GameRPG::End() {

@@ -26,7 +26,8 @@ enum class KeyCode : uint16_t {
     LArrow = 5,
     RArrow = 6,
     UArrow = 7,
-    DArrow = 8
+    DArrow = 8,
+    Space = 9,
 };
 
 /**
