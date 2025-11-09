@@ -17,7 +17,7 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsSystem->SetScene(physicsScene);
 
     CSVData levelData;
-    CSVParser::Parse(&levelData, "levels/tilemap_01.csv");
+    CSVParser::Parse(&levelData, "levels/tilemap_01.csv", true);
 
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
@@ -38,7 +38,7 @@ void ME::GameRPG::Update(double deltaTime) {
         // Update game logic here.
     }
 
-    const float speed = 20.0f * deltaTime;
+    const float speed = 40.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::W) || inputManager->GetKeyDown(ME::Input::KeyCode::UArrow)) {

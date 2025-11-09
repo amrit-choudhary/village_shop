@@ -21,7 +21,7 @@ class SceneRPG : public Scene {
     const size_t cellPadding = 0;
     const size_t cellSize = 16;
     const size_t cellSizeby2 = cellSize / 2;
-    const int32_t originX = -200;
+    const int32_t originX = -400;
     const int32_t originY = -100;
 
    public:

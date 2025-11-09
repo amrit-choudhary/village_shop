@@ -9,8 +9,12 @@ class CSVParser {
     CSVParser();
     ~CSVParser();
 
-    // Parses a CSV file.
-    static void Parse(CSVData* csvData, const char* filePath);
+    /**
+     * Parses a CSV file.
+     * For tilemaps, set flipVertical to true to flip the rows vertically.
+     * Because it is common for tilemaps data to have (0,0) at bottom-left.
+     */
+    static void Parse(CSVData* csvData, const char* filePath, const bool flipVertical = false);
 
    private:
 };

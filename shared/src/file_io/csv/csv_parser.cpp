@@ -17,7 +17,7 @@ static inline std::string Trim(const std::string& s) {
     return s.substr(a, b - a + 1);
 }
 
-void ME::CSVParser::Parse(CSVData* csvData, const char* filePath) {
+void ME::CSVParser::Parse(CSVData* csvData, const char* filePath, const bool flipVertical) {
     csvData->ClearData();
     std::string fileName = ME::GetResourcesPath() + filePath;
     std::ifstream file(fileName);
@@ -70,10 +70,19 @@ void ME::CSVParser::Parse(CSVData* csvData, const char* filePath) {
 
     csvData->SetSize(rowCount, colCount);
 
-    for (size_t r = 0; r < rowCount; ++r) {
-        const auto& rv = rows[r];
-        for (size_t c = 0; c < rv.size(); ++c) {
-            csvData->SetValue(r, c, rv[c]);
+    if (flipVertical) {
+        for (size_t r = 0; r < rowCount; ++r) {
+            const auto& rv = rows[rowCount - 1 - r];
+            for (size_t c = 0; c < rv.size(); ++c) {
+                csvData->SetValue(r, c, rv[c]);
+            }
+        }
+    } else {
+        for (size_t r = 0; r < rowCount; ++r) {
+            const auto& rv = rows[r];
+            for (size_t c = 0; c < rv.size(); ++c) {
+                csvData->SetValue(r, c, rv[c]);
+            }
         }
     }
 }
