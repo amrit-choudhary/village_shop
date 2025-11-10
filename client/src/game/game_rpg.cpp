@@ -1,5 +1,6 @@
 #include "game_rpg.h"
 
+#include "../world/tile.h"
 #include "src/file_io/csv/csv_parser.h"
 
 ME::GameRPG::GameRPG() : Game() {}
@@ -21,9 +22,8 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
 
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
-        if (tileIndex != 0) {
-            rpgScene->spriteInstanceData[i]->atlasIndex = tileIndex - 1;
-        }
+        ME::TileRenderData tileRenderData = ME::TileRenderData::FromGlobalTileID(tileIndex);
+        rpgScene->spriteInstanceData[i]->atlasIndex = tileRenderData.atlasIndex;
     }
 
     ME::Log("RPG Game Start!");
