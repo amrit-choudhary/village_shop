@@ -1,16 +1,18 @@
 // contains some common helper functions and macros for HLSL shaders.
 
 // Forward declarations.
-float2 GetAtlasUVPad(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps);
+float2 GetAtlasUVPad(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps, uint flags);
 
 // Function to calculate UV coordinates for a texture atlas.
 // Atlas index is the index of the texture in the atlas, starting from top left.
 // uv will simply be quad UVs from (0,0) to (1,1).
-float2 GetAtlasUV(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps)
+
+float2 GetAtlasUV(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps, uint flags)
 {
-    if(atlasProps.padding > 0){
-        return GetAtlasUVPad(uv, atlasIndex, atlasProps);
+    if (atlasProps.padding > 0) {
+        return GetAtlasUVPad(uv, atlasIndex, atlasProps, flags);
     }
+
     // Calculate tile size in UV space
     float tileWidthUV  = (float)atlasProps.tileSizeX / (float)atlasProps.width;
     float tileHeightUV = (float)atlasProps.tileSizeY / (float)atlasProps.height;
@@ -19,8 +21,12 @@ float2 GetAtlasUV(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps)
     uint col = atlasIndex % atlasProps.numTilesX;
     uint row = atlasIndex / atlasProps.numTilesX;
 
-    // Offset in UV space
+    // Offset in UV space (start of tile)
     float2 tileOffsetUV = float2(col * tileWidthUV, row * tileHeightUV);
+
+    // Apply flipping by inverting local uv; do NOT change the tile offset.
+    if ((flags & 0x1) != 0) uv.x = 1.0f - uv.x; // horizontal flip
+    if ((flags & 0x2) != 0) uv.y = 1.0f - uv.y; // vertical flip
 
     // Adjust input UV to fit within the tile
     float2 adjustedUV = tileOffsetUV + uv * float2(tileWidthUV, tileHeightUV);
@@ -28,30 +34,31 @@ float2 GetAtlasUV(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps)
     return adjustedUV;
 }
 
-float2 GetAtlasUVPad(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps)
+float2 GetAtlasUVPad(float2 uv, uint atlasIndex, TextureAtlasProperties atlasProps, uint flags)
 {
-    // Calculate tile size in UV space, tile size including padding
+    // tile content size in UV
     float tileWidthUV  = (float)atlasProps.tileSizeX / (float)atlasProps.width;
     float tileHeightUV = (float)atlasProps.tileSizeY / (float)atlasProps.height;
 
-    // Calculate padding in UV space
+    // padding in UV and stride between tiles (content + padding)
     float padU = (float)atlasProps.padding / (float)atlasProps.width;
     float padV = (float)atlasProps.padding / (float)atlasProps.height;
+    float strideU = tileWidthUV + padU;
+    float strideV = tileHeightUV + padV;
 
-    // Find tile position (row, col) from atlasIndex
+    // tile coordinates
     uint col = atlasIndex % atlasProps.numTilesX;
     uint row = atlasIndex / atlasProps.numTilesX;
 
-    // For first column/row, no padding at the edge
-    float offsetU = col * tileWidthUV + (col > 0 ? padU : 0.0f);
-    float offsetV = row * tileHeightUV + (row > 0 ? padV : 0.0f);
+    // offset is col/row * stride; no extra special-casing for edges required
+    float offsetU = col * strideU;
+    float offsetV = row * strideV;
 
-    // Usable area inside the tile (excluding padding on both sides except for first tile)
-    float usableWidthUV  = tileWidthUV  - ((col > 0 ? 2.0f : 1.0f) * padU);
-    float usableHeightUV = tileHeightUV - ((row > 0 ? 2.0f : 1.0f) * padV);
+    // flipping only affects the local UV inside the tile; no offset adjustment needed
+    if ((flags & 0x1) != 0) uv.x = 1.0f - uv.x;
+    if ((flags & 0x2) != 0) uv.y = 1.0f - uv.y;
 
-    float2 tileOffsetUV = float2(offsetU, offsetV);
-    float2 adjustedUV = tileOffsetUV + uv * float2(usableWidthUV, usableHeightUV);
-
+    // map local uv into atlas using tile content size (padding sits between tiles)
+    float2 adjustedUV = float2(offsetU + uv.x * tileWidthUV, offsetV + uv.y * tileHeightUV);
     return adjustedUV;
 }

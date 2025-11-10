@@ -48,7 +48,7 @@ VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
     output.position = outputPos;
     // flipping y in uv is directx specific.
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
-    output.uv = GetAtlasUV(flippedUV, instanceData.atlasIndex, atlasProps);
+    output.uv = GetAtlasUV(flippedUV, instanceData.atlasIndex, atlasProps, instanceData.flags);
     output.color = instanceData.color;
 
     return output;

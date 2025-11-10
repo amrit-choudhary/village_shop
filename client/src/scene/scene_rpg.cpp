@@ -59,7 +59,7 @@ void ME::SceneRPG::CreateResources() {
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    textureAtlasProperties[0] = ME::TextureAtlasProperties{17, 17, 1, 1024, 32, 32, 543, 543};
+    textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1024, 32, 32, 543, 543};
     textureAtlasProperties[1] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
     textureAtlasPropertiesCount = 2;
 
@@ -73,7 +73,7 @@ void ME::SceneRPG::BuildLights() {
 
 void ME::SceneRPG::BuildCamera() {
     ME::Scene::BuildCamera();
-    spriteCamera->orthographicSize = 100.0f;
+    spriteCamera->orthographicSize = 300.0f;
 }
 
 void ME::SceneRPG::BuildTransforms() {}

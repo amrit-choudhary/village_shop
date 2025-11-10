@@ -23,7 +23,8 @@ struct SpriteInstanceData {
     float4x4 modelMatrix;
     float4 color;
     uint atlasIndex;
-    uint3 padding; 
+    uint flags;
+    uint2 padding; 
 };
 
 // Texture Atlas Properties

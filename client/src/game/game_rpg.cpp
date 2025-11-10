@@ -18,12 +18,16 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsSystem->SetScene(physicsScene);
 
     CSVData levelData;
-    CSVParser::Parse(&levelData, "levels/tilemap_01.csv", true);
+    CSVParser::Parse(&levelData, "levels/tilemap_03.csv", true);
 
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
         ME::TileRenderData tileRenderData = ME::TileRenderData::FromGlobalTileID(tileIndex);
         rpgScene->spriteInstanceData[i]->atlasIndex = tileRenderData.atlasIndex;
+        // Set flags for flipping at bit 0 horizontal and bit 1 vertical.
+        rpgScene->spriteInstanceData[i]->flags = (tileRenderData.flipX ? 0x1 : 0x0) |
+                                                 (tileRenderData.flipY ? 0x2 : 0x0) |
+                                                 (tileRenderData.flipDiagonal ? 0x4 : 0x0);
     }
 
     ME::Log("RPG Game Start!");
@@ -40,18 +44,26 @@ void ME::GameRPG::Update(double deltaTime) {
 
     const float speed = 40.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
+    const float zoomSpeed = 20.0f * deltaTime;
 
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::W) || inputManager->GetKeyDown(ME::Input::KeyCode::UArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::W)) {
         movementVector.y += speed;
     }
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::S) || inputManager->GetKeyDown(ME::Input::KeyCode::DArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::S)) {
         movementVector.y -= speed;
     }
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::A) || inputManager->GetKeyDown(ME::Input::KeyCode::LArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::A)) {
         movementVector.x -= speed;
     }
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::D) || inputManager->GetKeyDown(ME::Input::KeyCode::RArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::D)) {
         movementVector.x += speed;
+    }
+
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::UArrow)) {
+        scene->spriteCamera->orthographicSize -= zoomSpeed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::DArrow)) {
+        scene->spriteCamera->orthographicSize += zoomSpeed;
     }
 
     scene->spriteCamera->position += movementVector;
