@@ -2,6 +2,10 @@
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+# Add C sources (e.g. cJSON.c) to the build as well.
+file(GLOB_RECURSE CSOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c")
+list(APPEND SOURCES ${CSOURCES})
+
 add_library(VillageShop_Shared STATIC ${SOURCES})
 
 # Set preprocessor options.

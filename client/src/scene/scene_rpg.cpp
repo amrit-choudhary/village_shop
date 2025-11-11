@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include "../utils/json_utils.h"
 #include "src/misc/game_constants.h"
 #include "src/random/random_engine.h"
 
@@ -59,8 +60,8 @@ void ME::SceneRPG::CreateResources() {
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1024, 32, 32, 543, 543};
-    textureAtlasProperties[1] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_01.json", textureAtlasProperties[0]);
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
     textureAtlasPropertiesCount = 2;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
