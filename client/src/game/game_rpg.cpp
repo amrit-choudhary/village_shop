@@ -18,13 +18,23 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsSystem->SetScene(physicsScene);
 
     CSVData levelData;
-    CSVParser::Parse(&levelData, "levels/tilemap_03.csv", true);
+    CSVParser::Parse(&levelData, "levels/tilemap_04.csv", true);
 
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
         ME::TileRenderData tileRenderData = ME::TileRenderData::FromGlobalTileID(tileIndex);
         rpgScene->spriteInstanceData[i]->atlasIndex = tileRenderData.atlasIndex;
-        // Set flags for flipping at bit 0 horizontal and bit 1 vertical.
+        if (tileRenderData.flipDiagonal) {
+            if (tileRenderData.flipY) {
+                rpgScene->instancedSpriteTransforms[i]->SetRotation(0.0f, 0.0f, -ME::PI / 2.0f);
+                tileRenderData.flipY = false;
+            } else {
+                rpgScene->instancedSpriteTransforms[i]->SetRotation(0.0f, 0.0f, ME::PI / 2.0f);
+            }
+            rpgScene->spriteInstanceData[i]->modelMatrixData =
+                rpgScene->instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        }
+        // Set flags for flipping at bit 0 horizontal, bit 1 vertical and bit 2 is diagonal.
         rpgScene->spriteInstanceData[i]->flags = (tileRenderData.flipX ? 0x1 : 0x0) |
                                                  (tileRenderData.flipY ? 0x2 : 0x0) |
                                                  (tileRenderData.flipDiagonal ? 0x4 : 0x0);
