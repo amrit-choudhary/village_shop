@@ -37,4 +37,5 @@ struct TextureAtlasProperties {
     uint numTilesY;
     uint width;
     uint height;
+    uint paddingType;
 };

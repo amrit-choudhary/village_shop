@@ -37,6 +37,7 @@ bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlas
         outAtlasProps.numTilesY = cJSON_GetObjectItem(json, "numTilesY")->valueint;
         outAtlasProps.width = cJSON_GetObjectItem(json, "width")->valueint;
         outAtlasProps.height = cJSON_GetObjectItem(json, "height")->valueint;
+        outAtlasProps.paddingType = cJSON_GetObjectItem(json, "paddingType")->valueint;
 
         // Clean up and return the properties.
         cJSON_Delete(json);

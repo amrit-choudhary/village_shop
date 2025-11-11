@@ -12,6 +12,12 @@ namespace ME {
 // Constants.
 constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
 
+enum class TextureAtlasPaddingType : uint8_t {
+    None = 0,
+    No_Edge = 1,  // No edge padding, just padding between tiles
+    Edge = 2      // Edge padding, with padding between tiles
+};
+
 /**
  * Data related to texture atlases.
  * This is used to hold information about the texture atlas, such as the size, number of textures, etc.
@@ -19,14 +25,16 @@ constexpr uint8_t MIP_LEVELS_DEFAULT = 4;
  */
 class TextureAtlasProperties {
    public:
-    uint32_t tileSizeX;    // Width of each tile in the atlas
-    uint32_t tileSizeY;    // Size of each tile in the atlas
-    uint32_t padding;      // Padding between tiles in the atlas
-    uint32_t numTextures;  // Number of textures in the atlas
-    uint32_t numTilesX;    // Number of tiles in the X direction
-    uint32_t numTilesY;    // Number of tiles in the Y direction
-    uint32_t width;        // Width of the atlas texture
-    uint32_t height;       // Height of the atlas texture
+    uint32_t tileSizeX;      // Width of each tile in the atlas
+    uint32_t tileSizeY;      // Size of each tile in the atlas
+    uint32_t padding;        // Padding between tiles in the atlas
+    uint32_t numTextures;    // Number of textures in the atlas
+    uint32_t numTilesX;      // Number of tiles in the X direction
+    uint32_t numTilesY;      // Number of tiles in the Y direction
+    uint32_t width;          // Width of the atlas texture
+    uint32_t height;         // Height of the atlas texture
+    uint32_t paddingType;    // Type of padding used in the atlas (see TextureAtlasPaddingType)
+    uint32_t gpuPadding[3];  // Padding to align the structure to 16 bytes
 };
 
 class Texture {

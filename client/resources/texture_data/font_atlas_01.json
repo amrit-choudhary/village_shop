@@ -6,5 +6,6 @@
     "numTilesX": 16,
     "numTilesY": 16,
     "width": 160,
-    "height": 160
+    "height": 160,
+    "paddingType": 0
 }
