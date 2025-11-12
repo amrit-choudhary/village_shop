@@ -12,22 +12,8 @@
 #include "src/third_party/json/cJSON.h"
 
 bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlasProperties& outAtlasProps) {
-    std::string fileName = ME::GetResourcesPath() + filePath;
-
-    std::ifstream file(fileName);
-    std::stringstream buffer;
-
-    if (file.is_open()) {
-        buffer << file.rdbuf();
-        const std::string fileContent = buffer.str();
-
-        // Parse the JSON content.
-        cJSON* json = cJSON_Parse(fileContent.c_str());
-        if (!json) {
-            std::cout << "Failed to parse JSON: " + std::string(cJSON_GetErrorPtr()) << std::endl;
-            return false;
-        }
-
+    cJSON* json = LoadJSONFromFile(filePath);
+    if (json != nullptr) {
         // Extract properties from the JSON object. This is case insensitive.
         outAtlasProps.tileSizeX = cJSON_GetObjectItem(json, "tileSizeX")->valueint;
         outAtlasProps.tileSizeY = cJSON_GetObjectItem(json, "tileSizeY")->valueint;
@@ -39,13 +25,31 @@ bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlas
         outAtlasProps.height = cJSON_GetObjectItem(json, "height")->valueint;
         outAtlasProps.paddingType = cJSON_GetObjectItem(json, "paddingType")->valueint;
 
-        // Clean up and return the properties.
         cJSON_Delete(json);
         return true;
+    }
+    return false;
+}
+
+cJSON* ME::JsonUtils::LoadJSONFromFile(const char* filePath) {
+    std::string fileName = ME::GetResourcesPath() + filePath;
+
+    std::ifstream file(fileName);
+    std::stringstream buffer;
+
+    if (file.is_open()) {
+        buffer << file.rdbuf();
+        const std::string fileContent = buffer.str();
+
+        cJSON* json = cJSON_Parse(fileContent.c_str());
+        if (!json) {
+            std::cout << "Failed to parse JSON: " + std::string(cJSON_GetErrorPtr()) << std::endl;
+            return nullptr;
+        }
+        return json;
     } else {
         std::cout << "Unable to open file" << std::endl;
-        return false;
+        return nullptr;
     }
-
-    return false;
+    return nullptr;
 }
