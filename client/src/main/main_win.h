@@ -11,6 +11,7 @@
 
 #include "../game/game.h"
 #include "../game/game_breakout.h"
+#include "../game/game_dice_simple.h"
 #include "../game/game_falling_sand.h"
 #include "../game/game_game_of_life.h"
 #include "../game/game_rpg.h"
@@ -52,7 +53,8 @@ class GameMain {
     // ME::GameBreakout game;
     // ME::GameOfLife game;
     // ME::GameFallingSand game;
-    ME::GameRPG game;
+    // ME::GameRPG game;
+    ME::GameDiceSimple game;
     ME::PhysicsSystem physicsSystem;
     ME::RendererDX renderer;
 
