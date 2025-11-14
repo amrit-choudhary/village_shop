@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 
+#include "../anim/sprite_anim_clip.h"
 #include "../rendering/shared/texture.h"
 #include "src/third_party/json/cJSON.h"
 
@@ -24,6 +25,31 @@ bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlas
         outAtlasProps.width = cJSON_GetObjectItem(json, "width")->valueint;
         outAtlasProps.height = cJSON_GetObjectItem(json, "height")->valueint;
         outAtlasProps.paddingType = cJSON_GetObjectItem(json, "paddingType")->valueint;
+
+        cJSON_Delete(json);
+        return true;
+    }
+    return false;
+}
+
+bool ME::JsonUtils::LoadSpriteAnimClipFromJSON(const char* filePath, ME::SpriteAnimClip** outSpriteAnimClip) {
+    *outSpriteAnimClip = nullptr;
+
+    cJSON* json = LoadJSONFromFile(filePath);
+    if (json != nullptr) {
+        cJSON* bLoopingItem = cJSON_GetObjectItem(json, "bLooping");
+        bool bLooping = (bLoopingItem != nullptr) && cJSON_IsTrue(bLoopingItem);
+        uint8_t textureAtlasIndex = static_cast<uint8_t>(cJSON_GetObjectItem(json, "textureAtlasIndex")->valueint);
+        uint8_t spriteCount = static_cast<uint8_t>(cJSON_GetObjectItem(json, "spriteCount")->valueint);
+        uint16_t* spriteIndices = new uint16_t[spriteCount]{};
+        cJSON* arr = cJSON_GetObjectItem(json, "spriteIndices");
+        for (uint8_t i = 0; i < spriteCount; i++) {
+            cJSON* item = cJSON_GetArrayItem(arr, i);
+            spriteIndices[i] = static_cast<uint16_t>(item->valueint);
+        }
+
+        ME::SpriteAnimClip* clip = new SpriteAnimClip(bLooping, textureAtlasIndex, spriteCount, spriteIndices);
+        *outSpriteAnimClip = clip;
 
         cJSON_Delete(json);
         return true;

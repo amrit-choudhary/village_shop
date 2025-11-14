@@ -2,6 +2,8 @@
 
 #include <cstddef>
 
+#include "../anim/sprite_anim_clip.h"
+#include "../anim/sprite_animator.h"
 #include "../utils/json_utils.h"
 #include "src/misc/game_constants.h"
 #include "src/random/random_engine.h"
@@ -92,6 +94,13 @@ void ME::SceneDiceSimple::BuildInstancedSpriteTransforms() {
 }
 void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+
+    ME::SpriteAnimClip* clip0 = nullptr;
+    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(2);
+    animator0->AddClip(clip0);
+
+    instancedSpriteRenderers[0]->animator = animator0;
 
     spriteInstanceData[0] = new ME::SpriteRendererInstanceData();
     spriteInstanceData[0]->modelMatrixData = instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();

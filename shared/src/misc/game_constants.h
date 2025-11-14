@@ -34,5 +34,9 @@ constexpr uint32_t MaxDescriptorsOnDescriptorHeap = 256;
 constexpr uint32_t MaxStaticColliderCount = 100'000;
 constexpr uint32_t MaxDynamicColliderCount = 32;
 
+// Animation constants
+constexpr uint8_t AnimGameFrameRate = 60;
+constexpr uint8_t MaxSpriteAnimClipsOnAnimator = 8;
+
 }  // namespace Constants
 }  // namespace ME

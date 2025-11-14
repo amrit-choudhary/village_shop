@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "../../anim/sprite_animator.h"
 #include "color.h"
 #include "src/math/transform.h"
 #include "src/math/vec16.h"
@@ -43,6 +44,8 @@ class SpriteRenderer {
     const uint16_t atlasIndex = 0;
     const uint8_t materialId = 0;
     const ME::Color color;
+
+    ME::SpriteAnimator* animator = nullptr;
 };
 
 }  // namespace ME

@@ -12,6 +12,7 @@ namespace ME {
 
 // Forward Declarations
 class TextureAtlasProperties;
+class SpriteAnimClip;
 
 class JsonUtils {
    public:
@@ -23,6 +24,12 @@ class JsonUtils {
      * Returns True if the properties were loaded successfully, false otherwise.
      */
     static bool LoadTextureAtlasProps(const char* filePath, ME::TextureAtlasProperties& outAtlasProps);
+
+    /**
+     * Load sprite animation clips from a JSON file.
+     * Returns True if the clips was loaded successfully, false otherwise.
+     */
+    static bool LoadSpriteAnimClipFromJSON(const char* filePath, ME::SpriteAnimClip** outSpriteAnimClip);
 
    private:
     /**

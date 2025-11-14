@@ -16,7 +16,7 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
 
     whiteDiceAnimCounter = 0;
     blackDiceAnimCounter = 0;
-    diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
+    // diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
     diceScene->spriteInstanceData[1]->atlasIndex = blackDiceStartAtlasIndex + blackDiceAnimCounter;
 
     ME::Log("Simple Dice Game Start!");
@@ -25,14 +25,18 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::GameDiceSimple::Update(double deltaTime) {
     Game::Update(deltaTime);
 
+    diceScene->instancedSpriteRenderers[0]->animator->Update(deltaTime);
+    diceScene->spriteInstanceData[0]->atlasIndex =
+        diceScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
+
     frameCounter++;
     if (frameCounter > updateIntervalFrames) {
         frameCounter = 0;
         // Update game logic here.
         if (bRolling) {
-            whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
+            // whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
             blackDiceAnimCounter = rndAnimBlack.NextRange(0, 5);
-            diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
+            // diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
             diceScene->spriteInstanceData[1]->atlasIndex = blackDiceStartAtlasIndex + blackDiceAnimCounter;
         }
     }
