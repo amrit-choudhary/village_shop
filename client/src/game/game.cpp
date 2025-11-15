@@ -42,6 +42,10 @@ void ME::Game::SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem) {
     physicsSystem = ptrPhysicsSystem;
 }
 
+void ME::Game::SetAnimationSystemRef(ME::AnimationSystem* ptrAnimationSystem) {
+    animationSystem = ptrAnimationSystem;
+}
+
 void ME::Game::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
     delete result;
 }

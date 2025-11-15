@@ -3,7 +3,13 @@
 #include <src/logging.h>
 #include <src/misc/game_constants.h>
 
-ME::SpriteAnimator::SpriteAnimator(uint8_t frameRate) {
+#include "../rendering/shared/sprite_renderer.h"
+
+ME::SpriteAnimator::SpriteAnimator(ME::SpriteRenderer* spriteRenderer, uint8_t frameRate)
+    : spriteRenderer(spriteRenderer) {
+    if (spriteRenderer == nullptr) {
+        ME::LogError("SpriteAnimator created without a SpriteRenderer!");
+    }
     clips = new ME::SpriteAnimClip* [ME::Constants::MaxSpriteAnimClipsOnAnimator] {};
     SetFrameRate(frameRate);
 }
@@ -31,12 +37,17 @@ void ME::SpriteAnimator::ChangeClip(uint8_t clipIndex) {
         currentClipIndex = clipIndex;
         currentFrame = 0;
         accumulatedFrames = 0;
+
+        UpdateSpriteRenderer();
     } else {
         ME::LogError("Sprite animation clip index out of bounds!");
     }
 }
 
-void ME::SpriteAnimator::Update(double deltaTime) {
+void ME::SpriteAnimator::AnimationUpdate() {
+    if (!bRunning) {
+        return;
+    }
     if (clipCount == 0) {
         return;
     }
@@ -52,6 +63,8 @@ void ME::SpriteAnimator::Update(double deltaTime) {
                 currentFrame = currentClip->GetSpriteCount() - 1;
             }
         }
+
+        UpdateSpriteRenderer();
     }
 }
 
@@ -74,4 +87,23 @@ uint16_t ME::SpriteAnimator::GetCurrentAtlasIndex() const {
 
 uint8_t ME::SpriteAnimator::GetCurrentClipIndex() const {
     return currentClipIndex;
+}
+
+bool ME::SpriteAnimator::IsAnimationRunning() const {
+    return bRunning;
+}
+
+void ME::SpriteAnimator::StartAnimation() {
+    bRunning = true;
+}
+
+void ME::SpriteAnimator::StopAnimation() {
+    bRunning = false;
+}
+
+void ME::SpriteAnimator::UpdateSpriteRenderer() {
+    if (clipCount == 0) {
+        return;
+    }
+    spriteRenderer->atlasIndex = clips[currentClipIndex]->GetSpriteAtlasIndex(currentFrame);
 }

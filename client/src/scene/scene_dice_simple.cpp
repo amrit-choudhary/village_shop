@@ -100,7 +100,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
 
     ME::SpriteAnimClip* clip0 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(8);
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
     animator0->AddClip(clip0);
 
     instancedSpriteRenderers[0]->animator = animator0;
@@ -114,7 +114,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
 
     ME::SpriteAnimClip* clip1 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
-    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(8);
+    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(instancedSpriteRenderers[1], 8);
     animator1->AddClip(clip1);
 
     instancedSpriteRenderers[1]->animator = animator1;

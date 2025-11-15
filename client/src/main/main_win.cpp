@@ -11,8 +11,9 @@ ME::GameMain::~GameMain() {
     connection.End();
     inputManager.End();
     timeManager.End();
-    renderer.End();
     physicsSystem.End();
+    animationSystem.End();
+    renderer.End();
 }
 
 void ME::GameMain::Init(HWND hWnd) {
@@ -27,10 +28,12 @@ void ME::GameMain::Init(HWND hWnd) {
     winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
     connection.Init();
     physicsSystem.Init();
+    animationSystem.Init();
 
     game.SetInputManagerRef(&inputManager);
     game.SetConnectionRef(&connection);
     game.SetPhysicsSystemRef(&physicsSystem);
+    game.SetAnimationSystemRef(&animationSystem);
     game.Init(&timeManager);
 
     renderer.InitDX(hWnd);
@@ -65,6 +68,8 @@ void ME::GameMain::Update() {
         connection.Update(deltaTime);
 
         physicsSystem.Update(deltaTime);
+
+        animationSystem.Update(deltaTime);
     }
 
     // Perform Rendering
@@ -85,8 +90,9 @@ void ME::GameMain::ShutDownGameSystems() {
     connection.End();
     inputManager.End();
     timeManager.End();
-    renderer.End();
     physicsSystem.End();
+    animationSystem.End();
+    renderer.End();
 }
 
 #endif  // VG_WIN

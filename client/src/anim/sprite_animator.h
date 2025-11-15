@@ -6,9 +6,12 @@
 
 namespace ME {
 
+// Forward declarations.
+class SpriteRenderer;
+
 class SpriteAnimator {
    public:
-    SpriteAnimator(uint8_t frameRate = 24);
+    SpriteAnimator(ME::SpriteRenderer* spriteRenderer, uint8_t frameRate = 24);
     virtual ~SpriteAnimator();
 
     /**
@@ -25,8 +28,8 @@ class SpriteAnimator {
      */
     void ChangeClip(uint8_t clipIndex);
 
-    // Game frame update.
-    void Update(double deltaTime);
+    // Anim system update message. Advance the current frame based on frame rate.
+    void AnimationUpdate();
 
     /**
      * Set the frame rate (frames per second) for the animator.
@@ -44,7 +47,24 @@ class SpriteAnimator {
      */
     uint8_t GetCurrentClipIndex() const;
 
+    /**
+     * Check if the animation is currently running.
+     */
+    bool IsAnimationRunning() const;
+
+    /**
+     * Will pause the animation update.
+     */
+    void StartAnimation();
+
+    /**
+     * Will resume the animation update.
+     */
+    void StopAnimation();
+
    private:
+    ME::SpriteRenderer* spriteRenderer = nullptr;  // Associated sprite renderer.
+    bool bRunning = true;
     uint8_t currentFrame = 0;
     uint8_t clipCount = 0;
     uint8_t currentClipIndex = 0;
@@ -52,8 +72,10 @@ class SpriteAnimator {
     uint8_t accumulatedFrames = 0;
     uint8_t skipFrameCount = 0;
     uint8_t frameRate = DEFAULT_FRAME_RATE;
-
     constexpr static uint8_t DEFAULT_FRAME_RATE = 24;
+
+    // Apply the latest frame's atlas index to the sprite renderer after animation update.
+    void UpdateSpriteRenderer();
 };
 
 }  // namespace ME

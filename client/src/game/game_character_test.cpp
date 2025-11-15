@@ -13,6 +13,8 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);
     physicsSystem->SetScene(physicsScene);
+    animationSystem->SetScene(scene);
+    animationSystem->Init();
 
     // Init first frame of character animation.
     charScene->spriteInstanceData[0]->atlasIndex =
@@ -67,9 +69,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     }
 
     if (bAnyKeyDown) {
-        charScene->instancedSpriteRenderers[0]->animator->Update(deltaTime);
-        charScene->spriteInstanceData[0]->atlasIndex =
-            charScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
+        charScene->spriteInstanceData[0]->atlasIndex = charScene->instancedSpriteRenderers[0]->atlasIndex;
     }
 
     ME::Vec3 currentPosition = charScene->instancedSpriteTransforms[0]->GetPosition() + movementVector;

@@ -9,6 +9,7 @@
 
 #include <array>
 
+#include "../anim/animation_system.h"
 #include "../input/input_manager.h"
 #include "../net/connection.h"
 #include "../scene/scene.h"
@@ -41,6 +42,7 @@ class Game {
     void SetInputManagerRef(ME::Input::InputManager *ptrInput);
     void SetConnectionRef(ME::Connection *ptrConnection);
     void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
+    void SetAnimationSystemRef(ME::AnimationSystem *ptrAnimationSystem);
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
@@ -54,5 +56,6 @@ class Game {
     ME::Input::InputManager *inputManager = nullptr;
     ME::Scene *scene = nullptr;
     ME::PhysicsSystem *physicsSystem = nullptr;
+    ME::AnimationSystem *animationSystem = nullptr;
 };
 }  // namespace ME

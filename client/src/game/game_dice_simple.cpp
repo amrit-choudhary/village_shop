@@ -20,16 +20,6 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::GameDiceSimple::Update(double deltaTime) {
     Game::Update(deltaTime);
 
-    if (bRolling) {
-        diceScene->instancedSpriteRenderers[0]->animator->Update(deltaTime);
-        diceScene->spriteInstanceData[0]->atlasIndex =
-            diceScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
-
-        diceScene->instancedSpriteRenderers[1]->animator->Update(deltaTime);
-        diceScene->spriteInstanceData[1]->atlasIndex =
-            diceScene->instancedSpriteRenderers[1]->animator->GetCurrentAtlasIndex();
-    }
-
     frameCounter++;
     if (frameCounter > updateIntervalFrames) {
         frameCounter = 0;

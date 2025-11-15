@@ -98,7 +98,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
     instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
 
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(8);
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
     instancedSpriteRenderers[0]->animator = animator0;
 
     ME::SpriteAnimClip* clip0 = nullptr;
