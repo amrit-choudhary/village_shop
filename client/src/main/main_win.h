@@ -11,6 +11,7 @@
 
 #include "../game/game.h"
 #include "../game/game_breakout.h"
+#include "../game/game_character_test.h"
 #include "../game/game_dice_simple.h"
 #include "../game/game_falling_sand.h"
 #include "../game/game_game_of_life.h"
@@ -54,7 +55,8 @@ class GameMain {
     // ME::GameOfLife game;
     // ME::GameFallingSand game;
     // ME::GameRPG game;
-    ME::GameDiceSimple game;
+    // ME::GameDiceSimple game;
+    ME::GameCharacterTest game;
     ME::PhysicsSystem physicsSystem;
     ME::RendererDX renderer;
 

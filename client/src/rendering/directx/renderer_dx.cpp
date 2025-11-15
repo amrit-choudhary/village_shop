@@ -244,8 +244,8 @@ void ME::RendererDX::Draw() {
     D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
     commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-    uint32_t textureIndex = 2;
-    uint32_t atlasIndex = 2;
+    uint32_t textureIndex = 1;
+    uint32_t atlasIndex = 1;
     uint32_t atlasHeapIndex = scene->textureAtlasCBHeapIndices[atlasIndex];
     ME::TextureAtlasProperties atlasProps = scene->textureAtlasProperties[atlasIndex];
     scene->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
@@ -277,8 +277,8 @@ void ME::RendererDX::Draw() {
 
     // Start Text Drawing.
 
-    textureIndex = 1;
-    atlasIndex = 1;
+    textureIndex = 0;
+    atlasIndex = 0;
     atlasHeapIndex = scene->textureAtlasCBHeapIndices[atlasIndex];
 
     D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPassText = descHeapManager->GetGPUDescriptorHandleForIndex(0);

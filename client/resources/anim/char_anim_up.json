@@ -1,0 +1,11 @@
+{
+    "bLooping": true,
+    "textureAtlasIndex": 0,
+    "spriteCount": 4,
+    "spriteIndices": [
+        72,
+        80,
+        88,
+        80
+    ]
+}
