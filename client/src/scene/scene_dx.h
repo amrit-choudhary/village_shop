@@ -57,25 +57,31 @@ class SceneDX {
     ME::Transform** textTransforms;
     ME::TextRenderer** textRenderers;
 
-    uint16_t transformCount;
-    uint16_t meshRendererCount;
-    uint16_t spriteTransformCount;
-    uint16_t spriteRendererCount;
-    uint32_t instancedSpriteTransformCount;
-    uint32_t instancedSpriteRendererCount;
-    uint32_t textTransformsCount;
-    uint32_t textRendererCount;
-    uint32_t textInstanceDataCount;
-    uint32_t perPassCBCount;
+    uint16_t transformCount = 0;
+    uint16_t meshRendererCount = 0;
+    uint16_t spriteTransformCount = 0;
+    uint16_t spriteRendererCount = 0;
+    uint32_t instancedSpriteTransformCount = 0;
+    uint32_t instancedSpriteRendererCount = 0;
+    uint32_t textTransformsCount = 0;
+    uint32_t textRendererCount = 0;
+    uint32_t textInstanceDataCount = 0;
+    uint32_t perPassCBCount = 0;
+    uint32_t textureAtlasCBCount = 0;
 
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
+    uint32_t spriteInstanceBufferHeapIndex = 0;
 
     ME::TextRendererInstanceData** textInstanceData;
     ME::UploadBufferDX* textInstanceBuffer = nullptr;
-    D3D12_GPU_DESCRIPTOR_HANDLE textInstanceBufferHandle;
+    uint32_t textInstanceBufferHeapIndex = 0;
 
     ME::UploadBufferDX** perPassCBs = nullptr;
+    uint32_t* perPassCBHeapIndices = nullptr;  // Map of heap indices for perPassCBs for gpu binding later.
+
+    ME::UploadBufferDX** textureAtlasCBs = nullptr;
+    uint32_t* textureAtlasCBHeapIndices = nullptr;  // Map of heap indices for texture atlas CBs for gpu binding later.
 
    private:
     ID3D12Device* device = nullptr;

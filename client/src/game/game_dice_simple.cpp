@@ -14,30 +14,27 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsSystem->SetGame(this);
     physicsSystem->SetScene(physicsScene);
 
-    whiteDiceAnimCounter = 0;
-    blackDiceAnimCounter = 0;
-    // diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
-    diceScene->spriteInstanceData[1]->atlasIndex = blackDiceStartAtlasIndex + blackDiceAnimCounter;
-
     ME::Log("Simple Dice Game Start!");
 }
 
 void ME::GameDiceSimple::Update(double deltaTime) {
     Game::Update(deltaTime);
 
-    diceScene->instancedSpriteRenderers[0]->animator->Update(deltaTime);
-    diceScene->spriteInstanceData[0]->atlasIndex =
-        diceScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
+    if (bRolling) {
+        diceScene->instancedSpriteRenderers[0]->animator->Update(deltaTime);
+        diceScene->spriteInstanceData[0]->atlasIndex =
+            diceScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
+
+        diceScene->instancedSpriteRenderers[1]->animator->Update(deltaTime);
+        diceScene->spriteInstanceData[1]->atlasIndex =
+            diceScene->instancedSpriteRenderers[1]->animator->GetCurrentAtlasIndex();
+    }
 
     frameCounter++;
     if (frameCounter > updateIntervalFrames) {
         frameCounter = 0;
         // Update game logic here.
         if (bRolling) {
-            // whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
-            blackDiceAnimCounter = rndAnimBlack.NextRange(0, 5);
-            // diceScene->spriteInstanceData[0]->atlasIndex = whiteDiceStartAtlasIndex + whiteDiceAnimCounter;
-            diceScene->spriteInstanceData[1]->atlasIndex = blackDiceStartAtlasIndex + blackDiceAnimCounter;
         }
     }
 
@@ -52,6 +49,9 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             diceScene->textRenderers[2]->SetText(resultWaiting);
         } else {
             // Decide result
+            uint8_t whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
+            uint8_t blackDiceAnimCounter = rndAnimBlack.NextRange(0, 5);
+
             diceScene->textRenderers[1]->SetText(roll);
             if (whiteDiceAnimCounter > blackDiceAnimCounter) {
                 diceScene->textRenderers[2]->SetText(resultWin);

@@ -55,7 +55,9 @@ void ME::SceneDiceSimple::CreateResources() {
 
     spriteTexturePaths[0] = "textures/sprites/monochrome.png";
     spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
-    spriteTextureCount = 2;
+    spriteTexturePaths[2] = "textures/sprites/dice_white.png";
+    spriteTexturePaths[3] = "textures/sprites/dice_pink.png";
+    spriteTextureCount = 4;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
@@ -63,7 +65,8 @@ void ME::SceneDiceSimple::CreateResources() {
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_02.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[2]);
+    textureAtlasPropertiesCount = 3;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -97,7 +100,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
 
     ME::SpriteAnimClip* clip0 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(2);
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(8);
     animator0->AddClip(clip0);
 
     instancedSpriteRenderers[0]->animator = animator0;
@@ -108,6 +111,13 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     spriteInstanceData[0]->color = ME::Color::White();
 
     instancedSpriteRenderers[1] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+
+    ME::SpriteAnimClip* clip1 = nullptr;
+    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
+    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(8);
+    animator1->AddClip(clip1);
+
+    instancedSpriteRenderers[1]->animator = animator1;
 
     spriteInstanceData[1] = new ME::SpriteRendererInstanceData();
     spriteInstanceData[1]->modelMatrixData = instancedSpriteTransforms[1]->GetModelMatrix().GetDataForShader();

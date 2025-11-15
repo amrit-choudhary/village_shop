@@ -36,11 +36,6 @@ class GameDiceSimple : public Game {
     uint32_t frameCounter2 = 0;
     uint32_t updateIntervalFrames2 = 160;
 
-    uint32_t whiteDiceStartAtlasIndex = 777;  // Starting index for white dice textures in the atlas.
-    uint32_t blackDiceStartAtlasIndex = 728;  // Alternate starting index for black dice textures in the atlas.
-    uint8_t whiteDiceAnimCounter = 0;
-    uint8_t blackDiceAnimCounter = 0;
-
     ME::Random rndWhite{"White", true};
     ME::Random rndBlack{"Black", true};
     ME::Random rndAnimWhite{"WhiteAnim", true};
