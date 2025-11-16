@@ -74,8 +74,14 @@ class RendererDX : public PlatformRenderer {
     D3D12_VIEWPORT screenViewport;
     D3D12_RECT scissorRect;
 
-    ID3D12PipelineState* pso = nullptr;
-    ID3D12RootSignature* rootSignature = nullptr;
+    // PSO for 2D rendering with texture atlases. No instancing.
+    ID3D12PipelineState* pso2DAtl = nullptr;
+    // Root signature for 2D rendering with texture atlases. No instancing.
+    ID3D12RootSignature* rootSig2DAtl = nullptr;
+    // PSO for 2D rendering with instancing and texture atlases.
+    ID3D12PipelineState* pso2DInsAtl = nullptr;
+    // Root signature for 2D rendering with instancing and texture atlases.
+    ID3D12RootSignature* rootSig2DInsAtl = nullptr;
 
     uint32_t rtvDescriptorSize = 0;
     uint32_t dsvDescriptorSize = 0;

@@ -25,7 +25,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     const float speed = 20.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
-    ME::SpriteAnimator* animator = charScene->instancedSpriteRenderers[0]->animator;
+    ME::SpriteAnimator* animator = charScene->spriteRenderers[0]->animator;
     bool bAnyKeyDown = false;
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::W)) {
@@ -74,9 +74,9 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         animator->StopAnimation();
     }
 
-    ME::Vec3 currentPosition = charScene->instancedSpriteTransforms[0]->GetPosition() + movementVector;
-    charScene->instancedSpriteTransforms[0]->SetPosition(currentPosition);
-    charScene->instancedSpriteRenderers[0]->bDirty = true;
+    ME::Vec3 currentPosition = charScene->spriteTransforms[0]->GetPosition() + movementVector;
+    charScene->spriteTransforms[0]->SetPosition(currentPosition);
+    charScene->spriteRenderers[0]->bDirty = true;
 }
 
 void ME::GameCharacterTest::End() {

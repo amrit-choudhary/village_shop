@@ -420,7 +420,22 @@ void ME::Scene::Update() {
     UpdateTextRenderers();
 }
 
-void ME::Scene::UpdateSpriteRenderers() {}
+void ME::Scene::UpdateSpriteRenderers() {
+    // Updating transforms and atlas indices for dirty sprites.
+    // In separate loops to avoid cache misses.
+    for (uint32_t i = 0; i < spriteRendererCount; ++i) {
+        if (!spriteRenderers[i]->bDirty) {
+            continue;
+        }
+        // Updated any required data before rendering.
+    }
+
+    for (uint32_t i = 0; i < spriteRendererCount; ++i) {
+        if (spriteRenderers[i]->bDirty) {
+            spriteRenderers[i]->bDirty = false;
+        }
+    }
+}
 
 void ME::Scene::UpdateInstancedSpriteRenderers() {
     // Updating transforms and atlas indicesfor dirty instances.

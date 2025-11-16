@@ -40,7 +40,7 @@ void ME::RendererDX::SetScene(ME::Scene* gameScene) {
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso);
+    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
 
     // Create a new scene with the provided game scene.
     sceneDX = new ME::SceneDX(device.Get(), commandList.Get(), descHeapManager, gameScene);
@@ -185,13 +185,12 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 
     descHeapManager = new ME::DescHeapManagerDX(device.Get(), cbvSrvUavDescHeap.Get());
 
-    rootSignature = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
-    pso = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSignature);
+    rootSig2DInsAtl = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
+    pso2DInsAtl = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSig2DInsAtl);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso);
-
+    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
     CD3DX12_RESOURCE_BARRIER depthBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     commandList->ResourceBarrier(1, &depthBarrier);
@@ -213,10 +212,10 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 
 void ME::RendererDX::Draw() {
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso);
+    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
 
-    commandList->SetPipelineState(pso);
-    commandList->SetGraphicsRootSignature(rootSignature);
+    commandList->SetPipelineState(pso2DInsAtl);
+    commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
 
     ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -238,78 +237,132 @@ void ME::RendererDX::Draw() {
     D3D12_CPU_DESCRIPTOR_HANDLE depthStencilHandle = GetDepthStencilHandle();
     commandList->OMSetRenderTargets(1, &backBufferHandle, true, &depthStencilHandle);
 
+    ///////////////////////
     // Sprite Drawing.
+    if (sceneDX->spriteRendererCount != 0) {
+        CBPerPass perPassData{};
+        perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
+        perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
+        perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
+        perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
+        sceneDX->perPassCBs[0]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-    CBPerPass perPassData{};
-    perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
-    perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
-    perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
-    perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
-    sceneDX->perPassCBs[0]->CopyData(&perPassData);
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
-    commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
+        D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
+        D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+        commandList->IASetVertexBuffers(0, 1, &vbView);
+        commandList->IASetIndexBuffer(&ibView);
+        commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    uint32_t textureIndex = 1;
-    uint32_t atlasIndex = 1;
-    uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
-    ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasIndex];
-    sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
+        for (uint32_t i = 0; i < sceneDX->spriteRendererCount; ++i) {
+            uint32_t textureIndex = sceneDX->spriteRenderers[i]->textureId;
+            uint32_t atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
+            uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
+            ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasIndex];
+            sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
-    commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
+            D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+            commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
-        descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
+            D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
+                descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
+            commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
-    commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
-
-    for (uint32_t i = 0; i < sceneDX->instancedSpriteRendererCount; ++i) {
-        sceneDX->spriteInstanceBuffer->CopyData(i, sceneDX->spriteInstanceData[i]);
+            commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
+        }
     }
-    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData =
-        descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteInstanceBufferHeapIndex);
-    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
 
-    D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
-    D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
-    commandList->IASetVertexBuffers(0, 1, &vbView);
-    commandList->IASetIndexBuffer(&ibView);
-    commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    ///////////////////////////
+    // Instanced Sprite Drawing.
 
-    commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount, 0, 0, 0);
+    if (sceneDX->instancedSpriteRendererCount != 0) {
+        CBPerPass perPassData{};
+        perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
+        perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
+        perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
+        perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
+        sceneDX->perPassCBs[0]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
+        uint32_t textureIndex = 1;
+        uint32_t atlasIndex = 1;
+        uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
+        ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasIndex];
+        sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
+
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+        commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
+
+        D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
+            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
+
+        commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
+
+        for (uint32_t i = 0; i < sceneDX->instancedSpriteRendererCount; ++i) {
+            sceneDX->spriteInstanceBuffer->CopyData(i, sceneDX->spriteInstanceData[i]);
+        }
+        D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData =
+            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteInstanceBufferHeapIndex);
+        commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
+
+        D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
+        D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+        commandList->IASetVertexBuffers(0, 1, &vbView);
+        commandList->IASetIndexBuffer(&ibView);
+        commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount, 0, 0, 0);
+    }
     // End Sprite Drawing.
 
+    ///////////////////////////
     // Start Text Drawing.
+    if (sceneDX->textRendererCount != 0) {
+        uint32_t textureIndex = 0;
+        uint32_t atlasIndex = 0;
+        uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
 
-    textureIndex = 0;
-    atlasIndex = 0;
-    atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
+        CBPerPass perPassData{};
+        perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
+        perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
+        perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
+        perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
+        sceneDX->perPassCBs[0]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPassText = descHeapManager->GetGPUDescriptorHandleForIndex(0);
-    commandList->SetGraphicsRootDescriptorTable(0, cbvPerPassText);
+        ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasIndex];
+        sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasPropsText);
 
-    ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasIndex];
-    sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasPropsText);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlasText = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+        commandList->SetGraphicsRootDescriptorTable(1, cbvAtlasText);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlasText = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
-    commandList->SetGraphicsRootDescriptorTable(1, cbvAtlasText);
+        D3D12_GPU_DESCRIPTOR_HANDLE textureHandleText =
+            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
+        commandList->SetGraphicsRootDescriptorTable(2, textureHandleText);
 
-    D3D12_GPU_DESCRIPTOR_HANDLE textureHandleText =
-        descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
-    commandList->SetGraphicsRootDescriptorTable(2, textureHandleText);
+        for (uint32_t i = 0; i < sceneDX->textInstanceDataCount; ++i) {
+            sceneDX->textInstanceBuffer->CopyData(i, sceneDX->textInstanceData[i]);
+        }
 
-    for (uint32_t i = 0; i < sceneDX->textInstanceDataCount; ++i) {
-        sceneDX->textInstanceBuffer->CopyData(i, sceneDX->textInstanceData[i]);
+        D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataText =
+            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->textInstanceBufferHeapIndex);
+        commandList->SetGraphicsRootDescriptorTable(3, srvInstanceDataText);
+
+        D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
+        D3D12_INDEX_BUFFER_VIEW ibView = quad->GetIndexBufferView();
+        commandList->IASetVertexBuffers(0, 1, &vbView);
+        commandList->IASetIndexBuffer(&ibView);
+        commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->textInstanceDataCount, 0, 0, 0);
     }
-
-    D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataText =
-        descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->textInstanceBufferHeapIndex);
-    commandList->SetGraphicsRootDescriptorTable(3, srvInstanceDataText);
-
-    commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->textInstanceDataCount, 0, 0, 0);
-
     // End Text Drawing.
+
+    /////////////////////
+    // Drawing End
 
     CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

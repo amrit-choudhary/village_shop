@@ -82,24 +82,20 @@ void ME::SceneCharacterTest::BuildTransforms() {}
 
 void ME::SceneCharacterTest::BuildMeshRenderers() {}
 
-void ME::SceneCharacterTest::BuildSpriteTransforms() {}
-
-void ME::SceneCharacterTest::BuildSpriteRenderers() {}
-
-void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
+void ME::SceneCharacterTest::BuildSpriteTransforms() {
     // Character Sprite
-    instancedSpriteTransforms[0] = new ME::Transform();
-    instancedSpriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
-    instancedSpriteTransforms[0]->SetScale(charWidth, charHeight);
+    spriteTransforms[0] = new ME::Transform();
+    spriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
+    spriteTransforms[0]->SetScale(charWidth, charHeight);
 
-    instancedSpriteTransformCount = 1;
+    spriteTransformCount = 1;
 }
 
-void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
-    instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+void ME::SceneCharacterTest::BuildSpriteRenderers() {
+    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
 
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
-    instancedSpriteRenderers[0]->animator = animator0;
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(spriteRenderers[0], 8);
+    spriteRenderers[0]->animator = animator0;
 
     ME::SpriteAnimClip* clip0 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
@@ -118,12 +114,47 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
     animator0->AddClip(clip2);
     animator0->AddClip(clip3);
 
-    spriteInstanceData[0] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[0]->modelMatrixData = instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();
-    spriteInstanceData[0]->atlasIndex = 0;
-    spriteInstanceData[0]->color = ME::Color::White();
+    spriteRendererCount = 1;
+}
 
-    instancedSpriteRendererCount = 1;
+void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
+    // // Character Sprite
+    // instancedSpriteTransforms[0] = new ME::Transform();
+    // instancedSpriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
+    // instancedSpriteTransforms[0]->SetScale(charWidth, charHeight);
+
+    instancedSpriteTransformCount = 0;
+}
+
+void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
+    // instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+
+    // ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
+    // instancedSpriteRenderers[0]->animator = animator0;
+
+    // ME::SpriteAnimClip* clip0 = nullptr;
+    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
+
+    // ME::SpriteAnimClip* clip1 = nullptr;
+    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_right.json", &clip1);
+
+    // ME::SpriteAnimClip* clip2 = nullptr;
+    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_down.json", &clip2);
+
+    // ME::SpriteAnimClip* clip3 = nullptr;
+    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_left.json", &clip3);
+
+    // animator0->AddClip(clip0);
+    // animator0->AddClip(clip1);
+    // animator0->AddClip(clip2);
+    // animator0->AddClip(clip3);
+
+    // spriteInstanceData[0] = new ME::SpriteRendererInstanceData();
+    // spriteInstanceData[0]->modelMatrixData = instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();
+    // spriteInstanceData[0]->atlasIndex = 0;
+    // spriteInstanceData[0]->color = ME::Color::White();
+
+    instancedSpriteRendererCount = 0;
 }
 
 void ME::SceneCharacterTest::BuildTextRenderers() {
@@ -149,5 +180,7 @@ void ME::SceneCharacterTest::BuildTextRenderers() {
         textInstanceData[i]->color = textRend1->color;
         textInstanceData[i]->atlasIndex = textRend1->text[i];
     }
+
     textInstanceDataCount = textRend1->GetCount();
+    textRendererCount = 1;
 }

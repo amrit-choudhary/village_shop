@@ -179,6 +179,10 @@ void ME::SceneDX::MakeConstantBuffers() {
 }
 
 void ME::SceneDX::MakeSpriteInstanceBuffer() {
+    if (instancedSpriteRendererCount == 0) {
+        return;
+    }
+
     spriteInstanceBuffer =
         new ME::UploadBufferDX(device, false, instancedSpriteRendererCount, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
@@ -186,6 +190,10 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
 }
 
 void ME::SceneDX::MakeTextInstanceBuffer() {
+    if (textInstanceDataCount == 0) {
+        return;
+    }
+
     textInstanceBuffer =
         new ME::UploadBufferDX(device, false, textInstanceDataCount, sizeof(ME::TextRendererInstanceData));
     textInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
