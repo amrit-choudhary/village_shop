@@ -39,6 +39,9 @@ class SpriteRenderer {
         : quadId(quadId), materialId(materialId), textureId(textureId), atlasIndex(atlasIndex), color(color) {}
     ~SpriteRenderer();
 
+    // Mark the sprite renderer as dirty to update rendering data before frame is drawn.
+    bool bDirty = true;
+
     const uint8_t quadId = 0;
     const uint8_t textureId = 0;
     uint16_t atlasIndex = 0;

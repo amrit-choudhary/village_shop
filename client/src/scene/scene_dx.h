@@ -31,8 +31,11 @@ class SceneDX {
     // Cleanup upload buffers and other temp resources right after initialization.
     void PostInitCleanup();
 
-    // Update scene. Mostly used to update the transforms and instance count. Actual scene change is done in the
-    // ME::Scene class.
+    /**
+     * Updates the rendering related data in the scene, if any render element is marked as dirty.
+     * This is called from Renderer.Update(), right before Renderer.Draw().
+     * First Scene::Update() is called, then this DX specific update is called.
+     */
     void Update();
 
     void End();

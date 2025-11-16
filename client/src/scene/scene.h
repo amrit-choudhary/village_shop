@@ -25,6 +25,16 @@ class Scene {
     Scene();
     virtual ~Scene();
 
+    /**
+     * Updates the rendering related data in the scene, if any render element is marked as dirty.
+     * This is called from Renderer.Update(), right before Renderer.Draw().
+     * Like if sprite renderer's atlas index changed due to animation.
+     * This is called every frame before rendering.
+     * Everything that is not DX or MTL dependent is updated here, after which DX and MTL scene is updated from
+     * Renderer.Update().
+     */
+    void Update();
+
    public:
     ME::Light* ambientLight;
     ME::Light* directionalLight;
@@ -88,8 +98,24 @@ class Scene {
     virtual void BuildInstancedSpriteRenderers();
     virtual void BuildTextRenderers();
 
-    // Can update fixed width texts.
-    virtual void UpdateTextInstanceData();
+   private:
+    /**
+     * Updates sprite renderers that are marked as dirty.
+     * After update, the dirty flag is cleared.
+     */
+    void UpdateSpriteRenderers();
+
+    /**
+     * Updates instanced sprite renderers that are marked as dirty.
+     * After update, the dirty flag is cleared.
+     */
+    void UpdateInstancedSpriteRenderers();
+
+    /**
+     * Updates text renderers that are marked as dirty.
+     * After update, the dirty flag is cleared.
+     */
+    void UpdateTextRenderers();
 };
 
 }  // namespace ME

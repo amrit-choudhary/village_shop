@@ -16,10 +16,6 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->SetScene(scene);
     animationSystem->Init();
 
-    // Init first frame of character animation.
-    charScene->spriteInstanceData[0]->atlasIndex =
-        charScene->instancedSpriteRenderers[0]->animator->GetCurrentAtlasIndex();
-
     ME::Log("Character Animation Test Game Start!");
 }
 
@@ -33,6 +29,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     bool bAnyKeyDown = false;
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::W)) {
+        movementVector.x = 0;
         movementVector.y += speed;
 
         if (animator->GetCurrentClipIndex() != 0) {
@@ -42,6 +39,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     }
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::S)) {
+        movementVector.x = 0;
         movementVector.y -= speed;
 
         if (animator->GetCurrentClipIndex() != 2) {
@@ -52,6 +50,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::A)) {
         movementVector.x -= speed;
+        movementVector.y = 0;
 
         if (animator->GetCurrentClipIndex() != 3) {
             animator->ChangeClip(3);  // Left animation
@@ -61,6 +60,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::D)) {
         movementVector.x += speed;
+        movementVector.y = 0;
 
         if (animator->GetCurrentClipIndex() != 1) {
             animator->ChangeClip(1);  // Right animation
@@ -69,13 +69,14 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     }
 
     if (bAnyKeyDown) {
-        charScene->spriteInstanceData[0]->atlasIndex = charScene->instancedSpriteRenderers[0]->atlasIndex;
+        animator->StartAnimation();
+    } else {
+        animator->StopAnimation();
     }
 
     ME::Vec3 currentPosition = charScene->instancedSpriteTransforms[0]->GetPosition() + movementVector;
     charScene->instancedSpriteTransforms[0]->SetPosition(currentPosition);
-    charScene->spriteInstanceData[0]->modelMatrixData =
-        charScene->instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();
+    charScene->instancedSpriteRenderers[0]->bDirty = true;
 }
 
 void ME::GameCharacterTest::End() {

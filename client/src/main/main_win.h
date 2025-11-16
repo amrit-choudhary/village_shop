@@ -56,8 +56,8 @@ class GameMain {
     // ME::GameOfLife game;
     // ME::GameFallingSand game;
     // ME::GameRPG game;
-    // ME::GameDiceSimple game;
-    ME::GameCharacterTest game;
+    ME::GameDiceSimple game;
+    // ME::GameCharacterTest game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::RendererDX renderer;

@@ -53,20 +53,18 @@ void ME::SceneDiceSimple::CreateResources() {
 
     textureCount = 0;
 
-    spriteTexturePaths[0] = "textures/sprites/monochrome.png";
-    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
-    spriteTexturePaths[2] = "textures/sprites/dice_white.png";
-    spriteTexturePaths[3] = "textures/sprites/dice_pink.png";
-    spriteTextureCount = 4;
+    spriteTexturePaths[0] = "textures/font/ascii_ibm_transparent.png";
+    spriteTexturePaths[1] = "textures/sprites/dice_white.png";
+    spriteTexturePaths[2] = "textures/sprites/dice_pink.png";
+    spriteTextureCount = 3;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_02.json", textureAtlasProperties[0]);
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[2]);
-    textureAtlasPropertiesCount = 3;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[0]);
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[1]);
+    textureAtlasPropertiesCount = 2;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -96,14 +94,14 @@ void ME::SceneDiceSimple::BuildInstancedSpriteTransforms() {
     instancedSpriteTransformCount = 2;
 }
 void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
-    instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
+    instancedSpriteRenderers[0]->animator = animator0;
 
     ME::SpriteAnimClip* clip0 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
     animator0->AddClip(clip0);
-
-    instancedSpriteRenderers[0]->animator = animator0;
 
     spriteInstanceData[0] = new ME::SpriteRendererInstanceData();
     spriteInstanceData[0]->modelMatrixData = instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();
@@ -112,12 +110,12 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
 
     instancedSpriteRenderers[1] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
 
+    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(instancedSpriteRenderers[1], 8);
+    instancedSpriteRenderers[1]->animator = animator1;
+
     ME::SpriteAnimClip* clip1 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
-    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(instancedSpriteRenderers[1], 8);
     animator1->AddClip(clip1);
-
-    instancedSpriteRenderers[1]->animator = animator1;
 
     spriteInstanceData[1] = new ME::SpriteRendererInstanceData();
     spriteInstanceData[1]->modelMatrixData = instancedSpriteTransforms[1]->GetModelMatrix().GetDataForShader();

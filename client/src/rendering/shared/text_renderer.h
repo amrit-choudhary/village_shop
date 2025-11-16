@@ -43,6 +43,9 @@ class TextRenderer {
           charsPerLine(charsPerLine) {}
     ~TextRenderer();
 
+    // Marks the text renderer as dirty, indicating that its data has changed and needs to be updated.
+    bool bDirty = true;
+
     const char* text;
     const uint8_t quadId = 0;      // ID of the quad to render
     const uint8_t textureId = 0;   // ID of the texture to use

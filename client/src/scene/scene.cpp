@@ -414,12 +414,50 @@ void ME::Scene::BuildTextRenderers() {
     textInstanceDataCount += textRend3->GetCount();
 }
 
-void ME::Scene::UpdateTextInstanceData() {
-    int count = 0;
+void ME::Scene::Update() {
+    UpdateSpriteRenderers();
+    UpdateInstancedSpriteRenderers();
+    UpdateTextRenderers();
+}
+
+void ME::Scene::UpdateSpriteRenderers() {}
+
+void ME::Scene::UpdateInstancedSpriteRenderers() {
+    // Updating transforms and atlas indicesfor dirty instances.
+    // In separate loops to avoid cache misses.
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        if (!instancedSpriteRenderers[i]->bDirty) {
+            continue;
+        }
+        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+    }
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        if (!instancedSpriteRenderers[i]->bDirty) {
+            continue;
+        }
+        spriteInstanceData[i]->atlasIndex = instancedSpriteRenderers[i]->atlasIndex;
+    }
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+        if (instancedSpriteRenderers[i]->bDirty) {
+            instancedSpriteRenderers[i]->bDirty = false;
+        }
+    }
+}
+
+void ME::Scene::UpdateTextRenderers() {
+    uint32_t count = 0;
     for (uint32_t i = 0; i < textRendererCount; ++i) {
+        if (!textRenderers[i]->bDirty) {
+            count += textRenderers[i]->GetCount();
+            continue;
+        }
         for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
             textInstanceData[count]->atlasIndex = textRenderers[i]->text[j];
             count++;
         }
+        textRenderers[i]->bDirty = false;
     }
 }

@@ -13,6 +13,8 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);
     physicsSystem->SetScene(physicsScene);
+    animationSystem->SetScene(scene);
+    animationSystem->Init();
 
     ME::Log("Simple Dice Game Start!");
 }
@@ -37,6 +39,8 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             // Start rolling
             diceScene->textRenderers[1]->SetText(rolling);
             diceScene->textRenderers[2]->SetText(resultWaiting);
+            diceScene->instancedSpriteRenderers[0]->animator->StartAnimation();
+            diceScene->instancedSpriteRenderers[1]->animator->StartAnimation();
         } else {
             // Decide result
             uint8_t whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
@@ -50,9 +54,11 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             } else {
                 diceScene->textRenderers[2]->SetText(resultDraw);
             }
+            diceScene->instancedSpriteRenderers[0]->animator->StopAnimation();
+            diceScene->instancedSpriteRenderers[1]->animator->StopAnimation();
         }
-
-        diceScene->UpdateTextInstanceData();
+        diceScene->textRenderers[1]->bDirty = true;
+        diceScene->textRenderers[2]->bDirty = true;
     }
 }
 

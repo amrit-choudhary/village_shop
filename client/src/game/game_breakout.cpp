@@ -67,7 +67,7 @@ void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, Colli
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%03u", score);
     brkScene->textRenderers[1]->SetText(scoreText);
-    brkScene->UpdateTextInstanceData();
+    brkScene->textRenderers[1]->bDirty = true;
     ME::LogDebug("Score: " + std::to_string(score));
 
     delete result;

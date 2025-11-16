@@ -106,4 +106,5 @@ void ME::SpriteAnimator::UpdateSpriteRenderer() {
         return;
     }
     spriteRenderer->atlasIndex = clips[currentClipIndex]->GetSpriteAtlasIndex(currentFrame);
+    spriteRenderer->bDirty = true;
 }
