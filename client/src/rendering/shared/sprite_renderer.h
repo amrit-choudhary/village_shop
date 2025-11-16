@@ -35,7 +35,7 @@ class SpriteRendererInstanceData {
 class SpriteRenderer {
    public:
     SpriteRenderer() = delete;
-    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t atlasIndex, const Color& color)
+    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint16_t atlasIndex, const Color& color)
         : quadId(quadId), materialId(materialId), textureId(textureId), atlasIndex(atlasIndex), color(color) {}
     ~SpriteRenderer();
 

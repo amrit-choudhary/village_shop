@@ -438,6 +438,7 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
             continue;
         }
         spriteInstanceData[i]->atlasIndex = instancedSpriteRenderers[i]->atlasIndex;
+        spriteInstanceData[i]->color = instancedSpriteRenderers[i]->color;
     }
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {

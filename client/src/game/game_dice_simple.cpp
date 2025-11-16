@@ -57,8 +57,6 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             diceScene->instancedSpriteRenderers[0]->animator->StopAnimation();
             diceScene->instancedSpriteRenderers[1]->animator->StopAnimation();
         }
-        diceScene->textRenderers[1]->bDirty = true;
-        diceScene->textRenderers[2]->bDirty = true;
     }
 }
 

@@ -30,33 +30,24 @@ class TextRenderer {
    public:
     TextRenderer() = delete;
     TextRenderer(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId, const ME::Color& color,
-                 uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine)
-        : text(text),
-          quadId(quadId),
-          textureId(textureId),
-          materialId(materialId),
-          color(color),
-          height(height),
-          width(width),
-          letterSpacing(letterSpacing),
-          lineGap(lineGap),
-          charsPerLine(charsPerLine) {}
+                 uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine);
     ~TextRenderer();
 
     // Marks the text renderer as dirty, indicating that its data has changed and needs to be updated.
     bool bDirty = true;
 
-    const char* text;
-    const uint8_t quadId = 0;      // ID of the quad to render
-    const uint8_t textureId = 0;   // ID of the texture to use
-    const uint8_t materialId = 0;  // ID of the material to use
-    const ME::Color color;         // Color of the text
-    const uint16_t height;         // Height of the text in pixels
-    const uint16_t width;          // Width of the text in pixels
-    const int16_t letterSpacing;   // Spacing between letters in pixels
-    const int16_t lineGap;         // Gap between lines in pixels
-    const uint16_t charsPerLine;   // Number of characters per line
+    char* text = nullptr;                  // Text to render
+    const uint8_t quadId = 0;              // ID of the quad to render
+    const uint8_t textureId = 0;           // ID of the texture to use
+    const uint8_t materialId = 0;          // ID of the material to use
+    ME::Color color = ME::Color::White();  // Color of the text
+    uint16_t height = 12;                  // Height of the text in pixels
+    uint16_t width = 12;                   // Width of the text in pixels
+    int16_t letterSpacing = 2;             // Spacing between letters in pixels
+    int16_t lineGap = 2;                   // Gap between lines in pixels
+    uint16_t charsPerLine = 80;            // Number of characters per line
 
+    // Sets new text to render and marks the renderer as dirty.
     void SetText(const char* newText);
 
     // Returns the number of characters in the text.

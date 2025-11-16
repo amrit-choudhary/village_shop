@@ -28,10 +28,8 @@ void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
 void ME::GameBreakout::TranslateBall(Vec2 delta) {
     Vec3 newBallPosition = ballTransform->GetPosition() + Vec3(delta.x, delta.y, 0.0f);
     ballTransform->SetPosition(newBallPosition);
-
-    ballInstanceData->modelMatrixData = ballTransform->GetModelMatrix().GetDataForShader();
-
     ballCollider->UpdateTransform(*ballTransform, brkScene->ballCollScaleMult);
+    brkScene->instancedSpriteRenderers[brkScene->ballIndex]->bDirty = true;
 }
 
 void ME::GameBreakout::Update(double deltaTime) {
@@ -60,14 +58,15 @@ void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, Colli
 
     if (IsDestructible(b->GetID())) {
         b->isEnabled = false;
-        brkScene->spriteInstanceData[b->GetID()]->atlasIndex = 0;  // Set to black if hit.
+        brkScene->instancedSpriteRenderers[b->GetID()]->atlasIndex = 0;  // Make it black (invisible).
+        brkScene->instancedSpriteRenderers[b->GetID()]->color = ME::Color::Black();
+        brkScene->instancedSpriteRenderers[b->GetID()]->bDirty = true;
         ++score;
     }
 
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%03u", score);
     brkScene->textRenderers[1]->SetText(scoreText);
-    brkScene->textRenderers[1]->bDirty = true;
     ME::LogDebug("Score: " + std::to_string(score));
 
     delete result;
@@ -75,7 +74,7 @@ void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, Colli
 
 bool ME::GameBreakout::IsDestructible(uint32_t index) const {
     if (index < brkScene->gridCount) {
-        return brkScene->spriteInstanceData[index]->atlasIndex != 0;
+        return brkScene->instancedSpriteRenderers[index]->atlasIndex != 0;
     }
 
     return false;

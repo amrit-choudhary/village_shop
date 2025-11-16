@@ -2,6 +2,7 @@
 
 #include <cstddef>
 
+#include "../utils/json_utils.h"
 #include "level_breakout.h"
 #include "src/misc/game_constants.h"
 #include "src/random/random_engine.h"
@@ -56,16 +57,16 @@ void ME::SceneBreakout::CreateResources() {
 
     textureCount = 0;
 
-    spriteTexturePaths[0] = "textures/sprites/monochrome.png";
-    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
+    spriteTexturePaths[0] = "textures/font/ascii_ibm_transparent.png";
+    spriteTexturePaths[1] = "textures/sprites/monochrome.png";
     spriteTextureCount = 2;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    textureAtlasProperties[0] = ME::TextureAtlasProperties{17, 17, 1, 1078, 49, 22, 832, 373};
-    textureAtlasProperties[1] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[0]);
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_02.json", textureAtlasProperties[1]);
     textureAtlasPropertiesCount = 2;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
@@ -116,11 +117,9 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
 
     // Fill the bricks only.
     for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 587, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-        spriteInstanceData[i]->color = ME::Color::RandomColorPretty(randomColor);
 
         uint8_t ix = i % gridX;
         uint8_t iy = ((i / gridX) % gridY);
@@ -128,15 +127,15 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
         uint16_t brickIndex = (iy * gridX) + ix;
 
         if (brickIndex < level.brickCount) {
-            spriteInstanceData[i]->atlasIndex = 587;  // Brick.
             uint8_t colorIndex = static_cast<uint8_t>(level.bricks[brickIndex].type);
-            spriteInstanceData[i]->color = colorPalette[colorIndex];
+            instancedSpriteRenderers[i]->color = colorPalette[colorIndex];
+            instancedSpriteRenderers[i]->atlasIndex = 587;
 
             staticColliders[staticColliderCount] = ME::ColliderAABB(i, true, true, *instancedSpriteTransforms[i]);
             ++staticColliderCount;
         } else {
-            spriteInstanceData[i]->atlasIndex = 0;  // Black.
-            spriteInstanceData[i]->color = ME::Color::Black();
+            instancedSpriteRenderers[i]->atlasIndex = 0;
+            instancedSpriteRenderers[i]->color = ME::Color::Black();
         }
     }
 }
@@ -220,12 +219,10 @@ void ME::SceneBreakout::CreateWalls() {
         instancedSpriteTransforms[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
 
         ++instancedSpriteRendererCount;
-        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 0, ME::Color::White());
         spriteInstanceData[indices[i]] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[indices[i]]->modelMatrixData =
-            instancedSpriteTransforms[indices[i]]->GetModelMatrix().GetDataForShader();
-        spriteInstanceData[indices[i]]->atlasIndex = 253;
-        spriteInstanceData[indices[i]]->color = colorPalette[7];
+        instancedSpriteRenderers[indices[i]]->atlasIndex = 253;
+        instancedSpriteRenderers[indices[i]]->color = colorPalette[7];
 
         staticColliders[staticColliderCount] =
             ME::ColliderAABB(indices[i], true, true, *instancedSpriteTransforms[indices[i]]);
@@ -240,12 +237,10 @@ void ME::SceneBreakout::CreatePaddle() {
     instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
 
     ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 253, ME::Color::White());
     spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[paddleIndex]->modelMatrixData =
-        instancedSpriteTransforms[paddleIndex]->GetModelMatrix().GetDataForShader();
-    spriteInstanceData[paddleIndex]->atlasIndex = 253;
-    spriteInstanceData[paddleIndex]->color = colorPalette[0];
+    instancedSpriteRenderers[paddleIndex]->atlasIndex = 253;
+    instancedSpriteRenderers[paddleIndex]->color = colorPalette[0];
 
     staticColliders[staticColliderCount] =
         ME::ColliderAABB(paddleIndex, true, true, *instancedSpriteTransforms[paddleIndex]);
@@ -259,12 +254,10 @@ void ME::SceneBreakout::CreateBall() {
     instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
 
     ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 631, ME::Color::White());
     spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData[ballIndex]->modelMatrixData =
-        instancedSpriteTransforms[ballIndex]->GetModelMatrix().GetDataForShader();
-    spriteInstanceData[ballIndex]->atlasIndex = 631;
-    spriteInstanceData[ballIndex]->color = colorPalette[6];
+    instancedSpriteRenderers[ballIndex]->atlasIndex = 631;
+    instancedSpriteRenderers[ballIndex]->color = colorPalette[6];
 
     dynamicColliders[dynamicColliderCount] =
         ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms[ballIndex], ballCollScaleMult);
