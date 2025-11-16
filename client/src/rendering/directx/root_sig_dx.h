@@ -27,6 +27,9 @@ class RootSigDx {
     /** Create root signature for 2D rendering with Instancing and Texture Atlases. */
     static ID3D12RootSignature* CreateRootSignature2DInstancedAtlas(ID3D12Device* device);
 
+    /** Create root signature for 2D rendering without Instancing and Texture Atlases. */
+    static ID3D12RootSignature* CreateRootSignature2DAtlas(ID3D12Device* device);
+
     /** Create root signature for 3D rendering. */
     static ID3D12RootSignature* CreateRootSignature3D(ID3D12Device* device);
 

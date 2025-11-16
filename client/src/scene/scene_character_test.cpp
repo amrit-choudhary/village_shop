@@ -6,6 +6,7 @@
 #include "../anim/sprite_animator.h"
 #include "../utils/json_utils.h"
 #include "src/misc/game_constants.h"
+#include "src/random/random_engine.h"
 
 ME::SceneCharacterTest::SceneCharacterTest() {}
 
@@ -92,7 +93,7 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
 }
 
 void ME::SceneCharacterTest::BuildSpriteRenderers() {
-    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+    spriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::White());
 
     ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(spriteRenderers[0], 8);
     spriteRenderers[0]->animator = animator0;
@@ -118,43 +119,52 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
-    // // Character Sprite
-    // instancedSpriteTransforms[0] = new ME::Transform();
-    // instancedSpriteTransforms[0]->SetPosition(0.0f, 0.0f, 0.0f);
-    // instancedSpriteTransforms[0]->SetScale(charWidth, charHeight);
+    // NPC Sprites
+    ME::Random rnd{"npc_position", true};
+    for (size_t i = 0; i < 255; ++i) {
+        float x = rnd.NextDouble() * 70.0f - 35.0f;
+        float y = rnd.NextDouble() * 80.0f - 40.0f;
 
-    instancedSpriteTransformCount = 0;
+        instancedSpriteTransforms[i] = new ME::Transform();
+        instancedSpriteTransforms[i]->SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms[i]->SetScale(npcWidth, npcHeight);
+    }
+    instancedSpriteTransformCount = 255;
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
-    // instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+    for (size_t i = 0; i < 255; ++i) {
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::RandomColorPretty());
 
-    // ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
-    // instancedSpriteRenderers[0]->animator = animator0;
+        ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[i], 8);
+        instancedSpriteRenderers[i]->animator = animator0;
 
-    // ME::SpriteAnimClip* clip0 = nullptr;
-    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
+        ME::SpriteAnimClip* clip0 = nullptr;
+        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
 
-    // ME::SpriteAnimClip* clip1 = nullptr;
-    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_right.json", &clip1);
+        ME::SpriteAnimClip* clip1 = nullptr;
+        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_right.json", &clip1);
 
-    // ME::SpriteAnimClip* clip2 = nullptr;
-    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_down.json", &clip2);
+        ME::SpriteAnimClip* clip2 = nullptr;
+        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_down.json", &clip2);
 
-    // ME::SpriteAnimClip* clip3 = nullptr;
-    // ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_left.json", &clip3);
+        ME::SpriteAnimClip* clip3 = nullptr;
+        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_left.json", &clip3);
 
-    // animator0->AddClip(clip0);
-    // animator0->AddClip(clip1);
-    // animator0->AddClip(clip2);
-    // animator0->AddClip(clip3);
+        animator0->AddClip(clip0);
+        animator0->AddClip(clip1);
+        animator0->AddClip(clip2);
+        animator0->AddClip(clip3);
 
-    // spriteInstanceData[0] = new ME::SpriteRendererInstanceData();
-    // spriteInstanceData[0]->modelMatrixData = instancedSpriteTransforms[0]->GetModelMatrix().GetDataForShader();
-    // spriteInstanceData[0]->atlasIndex = 0;
-    // spriteInstanceData[0]->color = ME::Color::White();
+        animator0->ChangeClip(2);  // Default to down animation
 
-    instancedSpriteRendererCount = 0;
+        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData[i]->atlasIndex = 0;
+        spriteInstanceData[i]->color = ME::Color::White();
+    }
+
+    instancedSpriteRendererCount = 255;
 }
 
 void ME::SceneCharacterTest::BuildTextRenderers() {

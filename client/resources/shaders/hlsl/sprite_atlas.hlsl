@@ -1,4 +1,4 @@
-// Simple sprite shader for instanced rendering.
+// Simple sprite shader for non instanced rendering.
 
 #include "structs.hlsl"
 #include "helpers.hlsl"
@@ -13,12 +13,15 @@ cbuffer TextureAtlasProperties : register(b1)
     TextureAtlasProperties atlasProps;
 };
 
+cbuffer CBPerSprite : register(b2)
+{
+    CBPerSprite spriteData;
+};
+
 Texture2D tex : register(t0);
 
 // Using clamped point sampling for pixel art style atlases.
 SamplerState texSampler : register(s1);
-
-StructuredBuffer<SpriteInstanceData> instanceBuffer : register(t1);
 
 struct VertexIn
 {
@@ -33,19 +36,17 @@ struct VertexOut
     float4 color : COLOR0;
 };
 
-VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
+VertexOut VS(VertexIn input)
 {
-	VertexOut output;
+    VertexOut output;
 
-    SpriteInstanceData instanceData = instanceBuffer[instanceID];
-
-    float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), instanceData.modelMatrix);
+    float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), spriteData.modelMatrix);
     outputPos = mul(outputPos, passData.viewMatrix);
     outputPos = mul(outputPos, passData.projectionMatrix);
     output.position = outputPos;
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
-    output.uv = GetAtlasUV(flippedUV, instanceData.atlasIndex, atlasProps, instanceData.flags);
-    output.color = instanceData.color;
+    output.uv = GetAtlasUV(flippedUV, spriteData.atlasIndex, atlasProps, spriteData.flags);
+    output.color = spriteData.color;
 
     return output;
 }

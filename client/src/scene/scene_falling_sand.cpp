@@ -104,7 +104,7 @@ void ME::SceneFallingSand::BuildInstancedSpriteRenderers() {
     instancedSpriteRendererCount = static_cast<uint32_t>(gridCount);
 
     for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();

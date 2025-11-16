@@ -40,7 +40,7 @@ void ME::RendererDX::SetScene(ME::Scene* gameScene) {
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
+    commandList->Reset(directCmdListAlloc.Get(), pso2DAtl);
 
     // Create a new scene with the provided game scene.
     sceneDX = new ME::SceneDX(device.Get(), commandList.Get(), descHeapManager, gameScene);
@@ -185,12 +185,15 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 
     descHeapManager = new ME::DescHeapManagerDX(device.Get(), cbvSrvUavDescHeap.Get());
 
+    // Create Root Signatures and PSOs.
+    rootSig2DAtl = RootSigDx::CreateRootSignature2DAtlas(device.Get());
+    pso2DAtl = PSODirectX::CreatePSO2DAtlas(device.Get(), "sprite_atlas.hlsl", rootSig2DAtl);
     rootSig2DInsAtl = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
     pso2DInsAtl = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSig2DInsAtl);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
+    commandList->Reset(directCmdListAlloc.Get(), pso2DAtl);
     CD3DX12_RESOURCE_BARRIER depthBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
         depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
     commandList->ResourceBarrier(1, &depthBarrier);
@@ -212,10 +215,10 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 
 void ME::RendererDX::Draw() {
     directCmdListAlloc->Reset();
-    commandList->Reset(directCmdListAlloc.Get(), pso2DInsAtl);
+    commandList->Reset(directCmdListAlloc.Get(), pso2DAtl);
 
-    commandList->SetPipelineState(pso2DInsAtl);
-    commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
+    commandList->SetPipelineState(pso2DAtl);
+    commandList->SetGraphicsRootSignature(rootSig2DAtl);
 
     ID3D12DescriptorHeap* descriptorHeaps[] = {cbvSrvUavDescHeap.Get()};
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -239,7 +242,12 @@ void ME::RendererDX::Draw() {
 
     ///////////////////////
     // Sprite Drawing.
+
     if (sceneDX->spriteRendererCount != 0) {
+        // Set PSO and Root Signature for non instanced sprites.
+        commandList->SetPipelineState(pso2DAtl);
+        commandList->SetGraphicsRootSignature(rootSig2DAtl);
+
         CBPerPass perPassData{};
         perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
         perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
@@ -257,17 +265,28 @@ void ME::RendererDX::Draw() {
 
         for (uint32_t i = 0; i < sceneDX->spriteRendererCount; ++i) {
             uint32_t textureIndex = sceneDX->spriteRenderers[i]->textureId;
-            uint32_t atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
-            uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
-            ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasIndex];
-            sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
+            uint32_t atlasPropsIndex = sceneDX->spriteRenderers[i]->textureAtlasPropsId;
+            uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+            ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
+            sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasProps);
 
-            D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+            D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasPropsHeapIndex);
             commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
 
             D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
                 descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteTextures[textureIndex]->descHeapIndex);
             commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
+
+            CBPerSprite perSpriteData{};
+            perSpriteData.modelMatrix = sceneDX->spriteTransforms[i]->GetModelMatrix().GetDataRowMajor();
+            perSpriteData.color = sceneDX->spriteRenderers[i]->color;
+            perSpriteData.atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
+            perSpriteData.flags = 0;
+            sceneDX->perSpriteCBs[i]->CopyData(&perSpriteData);
+
+            D3D12_GPU_DESCRIPTOR_HANDLE cbvPerSprite =
+                descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->perSpriteCBHeapIndices[i]);
+            commandList->SetGraphicsRootDescriptorTable(3, cbvPerSprite);
 
             commandList->DrawIndexedInstanced(quad->indexCount, 1, 0, 0, 0);
         }
@@ -277,6 +296,10 @@ void ME::RendererDX::Draw() {
     // Instanced Sprite Drawing.
 
     if (sceneDX->instancedSpriteRendererCount != 0) {
+        // Set PSO and Root Signature for instanced sprites.
+        commandList->SetPipelineState(pso2DInsAtl);
+        commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
+
         CBPerPass perPassData{};
         perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
         perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
@@ -287,12 +310,12 @@ void ME::RendererDX::Draw() {
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
         uint32_t textureIndex = 1;
-        uint32_t atlasIndex = 1;
-        uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
-        ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasIndex];
-        sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasProps);
+        uint32_t atlasPropsIndex = 1;
+        uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+        ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
+        sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasProps);
 
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlas = descHeapManager->GetGPUDescriptorHandleForIndex(atlasPropsHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(1, cbvAtlas);
 
         D3D12_GPU_DESCRIPTOR_HANDLE textureHandle =
@@ -320,9 +343,13 @@ void ME::RendererDX::Draw() {
     ///////////////////////////
     // Start Text Drawing.
     if (sceneDX->textRendererCount != 0) {
+        // Set PSO and Root Signature for instanced sprites.
+        commandList->SetPipelineState(pso2DInsAtl);
+        commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
+
         uint32_t textureIndex = 0;
-        uint32_t atlasIndex = 0;
-        uint32_t atlasHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasIndex];
+        uint32_t atlasPropsIndex = 0;
+        uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
 
         CBPerPass perPassData{};
         perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
@@ -333,10 +360,10 @@ void ME::RendererDX::Draw() {
         D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-        ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasIndex];
-        sceneDX->textureAtlasCBs[atlasIndex]->CopyData(&atlasPropsText);
+        ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasPropsIndex];
+        sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasPropsText);
 
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlasText = descHeapManager->GetGPUDescriptorHandleForIndex(atlasHeapIndex);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvAtlasText = descHeapManager->GetGPUDescriptorHandleForIndex(atlasPropsHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(1, cbvAtlasText);
 
         D3D12_GPU_DESCRIPTOR_HANDLE textureHandleText =

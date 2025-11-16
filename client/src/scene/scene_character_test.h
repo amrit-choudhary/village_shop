@@ -29,6 +29,8 @@ class SceneCharacterTest : public Scene {
    private:
     const float charWidth = 16.0f;
     const float charHeight = 24.0f;
+    const float npcWidth = 6.0f;
+    const float npcHeight = 8.0f;
 };
 
 };  // namespace ME

@@ -39,3 +39,20 @@ struct TextureAtlasProperties {
     uint height;
     uint paddingType;
 };
+
+// Per Sprite Constant Buffer
+struct CBPerSprite {
+    float4x4 modelMatrix;
+    float4 color;
+    uint atlasIndex;
+    uint flags;
+    uint2 padding;
+};
+
+// Per Pass Constant Buffer
+struct CBPerPass {
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+    LightDataAmbient ambientLightData;
+    LightDataDirectional directionalLightData;
+};

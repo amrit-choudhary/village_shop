@@ -259,7 +259,7 @@ void ME::Scene::BuildSpriteRenderers() {
         int y = (i / gridCount) % gridCount;
 
         ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, color);
+        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, 1, color);
     }
 }
 
@@ -300,7 +300,7 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();

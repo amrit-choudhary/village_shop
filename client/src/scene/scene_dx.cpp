@@ -24,9 +24,10 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     // textureSamplerStates = new MTL::SamplerState*[Constants::MaxSamplerCount];
     perPassCBs = new ME::UploadBufferDX*[Constants::MaxConstantBuffersCount];
     perPassCBHeapIndices = new uint32_t[Constants::MaxConstantBuffersCount];
+    perSpriteCBs = new ME::UploadBufferDX*[Constants::MaxConstantBuffersCount];
+    perSpriteCBHeapIndices = new uint32_t[Constants::MaxConstantBuffersCount];
     textureAtlasCBs = new ME::UploadBufferDX*[Constants::MaxConstantBuffersCount];
     textureAtlasCBHeapIndices = new uint32_t[Constants::MaxConstantBuffersCount];
-
     transforms = scene->transforms;
     transformCount = scene->transformCount;
     spriteTransforms = scene->spriteTransforms;
@@ -98,6 +99,12 @@ ME::SceneDX::~SceneDX() {
     delete[] perPassCBs;
     delete[] perPassCBHeapIndices;
 
+    for (uint32_t i = 0; i < perSpriteCBCount; i++) {
+        delete perSpriteCBs[i];
+    }
+    delete[] perSpriteCBs;
+    delete[] perSpriteCBHeapIndices;
+
     for (uint32_t i = 0; i < textureAtlasCBCount; i++) {
         delete textureAtlasCBs[i];
     }
@@ -167,6 +174,14 @@ void ME::SceneDX::MakeConstantBuffers() {
 
     perPassCBs[0] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPass));
     perPassCBHeapIndices[0] = descHeapManager->CreateCBV(perPassCBs[0]->GetResource(), perPassCBs[0]->GetElementSize());
+
+    // Creating per-sprite constant buffers.
+    perSpriteCBCount = spriteRendererCount;
+    for (uint32_t i = 0; i < perSpriteCBCount; ++i) {
+        perSpriteCBs[i] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerSprite));
+        perSpriteCBHeapIndices[i] =
+            descHeapManager->CreateCBV(perSpriteCBs[i]->GetResource(), perSpriteCBs[i]->GetElementSize());
+    }
 
     // Creating texture atlas constant buffers.
     textureAtlasCBCount = scene->textureAtlasPropertiesCount;

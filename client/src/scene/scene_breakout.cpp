@@ -117,7 +117,7 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
 
     // Fill the bricks only.
     for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 587, ME::Color::White());
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, 587, ME::Color::White());
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
 
@@ -219,7 +219,7 @@ void ME::SceneBreakout::CreateWalls() {
         instancedSpriteTransforms[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
 
         ++instancedSpriteRendererCount;
-        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 0, ME::Color::White());
+        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, 0, ME::Color::White());
         spriteInstanceData[indices[i]] = new ME::SpriteRendererInstanceData();
         instancedSpriteRenderers[indices[i]]->atlasIndex = 253;
         instancedSpriteRenderers[indices[i]]->color = colorPalette[7];
@@ -237,7 +237,7 @@ void ME::SceneBreakout::CreatePaddle() {
     instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
 
     ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 253, ME::Color::White());
+    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 253, ME::Color::White());
     spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
     instancedSpriteRenderers[paddleIndex]->atlasIndex = 253;
     instancedSpriteRenderers[paddleIndex]->color = colorPalette[0];
@@ -254,7 +254,7 @@ void ME::SceneBreakout::CreateBall() {
     instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
 
     ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 631, ME::Color::White());
+    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 631, ME::Color::White());
     spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
     instancedSpriteRenderers[ballIndex]->atlasIndex = 631;
     instancedSpriteRenderers[ballIndex]->color = colorPalette[6];

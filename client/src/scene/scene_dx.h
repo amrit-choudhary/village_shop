@@ -71,6 +71,7 @@ class SceneDX {
     uint32_t textInstanceDataCount = 0;
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;
+    uint32_t perSpriteCBCount = 0;
 
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
@@ -82,6 +83,9 @@ class SceneDX {
 
     ME::UploadBufferDX** perPassCBs = nullptr;
     uint32_t* perPassCBHeapIndices = nullptr;  // Map of heap indices for perPassCBs for gpu binding later.
+
+    ME::UploadBufferDX** perSpriteCBs = nullptr;
+    uint32_t* perSpriteCBHeapIndices = nullptr;  // Map of heap indices for perSpriteCBs for gpu binding later.
 
     ME::UploadBufferDX** textureAtlasCBs = nullptr;
     uint32_t* textureAtlasCBHeapIndices = nullptr;  // Map of heap indices for texture atlas CBs for gpu binding later.

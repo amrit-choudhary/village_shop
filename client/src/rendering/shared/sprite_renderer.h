@@ -32,11 +32,32 @@ class SpriteRendererInstanceData {
     uint32_t padding[2]{0};   // Padding to align the structure
 };
 
+/**
+ * Constant buffer structure for sprite renderer.
+ * Used for non-instanced sprite rendering. Per sprite renderer.
+ * This is sent to the GPU as a constant buffer, so some hlsl padding rules apply.
+ * For flag rules see SpriteRendererInstanceData.
+ */
+class CBPerSprite {
+   public:
+    ME::Vec16 modelMatrix = ME::Vec16();
+    ME::Color color = ME::Color::White();
+    uint32_t atlasIndex = 0;
+    uint32_t flags = 0;      // Additional flags for rendering options
+    uint32_t padding[2]{0};  // Padding to align the structure
+};
+
 class SpriteRenderer {
    public:
     SpriteRenderer() = delete;
-    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint16_t atlasIndex, const Color& color)
-        : quadId(quadId), materialId(materialId), textureId(textureId), atlasIndex(atlasIndex), color(color) {}
+    SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t textureAtlasPropsId,
+                   uint16_t atlasIndex, const Color& color)
+        : quadId(quadId),
+          materialId(materialId),
+          textureId(textureId),
+          textureAtlasPropsId(textureAtlasPropsId),
+          atlasIndex(atlasIndex),
+          color(color) {}
     ~SpriteRenderer();
 
     // Mark the sprite renderer as dirty to update rendering data before frame is drawn.
@@ -44,6 +65,7 @@ class SpriteRenderer {
 
     const uint8_t quadId = 0;
     const uint8_t textureId = 0;
+    const uint8_t textureAtlasPropsId = 0;
     uint16_t atlasIndex = 0;
     const uint8_t materialId = 0;
     ME::Color color;

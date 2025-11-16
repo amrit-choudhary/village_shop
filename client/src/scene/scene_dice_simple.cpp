@@ -94,7 +94,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteTransforms() {
     instancedSpriteTransformCount = 2;
 }
 void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
-    instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, ME::Color::White());
+    instancedSpriteRenderers[0] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::White());
 
     ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[0], 8);
     instancedSpriteRenderers[0]->animator = animator0;
@@ -108,7 +108,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     spriteInstanceData[0]->atlasIndex = 0;
     spriteInstanceData[0]->color = ME::Color::White();
 
-    instancedSpriteRenderers[1] = new ME::SpriteRenderer(0, 0, 2, 1, ME::Color::White());
+    instancedSpriteRenderers[1] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
     ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(instancedSpriteRenderers[1], 8);
     instancedSpriteRenderers[1]->animator = animator1;

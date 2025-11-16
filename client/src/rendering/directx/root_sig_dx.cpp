@@ -144,6 +144,56 @@ ID3D12RootSignature* ME::RootSigDx::CreateRootSignature2DInstancedAtlas(ID3D12De
     return rootSig;
 }
 
+ID3D12RootSignature* ME::RootSigDx::CreateRootSignature2DAtlas(ID3D12Device* device) {
+    if (!device) return nullptr;
+
+    CD3DX12_ROOT_PARAMETER rootParameters[4];
+
+    // Per Pass at register(b0)
+    CD3DX12_DESCRIPTOR_RANGE cbvRangePass;
+    cbvRangePass.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+    rootParameters[0].InitAsDescriptorTable(1, &cbvRangePass);
+
+    // Texture Atlas Properties at register(b1)
+    CD3DX12_DESCRIPTOR_RANGE cbvRangeAtlasProps;
+    cbvRangeAtlasProps.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+    rootParameters[1].InitAsDescriptorTable(1, &cbvRangeAtlasProps);
+
+    // Texture at register(t0)
+    CD3DX12_DESCRIPTOR_RANGE srvRangeTex;
+    srvRangeTex.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+    rootParameters[2].InitAsDescriptorTable(1, &srvRangeTex);
+
+    // Per Sprite at register(b2)
+    CD3DX12_DESCRIPTOR_RANGE cbvRangeSprite;
+    cbvRangeSprite.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+    rootParameters[3].InitAsDescriptorTable(1, &cbvRangeSprite);
+
+    CD3DX12_STATIC_SAMPLER_DESC* staticSamplers = GetStaticSamplerDescriptors();
+
+    D3D12_ROOT_SIGNATURE_DESC desc = {};
+    desc.NumParameters = _countof(rootParameters);
+    desc.pParameters = rootParameters;
+    desc.NumStaticSamplers = 6;
+    desc.pStaticSamplers = staticSamplers;
+    desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    ID3DBlob* serialized;
+    ID3DBlob* error;
+    HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &serialized, &error);
+    if (FAILED(hr)) {
+        if (error) OutputDebugStringA(static_cast<const char*>(error->GetBufferPointer()));
+        return nullptr;
+    }
+
+    ID3D12RootSignature* rootSig;
+    hr = device->CreateRootSignature(0, serialized->GetBufferPointer(), serialized->GetBufferSize(),
+                                     IID_PPV_ARGS(&rootSig));
+    if (FAILED(hr)) return nullptr;
+
+    return rootSig;
+}
+
 ID3D12RootSignature* ME::RootSigDx::CreateRootSignature3D(ID3D12Device* device) {
     if (!device) return nullptr;
 
