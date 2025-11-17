@@ -12,9 +12,11 @@
 
 namespace ME::Input {
 enum class KeyState : uint8_t {
-    None = 0,
-    Up = 1,
-    Down = 2,
+    None = 0x00,
+    UpWasUp = 0x01,      // Key is currently up and was previously up. Default state.
+    UpWasDown = 0x02,    // Key is currently up but was previously down. Key was released.
+    DownWasDown = 0x04,  // Key is currently down and was previously down. Key is being held.
+    DownWasUp = 0x08,    // Key is currently down but was previously up. Key was pressed.
 };
 
 enum class KeyCode : uint16_t {
@@ -38,7 +40,9 @@ class PlatformInputManager {
     PlatformInputManager();
     ~PlatformInputManager();
     virtual void Init();
+    virtual void PreUpdate();
     virtual void Update(double deltaTime);
+    virtual void PostUpdate();
     virtual void End();
     virtual bool GetCLIInputString(std::string& input);
 };
@@ -54,7 +58,9 @@ class InputManager {
     ~InputManager();
 
     void Init();
+    void PreUpdate();
     void Update(double deltaTime);
+    void PostUpdate();
     void End();
 
     // Check if a key is down.
@@ -62,6 +68,12 @@ class InputManager {
 
     // Check if a key is up.
     static bool GetKeyUp(ME::Input::KeyCode keyCode);
+
+    // Check if key was released this frame.
+    static bool GetKeyReleased(ME::Input::KeyCode keyCode);
+
+    // Check if key was pressed this frame.
+    static bool GetKeyPressed(ME::Input::KeyCode keyCode);
 
     static std::unordered_map<ME::Input::KeyCode, ME::Input::KeyState> GlobalKeyState;
 

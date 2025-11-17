@@ -12,9 +12,9 @@ using namespace ME::Input;
 
 // Global key map with key states.
 std::unordered_map<KeyCode, KeyState> InputManager::GlobalKeyState = {
-    {KeyCode::None, KeyState::None}, {KeyCode::W, KeyState::Up},     {KeyCode::A, KeyState::Up},
-    {KeyCode::S, KeyState::Up},      {KeyCode::D, KeyState::Up},     {KeyCode::LArrow, KeyState::Up},
-    {KeyCode::RArrow, KeyState::Up}, {KeyCode::DArrow, KeyState::Up}};
+    {KeyCode::None, KeyState::None},      {KeyCode::W, KeyState::UpWasUp},     {KeyCode::A, KeyState::UpWasUp},
+    {KeyCode::S, KeyState::UpWasUp},      {KeyCode::D, KeyState::UpWasUp},     {KeyCode::LArrow, KeyState::UpWasUp},
+    {KeyCode::RArrow, KeyState::UpWasUp}, {KeyCode::DArrow, KeyState::UpWasUp}};
 
 InputManager::InputManager() {}
 
@@ -31,8 +31,16 @@ void InputManager::Init() {
     platformInputManager->Init();
 }
 
+void ME::Input::InputManager::PreUpdate() {
+    platformInputManager->PreUpdate();
+}
+
 void InputManager::Update(double deltaTime) {
     platformInputManager->Update(deltaTime);
+}
+
+void ME::Input::InputManager::PostUpdate() {
+    platformInputManager->PostUpdate();
 }
 
 void InputManager::End() {
@@ -40,11 +48,19 @@ void InputManager::End() {
 }
 
 bool InputManager::GetKeyDown(KeyCode keyCode) {
-    return (GlobalKeyState[keyCode] == KeyState::Down);
+    return (GlobalKeyState[keyCode] == KeyState::DownWasDown || GlobalKeyState[keyCode] == KeyState::DownWasUp);
 }
 
 bool InputManager::GetKeyUp(KeyCode keyCode) {
-    return (GlobalKeyState[keyCode] == KeyState::Up);
+    return (GlobalKeyState[keyCode] == KeyState::UpWasUp || GlobalKeyState[keyCode] == KeyState::UpWasDown);
+}
+
+bool ME::Input::InputManager::GetKeyReleased(ME::Input::KeyCode keyCode) {
+    return (GlobalKeyState[keyCode] == KeyState::UpWasDown);
+}
+
+bool ME::Input::InputManager::GetKeyPressed(ME::Input::KeyCode keyCode) {
+    return (GlobalKeyState[keyCode] == KeyState::DownWasUp);
 }
 
 bool InputManager::GetCLIInputString(std::string& input) {
@@ -61,7 +77,11 @@ PlatformInputManager::~PlatformInputManager() {}
 
 void PlatformInputManager::Init() {}
 
+void ME::Input::PlatformInputManager::PreUpdate() {}
+
 void PlatformInputManager::Update(double deltaTime) {}
+
+void ME::Input::PlatformInputManager::PostUpdate() {}
 
 void PlatformInputManager::End() {}
 

@@ -58,9 +58,12 @@ void ME::GameMain::Update() {
     if (shouldTick) {
         deltaTime = timeManager.GetDeltaTime();
 
+        inputManager.PreUpdate();
         inputManager.Update(deltaTime);
 
         game.Update(deltaTime);
+
+        inputManager.PostUpdate();
 
         renderer.Update();
         renderer.Draw();

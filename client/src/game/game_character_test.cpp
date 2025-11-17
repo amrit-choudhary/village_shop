@@ -77,6 +77,14 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     ME::Vec3 currentPosition = charScene->spriteTransforms[0]->GetPosition() + movementVector;
     charScene->spriteTransforms[0]->SetPosition(currentPosition);
     charScene->spriteRenderers[0]->bDirty = true;
+
+    if (inputManager->GetKeyPressed(ME::Input::KeyCode::Space)) {
+        ME::Log("Space key pressed Down!");
+    }
+
+    if (inputManager->GetKeyReleased(ME::Input::KeyCode::Space)) {
+        ME::Log("Space key released!");
+    }
 }
 
 void ME::GameCharacterTest::End() {
