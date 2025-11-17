@@ -31,7 +31,7 @@ class SceneCharacterTest : public Scene {
     const float charHeight = 12.0f;
     const float npcWidth = 6.0f;
     const float npcHeight = 6.0f;
-    const size_t maxNPCCount = 124;
+    const size_t maxNPCCount = 200;
 };
 
 };  // namespace ME

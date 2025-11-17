@@ -28,6 +28,13 @@ class GameCharacterTest : public Game {
    private:
     ME::SceneCharacterTest* charScene = nullptr;  // Scene for the game.
     ME::PhysicsScene* physicsScene = nullptr;     // Physics scene for the game.
+
+    const float enemyBaseSpeed = 10.0f;
+    const float enemySpeedVariance = 5.0f;
+    const float outThrowDistance = 70.0f;
+    const float minDistaneToPlayerSqr = 10.0f;
+    const size_t maxNPCCount = 200;
+    ME::Transform* playerTransform = nullptr;
 };
 
 }  // namespace ME
