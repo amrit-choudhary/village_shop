@@ -56,3 +56,9 @@ struct CBPerPass {
     LightDataAmbient ambientLightData;
     LightDataDirectional directionalLightData;
 };
+
+// Per Pass Constant Buffer for UI Text
+struct CBPerPassUIText {
+    uint screenWidth;
+    uint screenHeight;
+};

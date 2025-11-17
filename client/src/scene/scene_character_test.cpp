@@ -169,11 +169,11 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
 void ME::SceneCharacterTest::BuildTextRenderers() {
     // Text 1
     ME::TextRenderer* textRend1 =
-        new ME::TextRenderer{"\x0F Hero Test \x0F", 0, 2, 0, ME::Color::White(), 6, 6, -1, 0, 0};
+        new ME::TextRenderer{"\x0F Hero Test \x0F", 0, 2, 0, ME::Color::White(), 64, 64, -16, 0, 0};
     textRenderers[0] = textRend1;
 
     textTransforms[0] = new ME::Transform();
-    textTransforms[0]->SetPosition(-(textRend1->GetRenderWidth() / 2.0f), 45.0f, 0.0f);
+    textTransforms[0]->SetPosition(-(textRend1->GetRenderWidth() / 2.0f), 400.0f, 0.0f);
     textTransforms[0]->SetScale(textRend1->width, textRend1->height);
 
     for (uint32_t i = 0; i < textRend1->GetCount(); ++i) {

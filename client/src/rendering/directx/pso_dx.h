@@ -20,6 +20,13 @@ class CBPerPass {
     ME::LightDataDirectional directionalLightData;
 };
 
+/** Constant buffer structure for UI Text shaders. */
+class CBPerPassUIText {
+   public:
+    uint32_t screenWidth;
+    uint32_t screenHeight;
+};
+
 /** Constant buffer structure for shaders. */
 class CBPerObject {
    public:
@@ -50,6 +57,10 @@ class PSODirectX {
     /** Create PSO for 2D rendering with no instancing and texture atlases. */
     static ID3D12PipelineState* CreatePSO2DAtlas(ID3D12Device* device, const char* shaderName,
                                                  ID3D12RootSignature* rootSignature);
+
+    /** Create PSO for 2D UI Text rendering. */
+    static ID3D12PipelineState* CreatePSO2DUIText(ID3D12Device* device, const char* shaderName,
+                                                  ID3D12RootSignature* rootSignature);
 
    private:
 };

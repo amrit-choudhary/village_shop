@@ -79,6 +79,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     ME::Vec3 currentPosition = playerTransform->GetPosition() + movementVector;
     playerTransform->SetPosition(currentPosition);
     charScene->spriteRenderers[0]->bDirty = true;
+    charScene->spriteCamera->position += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
+    charScene->spriteCamera->viewPosition += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
 
     if (inputManager->GetKeyPressed(ME::Input::KeyCode::Space)) {
         ME::Log("Space key pressed Down!");

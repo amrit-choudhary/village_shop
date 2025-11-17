@@ -190,6 +190,8 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     pso2DAtl = PSODirectX::CreatePSO2DAtlas(device.Get(), "sprite_atlas.hlsl", rootSig2DAtl);
     rootSig2DInsAtl = RootSigDx::CreateRootSignature2DInstancedAtlas(device.Get());
     pso2DInsAtl = PSODirectX::CreatePSO2DInstancedAtlas(device.Get(), "sprite_instanced_atlas.hlsl", rootSig2DInsAtl);
+    rootSig2DUIText = RootSigDx::CreateRootSignature2DUIText(device.Get());
+    pso2DUIText = PSODirectX::CreatePSO2DUIText(device.Get(), "ui_text.hlsl", rootSig2DUIText);
 
     // Do Initilization that need command list.
     directCmdListAlloc->Reset();
@@ -344,20 +346,18 @@ void ME::RendererDX::Draw() {
     // Start Text Drawing.
     if (sceneDX->textRendererCount != 0) {
         // Set PSO and Root Signature for instanced sprites.
-        commandList->SetPipelineState(pso2DInsAtl);
-        commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
+        commandList->SetPipelineState(pso2DUIText);
+        commandList->SetGraphicsRootSignature(rootSig2DUIText);
 
         uint32_t textureIndex = 0;
         uint32_t atlasPropsIndex = 0;
         uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
 
-        CBPerPass perPassData{};
-        perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
-        perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
-        perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
-        perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
-        sceneDX->perPassCBs[0]->CopyData(&perPassData);
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        CBPerPassUIText perPassData{};
+        perPassData.screenWidth = clientWidth;
+        perPassData.screenHeight = clientHeight;
+        sceneDX->perPassCBs[1]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(1);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
         ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasPropsIndex];
