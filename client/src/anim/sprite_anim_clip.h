@@ -43,6 +43,15 @@ class SpriteAnimClip {
     // Checks bounds and return first sprite if out of bounds.
     uint16_t GetSpriteAtlasIndex(uint8_t index) const;
 
+    /**
+     * Creates a new SpriteAnimClip instance with all sprite indices offset by the given value.
+     * Useful when common sprite animation used for multiple characters with different but similar atlas indices.
+     * Helps in reusing the same animation clip data.
+     * @param offset The offset to add to each sprite index.
+     * Note: delete the original afterwards if not needed.
+     */
+    static SpriteAnimClip* DuplicateWithOffset(SpriteAnimClip* sourceClip, int16_t offset);
+
    private:
     // Whether the animation clip should loop.
     bool bLooping = true;

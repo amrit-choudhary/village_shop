@@ -309,8 +309,8 @@ void ME::RendererDX::Draw() {
         D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-        uint32_t textureIndex = 1;
-        uint32_t atlasPropsIndex = 1;
+        uint32_t textureIndex = 2;
+        uint32_t atlasPropsIndex = 2;
         uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
         ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
         sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasProps);

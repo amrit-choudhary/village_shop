@@ -27,10 +27,11 @@ class SceneCharacterTest : public Scene {
     virtual void BuildTextRenderers() override;
 
    private:
-    const float charWidth = 16.0f;
-    const float charHeight = 24.0f;
+    const float charWidth = 8.0f;
+    const float charHeight = 12.0f;
     const float npcWidth = 6.0f;
-    const float npcHeight = 8.0f;
+    const float npcHeight = 6.0f;
+    const size_t maxNPCCount = 124;
 };
 
 };  // namespace ME

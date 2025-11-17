@@ -56,7 +56,8 @@ void ME::SceneCharacterTest::CreateResources() {
 
     spriteTexturePaths[0] = "textures/font/ascii_ibm_transparent.png";
     spriteTexturePaths[1] = "textures/characters/character_walk_8.png";
-    spriteTextureCount = 2;
+    spriteTexturePaths[2] = "textures/enemies/enemy_atlas.png";
+    spriteTextureCount = 3;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
@@ -64,7 +65,8 @@ void ME::SceneCharacterTest::CreateResources() {
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_char_8.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[2]);
+    textureAtlasPropertiesCount = 3;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -121,7 +123,7 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
 void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
     // NPC Sprites
     ME::Random rnd{"npc_position", true};
-    for (size_t i = 0; i < 255; ++i) {
+    for (size_t i = 0; i < maxNPCCount; ++i) {
         float x = rnd.NextDouble() * 70.0f - 35.0f;
         float y = rnd.NextDouble() * 80.0f - 40.0f;
 
@@ -129,42 +131,34 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         instancedSpriteTransforms[i]->SetPosition(x, y, 0.0f);
         instancedSpriteTransforms[i]->SetScale(npcWidth, npcHeight);
     }
-    instancedSpriteTransformCount = 255;
+    instancedSpriteTransformCount = maxNPCCount;
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
-    for (size_t i = 0; i < 255; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::RandomColorPretty());
+    ME::Random rnd{"npc_type", true};
+    ME::SpriteAnimClip* clipBase = nullptr;  // Used as base to duplicate with offset. Deleted afterwards.
+    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/enemy_base_anim.json", &clipBase);
+
+    for (size_t i = 0; i < maxNPCCount; ++i) {
+        uint32_t type = rnd.NextRange(0, 11) * 4;
+        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 2, type, ME::Color::White());
 
         ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[i], 8);
         instancedSpriteRenderers[i]->animator = animator0;
 
-        ME::SpriteAnimClip* clip0 = nullptr;
-        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
+        SpriteAnimClip* clip = ME::SpriteAnimClip::DuplicateWithOffset(clipBase, static_cast<int16_t>(type));
 
-        ME::SpriteAnimClip* clip1 = nullptr;
-        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_right.json", &clip1);
-
-        ME::SpriteAnimClip* clip2 = nullptr;
-        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_down.json", &clip2);
-
-        ME::SpriteAnimClip* clip3 = nullptr;
-        ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_left.json", &clip3);
-
-        animator0->AddClip(clip0);
-        animator0->AddClip(clip1);
-        animator0->AddClip(clip2);
-        animator0->AddClip(clip3);
-
-        animator0->ChangeClip(2);  // Default to down animation
+        animator0->AddClip(clip);
+        animator0->ChangeClip(0);
 
         spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
         spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
         spriteInstanceData[i]->atlasIndex = 0;
         spriteInstanceData[i]->color = ME::Color::White();
     }
+    delete clipBase;
 
-    instancedSpriteRendererCount = 255;
+    instancedSpriteRendererCount = maxNPCCount;
 }
 
 void ME::SceneCharacterTest::BuildTextRenderers() {

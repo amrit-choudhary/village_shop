@@ -28,3 +28,28 @@ uint16_t ME::SpriteAnimClip::GetSpriteAtlasIndex(uint8_t index) const {
     }
     return spriteIndices[0];
 }
+
+ME::SpriteAnimClip* ME::SpriteAnimClip::DuplicateWithOffset(ME::SpriteAnimClip* sourceClip, int16_t offset) {
+    if (sourceClip == nullptr) {
+        return nullptr;
+    }
+
+    uint8_t spriteCount = sourceClip->GetSpriteCount();
+    const uint16_t* sourceIndices = sourceClip->spriteIndices;
+
+    // Create a new array for the offset indices.
+    uint16_t* offsetIndices = new uint16_t[spriteCount];
+    for (uint8_t i = 0; i < spriteCount; ++i) {
+        offsetIndices[i] = static_cast<uint16_t>(static_cast<int16_t>(sourceIndices[i]) + offset);
+
+        if (offsetIndices[i] < 0) {
+            offsetIndices[i] = 0;
+        }
+    }
+
+    // Create a new SpriteAnimClip with the offset indices.
+    SpriteAnimClip* newClip =
+        new SpriteAnimClip(sourceClip->bLooping, sourceClip->textureIndex, spriteCount, offsetIndices);
+
+    return newClip;
+}
