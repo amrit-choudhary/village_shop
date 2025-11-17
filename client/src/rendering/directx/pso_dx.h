@@ -27,6 +27,13 @@ class CBPerPassUIText {
     uint32_t screenHeight;
 };
 
+/** Constant buffer structure for UI Sprite shaders. */
+class CBPerPassUISprite {
+   public:
+    uint32_t screenWidth;
+    uint32_t screenHeight;
+};
+
 /** Constant buffer structure for shaders. */
 class CBPerObject {
    public:

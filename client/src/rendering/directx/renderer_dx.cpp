@@ -250,13 +250,15 @@ void ME::RendererDX::Draw() {
         commandList->SetPipelineState(pso2DAtl);
         commandList->SetGraphicsRootSignature(rootSig2DAtl);
 
+        const uint32_t cbPerPassIndex = 0;
+
         CBPerPass perPassData{};
         perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
         perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
         perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
         perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
-        sceneDX->perPassCBs[0]->CopyData(&perPassData);
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        sceneDX->perPassCBs[cbPerPassIndex]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(cbPerPassIndex);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
         D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
@@ -266,9 +268,10 @@ void ME::RendererDX::Draw() {
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         for (uint32_t i = 0; i < sceneDX->spriteRendererCount; ++i) {
-            uint32_t textureIndex = sceneDX->spriteRenderers[i]->textureId;
-            uint32_t atlasPropsIndex = sceneDX->spriteRenderers[i]->textureAtlasPropsId;
-            uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+            const uint32_t textureIndex = sceneDX->spriteRenderers[i]->textureId;
+            const uint32_t atlasPropsIndex = sceneDX->spriteRenderers[i]->textureAtlasPropsId;
+            const uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+
             ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
             sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasProps);
 
@@ -302,18 +305,21 @@ void ME::RendererDX::Draw() {
         commandList->SetPipelineState(pso2DInsAtl);
         commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
 
+        const uint32_t textureIndex = 2;
+        const uint32_t atlasPropsIndex = 2;
+        const uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+        const uint32_t cbPerPassIndex = 0;
+
         CBPerPass perPassData{};
         perPassData.viewMatrix = sceneDX->spriteCamera->GetViewMatrix().GetDataRowMajor();
         perPassData.projectionMatrix = sceneDX->spriteCamera->GetProjectionMatrix().GetDataRowMajor();
         perPassData.ambientLightData = sceneDX->ambientLight->GetLightDataAmbient();
         perPassData.directionalLightData = sceneDX->directionalLight->GetLightDataDirectional();
-        sceneDX->perPassCBs[0]->CopyData(&perPassData);
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(0);
+        sceneDX->perPassCBs[cbPerPassIndex]->CopyData(&perPassData);
+
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(cbPerPassIndex);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
-        uint32_t textureIndex = 2;
-        uint32_t atlasPropsIndex = 2;
-        uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
         ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
         sceneDX->textureAtlasCBs[atlasPropsIndex]->CopyData(&atlasProps);
 
@@ -349,15 +355,16 @@ void ME::RendererDX::Draw() {
         commandList->SetPipelineState(pso2DUIText);
         commandList->SetGraphicsRootSignature(rootSig2DUIText);
 
-        uint32_t textureIndex = 0;
-        uint32_t atlasPropsIndex = 0;
-        uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+        const uint32_t textureIndex = 0;
+        const uint32_t atlasPropsIndex = 0;
+        const uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
+        const uint32_t cbPerPassIndex = 2;  // UI Text CB is at index 2.
 
         CBPerPassUIText perPassData{};
         perPassData.screenWidth = clientWidth;
         perPassData.screenHeight = clientHeight;
-        sceneDX->perPassCBs[1]->CopyData(&perPassData);
-        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(1);
+        sceneDX->perPassCBs[cbPerPassIndex]->CopyData(&perPassData);
+        D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(cbPerPassIndex);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);
 
         ME::TextureAtlasProperties atlasPropsText = sceneDX->textureAtlasProperties[atlasPropsIndex];

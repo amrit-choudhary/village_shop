@@ -170,15 +170,19 @@ void ME::SceneDX::MakeTextureSamplers() {}
 
 void ME::SceneDX::MakeConstantBuffers() {
     // Creating per-pass constant buffers.
-    perPassCBCount = 2;
+    perPassCBCount = 3;
 
     // Sprite Rendering.
     perPassCBs[0] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPass));
     perPassCBHeapIndices[0] = descHeapManager->CreateCBV(perPassCBs[0]->GetResource(), perPassCBs[0]->GetElementSize());
 
-    // UI Text Rendering.
-    perPassCBs[1] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPassUIText));
+    // UI Sprite Rendering.
+    perPassCBs[1] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPassUISprite));
     perPassCBHeapIndices[1] = descHeapManager->CreateCBV(perPassCBs[1]->GetResource(), perPassCBs[1]->GetElementSize());
+
+    // UI Text Rendering.
+    perPassCBs[2] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPassUIText));
+    perPassCBHeapIndices[2] = descHeapManager->CreateCBV(perPassCBs[2]->GetResource(), perPassCBs[2]->GetElementSize());
 
     // Creating per-sprite constant buffers.
     perSpriteCBCount = spriteRendererCount;

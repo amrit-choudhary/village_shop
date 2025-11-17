@@ -62,3 +62,9 @@ struct CBPerPassUIText {
     uint screenWidth;
     uint screenHeight;
 };
+
+// Per Pass Constant Buffer for UI Sprite
+struct CBPerPassUISprite {
+    uint screenWidth;
+    uint screenHeight;
+};
