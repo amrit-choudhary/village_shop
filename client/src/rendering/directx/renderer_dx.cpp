@@ -281,7 +281,7 @@ void ME::RendererDX::Draw() {
             perSpriteData.modelMatrix = sceneDX->spriteTransforms[i]->GetModelMatrix().GetDataRowMajor();
             perSpriteData.color = sceneDX->spriteRenderers[i]->color;
             perSpriteData.atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
-            perSpriteData.flags = 0;
+            perSpriteData.flags = sceneDX->spriteRenderers[i]->flags;
             sceneDX->perSpriteCBs[i]->CopyData(&perSpriteData);
 
             D3D12_GPU_DESCRIPTOR_HANDLE cbvPerSprite =

@@ -51,14 +51,25 @@ class SpriteRenderer {
    public:
     SpriteRenderer() = delete;
     SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t textureAtlasPropsId,
-                   uint16_t atlasIndex, const Color& color)
-        : quadId(quadId),
-          materialId(materialId),
-          textureId(textureId),
-          textureAtlasPropsId(textureAtlasPropsId),
-          atlasIndex(atlasIndex),
-          color(color) {}
+                   uint16_t atlasIndex, const Color& color = ME::Color::White(), uint32_t flags = 0);
     ~SpriteRenderer();
+
+    /**
+     * Flip the sprite horizontally.
+     * @param bFlip Whether to flip the sprite horizontally.
+     */
+    void ToggleFlipHorizontal(bool bFlip);
+    /**
+     * Flip the sprite vertically.
+     * @param bFlip Whether to flip the sprite vertically.
+     */
+    void ToggleFlipVertical(bool bFlip);
+
+    // Get whether the sprite is flipped horizontally.
+    bool GetFlipHorizontal() const;
+
+    // Get whether the sprite is flipped vertically.
+    bool GetFlipVertical() const;
 
     // Mark the sprite renderer as dirty to update rendering data before frame is drawn.
     bool bDirty = true;
@@ -68,9 +79,14 @@ class SpriteRenderer {
     const uint8_t textureAtlasPropsId = 0;
     uint16_t atlasIndex = 0;
     const uint8_t materialId = 0;
-    ME::Color color;
+    ME::Color color = ME::Color::White();
+    uint32_t flags = 0;
 
     ME::SpriteAnimator* animator = nullptr;
+
+   private:
+    bool bFlippedH = false;
+    bool bFlippedV = false;
 };
 
 }  // namespace ME
