@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <string>
 
-namespace ME {
+namespace ME::Utils {
 
 /**
  * Converts a c style string to uint32_t using hashing function.
@@ -20,4 +20,13 @@ void SetPaths(char* arg1, char* arg2);
 
 std::string GetResourcesPath();
 
-}  // namespace ME
+inline uint32_t Pack16To32(uint16_t high, uint16_t low) {
+    return (static_cast<uint32_t>(high) << 16) | static_cast<uint32_t>(low);
+}
+
+inline void Unpack32To16(uint32_t packed, uint16_t& out_high, uint16_t& out_low) {
+    out_high = static_cast<uint16_t>((packed >> 16) & 0xFFFF);
+    out_low = static_cast<uint16_t>(packed & 0xFFFF);
+}
+
+}  // namespace ME::Utils

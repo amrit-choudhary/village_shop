@@ -87,8 +87,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     RegisterClassExW(&windowClass);
 
     // Desired client area size
-    int clientWidth = 1200;
-    int clientHeight = 900;
+    uint16_t clientWidth = 1200;
+    uint16_t clientHeight = 900;
+    ME::GlobalVars::SetWindowSize(clientWidth, clientHeight);
 
     RECT rect = {0, 0, clientWidth, clientHeight};
     AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, FALSE, 0);

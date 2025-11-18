@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include "../../misc/global_vars.h"
 #include "../../src/scene/scene_dx.h"
 #include "../shared/camera.h"
 #include "../shared/light.h"
@@ -75,6 +76,10 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
 #endif
 
     hWnd = currenthWnd;
+
+    // Get window size from global vars.
+    clientWidth = ME::GlobalVars::GetWindowWidth();
+    clientHeight = ME::GlobalVars::GetWindowHeight();
 
     if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)))) {
         MessageBoxW(hWnd, L"Failed to create DXGI Factory", L"Error", MB_OK);
