@@ -25,7 +25,7 @@ ME::Shader::~Shader() {
 }
 
 void ME::Shader::CompileShader(const char* shaderName) {
-    std::string filePath = ME::GetResourcesPath() + "shaders/hlsl/" + shaderName;
+    std::string filePath = ME::Utils::GetResourcesPath() + "shaders/hlsl/" + shaderName;
     std::wstring wFilePath(filePath.begin(), filePath.end());
 
     HRESULT hr = S_OK;

@@ -23,15 +23,15 @@ class CBPerPass {
 /** Constant buffer structure for UI Text shaders. */
 class CBPerPassUIText {
    public:
-    uint32_t screenWidth;
-    uint32_t screenHeight;
+    // Packed screen dimension: high 16 bits = width, low 16 bits = height.
+    uint32_t screenDimension;
 };
 
 /** Constant buffer structure for UI Sprite shaders. */
 class CBPerPassUISprite {
    public:
-    uint32_t screenWidth;
-    uint32_t screenHeight;
+    // Packed screen dimension: high 16 bits = width, low 16 bits = height.
+    uint32_t screenDimension;
 };
 
 /** Constant buffer structure for shaders. */

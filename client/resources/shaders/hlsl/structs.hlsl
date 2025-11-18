@@ -59,12 +59,10 @@ struct CBPerPass {
 
 // Per Pass Constant Buffer for UI Text
 struct CBPerPassUIText {
-    uint screenWidth;
-    uint screenHeight;
+    uint screenDimension; // Packed
 };
 
 // Per Pass Constant Buffer for UI Sprite
 struct CBPerPassUISprite {
-    uint screenWidth;
-    uint screenHeight;
+    uint screenDimension; // Packed
 };

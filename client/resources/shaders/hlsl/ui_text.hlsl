@@ -41,8 +41,11 @@ VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
 
     float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), instanceData.modelMatrix);
     // Mapping to NDC space for UI rendering. [-1, 1] range.
-    outputPos.x = (outputPos.x / passData.screenWidth) * 2.0f;
-    outputPos.y = (outputPos.y / passData.screenHeight) * 2.0f;
+    // Screen dimensions are packed in a single uint32_t.
+    uint screenWidth = (passData.screenDimension >> 16) & 0xFFFF;
+    uint screenHeight = passData.screenDimension & 0xFFFF;
+    outputPos.x = (outputPos.x / screenWidth) * 2.0f;
+    outputPos.y = (outputPos.y / screenHeight) * 2.0f;
     output.position = outputPos;
     float2 flippedUV = float2(input.uv.x, 1.0f - input.uv.y);
     output.uv = GetAtlasUV(flippedUV, instanceData.atlasIndex, atlasProps, instanceData.flags);

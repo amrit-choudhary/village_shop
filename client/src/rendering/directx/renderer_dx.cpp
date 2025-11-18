@@ -366,8 +366,7 @@ void ME::RendererDX::Draw() {
         const uint32_t cbPerPassIndex = 2;  // UI Text CB is at index 2.
 
         CBPerPassUIText perPassData{};
-        perPassData.screenWidth = clientWidth;
-        perPassData.screenHeight = clientHeight;
+        perPassData.screenDimension = ME::GlobalVars::GetWindowSizeCombined();
         sceneDX->perPassCBs[cbPerPassIndex]->CopyData(&perPassData);
         D3D12_GPU_DESCRIPTOR_HANDLE cbvPerPass = descHeapManager->GetGPUDescriptorHandleForIndex(cbPerPassIndex);
         commandList->SetGraphicsRootDescriptorTable(0, cbvPerPass);

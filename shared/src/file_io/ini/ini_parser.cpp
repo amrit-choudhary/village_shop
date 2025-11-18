@@ -6,7 +6,7 @@ std::string fileName = "config/settings.ini";
 
 INIMap Load() {
     INIMap iniMap;
-    fileName = ME::GetResourcesPath() + fileName;
+    fileName = ME::Utils::GetResourcesPath() + fileName;
 
     std::ifstream file(fileName);
     std::stringstream buffer;

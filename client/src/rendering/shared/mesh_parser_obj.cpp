@@ -10,7 +10,7 @@
 #include "src/misc/utils.h"
 
 void ME::CreateMeshFromOBJ(const char* fileName, ME::Mesh& mesh) {
-    std::string filePath = ME::GetResourcesPath() + fileName;
+    std::string filePath = ME::Utils::GetResourcesPath() + fileName;
     std::ifstream file(filePath);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + filePath);

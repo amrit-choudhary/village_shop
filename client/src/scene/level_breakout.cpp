@@ -29,7 +29,7 @@ void ME::Level::Save(const Level& level, const char* filePath) {
         level1.bricks[i].type = static_cast<BrickType>(i % 8);
     }
 
-    std::string fileName = ME::GetResourcesPath() + filePath;
+    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
     std::ofstream file(fileName, std::ios::binary);
     if (!file) {
         throw std::runtime_error("Failed to open file for saving level data.");
@@ -47,7 +47,7 @@ void ME::Level::Save(const Level& level, const char* filePath) {
 }
 
 void ME::Level::Load(Level* level, const char* filePath) {
-    std::string fileName = ME::GetResourcesPath() + filePath;
+    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
     std::ifstream file(fileName, std::ios::binary);
     if (!file) {
         throw std::runtime_error("Failed to open file for saving level data.");

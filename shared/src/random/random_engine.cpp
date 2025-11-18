@@ -33,7 +33,7 @@ ME::Random::Random(uint32_t seed) {
 }
 
 ME::Random::Random(const char *seedString, bool useTime) {
-    uint32_t seed = ME::HashString2uint32(seedString);
+    uint32_t seed = ME::Utils::HashString2uint32(seedString);
     if (useTime) {
         seed += std::chrono::system_clock::now().time_since_epoch().count();
     }

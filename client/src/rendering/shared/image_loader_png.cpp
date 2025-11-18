@@ -32,7 +32,7 @@ void user_warning_fn(png_structp png_ptr, png_const_charp warning_msg) {
 }
 
 bool ME::LoadPNG(const char* fileName, PNGData& out_data) {
-    std::string fileNameString = ME::GetResourcesPath() + fileName;
+    std::string fileNameString = ME::Utils::GetResourcesPath() + fileName;
     const char* filename = fileNameString.c_str();
 
     png_structp png_ptr = nullptr;

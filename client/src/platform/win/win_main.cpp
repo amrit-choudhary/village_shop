@@ -72,7 +72,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
     // Initialize the game
     char exePath[MAX_PATH];
     GetModuleFileName(NULL, exePath, MAX_PATH);
-    ME::SetPaths(exePath, nullptr);
+    ME::Utils::SetPaths(exePath, nullptr);
 
     ME::GameMain game;
 

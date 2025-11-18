@@ -58,7 +58,7 @@ bool ME::JsonUtils::LoadSpriteAnimClipFromJSON(const char* filePath, ME::SpriteA
 }
 
 cJSON* ME::JsonUtils::LoadJSONFromFile(const char* filePath) {
-    std::string fileName = ME::GetResourcesPath() + filePath;
+    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
 
     std::ifstream file(fileName);
     std::stringstream buffer;

@@ -19,7 +19,7 @@ static inline std::string Trim(const std::string& s) {
 
 void ME::CSVParser::Parse(CSVData* csvData, const char* filePath, const bool flipVertical) {
     csvData->ClearData();
-    std::string fileName = ME::GetResourcesPath() + filePath;
+    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
     std::ifstream file(fileName);
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << fileName << std::endl;

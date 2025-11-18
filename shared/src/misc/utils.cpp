@@ -15,7 +15,7 @@ static std::string resourceDirPath;
 
 using namespace ME;
 
-uint32_t ME::HashString2uint32(const char* str) {
+uint32_t ME::Utils::HashString2uint32(const char* str) {
     uint32_t hash = 5381;
     int c;
     while ((c = *str++)) {
@@ -24,7 +24,7 @@ uint32_t ME::HashString2uint32(const char* str) {
     return hash;
 }
 
-void ME::SetPaths(char* arg1, char* arg2) {
+void ME::Utils::SetPaths(char* arg1, char* arg2) {
     executablePath = arg1;
 
     executableDirPath = std::string{executablePath};
@@ -43,6 +43,6 @@ void ME::SetPaths(char* arg1, char* arg2) {
     resourceDirPath += "/resources/";
 }
 
-std::string ME::GetResourcesPath() {
+std::string ME::Utils::GetResourcesPath() {
     return resourceDirPath;
 }
