@@ -22,6 +22,8 @@ void ME::SceneCharacterTest::Init() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
+    BuildUISpriteTransforms();
+    BuildUISpriteRenderers();
     BuildTextRenderers();
 }
 
@@ -40,6 +42,9 @@ void ME::SceneCharacterTest::CreateResources() {
     instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    uiSpriteTransforms = new ME::Transform*[Constants::MaxUISpriteTransformCount];
+    uiSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxUISpriteRendererCount];
+    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData*[Constants::MaxUISpriteInstanceDataCount];
     textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
     textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
     textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
@@ -57,7 +62,8 @@ void ME::SceneCharacterTest::CreateResources() {
     spriteTexturePaths[0] = "textures/font/ascii_ibm_transparent.png";
     spriteTexturePaths[1] = "textures/characters/character_walk_8.png";
     spriteTexturePaths[2] = "textures/enemies/enemy_atlas.png";
-    spriteTextureCount = 3;
+    spriteTexturePaths[3] = "textures/ui/ui_atlas.png";
+    spriteTextureCount = 4;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
@@ -66,7 +72,8 @@ void ME::SceneCharacterTest::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_char_8.json", textureAtlasProperties[1]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[2]);
-    textureAtlasPropertiesCount = 3;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[3]);
+    textureAtlasPropertiesCount = 4;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -166,14 +173,43 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
     instancedSpriteRendererCount = maxNPCCount;
 }
 
+void ME::SceneCharacterTest::BuildUISpriteTransforms() {
+    for (size_t i = 0; i < uiSpriteCount; ++i) {
+        uint8_t row = static_cast<uint8_t>(i / uiSpriteWidthCount);
+        uint8_t col = static_cast<uint8_t>(i % uiSpriteWidthCount);
+        float x = -175.0f + col * uiSpriteSize;
+        float y = -500.0f + row * uiSpriteSize;
+
+        uiSpriteTransforms[i] = new ME::Transform();
+        uiSpriteTransforms[i]->SetPosition(x, y, 0.0f);
+        uiSpriteTransforms[i]->SetScale(uiSpriteSize, uiSpriteSize);
+    }
+    uiSpriteTransformCount = uiSpriteCount;
+}
+
+void ME::SceneCharacterTest::BuildUISpriteRenderers() {
+    uint16_t s = 399;
+    uint16_t panel[15] = {s + 60, s + 61, s + 61, s + 61, s + 62, s + 30, s + 31, s + 31,
+                          s + 31, s + 32, s + 0,  s + 1,  s + 1,  s + 1,  s + 2};
+    for (size_t i = 0; i < uiSpriteCount; ++i) {
+        uiSpriteRenderers[i] = new ME::SpriteRenderer(3, 0, 1, 1, panel[i]);
+
+        uiSpriteInstanceData[i] = new ME::UISpriteRendererInstanceData();
+        uiSpriteInstanceData[i]->modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        uiSpriteInstanceData[i]->atlasIndex = i;
+        uiSpriteInstanceData[i]->color = ME::Color::White();
+    }
+    uiSpriteRendererCount = uiSpriteCount;
+    uiSpriteInstanceDataCount = uiSpriteCount;
+}
+
 void ME::SceneCharacterTest::BuildTextRenderers() {
     // Text 1
-    ME::TextRenderer* textRend1 =
-        new ME::TextRenderer{"\x0F Hero Test \x0F", 0, 2, 0, ME::Color::White(), 64, 64, -16, 0, 0};
+    ME::TextRenderer* textRend1 = new ME::TextRenderer{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 40, 40, -10, 0, 0};
     textRenderers[0] = textRend1;
 
     textTransforms[0] = new ME::Transform();
-    textTransforms[0]->SetPosition(-(textRend1->GetRenderWidth() / 2.0f), 400.0f, 0.0f);
+    textTransforms[0]->SetPosition(-(textRend1->GetRenderWidth() / 2.0f), -375.0f, 0.0f);
     textTransforms[0]->SetScale(textRend1->width, textRend1->height);
 
     for (uint32_t i = 0; i < textRend1->GetCount(); ++i) {

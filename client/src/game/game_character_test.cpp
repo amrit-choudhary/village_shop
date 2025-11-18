@@ -101,6 +101,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
             npcTransform->SetPosition(newPos);
             charScene->instancedSpriteRenderers[i]->bDirty = true;
+            ++score;
         } else {
             // Move towards player.
             ME::Vec3 moveDir = dirToPlayer.Normalised();
@@ -110,6 +111,10 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             charScene->instancedSpriteRenderers[i]->bDirty = true;
         }
     }
+
+    char scoreText[32];
+    snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
+    charScene->textRenderers[0]->SetText(scoreText);
 }
 
 void ME::GameCharacterTest::End() {

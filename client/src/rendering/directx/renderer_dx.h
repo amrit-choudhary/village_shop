@@ -86,6 +86,10 @@ class RendererDX : public PlatformRenderer {
     ID3D12PipelineState* pso2DUIText = nullptr;
     // Root signature for UI Text rendering.
     ID3D12RootSignature* rootSig2DUIText = nullptr;
+    // PSO for UI Sprite rendering.
+    ID3D12PipelineState* pso2DUISprite = nullptr;
+    // Root signature for UI Sprite rendering.
+    ID3D12RootSignature* rootSig2DUISprite = nullptr;
 
     uint32_t rtvDescriptorSize = 0;
     uint32_t dsvDescriptorSize = 0;

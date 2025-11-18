@@ -33,6 +33,9 @@ class RootSigDx {
     /** Create root signature for 2D UI Text rendering. */
     static ID3D12RootSignature* CreateRootSignature2DUIText(ID3D12Device* device);
 
+    /** Create root signature for 2D UI Sprite rendering. */
+    static ID3D12RootSignature* CreateRootSignature2DUISprite(ID3D12Device* device);
+
     /** Create root signature for 3D rendering. */
     static ID3D12RootSignature* CreateRootSignature3D(ID3D12Device* device);
 

@@ -59,6 +59,9 @@ class Scene {
     ME::SpriteRenderer** instancedSpriteRenderers;
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::TextureAtlasProperties* textureAtlasProperties;
+    ME::Transform** uiSpriteTransforms;
+    ME::SpriteRenderer** uiSpriteRenderers;
+    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
     ME::Transform** textTransforms;
     ME::TextRenderer** textRenderers;
     ME::TextRendererInstanceData** textInstanceData;
@@ -79,6 +82,9 @@ class Scene {
     uint16_t spriteRendererCount = 0;
     uint32_t instancedSpriteTransformCount = 0;
     uint32_t instancedSpriteRendererCount = 0;
+    uint32_t uiSpriteTransformCount = 0;
+    uint32_t uiSpriteRendererCount = 0;
+    uint32_t uiSpriteInstanceDataCount = 0;
     uint16_t textTransformsCount = 0;
     uint16_t textRendererCount = 0;
     uint32_t textInstanceDataCount = 0;
@@ -96,6 +102,8 @@ class Scene {
     virtual void BuildSpriteRenderers();
     virtual void BuildInstancedSpriteTransforms();
     virtual void BuildInstancedSpriteRenderers();
+    virtual void BuildUISpriteTransforms();
+    virtual void BuildUISpriteRenderers();
     virtual void BuildTextRenderers();
 
    private:
@@ -110,6 +118,12 @@ class Scene {
      * After update, the dirty flag is cleared.
      */
     void UpdateInstancedSpriteRenderers();
+
+    /**
+     * Updates UI sprite renderers that are marked as dirty.
+     * After update, the dirty flag is cleared.
+     */
+    void UpdateUISpriteRenderers();
 
     /**
      * Updates text renderers that are marked as dirty.

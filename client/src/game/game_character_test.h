@@ -33,8 +33,9 @@ class GameCharacterTest : public Game {
     const float enemySpeedVariance = 5.0f;
     const float outThrowDistance = 70.0f;
     const float minDistaneToPlayerSqr = 10.0f;
-    const size_t maxNPCCount = 200;
+    const size_t maxNPCCount = 64;
     ME::Transform* playerTransform = nullptr;
+    uint32_t score = 0;
 };
 
 }  // namespace ME

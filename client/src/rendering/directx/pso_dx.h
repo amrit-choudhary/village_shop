@@ -69,6 +69,10 @@ class PSODirectX {
     static ID3D12PipelineState* CreatePSO2DUIText(ID3D12Device* device, const char* shaderName,
                                                   ID3D12RootSignature* rootSignature);
 
+    /** Create PSO for 2D UI Sprite rendering. */
+    static ID3D12PipelineState* CreatePSO2DUISprite(ID3D12Device* device, const char* shaderName,
+                                                    ID3D12RootSignature* rootSignature);
+
    private:
 };
 

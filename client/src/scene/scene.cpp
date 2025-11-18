@@ -19,6 +19,8 @@ void ME::Scene::Init() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
+    BuildUISpriteTransforms();
+    BuildUISpriteRenderers();
     BuildTextRenderers();
 }
 
@@ -74,6 +76,21 @@ ME::Scene::~Scene() {
     }
     delete[] spriteInstanceData;
 
+    for (uint32_t i = 0; i < uiSpriteTransformCount; ++i) {
+        delete uiSpriteTransforms[i];
+    }
+    delete[] uiSpriteTransforms;
+
+    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
+        delete uiSpriteRenderers[i];
+    }
+    delete[] uiSpriteRenderers;
+
+    for (uint32_t i = 0; i < uiSpriteInstanceDataCount; ++i) {
+        delete uiSpriteInstanceData[i];
+    }
+    delete[] uiSpriteInstanceData;
+
     for (uint32_t i = 0; i < textTransformsCount; ++i) {
         delete textTransforms[i];
     }
@@ -105,6 +122,9 @@ void ME::Scene::CreateResources() {
     instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    uiSpriteTransforms = new ME::Transform*[Constants::MaxUISpriteTransformCount];
+    uiSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxUISpriteRendererCount];
+    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData*[Constants::MaxUISpriteInstanceDataCount];
     textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
     textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
     textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
@@ -335,6 +355,10 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
     }
 }
 
+void ME::Scene::BuildUISpriteTransforms() {}
+
+void ME::Scene::BuildUISpriteRenderers() {}
+
 void ME::Scene::BuildTextRenderers() {
     textRendererCount = 3;
     textTransformsCount = 3;
@@ -417,6 +441,7 @@ void ME::Scene::BuildTextRenderers() {
 void ME::Scene::Update() {
     UpdateSpriteRenderers();
     UpdateInstancedSpriteRenderers();
+    UpdateUISpriteRenderers();
     UpdateTextRenderers();
 }
 
@@ -460,6 +485,33 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
     for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
         if (instancedSpriteRenderers[i]->bDirty) {
             instancedSpriteRenderers[i]->bDirty = false;
+        }
+    }
+}
+
+void ME::Scene::UpdateUISpriteRenderers() {
+    // Updating transforms and atlas indicesfor dirty instances.
+    // In separate loops to avoid cache misses.
+
+    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
+        if (!uiSpriteRenderers[i]->bDirty) {
+            continue;
+        }
+        uiSpriteInstanceData[i]->modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+    }
+
+    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
+        if (!uiSpriteRenderers[i]->bDirty) {
+            continue;
+        }
+        uiSpriteInstanceData[i]->atlasIndex = uiSpriteRenderers[i]->atlasIndex;
+        uiSpriteInstanceData[i]->color = uiSpriteRenderers[i]->color;
+        uiSpriteInstanceData[i]->flags = uiSpriteRenderers[i]->flags;
+    }
+
+    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
+        if (uiSpriteRenderers[i]->bDirty) {
+            uiSpriteRenderers[i]->bDirty = false;
         }
     }
 }

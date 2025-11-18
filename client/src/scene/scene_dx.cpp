@@ -34,6 +34,8 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     spriteTransformCount = scene->spriteTransformCount;
     instancedSpriteTransforms = scene->instancedSpriteTransforms;
     instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
+    uiSpriteTransforms = scene->uiSpriteTransforms;
+    uiSpriteTransformCount = scene->uiSpriteTransformCount;
     textTransforms = scene->textTransforms;
     textTransformsCount = scene->textTransformsCount;
 
@@ -44,11 +46,16 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     instancedSpriteRenderers = scene->instancedSpriteRenderers;
     instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
     spriteInstanceData = scene->spriteInstanceData;
-    textureAtlasProperties = scene->textureAtlasProperties;
+    uiSpriteRenderers = scene->uiSpriteRenderers;
+    uiSpriteRendererCount = scene->uiSpriteRendererCount;
+    uiSpriteInstanceData = scene->uiSpriteInstanceData;
+    uiSpriteInstanceDataCount = scene->uiSpriteInstanceDataCount;
     textRenderers = scene->textRenderers;
     textRendererCount = scene->textRendererCount;
     textInstanceData = scene->textInstanceData;
     textInstanceDataCount = scene->textInstanceDataCount;
+
+    textureAtlasProperties = scene->textureAtlasProperties;
 
     MakeMeshes();
     MakeQuads();
@@ -59,6 +66,7 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     MakeTextureSamplers();
 
     MakeSpriteInstanceBuffer();
+    MakeUISpriteInstanceBuffer();
     MakeTextInstanceBuffer();
 }
 
@@ -194,7 +202,6 @@ void ME::SceneDX::MakeConstantBuffers() {
 
     // Creating texture atlas constant buffers.
     textureAtlasCBCount = scene->textureAtlasPropertiesCount;
-
     for (uint32_t i = 0; i < textureAtlasCBCount; ++i) {
         textureAtlasCBs[i] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::TextureAtlasProperties));
         textureAtlasCBHeapIndices[i] =
@@ -211,6 +218,17 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
         new ME::UploadBufferDX(device, false, instancedSpriteRendererCount, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
         spriteInstanceBuffer->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount);
+}
+
+void ME::SceneDX::MakeUISpriteInstanceBuffer() {
+    if (uiSpriteInstanceDataCount == 0) {
+        return;
+    }
+
+    uiSpriteInstanceBuffer =
+        new ME::UploadBufferDX(device, false, uiSpriteInstanceDataCount, sizeof(ME::UISpriteRendererInstanceData));
+    uiSpriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
+        uiSpriteInstanceBuffer->GetResource(), sizeof(ME::UISpriteRendererInstanceData), uiSpriteInstanceDataCount);
 }
 
 void ME::SceneDX::MakeTextInstanceBuffer() {

@@ -57,6 +57,8 @@ class SceneDX {
     ME::SpriteRenderer** spriteRenderers;
     ME::Transform** instancedSpriteTransforms;
     ME::SpriteRenderer** instancedSpriteRenderers;
+    ME::Transform** uiSpriteTransforms;
+    ME::SpriteRenderer** uiSpriteRenderers;
     ME::Transform** textTransforms;
     ME::TextRenderer** textRenderers;
 
@@ -66,6 +68,9 @@ class SceneDX {
     uint16_t spriteRendererCount = 0;
     uint32_t instancedSpriteTransformCount = 0;
     uint32_t instancedSpriteRendererCount = 0;
+    uint32_t uiSpriteTransformCount = 0;
+    uint32_t uiSpriteRendererCount = 0;
+    uint32_t uiSpriteInstanceDataCount = 0;
     uint32_t textTransformsCount = 0;
     uint32_t textRendererCount = 0;
     uint32_t textInstanceDataCount = 0;
@@ -76,6 +81,10 @@ class SceneDX {
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
     uint32_t spriteInstanceBufferHeapIndex = 0;
+
+    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
+    ME::UploadBufferDX* uiSpriteInstanceBuffer = nullptr;
+    uint32_t uiSpriteInstanceBufferHeapIndex = 0;
 
     ME::TextRendererInstanceData** textInstanceData;
     ME::UploadBufferDX* textInstanceBuffer = nullptr;
@@ -105,6 +114,7 @@ class SceneDX {
     void MakeConstantBuffers();
 
     void MakeSpriteInstanceBuffer();
+    void MakeUISpriteInstanceBuffer();
     void MakeTextInstanceBuffer();
 };
 
