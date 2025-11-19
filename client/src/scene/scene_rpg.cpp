@@ -20,7 +20,6 @@ void ME::SceneRPG::Init() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
-    BuildTextRenderers();
 }
 
 void ME::SceneRPG::CreateResources() {
@@ -38,9 +37,6 @@ void ME::SceneRPG::CreateResources() {
     instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
-    textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
-    textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
-    textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -53,16 +49,14 @@ void ME::SceneRPG::CreateResources() {
     textureCount = 0;
 
     spriteTexturePaths[0] = "textures/sprites/tileset_legacy.png";
-    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
-    spriteTextureCount = 2;
+    spriteTextureCount = 1;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_01.json", textureAtlasProperties[0]);
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    textureAtlasPropertiesCount = 1;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -114,34 +108,4 @@ void ME::SceneRPG::BuildInstancedSpriteRenderers() {
         spriteInstanceData[i]->atlasIndex = 0;
         spriteInstanceData[i]->color = ME::Color::White();
     }
-}
-
-void ME::SceneRPG::BuildTextRenderers() {
-    textRendererCount = 1;
-    textTransformsCount = 1;
-
-    // Text 1
-    ME::TextRenderer* textRend =
-        new ME::TextRenderer{"\x0F RPG LEVEL \x0F", 0, 2, 0, ME::Color::White(), 80, 80, -10, 0, 0};
-    textRenderers[0] = textRend;
-
-    textTransforms[0] = new ME::Transform();
-    textTransforms[0]->SetPosition(-(textRend->GetRenderWidth() / 2.0f), 940.0f, 0.0f);
-    textTransforms[0]->SetScale(textRend->width, textRend->height);
-
-    for (uint32_t i = 0; i < textRend->GetCount(); ++i) {
-        textInstanceData[i] = new ME::TextRendererInstanceData();
-
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[0]->GetPosition();
-        position.x += (i * (textRend->width + textRend->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend->width, textRend->height);
-        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetDataForShader();
-
-        textInstanceData[i]->color = textRend->color;
-        textInstanceData[i]->atlasIndex = textRend->text[i];
-    }
-
-    textInstanceDataCount = textRend->GetCount();
 }

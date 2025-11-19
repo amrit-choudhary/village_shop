@@ -351,8 +351,8 @@ void ME::RendererDX::Draw() {
         commandList->SetPipelineState(pso2DInsAtl);
         commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
 
-        const uint32_t textureIndex = 2;
-        const uint32_t atlasPropsIndex = 2;
+        const uint32_t textureIndex = 1;
+        const uint32_t atlasPropsIndex = 1;
         const uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
         const uint32_t cbPerPassIndex = 0;
 

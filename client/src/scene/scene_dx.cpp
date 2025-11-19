@@ -34,10 +34,6 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     spriteTransformCount = scene->spriteTransformCount;
     instancedSpriteTransforms = scene->instancedSpriteTransforms;
     instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
-    uiSpriteTransforms = scene->uiSpriteTransforms;
-    uiSpriteTransformCount = scene->uiSpriteTransformCount;
-    textTransforms = scene->textTransforms;
-    textTransformsCount = scene->textTransformsCount;
 
     meshRenderers = scene->meshRenderers;
     meshRendererCount = scene->meshRendererCount;
@@ -46,14 +42,6 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     instancedSpriteRenderers = scene->instancedSpriteRenderers;
     instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
     spriteInstanceData = scene->spriteInstanceData;
-    uiSpriteRenderers = scene->uiSpriteRenderers;
-    uiSpriteRendererCount = scene->uiSpriteRendererCount;
-    uiSpriteInstanceData = scene->uiSpriteInstanceData;
-    uiSpriteInstanceDataCount = scene->uiSpriteInstanceDataCount;
-    textRenderers = scene->textRenderers;
-    textRendererCount = scene->textRendererCount;
-    textInstanceData = scene->textInstanceData;
-    textInstanceDataCount = scene->textInstanceDataCount;
 
     textureAtlasProperties = scene->textureAtlasProperties;
 
@@ -66,8 +54,6 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     MakeTextureSamplers();
 
     MakeSpriteInstanceBuffer();
-    MakeUISpriteInstanceBuffer();
-    MakeTextInstanceBuffer();
 }
 
 ME::SceneDX::~SceneDX() {
@@ -180,19 +166,11 @@ void ME::SceneDX::MakeTextureSamplers() {}
 
 void ME::SceneDX::MakeConstantBuffers() {
     // Creating per-pass constant buffers.
-    perPassCBCount = 3;
+    perPassCBCount = 1;
 
     // Sprite Rendering.
     perPassCBs[0] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPass));
     perPassCBHeapIndices[0] = descHeapManager->CreateCBV(perPassCBs[0]->GetResource(), perPassCBs[0]->GetElementSize());
-
-    // UI Sprite Rendering.
-    perPassCBs[1] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPassUISprite));
-    perPassCBHeapIndices[1] = descHeapManager->CreateCBV(perPassCBs[1]->GetResource(), perPassCBs[1]->GetElementSize());
-
-    // UI Text Rendering.
-    perPassCBs[2] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::CBPerPassUIText));
-    perPassCBHeapIndices[2] = descHeapManager->CreateCBV(perPassCBs[2]->GetResource(), perPassCBs[2]->GetElementSize());
 
     // Creating per-sprite constant buffers.
     perSpriteCBCount = spriteRendererCount;
@@ -220,28 +198,6 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
         new ME::UploadBufferDX(device, false, instancedSpriteRendererCount, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
         spriteInstanceBuffer->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount);
-}
-
-void ME::SceneDX::MakeUISpriteInstanceBuffer() {
-    if (uiSpriteInstanceDataCount == 0) {
-        return;
-    }
-
-    uiSpriteInstanceBuffer =
-        new ME::UploadBufferDX(device, false, uiSpriteInstanceDataCount, sizeof(ME::UISpriteRendererInstanceData));
-    uiSpriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        uiSpriteInstanceBuffer->GetResource(), sizeof(ME::UISpriteRendererInstanceData), uiSpriteInstanceDataCount);
-}
-
-void ME::SceneDX::MakeTextInstanceBuffer() {
-    if (textInstanceDataCount == 0) {
-        return;
-    }
-
-    textInstanceBuffer =
-        new ME::UploadBufferDX(device, false, textInstanceDataCount, sizeof(ME::TextRendererInstanceData));
-    textInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData), textInstanceDataCount);
 }
 
 #endif  // VG_WIN

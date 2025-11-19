@@ -24,7 +24,6 @@ class SceneDiceSimple : public Scene {
     virtual void BuildSpriteRenderers() override;
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
-    virtual void BuildTextRenderers() override;
 
    private:
     const float cellSize = 16.0f;

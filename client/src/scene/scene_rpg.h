@@ -35,7 +35,6 @@ class SceneRPG : public Scene {
     virtual void BuildSpriteRenderers() override;
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
-    virtual void BuildTextRenderers() override;
 };
 
 }  // namespace ME

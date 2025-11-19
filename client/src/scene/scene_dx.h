@@ -50,17 +50,12 @@ class SceneDX {
     ME::TextureDX** textures;
     ME::TextureDX** spriteTextures;
     ME::TextureAtlasProperties* textureAtlasProperties;
-    CD3DX12_STATIC_SAMPLER_DESC** textureSamplerStates;
     ME::Transform** transforms;
     ME::MeshRenderer** meshRenderers;
     ME::Transform** spriteTransforms;
     ME::SpriteRenderer** spriteRenderers;
     ME::Transform** instancedSpriteTransforms;
     ME::SpriteRenderer** instancedSpriteRenderers;
-    ME::Transform** uiSpriteTransforms;
-    ME::SpriteRenderer** uiSpriteRenderers;
-    ME::Transform** textTransforms;
-    ME::TextRenderer** textRenderers;
 
     uint16_t transformCount = 0;
     uint16_t meshRendererCount = 0;
@@ -68,12 +63,6 @@ class SceneDX {
     uint16_t spriteRendererCount = 0;
     uint32_t instancedSpriteTransformCount = 0;
     uint32_t instancedSpriteRendererCount = 0;
-    uint32_t uiSpriteTransformCount = 0;
-    uint32_t uiSpriteRendererCount = 0;
-    uint32_t uiSpriteInstanceDataCount = 0;
-    uint32_t textTransformsCount = 0;
-    uint32_t textRendererCount = 0;
-    uint32_t textInstanceDataCount = 0;
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;
     uint32_t perSpriteCBCount = 0;
@@ -81,14 +70,6 @@ class SceneDX {
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::UploadBufferDX* spriteInstanceBuffer = nullptr;
     uint32_t spriteInstanceBufferHeapIndex = 0;
-
-    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
-    ME::UploadBufferDX* uiSpriteInstanceBuffer = nullptr;
-    uint32_t uiSpriteInstanceBufferHeapIndex = 0;
-
-    ME::TextRendererInstanceData** textInstanceData;
-    ME::UploadBufferDX* textInstanceBuffer = nullptr;
-    uint32_t textInstanceBufferHeapIndex = 0;
 
     ME::UploadBufferDX** perPassCBs = nullptr;
     uint32_t* perPassCBHeapIndices = nullptr;  // Map of heap indices for perPassCBs for gpu binding later.
@@ -114,8 +95,6 @@ class SceneDX {
     void MakeConstantBuffers();
 
     void MakeSpriteInstanceBuffer();
-    void MakeUISpriteInstanceBuffer();
-    void MakeTextInstanceBuffer();
 };
 
 }  // namespace ME

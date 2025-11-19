@@ -58,7 +58,6 @@ class SceneBreakout : public Scene {
     virtual void BuildSpriteRenderers() override;
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
-    virtual void BuildTextRenderers() override;
 
    private:
     ME::Color colorPalette[8] = {ME::Color("#fbffff"), ME::Color("#3a5975"), ME::Color("#d74339"),

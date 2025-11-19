@@ -24,9 +24,6 @@ class SceneCharacterTest : public Scene {
     virtual void BuildSpriteRenderers() override;
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
-    virtual void BuildUISpriteTransforms() override;
-    virtual void BuildUISpriteRenderers() override;
-    virtual void BuildTextRenderers() override;
 
    private:
     const float charWidth = 8.0f;

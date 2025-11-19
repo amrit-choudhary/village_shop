@@ -19,9 +19,6 @@ void ME::Scene::Init() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
-    BuildUISpriteTransforms();
-    BuildUISpriteRenderers();
-    BuildTextRenderers();
 }
 
 ME::Scene::~Scene() {
@@ -75,36 +72,6 @@ ME::Scene::~Scene() {
         delete spriteInstanceData[i];
     }
     delete[] spriteInstanceData;
-
-    for (uint32_t i = 0; i < uiSpriteTransformCount; ++i) {
-        delete uiSpriteTransforms[i];
-    }
-    delete[] uiSpriteTransforms;
-
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        delete uiSpriteRenderers[i];
-    }
-    delete[] uiSpriteRenderers;
-
-    for (uint32_t i = 0; i < uiSpriteInstanceDataCount; ++i) {
-        delete uiSpriteInstanceData[i];
-    }
-    delete[] uiSpriteInstanceData;
-
-    for (uint32_t i = 0; i < textTransformsCount; ++i) {
-        delete textTransforms[i];
-    }
-    delete[] textTransforms;
-
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        delete textRenderers[i];
-    }
-    delete[] textRenderers;
-
-    for (uint32_t i = 0; i < textInstanceDataCount; ++i) {
-        delete textInstanceData[i];
-    }
-    delete[] textInstanceData;
 }
 
 void ME::Scene::CreateResources() {
@@ -122,12 +89,6 @@ void ME::Scene::CreateResources() {
     instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
-    uiSpriteTransforms = new ME::Transform*[Constants::MaxUISpriteTransformCount];
-    uiSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxUISpriteRendererCount];
-    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData*[Constants::MaxUISpriteInstanceDataCount];
-    textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
-    textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
-    textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -355,94 +316,9 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
     }
 }
 
-void ME::Scene::BuildUISpriteTransforms() {}
-
-void ME::Scene::BuildUISpriteRenderers() {}
-
-void ME::Scene::BuildTextRenderers() {
-    textRendererCount = 3;
-    textTransformsCount = 3;
-
-    // Text 1
-    ME::TextRenderer* textRend =
-        new ME::TextRenderer{"\x06 VILLAGE SHOP \x06", 0, 2, 0, ME::Color::Green(), 100, 100, -10, 0, 0};
-    textRenderers[0] = textRend;
-
-    textTransforms[0] = new ME::Transform();
-    textTransforms[0]->SetPosition(-(textRend->GetRenderWidth() / 2.0f), -650.0f, 0.0f);
-    textTransforms[0]->SetScale(textRend->width, textRend->height);
-
-    for (uint32_t i = 0; i < textRend->GetCount(); ++i) {
-        textInstanceData[i] = new ME::TextRendererInstanceData();
-
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[0]->GetPosition();
-        position.x += (i * (textRend->width + textRend->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend->width, textRend->height);
-        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetData();
-
-        textInstanceData[i]->color = textRend->color;
-        textInstanceData[i]->atlasIndex = textRend->text[i];
-    }
-    textInstanceDataCount = textRend->GetCount();
-
-    // Text 2
-    ME::TextRenderer* textRend2 =
-        new ME::TextRenderer{"\x10 The Game! \x11", 0, 2, 0, ME::Color::Blue(), 60, 60, -8, 0, 0};
-    textRenderers[1] = textRend2;
-
-    textTransforms[1] = new ME::Transform();
-    textTransforms[1]->SetPosition(-(textRend2->GetRenderWidth() / 2.0f), -770.0f, 0.0f);
-    textTransforms[1]->SetScale(textRend2->width, textRend2->height);
-
-    uint32_t j = textInstanceDataCount;
-    for (uint32_t i = 0; i < textRend2->GetCount(); ++i) {
-        textInstanceData[i + j] = new ME::TextRendererInstanceData();
-
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[1]->GetPosition();
-        position.x += (i * (textRend2->width + textRend2->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend2->width, textRend2->height);
-        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetData();
-
-        textInstanceData[i + j]->color = textRend2->color;
-        textInstanceData[i + j]->atlasIndex = textRend2->text[i];
-    }
-    textInstanceDataCount += textRend2->GetCount();
-
-    // Text 3
-    ME::TextRenderer* textRend3 =
-        new ME::TextRenderer{"Created by Amrit Choudhary", 0, 2, 0, ME::Color::Purple(), 40, 40, -4, 0, 0};
-    textRenderers[2] = textRend3;
-
-    textTransforms[2] = new ME::Transform();
-    textTransforms[2]->SetPosition(-(textRend3->GetRenderWidth() / 2.0f), -880.0f, 0.0f);
-    textTransforms[2]->SetScale(textRend3->width, textRend3->height);
-
-    uint32_t k = textInstanceDataCount;
-    for (uint32_t i = 0; i < textRend3->GetCount(); ++i) {
-        textInstanceData[i + k] = new ME::TextRendererInstanceData();
-
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[2]->GetPosition();
-        position.x += (i * (textRend3->width + textRend3->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend3->width, textRend3->height);
-        textInstanceData[i + k]->modelMatrixData = transform.GetModelMatrix().GetData();
-
-        textInstanceData[i + k]->color = textRend3->color;
-        textInstanceData[i + k]->atlasIndex = textRend3->text[i];
-    }
-    textInstanceDataCount += textRend3->GetCount();
-}
-
 void ME::Scene::Update() {
     UpdateSpriteRenderers();
     UpdateInstancedSpriteRenderers();
-    UpdateUISpriteRenderers();
-    UpdateTextRenderers();
 }
 
 void ME::Scene::UpdateSpriteRenderers() {
@@ -486,47 +362,5 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
         if (instancedSpriteRenderers[i]->bDirty) {
             instancedSpriteRenderers[i]->bDirty = false;
         }
-    }
-}
-
-void ME::Scene::UpdateUISpriteRenderers() {
-    // Updating transforms and atlas indicesfor dirty instances.
-    // In separate loops to avoid cache misses.
-
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (!uiSpriteRenderers[i]->bDirty) {
-            continue;
-        }
-        uiSpriteInstanceData[i]->modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-    }
-
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (!uiSpriteRenderers[i]->bDirty) {
-            continue;
-        }
-        uiSpriteInstanceData[i]->atlasIndex = uiSpriteRenderers[i]->atlasIndex;
-        uiSpriteInstanceData[i]->color = uiSpriteRenderers[i]->color;
-        uiSpriteInstanceData[i]->flags = uiSpriteRenderers[i]->flags;
-    }
-
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (uiSpriteRenderers[i]->bDirty) {
-            uiSpriteRenderers[i]->bDirty = false;
-        }
-    }
-}
-
-void ME::Scene::UpdateTextRenderers() {
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        if (!textRenderers[i]->bDirty) {
-            count += textRenderers[i]->GetCount();
-            continue;
-        }
-        for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
-            textInstanceData[count]->atlasIndex = textRenderers[i]->text[j];
-            count++;
-        }
-        textRenderers[i]->bDirty = false;
     }
 }

@@ -1,12 +1,14 @@
+#pragma once
+
 /**
  * Scene class implementation
  * This file contains the implementation of the Scene class, which is responsible for managing
  * the 3D scene, including loading models, managing lights, and rendering the scene.
  * The Scene class provides methods to load models, set up lights, and render the scene using
  * the rendering engine. It also handles the camera and view transformations.
+ *
+ * UI related functionalities are handled in a separate SceneUI class.
  */
-
-#pragma once
 
 #include "../rendering/shared/camera.h"
 #include "../rendering/shared/light.h"
@@ -59,12 +61,6 @@ class Scene {
     ME::SpriteRenderer** instancedSpriteRenderers;
     ME::SpriteRendererInstanceData** spriteInstanceData;
     ME::TextureAtlasProperties* textureAtlasProperties;
-    ME::Transform** uiSpriteTransforms;
-    ME::SpriteRenderer** uiSpriteRenderers;
-    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
-    ME::Transform** textTransforms;
-    ME::TextRenderer** textRenderers;
-    ME::TextRendererInstanceData** textInstanceData;
 
     ME::ColliderAABB* staticColliders;
     ME::ColliderAABB* dynamicColliders;
@@ -82,12 +78,6 @@ class Scene {
     uint16_t spriteRendererCount = 0;
     uint32_t instancedSpriteTransformCount = 0;
     uint32_t instancedSpriteRendererCount = 0;
-    uint32_t uiSpriteTransformCount = 0;
-    uint32_t uiSpriteRendererCount = 0;
-    uint32_t uiSpriteInstanceDataCount = 0;
-    uint16_t textTransformsCount = 0;
-    uint16_t textRendererCount = 0;
-    uint32_t textInstanceDataCount = 0;
 
     uint32_t staticColliderCount = 0;
     uint8_t dynamicColliderCount = 0;
@@ -102,9 +92,6 @@ class Scene {
     virtual void BuildSpriteRenderers();
     virtual void BuildInstancedSpriteTransforms();
     virtual void BuildInstancedSpriteRenderers();
-    virtual void BuildUISpriteTransforms();
-    virtual void BuildUISpriteRenderers();
-    virtual void BuildTextRenderers();
 
    private:
     /**
@@ -118,18 +105,6 @@ class Scene {
      * After update, the dirty flag is cleared.
      */
     void UpdateInstancedSpriteRenderers();
-
-    /**
-     * Updates UI sprite renderers that are marked as dirty.
-     * After update, the dirty flag is cleared.
-     */
-    void UpdateUISpriteRenderers();
-
-    /**
-     * Updates text renderers that are marked as dirty.
-     * After update, the dirty flag is cleared.
-     */
-    void UpdateTextRenderers();
 };
 
 }  // namespace ME
