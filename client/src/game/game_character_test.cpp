@@ -9,6 +9,8 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     scene = new ME::SceneCharacterTest();
     scene->Init();
     charScene = dynamic_cast<ME::SceneCharacterTest*>(scene);
+    uiScene = new ME::SceneUI();
+    uiScene->Init();
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);
@@ -114,7 +116,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
-    charScene->textRenderers[0]->SetText(scoreText);
+    uiScene->textRenderers[0]->SetText(scoreText);
 }
 
 void ME::GameCharacterTest::End() {

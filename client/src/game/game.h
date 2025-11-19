@@ -13,6 +13,7 @@
 #include "../input/input_manager.h"
 #include "../net/connection.h"
 #include "../scene/scene.h"
+#include "../scene/scene_ui.h"
 #include "src/datastructure/ring_buffer.h"
 #include "src/logging.h"
 #include "src/math/math.h"
@@ -49,12 +50,14 @@ class Game {
     virtual void CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result);
 
     ME::Scene *GetScene();
+    ME::SceneUI *GetUIScene();
 
    protected:
     ME::Time::TimeManager *timeManager = nullptr;
     ME::Connection *connection = nullptr;
     ME::Input::InputManager *inputManager = nullptr;
     ME::Scene *scene = nullptr;
+    ME::SceneUI *uiScene = nullptr;
     ME::PhysicsSystem *physicsSystem = nullptr;
     ME::AnimationSystem *animationSystem = nullptr;
 };

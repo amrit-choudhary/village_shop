@@ -28,6 +28,8 @@ namespace ME {
 // Forward declarations to avoid including shader/quad headers here.
 class Scene;
 class SceneDX;
+class SceneUI;
+class SceneUIDX;
 class QuadDX;
 
 /**
@@ -41,6 +43,9 @@ class RendererDX : public PlatformRenderer {
     // Sets scene for the renderer.
     void SetScene(ME::Scene* gameScene) override;
 
+    // Sets both game and UI scenes for the renderer.
+    void SetScenes(ME::Scene* gameScene, ME::SceneUI* uiScene) override;
+
     // Will return true if game should tick based on FFR.
     void Update() override;
 
@@ -53,9 +58,12 @@ class RendererDX : public PlatformRenderer {
     void Draw();
 
    private:
-    HWND hWnd;
     ME::Scene* scene = nullptr;
     ME::SceneDX* sceneDX = nullptr;
+    ME::SceneUI* uiScene = nullptr;
+    ME::SceneUIDX* uiSceneDX = nullptr;
+
+    HWND hWnd;
     ComPtr<IDXGIFactory4> factory;
     ComPtr<ID3D12Device> device;
     ComPtr<ID3D12CommandQueue> commandQueue;

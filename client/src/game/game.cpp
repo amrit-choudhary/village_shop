@@ -53,3 +53,7 @@ void ME::Game::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResu
 ME::Scene* ME::Game::GetScene() {
     return scene;
 }
+
+ME::SceneUI* ME::Game::GetUIScene() {
+    return uiScene;
+}

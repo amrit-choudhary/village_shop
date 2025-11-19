@@ -37,7 +37,7 @@ void ME::GameMain::Init(HWND hWnd) {
     game.Init(&timeManager);
 
     renderer.InitDX(hWnd);
-    renderer.SetScene(game.GetScene());
+    renderer.SetScenes(game.GetScene(), game.GetUIScene());
 
     // Clock init after all systems are initialized.
     timeManager.Init(fps, false);

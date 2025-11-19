@@ -120,6 +120,8 @@ ME::SceneDX::~SceneDX() {
     delete[] textureAtlasCBHeapIndices;
 }
 
+void ME::SceneDX::Init() {}
+
 void ME::SceneDX::PostInitCleanup() {
     for (uint8_t i = 0; i < scene->meshCount; i++) {
         meshes[i]->ReleaseUploadBuffers();

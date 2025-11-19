@@ -24,6 +24,9 @@ class PlatformRenderer {
     // Sets the scene for the renderer.
     // This will be called by the game to set the scene for the renderer.
     virtual void SetScene(ME::Scene *gameScene) = 0;
+
+    // Sets both game and UI scenes for the renderer.
+    virtual void SetScenes(ME::Scene *gameScene, ME::SceneUI *uiScene) = 0;
 };
 
 /**
