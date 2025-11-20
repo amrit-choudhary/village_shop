@@ -1,7 +1,7 @@
 # The Village Shop
 
 <p align="center">
-<img src="/screenshots/CharacterTestGithub.gif" width="500px" />
+<img src="/screenshots/SceneAndUIDemo.gif" width="500px" />
 </p>
 
 <p align="center">
