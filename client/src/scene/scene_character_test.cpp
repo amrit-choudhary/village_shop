@@ -137,8 +137,8 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
     // Bullet Sprites.
     ME::Random rnd2{"bullet_position", true};
     for (size_t i = 0; i < maxBulletCount; ++i) {
-        float x = rnd2.NextDouble() * 500.0f - 250.0f;
-        float y = rnd2.NextDouble() * 500.0f - 250.0f;
+        float x = 9000.0f;
+        float y = 9000.0f;
 
         instancedSpriteTransforms1[i] = new ME::Transform();
         instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);

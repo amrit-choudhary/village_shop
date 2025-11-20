@@ -19,7 +19,9 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->Init();
 
     playerTransform = charScene->spriteTransforms[0];
-    uiScene->textRenderers[0]->SetText("  Character Test  ");
+    uiScene->textRenderers[0]->SetText("    Bullet Test   ");
+
+    bulletDirs = new ME::Vec2[maxBulletCount]{};
 
     ME::Log("Character Animation Test Game Start!");
 }
@@ -27,7 +29,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::GameCharacterTest::Update(double deltaTime) {
     Game::Update(deltaTime);
 
-    const float speed = 20.0f * deltaTime;
+    const float speed = 30.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
     ME::SpriteAnimator* animator = charScene->spriteRenderers[0]->animator;
@@ -41,6 +43,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             animator->ChangeClip(0);  // Up animation
         }
         bAnyKeyDown = true;
+        bulletStartDirAngle = ME::HALF_PI;
     }
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::S)) {
@@ -51,6 +54,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             animator->ChangeClip(2);  // Down animation
         }
         bAnyKeyDown = true;
+        bulletStartDirAngle = 3.0f * ME::HALF_PI;
     }
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::A)) {
@@ -61,6 +65,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             animator->ChangeClip(3);  // Left animation
         }
         bAnyKeyDown = true;
+        bulletStartDirAngle = 2.0f * ME::HALF_PI;
     }
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::D)) {
@@ -71,6 +76,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             animator->ChangeClip(1);  // Right animation
         }
         bAnyKeyDown = true;
+        bulletStartDirAngle = 0.0f;
     }
 
     if (bAnyKeyDown) {
@@ -119,12 +125,40 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
     uiScene->textRenderers[1]->SetText(scoreText);
 
-    const size_t maxBulletCount = 9'000;
-    if (inputManager->GetKeyReleased(ME::Input::KeyCode::Space)) {
-        for (int i = 0; i < maxBulletCount; ++i) {
-            charScene->instancedSpriteRenderers1[i]->color = ME::Color::RandomColorPretty();
-            charScene->instancedSpriteRenderers1[i]->bDirty = true;
+    // Bullet handling.
+    ++frameCounter;
+    if (frameCounter >= fireRate && inputManager->GetKeyDown(ME::Input::KeyCode::Space)) {
+        frameCounter = 0;
+        burstCounter = 0;
+        ++cycleCounter;
+        for (size_t i = 0; i < maxBulletCount; ++i) {
+            if (burstCounter >= burstCount) {
+                break;
+            }
+            if (bulletDirs[i].Length() < 1.0f) {
+                ++burstCounter;
+                float angle = bulletStartDirAngle + (rndBullet.NextDouble() - 0.5f) * ME::QUARTER_PI * 0.75f;
+                bulletDirs[i] = ME::Vec2{cos(angle), sin(angle)};
+                charScene->instancedSpriteTransforms1[i]->SetPosition(playerTransform->GetPosition());
+                charScene->instancedSpriteRenderers1[i]->atlasIndex = (cycleCounter % 4);
+            }
         }
+    }
+
+    // Move bullets.
+    for (size_t i = 0; i < maxBulletCount; ++i) {
+        ME::Transform* bulletTransform = charScene->instancedSpriteTransforms1[i];
+        ME::Vec3 bulletPos = bulletTransform->GetPosition();
+        bulletPos.x += bulletDirs[i].x * bulletSpeed * static_cast<float>(deltaTime);
+        bulletPos.y += bulletDirs[i].y * bulletSpeed * static_cast<float>(deltaTime);
+
+        if (bulletPos.Length() > 1000.0f) {
+            bulletPos = bulletParkPos;
+            bulletDirs[i] = ME::Vec2{0.0f, 0.0f};
+        }
+
+        bulletTransform->SetPosition(bulletPos);
+        charScene->instancedSpriteRenderers1[i]->bDirty = true;
     }
 }
 
@@ -133,6 +167,9 @@ void ME::GameCharacterTest::End() {
     physicsScene = nullptr;
     delete charScene;
     charScene = nullptr;
+
+    delete[] bulletDirs;
+    bulletDirs = nullptr;
 
     Game::End();
     ME::Log("Character Animation Test Game End!");
