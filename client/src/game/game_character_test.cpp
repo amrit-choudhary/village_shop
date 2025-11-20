@@ -118,6 +118,14 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
     uiScene->textRenderers[1]->SetText(scoreText);
+
+    const size_t maxBulletCount = 9'000;
+    if (inputManager->GetKeyReleased(ME::Input::KeyCode::Space)) {
+        for (int i = 0; i < maxBulletCount; ++i) {
+            charScene->instancedSpriteRenderers1[i]->color = ME::Color::RandomColorPretty();
+            charScene->instancedSpriteRenderers1[i]->bDirty = true;
+        }
+    }
 }
 
 void ME::GameCharacterTest::End() {

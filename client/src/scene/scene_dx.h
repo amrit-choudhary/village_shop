@@ -54,15 +54,24 @@ class SceneDX {
     ME::MeshRenderer** meshRenderers;
     ME::Transform** spriteTransforms;
     ME::SpriteRenderer** spriteRenderers;
+
     ME::Transform** instancedSpriteTransforms0;
     ME::SpriteRenderer** instancedSpriteRenderers0;
+
+    ME::Transform** instancedSpriteTransforms1;
+    ME::SpriteRenderer** instancedSpriteRenderers1;
 
     uint16_t transformCount = 0;
     uint16_t meshRendererCount = 0;
     uint16_t spriteTransformCount = 0;
     uint16_t spriteRendererCount = 0;
+
     uint32_t instancedSpriteTransformCount0 = 0;
     uint32_t instancedSpriteRendererCount0 = 0;
+
+    uint32_t instancedSpriteTransformCount1 = 0;
+    uint32_t instancedSpriteRendererCount1 = 0;
+
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;
     uint32_t perSpriteCBCount = 0;
@@ -70,6 +79,10 @@ class SceneDX {
     ME::SpriteRendererInstanceData** spriteInstanceData0;
     ME::UploadBufferDX* spriteInstanceBuffer0 = nullptr;
     uint32_t spriteInstanceBufferHeapIndex0 = 0;
+
+    ME::SpriteRendererInstanceData* spriteInstanceData1;
+    ME::UploadBufferDX* spriteInstanceBuffer1 = nullptr;
+    uint32_t spriteInstanceBufferHeapIndex1 = 0;
 
     ME::UploadBufferDX** perPassCBs = nullptr;
     uint32_t* perPassCBHeapIndices = nullptr;  // Map of heap indices for perPassCBs for gpu binding later.

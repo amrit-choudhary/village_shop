@@ -72,6 +72,18 @@ ME::Scene::~Scene() {
         delete spriteInstanceData0[i];
     }
     delete[] spriteInstanceData0;
+
+    for (uint32_t i = 0; i < instancedSpriteTransformCount1; ++i) {
+        delete instancedSpriteTransforms1[i];
+    }
+    delete[] instancedSpriteTransforms1;
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
+        delete instancedSpriteRenderers1[i];
+    }
+    delete[] instancedSpriteRenderers1;
+
+    delete[] spriteInstanceData1;
 }
 
 void ME::Scene::CreateResources() {
@@ -86,9 +98,14 @@ void ME::Scene::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+
+    instancedSpriteTransforms1 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData1 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -361,6 +378,28 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
     for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
         if (instancedSpriteRenderers0[i]->bDirty) {
             instancedSpriteRenderers0[i]->bDirty = false;
+        }
+    }
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
+        if (!instancedSpriteRenderers1[i]->bDirty) {
+            continue;
+        }
+        spriteInstanceData1[i].modelMatrixData = instancedSpriteTransforms1[i]->GetModelMatrix().GetDataForShader();
+    }
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
+        if (!instancedSpriteRenderers1[i]->bDirty) {
+            continue;
+        }
+        spriteInstanceData1[i].atlasIndex = instancedSpriteRenderers1[i]->atlasIndex;
+        spriteInstanceData1[i].color = instancedSpriteRenderers1[i]->color;
+        spriteInstanceData1[i].flags = instancedSpriteRenderers1[i]->flags;
+    }
+
+    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
+        if (instancedSpriteRenderers1[i]->bDirty) {
+            instancedSpriteRenderers1[i]->bDirty = false;
         }
     }
 }

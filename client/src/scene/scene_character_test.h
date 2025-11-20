@@ -34,6 +34,8 @@ class SceneCharacterTest : public Scene {
     const float uiSpriteSize = 80.0f;
     const size_t uiSpriteCount = 15;
     const size_t uiSpriteWidthCount = 5;
+    const size_t maxBulletCount = 9000;
+    const float bulletSize = 4.0f;
 };
 
 };  // namespace ME

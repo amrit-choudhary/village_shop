@@ -36,9 +36,14 @@ void ME::SceneCharacterTest::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+
+    instancedSpriteTransforms1 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData1 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -52,7 +57,8 @@ void ME::SceneCharacterTest::CreateResources() {
 
     spriteTexturePaths[0] = "textures/characters/character_walk_8.png";
     spriteTexturePaths[1] = "textures/enemies/enemy_atlas.png";
-    spriteTextureCount = 2;
+    spriteTexturePaths[2] = "textures/sprites/fireball.png";
+    spriteTextureCount = 3;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
@@ -60,7 +66,8 @@ void ME::SceneCharacterTest::CreateResources() {
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_char_8.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
+    textureAtlasPropertiesCount = 3;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
     textureSamplerCount = 1;
@@ -115,7 +122,7 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
-    // NPC Sprites
+    // NPC Sprites.
     ME::Random rnd{"npc_position", true};
     for (size_t i = 0; i < maxNPCCount; ++i) {
         float x = rnd.NextDouble() * 70.0f - 35.0f;
@@ -126,6 +133,18 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         instancedSpriteTransforms0[i]->SetScale(npcWidth, npcHeight);
     }
     instancedSpriteTransformCount0 = maxNPCCount;
+
+    // Bullet Sprites.
+    ME::Random rnd2{"bullet_position", true};
+    for (size_t i = 0; i < maxBulletCount; ++i) {
+        float x = rnd2.NextDouble() * 500.0f - 250.0f;
+        float y = rnd2.NextDouble() * 500.0f - 250.0f;
+
+        instancedSpriteTransforms1[i] = new ME::Transform();
+        instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms1[i]->SetScale(bulletSize, bulletSize);
+    }
+    instancedSpriteTransformCount1 = maxBulletCount;
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
@@ -155,6 +174,22 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
         spriteInstanceData0[i]->color = ME::Color::White();
     }
     delete clipBase;
-
     instancedSpriteRendererCount0 = maxNPCCount;
+
+    // Bullets.
+
+    for (size_t i = 0; i < maxBulletCount; ++i) {
+        instancedSpriteRenderers1[i] = new ME::SpriteRenderer(0, 0, 1, 2, (i % 6));
+
+        // Flip if on left side.
+        if (instancedSpriteTransforms1[i]->GetPosition().x > 0) {
+            instancedSpriteRenderers1[i]->ToggleFlipHorizontal(true);
+        }
+
+        spriteInstanceData1[i].modelMatrixData = instancedSpriteTransforms1[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData1[i].atlasIndex = 0;
+        spriteInstanceData1[i].color = ME::Color::White();
+    }
+
+    instancedSpriteRendererCount1 = maxBulletCount;
 }

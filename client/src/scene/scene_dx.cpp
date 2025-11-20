@@ -32,16 +32,25 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     transformCount = scene->transformCount;
     spriteTransforms = scene->spriteTransforms;
     spriteTransformCount = scene->spriteTransformCount;
+
     instancedSpriteTransforms0 = scene->instancedSpriteTransforms0;
     instancedSpriteTransformCount0 = scene->instancedSpriteTransformCount0;
+
+    instancedSpriteTransforms1 = scene->instancedSpriteTransforms1;
+    instancedSpriteTransformCount1 = scene->instancedSpriteTransformCount1;
 
     meshRenderers = scene->meshRenderers;
     meshRendererCount = scene->meshRendererCount;
     spriteRenderers = scene->spriteRenderers;
     spriteRendererCount = scene->spriteRendererCount;
+
     instancedSpriteRenderers0 = scene->instancedSpriteRenderers0;
     instancedSpriteRendererCount0 = scene->instancedSpriteRendererCount0;
     spriteInstanceData0 = scene->spriteInstanceData0;
+
+    instancedSpriteRenderers1 = scene->instancedSpriteRenderers1;
+    instancedSpriteRendererCount1 = scene->instancedSpriteRendererCount1;
+    spriteInstanceData1 = scene->spriteInstanceData1;
 
     textureAtlasProperties = scene->textureAtlasProperties;
 
@@ -190,6 +199,7 @@ void ME::SceneDX::MakeConstantBuffers() {
 }
 
 void ME::SceneDX::MakeSpriteInstanceBuffer() {
+    // First instance buffer.
     if (instancedSpriteRendererCount0 == 0) {
         return;
     }
@@ -198,6 +208,16 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
         new ME::UploadBufferDX(device, false, instancedSpriteRendererCount0, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex0 = descHeapManager->CreateSRVInstanceData(
         spriteInstanceBuffer0->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount0);
+
+    // Second instance buffer.
+    if (instancedSpriteRendererCount1 == 0) {
+        return;
+    }
+
+    spriteInstanceBuffer1 =
+        new ME::UploadBufferDX(device, false, instancedSpriteRendererCount1, sizeof(ME::SpriteRendererInstanceData));
+    spriteInstanceBufferHeapIndex1 = descHeapManager->CreateSRVInstanceData(
+        spriteInstanceBuffer1->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount1);
 }
 
 #endif  // VG_WIN
