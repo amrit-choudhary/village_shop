@@ -39,8 +39,8 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             // Start rolling
             // diceScene->textRenderers[1]->SetText(rolling);
             // diceScene->textRenderers[2]->SetText(resultWaiting);
-            diceScene->instancedSpriteRenderers[0]->animator->StartAnimation();
-            diceScene->instancedSpriteRenderers[1]->animator->StartAnimation();
+            diceScene->instancedSpriteRenderers0[0]->animator->StartAnimation();
+            diceScene->instancedSpriteRenderers0[1]->animator->StartAnimation();
         } else {
             // Decide result
             uint8_t whiteDiceAnimCounter = rndAnimWhite.NextRange(0, 5);
@@ -54,8 +54,8 @@ void ME::GameDiceSimple::Update(double deltaTime) {
             } else {
                 // diceScene->textRenderers[2]->SetText(resultDraw);
             }
-            diceScene->instancedSpriteRenderers[0]->animator->StopAnimation();
-            diceScene->instancedSpriteRenderers[1]->animator->StopAnimation();
+            diceScene->instancedSpriteRenderers0[0]->animator->StopAnimation();
+            diceScene->instancedSpriteRenderers0[1]->animator->StopAnimation();
         }
     }
 }

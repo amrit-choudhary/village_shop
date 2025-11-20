@@ -33,9 +33,9 @@ void ME::SceneGameOfLife::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
-    instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -78,7 +78,7 @@ void ME::SceneGameOfLife::BuildSpriteTransforms() {}
 void ME::SceneGameOfLife::BuildSpriteRenderers() {}
 
 void ME::SceneGameOfLife::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = static_cast<uint32_t>(gridCount);
+    instancedSpriteTransformCount0 = static_cast<uint32_t>(gridCount);
 
     for (size_t iy = 0; iy < gridHeight; ++iy) {
         for (size_t ix = 0; ix < gridWidth; ++ix) {
@@ -87,22 +87,22 @@ void ME::SceneGameOfLife::BuildInstancedSpriteTransforms() {
             float px = originX + static_cast<float>(cellSizeby2 + (ix * (cellSize + cellPadding)));
             float py = originY + static_cast<float>(cellSizeby2 + (iy * (cellSize + cellPadding)));
 
-            instancedSpriteTransforms[i] = new ME::Transform();
-            instancedSpriteTransforms[i]->SetPosition(px, py, 1.0f);
-            instancedSpriteTransforms[i]->SetScale(cellSize, cellSize);
+            instancedSpriteTransforms0[i] = new ME::Transform();
+            instancedSpriteTransforms0[i]->SetPosition(px, py, 1.0f);
+            instancedSpriteTransforms0[i]->SetScale(cellSize, cellSize);
         }
     }
 }
 
 void ME::SceneGameOfLife::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = static_cast<uint32_t>(gridCount);
+    instancedSpriteRendererCount0 = static_cast<uint32_t>(gridCount);
 
-    for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
+    for (size_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
-        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-        spriteInstanceData[i]->atlasIndex = 253;
-        spriteInstanceData[i]->color = ME::Color::Black();
+        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i]->atlasIndex = 253;
+        spriteInstanceData0[i]->color = ME::Color::Black();
     }
 }

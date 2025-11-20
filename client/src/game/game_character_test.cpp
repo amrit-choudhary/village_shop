@@ -94,7 +94,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     }
 
     for (int i = 0; i < maxNPCCount; ++i) {
-        ME::Transform* npcTransform = charScene->instancedSpriteTransforms[i];
+        ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
         ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
         float distSqr = dirToPlayer.Length();
 
@@ -103,7 +103,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             ME::Vec3 throwDir = dirToPlayer.Normalised();
             ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
             npcTransform->SetPosition(newPos);
-            charScene->instancedSpriteRenderers[i]->bDirty = true;
+            charScene->instancedSpriteRenderers0[i]->bDirty = true;
             ++score;
         } else {
             // Move towards player.
@@ -111,7 +111,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             float speed = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
             ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speed * static_cast<float>(deltaTime);
             npcTransform->SetPosition(newPos);
-            charScene->instancedSpriteRenderers[i]->bDirty = true;
+            charScene->instancedSpriteRenderers0[i]->bDirty = true;
         }
     }
 

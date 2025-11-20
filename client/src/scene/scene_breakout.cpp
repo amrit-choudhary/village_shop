@@ -39,9 +39,9 @@ void ME::SceneBreakout::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
-    instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -85,7 +85,7 @@ void ME::SceneBreakout::BuildSpriteRenderers() {}
 
 void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
     // Create Bricks Transforms.
-    instancedSpriteTransformCount = gridCount;
+    instancedSpriteTransformCount0 = gridCount;
 
     for (size_t iy = 0; iy < gridY; ++iy) {
         for (size_t ix = 0; ix < gridX; ++ix) {
@@ -94,9 +94,9 @@ void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
             float px = originX + brickWidthby2 + (static_cast<float>(ix) * (brickWidth + brickPadding));
             float py = originY + brickHeightby2 + (static_cast<float>(iy) * (brickHeight + brickPadding));
 
-            instancedSpriteTransforms[i] = new ME::Transform();
-            instancedSpriteTransforms[i]->SetPosition(px, py, 1.0f);
-            instancedSpriteTransforms[i]->SetScale(brickWidth, brickHeight);
+            instancedSpriteTransforms0[i] = new ME::Transform();
+            instancedSpriteTransforms0[i]->SetPosition(px, py, 1.0f);
+            instancedSpriteTransforms0[i]->SetScale(brickWidth, brickHeight);
         }
     }
 }
@@ -105,15 +105,15 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
     ME::Level level{};
     ME::Level::Load(&level, "levels/level_1.lvl");
 
-    instancedSpriteRendererCount = gridCount;
+    instancedSpriteRendererCount0 = gridCount;
 
     ME::Random randomColor("ColorInstancedSprite", true);
 
     // Fill the bricks only.
-    for (size_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, 587, ME::Color::White());
+    for (size_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 1, 1, 587, ME::Color::White());
 
-        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
 
         uint8_t ix = i % gridX;
         uint8_t iy = ((i / gridX) % gridY);
@@ -122,14 +122,14 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
 
         if (brickIndex < level.brickCount) {
             uint8_t colorIndex = static_cast<uint8_t>(level.bricks[brickIndex].type);
-            instancedSpriteRenderers[i]->color = colorPalette[colorIndex];
-            instancedSpriteRenderers[i]->atlasIndex = 587;
+            instancedSpriteRenderers0[i]->color = colorPalette[colorIndex];
+            instancedSpriteRenderers0[i]->atlasIndex = 587;
 
-            staticColliders[staticColliderCount] = ME::ColliderAABB(i, true, true, *instancedSpriteTransforms[i]);
+            staticColliders[staticColliderCount] = ME::ColliderAABB(i, true, true, *instancedSpriteTransforms0[i]);
             ++staticColliderCount;
         } else {
-            instancedSpriteRenderers[i]->atlasIndex = 0;
-            instancedSpriteRenderers[i]->color = ME::Color::Black();
+            instancedSpriteRenderers0[i]->atlasIndex = 0;
+            instancedSpriteRenderers0[i]->color = ME::Color::Black();
         }
     }
 }
@@ -153,53 +153,53 @@ void ME::SceneBreakout::CreateWalls() {
     uint16_t sizeYValues[4] = {wallHeight, wallSizeY, wallHeight, wallSizeY};
 
     for (int i = 0; i < 4; ++i) {
-        ++instancedSpriteTransformCount;
-        instancedSpriteTransforms[indices[i]] = new ME::Transform();
-        instancedSpriteTransforms[indices[i]]->SetPosition(xValues[i], yValues[i], 0.0f);
-        instancedSpriteTransforms[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
+        ++instancedSpriteTransformCount0;
+        instancedSpriteTransforms0[indices[i]] = new ME::Transform();
+        instancedSpriteTransforms0[indices[i]]->SetPosition(xValues[i], yValues[i], 0.0f);
+        instancedSpriteTransforms0[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
 
-        ++instancedSpriteRendererCount;
-        instancedSpriteRenderers[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, 0, ME::Color::White());
-        spriteInstanceData[indices[i]] = new ME::SpriteRendererInstanceData();
-        instancedSpriteRenderers[indices[i]]->atlasIndex = 253;
-        instancedSpriteRenderers[indices[i]]->color = colorPalette[7];
+        ++instancedSpriteRendererCount0;
+        instancedSpriteRenderers0[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, 0, ME::Color::White());
+        spriteInstanceData0[indices[i]] = new ME::SpriteRendererInstanceData();
+        instancedSpriteRenderers0[indices[i]]->atlasIndex = 253;
+        instancedSpriteRenderers0[indices[i]]->color = colorPalette[7];
 
         staticColliders[staticColliderCount] =
-            ME::ColliderAABB(indices[i], true, true, *instancedSpriteTransforms[indices[i]]);
+            ME::ColliderAABB(indices[i], true, true, *instancedSpriteTransforms0[indices[i]]);
         ++staticColliderCount;
     }
 }
 
 void ME::SceneBreakout::CreatePaddle() {
-    ++instancedSpriteTransformCount;
-    instancedSpriteTransforms[paddleIndex] = new ME::Transform();
-    instancedSpriteTransforms[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
-    instancedSpriteTransforms[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
+    ++instancedSpriteTransformCount0;
+    instancedSpriteTransforms0[paddleIndex] = new ME::Transform();
+    instancedSpriteTransforms0[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
+    instancedSpriteTransforms0[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
 
-    ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 253, ME::Color::White());
-    spriteInstanceData[paddleIndex] = new ME::SpriteRendererInstanceData();
-    instancedSpriteRenderers[paddleIndex]->atlasIndex = 253;
-    instancedSpriteRenderers[paddleIndex]->color = colorPalette[0];
+    ++instancedSpriteRendererCount0;
+    instancedSpriteRenderers0[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 253, ME::Color::White());
+    spriteInstanceData0[paddleIndex] = new ME::SpriteRendererInstanceData();
+    instancedSpriteRenderers0[paddleIndex]->atlasIndex = 253;
+    instancedSpriteRenderers0[paddleIndex]->color = colorPalette[0];
 
     staticColliders[staticColliderCount] =
-        ME::ColliderAABB(paddleIndex, true, true, *instancedSpriteTransforms[paddleIndex]);
+        ME::ColliderAABB(paddleIndex, true, true, *instancedSpriteTransforms0[paddleIndex]);
     ++staticColliderCount;
 }
 
 void ME::SceneBreakout::CreateBall() {
-    ++instancedSpriteTransformCount;
-    instancedSpriteTransforms[ballIndex] = new ME::Transform();
-    instancedSpriteTransforms[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
-    instancedSpriteTransforms[ballIndex]->SetScale(ballSize, ballSize);
+    ++instancedSpriteTransformCount0;
+    instancedSpriteTransforms0[ballIndex] = new ME::Transform();
+    instancedSpriteTransforms0[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
+    instancedSpriteTransforms0[ballIndex]->SetScale(ballSize, ballSize);
 
-    ++instancedSpriteRendererCount;
-    instancedSpriteRenderers[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 631, ME::Color::White());
-    spriteInstanceData[ballIndex] = new ME::SpriteRendererInstanceData();
-    instancedSpriteRenderers[ballIndex]->atlasIndex = 631;
-    instancedSpriteRenderers[ballIndex]->color = colorPalette[6];
+    ++instancedSpriteRendererCount0;
+    instancedSpriteRenderers0[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 631, ME::Color::White());
+    spriteInstanceData0[ballIndex] = new ME::SpriteRendererInstanceData();
+    instancedSpriteRenderers0[ballIndex]->atlasIndex = 631;
+    instancedSpriteRenderers0[ballIndex]->color = colorPalette[6];
 
     dynamicColliders[dynamicColliderCount] =
-        ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms[ballIndex], ballCollScaleMult);
+        ME::ColliderAABB(ballIndex, true, false, *instancedSpriteTransforms0[ballIndex], ballCollScaleMult);
     ++dynamicColliderCount;
 }

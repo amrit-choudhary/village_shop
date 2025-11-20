@@ -10,36 +10,42 @@ namespace ME {
 namespace Constants {
 
 // Scene constants
-constexpr uint8_t MaxMeshCount = 128;
-constexpr uint8_t MaxQuadCount = 8;
-constexpr uint8_t MaxTextureCount = 128;
-constexpr uint8_t MaxSpriteTextureCount = 128;
-constexpr uint8_t MaxTextureAtlasPropertiesCount = 128;
-constexpr uint8_t MaxShaderCount = 128;
-constexpr uint8_t MaxMaterialCount = 128;
-constexpr uint8_t MaxSamplerCount = 16;
-constexpr uint16_t MaxTransformCount = 1'000;
-constexpr uint16_t MaxMeshRendererCount = 1'000;
-constexpr uint16_t MaxSpriteTransformCount = 1'000;
-constexpr uint16_t MaxSpriteRendererCount = 1'000;
-constexpr uint32_t MaxInstancedSpriteTransformCount = 100'000;
-constexpr uint32_t MaxInstancedSpriteRendererCount = 100'000;
-constexpr uint16_t MaxUISpriteTransformCount = 100'000;
-constexpr uint16_t MaxUISpriteRendererCount = 100'000;
-constexpr uint32_t MaxUISpriteInstanceDataCount = 100'000;
-constexpr uint16_t MaxTextTransformsCount = 1'000;
-constexpr uint16_t MaxTextRendererCount = 1'000;
-constexpr uint32_t MaxTextInstanceDataCount = 100'000;
-constexpr uint32_t MaxConstantBuffersCount = 256;
-constexpr uint32_t MaxDescriptorsOnDescriptorHeap = 256;
+constexpr size_t MaxMeshCount = 128;
+constexpr size_t MaxQuadCount = 8;
+constexpr size_t MaxTextureCount = 128;
+constexpr size_t MaxSpriteTextureCount = 128;
+constexpr size_t MaxTextureAtlasPropertiesCount = 128;
+constexpr size_t MaxShaderCount = 128;
+constexpr size_t MaxMaterialCount = 128;
+constexpr size_t MaxSamplerCount = 16;
+constexpr size_t MaxTransformCount = 1'000;
+constexpr size_t MaxMeshRendererCount = 1'000;
+
+constexpr size_t MaxSpriteTransformCount = 1'000;
+constexpr size_t MaxSpriteRendererCount = 1'000;
+
+constexpr size_t MaxInstancedSpriteTransformCount = 10'000;
+constexpr size_t MaxInstancedSpriteRendererCount = 10'000;
+constexpr size_t MaxSpriteInstanceDataCount = 10'000;
+
+constexpr size_t MaxUISpriteTransformCount = 10'000;
+constexpr size_t MaxUISpriteRendererCount = 10'000;
+constexpr size_t MaxUISpriteInstanceDataCount = 10'000;
+
+constexpr size_t MaxTextTransformsCount = 1'000;
+constexpr size_t MaxTextRendererCount = 1'000;
+constexpr size_t MaxTextInstanceDataCount = 10'000;
+
+constexpr size_t MaxConstantBuffersCount = 256;
+constexpr size_t MaxDescriptorsOnDescriptorHeap = 256;
 
 // Physics constants
-constexpr uint32_t MaxStaticColliderCount = 100'000;
-constexpr uint32_t MaxDynamicColliderCount = 32;
+constexpr size_t MaxStaticColliderCount = 100'000;
+constexpr size_t MaxDynamicColliderCount = 32;
 
 // Animation constants
-constexpr uint8_t AnimGameFrameRate = 60;
-constexpr uint8_t MaxSpriteAnimClipsOnAnimator = 8;
+constexpr size_t AnimGameFrameRate = 60;
+constexpr size_t MaxSpriteAnimClipsOnAnimator = 8;
 
 }  // namespace Constants
 }  // namespace ME

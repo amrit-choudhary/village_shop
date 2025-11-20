@@ -23,21 +23,21 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
         ME::TileRenderData tileRenderData = ME::TileRenderData::FromGlobalTileID(tileIndex);
-        rpgScene->spriteInstanceData[i]->atlasIndex = tileRenderData.atlasIndex;
+        rpgScene->spriteInstanceData0[i]->atlasIndex = tileRenderData.atlasIndex;
         if (tileRenderData.flipDiagonal) {
             if (tileRenderData.flipY) {
-                rpgScene->instancedSpriteTransforms[i]->SetRotation(0.0f, 0.0f, -ME::PI / 2.0f);
+                rpgScene->instancedSpriteTransforms0[i]->SetRotation(0.0f, 0.0f, -ME::PI / 2.0f);
                 tileRenderData.flipY = false;
             } else {
-                rpgScene->instancedSpriteTransforms[i]->SetRotation(0.0f, 0.0f, ME::PI / 2.0f);
+                rpgScene->instancedSpriteTransforms0[i]->SetRotation(0.0f, 0.0f, ME::PI / 2.0f);
             }
-            rpgScene->spriteInstanceData[i]->modelMatrixData =
-                rpgScene->instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+            rpgScene->spriteInstanceData0[i]->modelMatrixData =
+                rpgScene->instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
         }
         // Set flags for flipping at bit 0 horizontal, bit 1 vertical and bit 2 is diagonal.
-        rpgScene->spriteInstanceData[i]->flags = (tileRenderData.flipX ? 0x1 : 0x0) |
-                                                 (tileRenderData.flipY ? 0x2 : 0x0) |
-                                                 (tileRenderData.flipDiagonal ? 0x4 : 0x0);
+        rpgScene->spriteInstanceData0[i]->flags = (tileRenderData.flipX ? 0x1 : 0x0) |
+                                                  (tileRenderData.flipY ? 0x2 : 0x0) |
+                                                  (tileRenderData.flipDiagonal ? 0x4 : 0x0);
     }
 
     ME::Log("RPG Game Start!");

@@ -58,20 +58,20 @@ ME::Scene::~Scene() {
     }
     delete[] spriteRenderers;
 
-    for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
-        delete instancedSpriteTransforms[i];
+    for (uint32_t i = 0; i < instancedSpriteTransformCount0; ++i) {
+        delete instancedSpriteTransforms0[i];
     }
-    delete[] instancedSpriteTransforms;
+    delete[] instancedSpriteTransforms0;
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        delete instancedSpriteRenderers[i];
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        delete instancedSpriteRenderers0[i];
     }
-    delete[] instancedSpriteRenderers;
+    delete[] instancedSpriteRenderers0;
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        delete spriteInstanceData[i];
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        delete spriteInstanceData0[i];
     }
-    delete[] spriteInstanceData;
+    delete[] spriteInstanceData0;
 }
 
 void ME::Scene::CreateResources() {
@@ -86,9 +86,9 @@ void ME::Scene::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
-    instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -245,28 +245,28 @@ void ME::Scene::BuildSpriteRenderers() {
 }
 
 void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount = 64 * 64;
+    instancedSpriteTransformCount0 = 64 * 64;
     int spriteSize = 20;
     int gridCount = 64;
     int gridOffsetX = -670;
     int gridOffsetY = -500;
     int padding = 0;
 
-    for (uint32_t i = 0; i < instancedSpriteTransformCount; ++i) {
+    for (uint32_t i = 0; i < instancedSpriteTransformCount0; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
         float px = x * (spriteSize + padding) + gridOffsetX;
         float py = y * (spriteSize + padding) + gridOffsetY;
 
-        instancedSpriteTransforms[i] = new ME::Transform();
-        instancedSpriteTransforms[i]->SetPosition(px, py, 0.0f);
-        instancedSpriteTransforms[i]->SetScale(spriteSize, spriteSize);
+        instancedSpriteTransforms0[i] = new ME::Transform();
+        instancedSpriteTransforms0[i]->SetPosition(px, py, 0.0f);
+        instancedSpriteTransforms0[i]->SetScale(spriteSize, spriteSize);
     }
 }
 
 void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount = 64 * 64;
+    instancedSpriteRendererCount0 = 64 * 64;
     int gridCount = 64;
 
     ME::Random randomColor("ColorInstancedSprite", true);
@@ -277,30 +277,30 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
     uint32_t perlinSeedG = randomPerlinSeed.Next();
     uint32_t perlinSeedB = randomPerlinSeed.Next();
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
         int x = i % gridCount;
         int y = (i / gridCount) % gridCount;
 
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
+        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
-        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetData();
+        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetData();
 
         if (x == 0 || x == gridCount - 1 || y == 0 || y == gridCount - 1) {
-            spriteInstanceData[i]->atlasIndex = 16;
-            spriteInstanceData[i]->color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
+            spriteInstanceData0[i]->atlasIndex = 16;
+            spriteInstanceData0[i]->color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
         } else {
             uint32_t val = randomGround.NextRange(0, 3);
             if (val < 3) {
                 // Ground.
-                spriteInstanceData[i]->atlasIndex = 1;
-                spriteInstanceData[i]->color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
+                spriteInstanceData0[i]->atlasIndex = 1;
+                spriteInstanceData0[i]->color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
             } else {
                 // Tiles
 
                 ME::Color color = ME::Color::RandomColorPretty(randomColor);
-                spriteInstanceData[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
-                spriteInstanceData[i]->color = color;
+                spriteInstanceData0[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
+                spriteInstanceData0[i]->color = color;
             }
         }
 
@@ -311,8 +311,8 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
         noiseR = (noiseR + 1.0f) / 2.0f;
         noiseG = (noiseG + 1.0f) / 2.0f;
         noiseB = (noiseB + 1.0f) / 2.0f;
-        spriteInstanceData[i]->atlasIndex = 253;
-        spriteInstanceData[i]->color = ME::Color{noiseR, noiseG, noiseB};
+        spriteInstanceData0[i]->atlasIndex = 253;
+        spriteInstanceData0[i]->color = ME::Color{noiseR, noiseG, noiseB};
     }
 }
 
@@ -342,25 +342,25 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
     // Updating transforms and atlas indicesfor dirty instances.
     // In separate loops to avoid cache misses.
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        if (!instancedSpriteRenderers[i]->bDirty) {
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        if (!instancedSpriteRenderers0[i]->bDirty) {
             continue;
         }
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        if (!instancedSpriteRenderers[i]->bDirty) {
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        if (!instancedSpriteRenderers0[i]->bDirty) {
             continue;
         }
-        spriteInstanceData[i]->atlasIndex = instancedSpriteRenderers[i]->atlasIndex;
-        spriteInstanceData[i]->color = instancedSpriteRenderers[i]->color;
-        spriteInstanceData[i]->flags = instancedSpriteRenderers[i]->flags;
+        spriteInstanceData0[i]->atlasIndex = instancedSpriteRenderers0[i]->atlasIndex;
+        spriteInstanceData0[i]->color = instancedSpriteRenderers0[i]->color;
+        spriteInstanceData0[i]->flags = instancedSpriteRenderers0[i]->flags;
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount; ++i) {
-        if (instancedSpriteRenderers[i]->bDirty) {
-            instancedSpriteRenderers[i]->bDirty = false;
+    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
+        if (instancedSpriteRenderers0[i]->bDirty) {
+            instancedSpriteRenderers0[i]->bDirty = false;
         }
     }
 }

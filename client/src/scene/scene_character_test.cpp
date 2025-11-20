@@ -36,9 +36,9 @@ void ME::SceneCharacterTest::CreateResources() {
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
     spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
-    instancedSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -121,11 +121,11 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         float x = rnd.NextDouble() * 70.0f - 35.0f;
         float y = rnd.NextDouble() * 80.0f - 40.0f;
 
-        instancedSpriteTransforms[i] = new ME::Transform();
-        instancedSpriteTransforms[i]->SetPosition(x, y, 0.0f);
-        instancedSpriteTransforms[i]->SetScale(npcWidth, npcHeight);
+        instancedSpriteTransforms0[i] = new ME::Transform();
+        instancedSpriteTransforms0[i]->SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms0[i]->SetScale(npcWidth, npcHeight);
     }
-    instancedSpriteTransformCount = maxNPCCount;
+    instancedSpriteTransformCount0 = maxNPCCount;
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
@@ -135,27 +135,26 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
 
     for (size_t i = 0; i < maxNPCCount; ++i) {
         uint32_t type = rnd.NextRange(0, 11) * 4;
-        instancedSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 2, type);
+        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 1, 2, type);
 
         // Flip if on left side.
-        if (instancedSpriteTransforms[i]->GetPosition().x > 0) {
-            instancedSpriteRenderers[i]->ToggleFlipHorizontal(true);
+        if (instancedSpriteTransforms0[i]->GetPosition().x > 0) {
+            instancedSpriteRenderers0[i]->ToggleFlipHorizontal(true);
         }
 
-        ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers[i], 6);
-        instancedSpriteRenderers[i]->animator = animator0;
-
+        ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers0[i], 6);
+        instancedSpriteRenderers0[i]->animator = animator0;
         SpriteAnimClip* clip = ME::SpriteAnimClip::DuplicateWithOffset(clipBase, static_cast<int16_t>(type));
 
         animator0->AddClip(clip);
         animator0->ChangeClip(0);
 
-        spriteInstanceData[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData[i]->modelMatrixData = instancedSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-        spriteInstanceData[i]->atlasIndex = 0;
-        spriteInstanceData[i]->color = ME::Color::White();
+        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
+        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i]->atlasIndex = 0;
+        spriteInstanceData0[i]->color = ME::Color::White();
     }
     delete clipBase;
 
-    instancedSpriteRendererCount = maxNPCCount;
+    instancedSpriteRendererCount0 = maxNPCCount;
 }

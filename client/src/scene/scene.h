@@ -53,14 +53,21 @@ class Scene {
     const char** spriteTexturePaths;
     const char** shaderPaths;
     ME::TextureSampler* textureSamplers;
+    ME::TextureAtlasProperties* textureAtlasProperties;
     ME::Transform** transforms;
     ME::MeshRenderer** meshRenderers;
     ME::Transform** spriteTransforms;
     ME::SpriteRenderer** spriteRenderers;
-    ME::Transform** instancedSpriteTransforms;
-    ME::SpriteRenderer** instancedSpriteRenderers;
-    ME::SpriteRendererInstanceData** spriteInstanceData;
-    ME::TextureAtlasProperties* textureAtlasProperties;
+
+    // First set of instanced sprite renderers.
+    ME::Transform** instancedSpriteTransforms0;
+    ME::SpriteRenderer** instancedSpriteRenderers0;
+    ME::SpriteRendererInstanceData** spriteInstanceData0;
+
+    // Second set of instanced sprite renderers.
+    ME::Transform** instancedSpriteTransforms1;
+    ME::SpriteRenderer** instancedSpriteRenderers1;
+    ME::SpriteRendererInstanceData* spriteInstanceData1;
 
     ME::ColliderAABB* staticColliders;
     ME::ColliderAABB* dynamicColliders;
@@ -76,8 +83,12 @@ class Scene {
     uint16_t meshRendererCount = 0;
     uint16_t spriteTransformCount = 0;
     uint16_t spriteRendererCount = 0;
-    uint32_t instancedSpriteTransformCount = 0;
-    uint32_t instancedSpriteRendererCount = 0;
+
+    uint32_t instancedSpriteTransformCount0 = 0;
+    uint32_t instancedSpriteRendererCount0 = 0;
+
+    uint32_t instancedSpriteTransformCount1 = 0;
+    uint32_t instancedSpriteRendererCount1 = 0;
 
     uint32_t staticColliderCount = 0;
     uint8_t dynamicColliderCount = 0;

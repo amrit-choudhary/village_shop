@@ -32,16 +32,16 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     transformCount = scene->transformCount;
     spriteTransforms = scene->spriteTransforms;
     spriteTransformCount = scene->spriteTransformCount;
-    instancedSpriteTransforms = scene->instancedSpriteTransforms;
-    instancedSpriteTransformCount = scene->instancedSpriteTransformCount;
+    instancedSpriteTransforms0 = scene->instancedSpriteTransforms0;
+    instancedSpriteTransformCount0 = scene->instancedSpriteTransformCount0;
 
     meshRenderers = scene->meshRenderers;
     meshRendererCount = scene->meshRendererCount;
     spriteRenderers = scene->spriteRenderers;
     spriteRendererCount = scene->spriteRendererCount;
-    instancedSpriteRenderers = scene->instancedSpriteRenderers;
-    instancedSpriteRendererCount = scene->instancedSpriteRendererCount;
-    spriteInstanceData = scene->spriteInstanceData;
+    instancedSpriteRenderers0 = scene->instancedSpriteRenderers0;
+    instancedSpriteRendererCount0 = scene->instancedSpriteRendererCount0;
+    spriteInstanceData0 = scene->spriteInstanceData0;
 
     textureAtlasProperties = scene->textureAtlasProperties;
 
@@ -190,14 +190,14 @@ void ME::SceneDX::MakeConstantBuffers() {
 }
 
 void ME::SceneDX::MakeSpriteInstanceBuffer() {
-    if (instancedSpriteRendererCount == 0) {
+    if (instancedSpriteRendererCount0 == 0) {
         return;
     }
 
-    spriteInstanceBuffer =
-        new ME::UploadBufferDX(device, false, instancedSpriteRendererCount, sizeof(ME::SpriteRendererInstanceData));
-    spriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        spriteInstanceBuffer->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount);
+    spriteInstanceBuffer0 =
+        new ME::UploadBufferDX(device, false, instancedSpriteRendererCount0, sizeof(ME::SpriteRendererInstanceData));
+    spriteInstanceBufferHeapIndex0 = descHeapManager->CreateSRVInstanceData(
+        spriteInstanceBuffer0->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRendererCount0);
 }
 
 #endif  // VG_WIN

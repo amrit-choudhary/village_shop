@@ -343,10 +343,10 @@ void ME::RendererDX::Draw() {
         }
     }
 
-    ///////////////////////////
-    // Instanced Sprite Drawing.
+    //////////////////////////////////
+    // First Instanced Sprite Drawing.
 
-    if (sceneDX->instancedSpriteRendererCount != 0) {
+    if (sceneDX->instancedSpriteRendererCount0 != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DInsAtl);
         commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
@@ -377,11 +377,11 @@ void ME::RendererDX::Draw() {
 
         commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
-        for (uint32_t i = 0; i < sceneDX->instancedSpriteRendererCount; ++i) {
-            sceneDX->spriteInstanceBuffer->CopyData(i, sceneDX->spriteInstanceData[i]);
+        for (uint32_t i = 0; i < sceneDX->instancedSpriteRendererCount0; ++i) {
+            sceneDX->spriteInstanceBuffer0->CopyData(i, sceneDX->spriteInstanceData0[i]);
         }
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData =
-            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteInstanceBufferHeapIndex);
+            descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteInstanceBufferHeapIndex0);
         commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);
 
         D3D12_VERTEX_BUFFER_VIEW vbView = quad->GetVertexBufferView();
@@ -390,7 +390,7 @@ void ME::RendererDX::Draw() {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount0, 0, 0, 0);
     }
     // End Sprite Drawing.
 
