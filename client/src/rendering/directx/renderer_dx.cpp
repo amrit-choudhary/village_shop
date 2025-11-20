@@ -377,9 +377,8 @@ void ME::RendererDX::Draw() {
 
         commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
-        for (uint32_t i = 0; i < sceneDX->instancedSpriteRendererCount0; ++i) {
-            sceneDX->spriteInstanceBuffer0->CopyData(i, sceneDX->spriteInstanceData0[i]);
-        }
+        sceneDX->spriteInstanceBuffer0->CopyData(sceneDX->spriteInstanceData0);
+
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceData =
             descHeapManager->GetGPUDescriptorHandleForIndex(sceneDX->spriteInstanceBufferHeapIndex0);
         commandList->SetGraphicsRootDescriptorTable(3, srvInstanceData);

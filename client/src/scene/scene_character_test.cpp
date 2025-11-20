@@ -39,7 +39,7 @@ void ME::SceneCharacterTest::CreateResources() {
 
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     instancedSpriteTransforms1 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
@@ -168,10 +168,9 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
         animator0->AddClip(clip);
         animator0->ChangeClip(0);
 
-        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
-        spriteInstanceData0[i]->atlasIndex = 0;
-        spriteInstanceData0[i]->color = ME::Color::White();
+        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i].atlasIndex = 0;
+        spriteInstanceData0[i].color = ME::Color::White();
     }
     delete clipBase;
     instancedSpriteRendererCount0 = maxNPCCount;

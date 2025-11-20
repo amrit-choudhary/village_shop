@@ -76,7 +76,7 @@ class SceneDX {
     uint32_t textureAtlasCBCount = 0;
     uint32_t perSpriteCBCount = 0;
 
-    ME::SpriteRendererInstanceData** spriteInstanceData0;
+    ME::SpriteRendererInstanceData* spriteInstanceData0;
     ME::UploadBufferDX* spriteInstanceBuffer0 = nullptr;
     uint32_t spriteInstanceBufferHeapIndex0 = 0;
 

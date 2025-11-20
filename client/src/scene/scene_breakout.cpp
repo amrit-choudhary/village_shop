@@ -41,7 +41,7 @@ void ME::SceneBreakout::CreateResources() {
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -113,8 +113,6 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
     for (size_t i = 0; i < instancedSpriteRendererCount0; ++i) {
         instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 1, 1, 587, ME::Color::White());
 
-        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
-
         uint8_t ix = i % gridX;
         uint8_t iy = ((i / gridX) % gridY);
         iy = gridY - 1 - iy;
@@ -160,7 +158,6 @@ void ME::SceneBreakout::CreateWalls() {
 
         ++instancedSpriteRendererCount0;
         instancedSpriteRenderers0[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, 0, ME::Color::White());
-        spriteInstanceData0[indices[i]] = new ME::SpriteRendererInstanceData();
         instancedSpriteRenderers0[indices[i]]->atlasIndex = 253;
         instancedSpriteRenderers0[indices[i]]->color = colorPalette[7];
 
@@ -178,7 +175,6 @@ void ME::SceneBreakout::CreatePaddle() {
 
     ++instancedSpriteRendererCount0;
     instancedSpriteRenderers0[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 253, ME::Color::White());
-    spriteInstanceData0[paddleIndex] = new ME::SpriteRendererInstanceData();
     instancedSpriteRenderers0[paddleIndex]->atlasIndex = 253;
     instancedSpriteRenderers0[paddleIndex]->color = colorPalette[0];
 
@@ -195,7 +191,6 @@ void ME::SceneBreakout::CreateBall() {
 
     ++instancedSpriteRendererCount0;
     instancedSpriteRenderers0[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 631, ME::Color::White());
-    spriteInstanceData0[ballIndex] = new ME::SpriteRendererInstanceData();
     instancedSpriteRenderers0[ballIndex]->atlasIndex = 631;
     instancedSpriteRenderers0[ballIndex]->color = colorPalette[6];
 

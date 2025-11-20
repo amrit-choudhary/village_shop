@@ -10,7 +10,7 @@ void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
     scene->Init();
     brkScene = dynamic_cast<ME::SceneBreakout *>(scene);
     ballTransform = brkScene->instancedSpriteTransforms0[brkScene->ballIndex];
-    ballInstanceData = brkScene->spriteInstanceData0[brkScene->ballIndex];
+    ballInstanceData = &(brkScene->spriteInstanceData0[brkScene->ballIndex]);
     ballVelocity = brkScene->ballVelocity;
 
     // Initialize the physics scene for Breakout.

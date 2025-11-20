@@ -68,9 +68,6 @@ ME::Scene::~Scene() {
     }
     delete[] instancedSpriteRenderers0;
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        delete spriteInstanceData0[i];
-    }
     delete[] spriteInstanceData0;
 
     for (uint32_t i = 0; i < instancedSpriteTransformCount1; ++i) {
@@ -101,7 +98,7 @@ void ME::Scene::CreateResources() {
 
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     instancedSpriteTransforms1 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
@@ -300,24 +297,23 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
 
         instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
-        spriteInstanceData0[i] = new ME::SpriteRendererInstanceData();
-        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetData();
+        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetData();
 
         if (x == 0 || x == gridCount - 1 || y == 0 || y == gridCount - 1) {
-            spriteInstanceData0[i]->atlasIndex = 16;
-            spriteInstanceData0[i]->color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
+            spriteInstanceData0[i].atlasIndex = 16;
+            spriteInstanceData0[i].color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
         } else {
             uint32_t val = randomGround.NextRange(0, 3);
             if (val < 3) {
                 // Ground.
-                spriteInstanceData0[i]->atlasIndex = 1;
-                spriteInstanceData0[i]->color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
+                spriteInstanceData0[i].atlasIndex = 1;
+                spriteInstanceData0[i].color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
             } else {
                 // Tiles
 
                 ME::Color color = ME::Color::RandomColorPretty(randomColor);
-                spriteInstanceData0[i]->atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
-                spriteInstanceData0[i]->color = color;
+                spriteInstanceData0[i].atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
+                spriteInstanceData0[i].color = color;
             }
         }
 
@@ -328,8 +324,8 @@ void ME::Scene::BuildInstancedSpriteRenderers() {
         noiseR = (noiseR + 1.0f) / 2.0f;
         noiseG = (noiseG + 1.0f) / 2.0f;
         noiseB = (noiseB + 1.0f) / 2.0f;
-        spriteInstanceData0[i]->atlasIndex = 253;
-        spriteInstanceData0[i]->color = ME::Color{noiseR, noiseG, noiseB};
+        spriteInstanceData0[i].atlasIndex = 253;
+        spriteInstanceData0[i].color = ME::Color{noiseR, noiseG, noiseB};
     }
 }
 
@@ -363,16 +359,16 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
         if (!instancedSpriteRenderers0[i]->bDirty) {
             continue;
         }
-        spriteInstanceData0[i]->modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
     }
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
         if (!instancedSpriteRenderers0[i]->bDirty) {
             continue;
         }
-        spriteInstanceData0[i]->atlasIndex = instancedSpriteRenderers0[i]->atlasIndex;
-        spriteInstanceData0[i]->color = instancedSpriteRenderers0[i]->color;
-        spriteInstanceData0[i]->flags = instancedSpriteRenderers0[i]->flags;
+        spriteInstanceData0[i].atlasIndex = instancedSpriteRenderers0[i]->atlasIndex;
+        spriteInstanceData0[i].color = instancedSpriteRenderers0[i]->color;
+        spriteInstanceData0[i].flags = instancedSpriteRenderers0[i]->flags;
     }
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {

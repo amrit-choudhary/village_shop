@@ -37,7 +37,7 @@ void ME::SceneDiceSimple::CreateResources() {
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
     instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
-    spriteInstanceData0 = new ME::SpriteRendererInstanceData*[Constants::MaxInstancedSpriteRendererCount];
+    spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
@@ -98,10 +98,9 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
     animator0->AddClip(clip0);
 
-    spriteInstanceData0[0] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData0[0]->modelMatrixData = instancedSpriteTransforms0[0]->GetModelMatrix().GetDataForShader();
-    spriteInstanceData0[0]->atlasIndex = 0;
-    spriteInstanceData0[0]->color = ME::Color::White();
+    spriteInstanceData0[0].modelMatrixData = instancedSpriteTransforms0[0]->GetModelMatrix().GetDataForShader();
+    spriteInstanceData0[0].atlasIndex = 0;
+    spriteInstanceData0[0].color = ME::Color::White();
 
     instancedSpriteRenderers0[1] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
@@ -112,10 +111,9 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
     animator1->AddClip(clip1);
 
-    spriteInstanceData0[1] = new ME::SpriteRendererInstanceData();
-    spriteInstanceData0[1]->modelMatrixData = instancedSpriteTransforms0[1]->GetModelMatrix().GetDataForShader();
-    spriteInstanceData0[1]->atlasIndex = 0;
-    spriteInstanceData0[1]->color = ME::Color::White();
+    spriteInstanceData0[1].modelMatrixData = instancedSpriteTransforms0[1]->GetModelMatrix().GetDataForShader();
+    spriteInstanceData0[1].atlasIndex = 0;
+    spriteInstanceData0[1].color = ME::Color::White();
 
     instancedSpriteRendererCount0 = 2;
 }

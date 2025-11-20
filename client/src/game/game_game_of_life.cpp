@@ -118,9 +118,9 @@ void ME::GameOfLife::UpdateGameOfLifeLogic() {
     uint8_t *cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 1) {
-            golScene->spriteInstanceData0[i]->color = ME::Color("#a7ce47");
+            golScene->spriteInstanceData0[i].color = ME::Color("#a7ce47");
         } else {
-            golScene->spriteInstanceData0[i]->color = ME::Color::Black();
+            golScene->spriteInstanceData0[i].color = ME::Color::Black();
         }
     }
 }
@@ -170,11 +170,11 @@ void ME::GameOfLife::UpdateGameOfLifeLogicBriansBrain() {
     uint8_t *cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 2) {
-            golScene->spriteInstanceData0[i]->color = ME::Color("#deeff3");
+            golScene->spriteInstanceData0[i].color = ME::Color("#deeff3");
         } else if (*(cellPtr + i) == 1) {
-            golScene->spriteInstanceData0[i]->color = ME::Color("#f0532c");
+            golScene->spriteInstanceData0[i].color = ME::Color("#f0532c");
         } else {
-            golScene->spriteInstanceData0[i]->color = ME::Color::Black();
+            golScene->spriteInstanceData0[i].color = ME::Color::Black();
         }
     }
 }

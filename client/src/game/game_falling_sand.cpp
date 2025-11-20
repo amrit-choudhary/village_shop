@@ -129,9 +129,9 @@ void ME::GameFallingSand::UpdateFallingSandLogic() {
     uint8_t *cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 1) {
-            sandScene->spriteInstanceData0[i]->color = ME::Color("#CBBD93");
+            sandScene->spriteInstanceData0[i].color = ME::Color("#CBBD93");
         } else {
-            sandScene->spriteInstanceData0[i]->color = ME::Color::Black();
+            sandScene->spriteInstanceData0[i].color = ME::Color::Black();
         }
     }
 }

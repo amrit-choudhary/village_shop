@@ -62,7 +62,7 @@ class Scene {
     // First set of instanced sprite renderers.
     ME::Transform** instancedSpriteTransforms0;
     ME::SpriteRenderer** instancedSpriteRenderers0;
-    ME::SpriteRendererInstanceData** spriteInstanceData0;
+    ME::SpriteRendererInstanceData* spriteInstanceData0;
 
     // Second set of instanced sprite renderers.
     ME::Transform** instancedSpriteTransforms1;
