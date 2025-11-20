@@ -24,7 +24,24 @@ struct SpriteInstanceData {
     float4 color;
     uint atlasIndex;
     uint flags;
-    uint2 padding; 
+};
+
+// Per Instance Data for UI Sprite Renderer
+// uint = uint32_t in c++ because uint16_t is not well supported in HLSL.
+struct UISpriteInstanceData {
+    float4x4 modelMatrix;
+    float4 color;
+    uint atlasIndex;
+    uint flags;
+};
+
+// Per Instance Data for Text Renderer
+// uint = uint32_t in c++ because uint16_t is not well supported in HLSL.
+struct TextInstanceData {
+    float4x4 modelMatrix;
+    float4 color;
+    uint atlasIndex;
+    uint flags;
 };
 
 // Texture Atlas Properties

@@ -18,7 +18,7 @@ Texture2D tex : register(t0);
 // Using clamped point sampling for pixel art style atlases.
 SamplerState texSampler : register(s1);
 
-StructuredBuffer<SpriteInstanceData> instanceBuffer : register(t1);
+StructuredBuffer<UISpriteInstanceData> instanceBuffer : register(t1);
 
 struct VertexIn
 {
@@ -37,7 +37,7 @@ VertexOut VS(VertexIn input, uint instanceID : SV_InstanceID)
 {
 	VertexOut output;
 
-    SpriteInstanceData instanceData = instanceBuffer[instanceID];
+    UISpriteInstanceData instanceData = instanceBuffer[instanceID];
 
     float4 outputPos = mul(float4(input.position, 0.0f, 1.0f), instanceData.modelMatrix);
     // Mapping to NDC space for UI rendering. [-1, 1] range.

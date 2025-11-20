@@ -29,13 +29,12 @@ class SpriteRendererInstanceData {
     ME::Color color = ME::Color::White();
     uint32_t atlasIndex = 0;  // Index of the texture atlas
     uint32_t flags = 0;       // Additional flags for rendering options
-    uint32_t padding[2]{0};   // Padding to align the structure
 };
 
 /**
  * Data to hold the UI sprite renderer instance data.
  * Used for instanced rendering.
- * This structure is sent to the GPU as a constant buffer, so some hlsl padding rules apply.
+ * This structure is sent to the GPU as a constant buffer, so some hlsl padding rules apply. (4)
  * Flags Rules bit wise:
  * 0: Flip the sprite horizontally.
  * 1: Flip the sprite vertically.
@@ -47,13 +46,12 @@ class UISpriteRendererInstanceData {
     ME::Color color = ME::Color::White();
     uint32_t atlasIndex = 0;  // Index of the texture atlas
     uint32_t flags = 0;       // Additional flags for rendering options
-    uint32_t padding[2]{0};   // Padding to align the structure
 };
 
 /**
  * Constant buffer structure for sprite renderer.
  * Used for non-instanced sprite rendering. Per sprite renderer.
- * This is sent to the GPU as a constant buffer, so some hlsl padding rules apply.
+ * This is sent to the GPU as a constant buffer, so some hlsl padding rules apply. (256)
  * For flag rules see SpriteRendererInstanceData.
  */
 class CBPerSprite {

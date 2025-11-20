@@ -472,9 +472,7 @@ void ME::RendererDX::Draw() {
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->spriteTextures[textureIndex]->descHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(2, textureHandleUISprite);
 
-        for (uint32_t i = 0; i < uiSceneDX->uiSpriteInstanceDataCount; ++i) {
-            uiSceneDX->uiSpriteInstanceBuffer->CopyData(i, uiSceneDX->uiSpriteInstanceData[i]);
-        }
+        uiSceneDX->uiSpriteInstanceBuffer->CopyData(uiSceneDX->uiSpriteInstanceData);
 
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataUISprite =
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->uiSpriteInstanceBufferHeapIndex);
@@ -519,9 +517,7 @@ void ME::RendererDX::Draw() {
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->spriteTextures[textureIndex]->descHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(2, textureHandleText);
 
-        for (uint32_t i = 0; i < uiSceneDX->textInstanceDataCount; ++i) {
-            uiSceneDX->textInstanceBuffer->CopyData(i, uiSceneDX->textInstanceData[i]);
-        }
+        uiSceneDX->textInstanceBuffer->CopyData(uiSceneDX->textInstanceData);
 
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataText =
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->textInstanceBufferHeapIndex);

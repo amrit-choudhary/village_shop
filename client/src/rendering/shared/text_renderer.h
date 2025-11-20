@@ -20,10 +20,10 @@ namespace ME {
  */
 class TextRendererInstanceData {
    public:
-    ME::Vec16 modelMatrixData;
-    ME::Color color;
-    uint16_t atlasIndex;  // Index of the texture atlas
-    uint8_t padding[14];  // Padding to align the structure
+    ME::Vec16 modelMatrixData = ME::Vec16();
+    ME::Color color = ME::Color::White();
+    uint32_t atlasIndex = 0;  // Index of the texture atlas
+    uint32_t flags = 0;
 };
 
 class TextRenderer {

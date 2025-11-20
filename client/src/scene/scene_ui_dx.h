@@ -54,11 +54,11 @@ class SceneUIDX {
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;
 
-    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
+    ME::UISpriteRendererInstanceData* uiSpriteInstanceData;
     ME::UploadBufferDX* uiSpriteInstanceBuffer = nullptr;
     uint32_t uiSpriteInstanceBufferHeapIndex = 0;
 
-    ME::TextRendererInstanceData** textInstanceData;
+    ME::TextRendererInstanceData* textInstanceData;
     ME::UploadBufferDX* textInstanceBuffer = nullptr;
     uint32_t textInstanceBufferHeapIndex = 0;
 

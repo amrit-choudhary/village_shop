@@ -13,7 +13,6 @@ ME::SceneUI::~SceneUI() {
     for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
         delete uiSpriteTransforms[i];
         delete uiSpriteRenderers[i];
-        delete uiSpriteInstanceData[i];
     }
     delete[] uiSpriteTransforms;
     delete[] uiSpriteRenderers;
@@ -29,9 +28,6 @@ ME::SceneUI::~SceneUI() {
     }
     delete[] textRenderers;
 
-    for (uint32_t i = 0; i < textInstanceDataCount; ++i) {
-        delete textInstanceData[i];
-    }
     delete[] textInstanceData;
 }
 
@@ -52,10 +48,10 @@ void ME::SceneUI::CreateResources() {
 
     uiSpriteTransforms = new ME::Transform*[Constants::MaxUISpriteTransformCount];
     uiSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxUISpriteRendererCount];
-    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData*[Constants::MaxUISpriteInstanceDataCount];
+    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData[Constants::MaxUISpriteInstanceDataCount];
     textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
     textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
-    textInstanceData = new ME::TextRendererInstanceData*[Constants::MaxTextInstanceDataCount];
+    textInstanceData = new ME::TextRendererInstanceData[Constants::MaxTextInstanceDataCount];
 
     // UI Sprite paths.
     spriteTexturePaths[0] = "textures/ui/ui_atlas.png";
@@ -87,10 +83,9 @@ void ME::SceneUI::BuildUISprites() {
     for (size_t i = 0; i < uiHeaderCount; ++i) {
         uiSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, headSP[i]);
 
-        uiSpriteInstanceData[i] = new ME::UISpriteRendererInstanceData();
-        uiSpriteInstanceData[i]->modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-        uiSpriteInstanceData[i]->atlasIndex = i;
-        uiSpriteInstanceData[i]->color = ME::Color::White();
+        uiSpriteInstanceData[i].modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        uiSpriteInstanceData[i].atlasIndex = i;
+        uiSpriteInstanceData[i].color = ME::Color::White();
     }
 
     const uint8_t uiSpriteCount = 15;
@@ -120,10 +115,9 @@ void ME::SceneUI::BuildUISprites() {
     for (size_t i = 0; i < uiSpriteCount; ++i) {
         uiSpriteRenderers[i + j] = new ME::SpriteRenderer(0, 0, 1, 1, panel[i]);
 
-        uiSpriteInstanceData[i + j] = new ME::UISpriteRendererInstanceData();
-        uiSpriteInstanceData[i + j]->modelMatrixData = uiSpriteTransforms[i + j]->GetModelMatrix().GetDataForShader();
-        uiSpriteInstanceData[i + j]->atlasIndex = i;
-        uiSpriteInstanceData[i + j]->color = ME::Color::White();
+        uiSpriteInstanceData[i + j].modelMatrixData = uiSpriteTransforms[i + j]->GetModelMatrix().GetDataForShader();
+        uiSpriteInstanceData[i + j].atlasIndex = i;
+        uiSpriteInstanceData[i + j].color = ME::Color::White();
     }
 
     uiSpriteRendererCount = uiHeaderCount + uiSpriteCount;
@@ -141,17 +135,14 @@ void ME::SceneUI::BuildTextRenderers() {
     textTransforms[0]->SetScale(textRend1->width, textRend1->height);
 
     for (uint32_t i = 0; i < textRend1->GetCount(); ++i) {
-        textInstanceData[i] = new ME::TextRendererInstanceData();
-
         ME::Transform transform;
         ME::Vec3 position = textTransforms[0]->GetPosition();
         position.x += (i * (textRend1->width + textRend1->letterSpacing));
         transform.SetPosition(position);
         transform.SetScale(textRend1->width, textRend1->height);
-        textInstanceData[i]->modelMatrixData = transform.GetModelMatrix().GetDataForShader();
-
-        textInstanceData[i]->color = textRend1->color;
-        textInstanceData[i]->atlasIndex = textRend1->text[i];
+        textInstanceData[i].modelMatrixData = transform.GetModelMatrix().GetDataForShader();
+        textInstanceData[i].color = textRend1->color;
+        textInstanceData[i].atlasIndex = textRend1->text[i];
     }
 
     // Text 2
@@ -165,17 +156,14 @@ void ME::SceneUI::BuildTextRenderers() {
     uint32_t j = textRend1->GetCount();
 
     for (uint32_t i = 0; i < textRend2->GetCount(); ++i) {
-        textInstanceData[i + j] = new ME::TextRendererInstanceData();
-
         ME::Transform transform;
         ME::Vec3 position = textTransforms[1]->GetPosition();
         position.x += (i * (textRend2->width + textRend2->letterSpacing));
         transform.SetPosition(position);
         transform.SetScale(textRend2->width, textRend2->height);
-        textInstanceData[i + j]->modelMatrixData = transform.GetModelMatrix().GetDataForShader();
-
-        textInstanceData[i + j]->color = textRend2->color;
-        textInstanceData[i + j]->atlasIndex = textRend2->text[i];
+        textInstanceData[i + j].modelMatrixData = transform.GetModelMatrix().GetDataForShader();
+        textInstanceData[i + j].color = textRend2->color;
+        textInstanceData[i + j].atlasIndex = textRend2->text[i];
     }
 
     textRendererCount = 2;
@@ -191,16 +179,16 @@ void ME::SceneUI::UpdateUISpriteRenderers() {
         if (!uiSpriteRenderers[i]->bDirty) {
             continue;
         }
-        uiSpriteInstanceData[i]->modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        uiSpriteInstanceData[i].modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
     }
 
     for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
         if (!uiSpriteRenderers[i]->bDirty) {
             continue;
         }
-        uiSpriteInstanceData[i]->atlasIndex = uiSpriteRenderers[i]->atlasIndex;
-        uiSpriteInstanceData[i]->color = uiSpriteRenderers[i]->color;
-        uiSpriteInstanceData[i]->flags = uiSpriteRenderers[i]->flags;
+        uiSpriteInstanceData[i].atlasIndex = uiSpriteRenderers[i]->atlasIndex;
+        uiSpriteInstanceData[i].color = uiSpriteRenderers[i]->color;
+        uiSpriteInstanceData[i].flags = uiSpriteRenderers[i]->flags;
     }
 
     for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
@@ -218,7 +206,7 @@ void ME::SceneUI::UpdateTextRenderers() {
             continue;
         }
         for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
-            textInstanceData[count]->atlasIndex = textRenderers[i]->text[j];
+            textInstanceData[count].atlasIndex = textRenderers[i]->text[j];
             count++;
         }
         textRenderers[i]->bDirty = false;

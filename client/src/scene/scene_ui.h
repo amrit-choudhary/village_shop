@@ -35,11 +35,11 @@ class SceneUI {
 
     ME::Transform** uiSpriteTransforms;
     ME::SpriteRenderer** uiSpriteRenderers;
-    ME::UISpriteRendererInstanceData** uiSpriteInstanceData;
+    ME::UISpriteRendererInstanceData* uiSpriteInstanceData;
 
     ME::Transform** textTransforms;
     ME::TextRenderer** textRenderers;
-    ME::TextRendererInstanceData** textInstanceData;
+    ME::TextRendererInstanceData* textInstanceData;
 
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t spriteTextureCount = 0;
