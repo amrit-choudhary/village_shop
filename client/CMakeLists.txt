@@ -86,9 +86,8 @@ else()
 set(RES_DESTINATION_FOLDER "${CMAKE_BINARY_DIR}/client/Debug/resources")
 endif()
 
-add_custom_command(
-    TARGET VillageShop_Client
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${RES_SOURCE_FOLDER} ${RES_DESTINATION_FOLDER}
-    COMMENT "Copying resources folder to build directory"
+add_custom_target(copy_resources
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${RES_DESTINATION_FOLDER}"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${RES_SOURCE_FOLDER}" "${RES_DESTINATION_FOLDER}"
+    COMMENT "Copying resources to build directory (manual target)"
 )

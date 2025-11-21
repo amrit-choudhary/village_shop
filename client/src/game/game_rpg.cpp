@@ -69,10 +69,10 @@ void ME::GameRPG::Update(double deltaTime) {
         movementVector.x += speed;
     }
 
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::UArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::UpArrow)) {
         scene->spriteCamera->orthographicSize -= zoomSpeed;
     }
-    if (inputManager->GetKeyDown(ME::Input::KeyCode::DArrow)) {
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::DownArrow)) {
         scene->spriteCamera->orthographicSize += zoomSpeed;
     }
 
