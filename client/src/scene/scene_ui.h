@@ -55,6 +55,19 @@ class SceneUI {
     virtual void BuildUISprites();
     virtual void BuildTextRenderers();
 
+   protected:
+    // Helper functions to add elements to the UI scene.
+
+    /**
+     * Creates and adds a UI sprite with the given position and scale.
+     */
+    void AddUISprite(ME::Vec3 position, ME::Vec3 scale, ME::SpriteRenderer* spriteRenderer);
+
+    /**
+     * Creates and adds a Text renderer with the given parameters.
+     */
+    void AddUIText(ME::Vec3 position, ME::Vec3 scale, ME::TextRenderer* textRenderer);
+
    private:
     /**
      * Updates UI sprite renderers that are marked as dirty.

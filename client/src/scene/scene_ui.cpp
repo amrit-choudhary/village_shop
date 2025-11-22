@@ -53,122 +53,46 @@ void ME::SceneUI::CreateResources() {
     textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
     textInstanceData = new ME::TextRendererInstanceData[Constants::MaxTextInstanceDataCount];
 
-    // UI Sprite paths.
-    spriteTexturePaths[0] = "textures/ui/ui_atlas.png";
-    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
-    spriteTextureCount = 2;
+    spriteTextureCount = 0;
 
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[0]);
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    textureAtlasPropertiesCount = 0;
 }
 
-void ME::SceneUI::BuildUISprites() {
-    const uint8_t uiHeaderCount = 7;
-    const float uiHeaderSize = 90.0f;
+void ME::SceneUI::BuildUISprites() {}
 
-    for (size_t i = 0; i < uiHeaderCount; ++i) {
-        float x = -290.0f + i * uiHeaderSize;
+void ME::SceneUI::BuildTextRenderers() {}
 
-        uiSpriteTransforms[i] = new ME::Transform();
-        uiSpriteTransforms[i]->SetPosition(x, 405.0f, 0.0f);
-        uiSpriteTransforms[i]->SetScale(uiHeaderSize, uiHeaderSize);
-    }
+void ME::SceneUI::AddUISprite(ME::Vec3 position, ME::Vec3 scale, ME::SpriteRenderer* spriteRenderer) {
+    ME::Transform* transform = new ME::Transform();
+    transform->SetPosition(position);
+    transform->SetScale(scale);
+    uiSpriteTransforms[uiSpriteRendererCount] = transform;
 
-    uint16_t sp = 48;
-    uint16_t headSP[7] = {static_cast<uint16_t>(sp + 0), static_cast<uint16_t>(sp + 1), static_cast<uint16_t>(sp + 1),
-                          static_cast<uint16_t>(sp + 1), static_cast<uint16_t>(sp + 1), static_cast<uint16_t>(sp + 1),
-                          static_cast<uint16_t>(sp + 2)};
-
-    for (size_t i = 0; i < uiHeaderCount; ++i) {
-        uiSpriteRenderers[i] = new ME::SpriteRenderer(0, 0, 1, 1, headSP[i]);
-
-        uiSpriteInstanceData[i].modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
-        uiSpriteInstanceData[i].atlasIndex = i;
-        uiSpriteInstanceData[i].color = ME::Color::White();
-    }
-
-    const uint8_t uiSpriteCount = 15;
-    const uint8_t uiSpriteWidthCount = 5;
-    const float uiSpriteSize = 80.0f;
-
-    const uint8_t j = uiHeaderCount;
-
-    for (size_t i = 0; i < uiSpriteCount; ++i) {
-        uint8_t row = static_cast<uint8_t>(i / uiSpriteWidthCount);
-        uint8_t col = static_cast<uint8_t>(i % uiSpriteWidthCount);
-        float x = -175.0f + col * uiSpriteSize;
-        float y = -560.0f + row * uiSpriteSize;
-
-        uiSpriteTransforms[i + j] = new ME::Transform();
-        uiSpriteTransforms[i + j]->SetPosition(x, y, 0.0f);
-        uiSpriteTransforms[i + j]->SetScale(uiSpriteSize, uiSpriteSize);
-    }
-
-    uint16_t s = 399;
-    uint16_t panel[15] = {static_cast<uint16_t>(s + 60), static_cast<uint16_t>(s + 61), static_cast<uint16_t>(s + 61),
-                          static_cast<uint16_t>(s + 61), static_cast<uint16_t>(s + 62), static_cast<uint16_t>(s + 30),
-                          static_cast<uint16_t>(s + 31), static_cast<uint16_t>(s + 31), static_cast<uint16_t>(s + 31),
-                          static_cast<uint16_t>(s + 32), static_cast<uint16_t>(s + 0),  static_cast<uint16_t>(s + 1),
-                          static_cast<uint16_t>(s + 1),  static_cast<uint16_t>(s + 1),  static_cast<uint16_t>(s + 2)};
-
-    for (size_t i = 0; i < uiSpriteCount; ++i) {
-        uiSpriteRenderers[i + j] = new ME::SpriteRenderer(0, 0, 1, 1, panel[i]);
-
-        uiSpriteInstanceData[i + j].modelMatrixData = uiSpriteTransforms[i + j]->GetModelMatrix().GetDataForShader();
-        uiSpriteInstanceData[i + j].atlasIndex = i;
-        uiSpriteInstanceData[i + j].color = ME::Color::White();
-    }
-
-    uiSpriteRendererCount = uiHeaderCount + uiSpriteCount;
-    uiSpriteInstanceDataCount = uiHeaderCount + uiSpriteCount;
+    uiSpriteRenderers[uiSpriteRendererCount] = spriteRenderer;
+    ++uiSpriteRendererCount;
 }
 
-void ME::SceneUI::BuildTextRenderers() {
-    // Text 1
-    ME::TextRenderer* textRend1 =
-        new ME::TextRenderer{"Game Name         ", 0, 2, 0, ME::Color{"#dfeaec"}, 40, 40, -10, 0, 0};
-    textRenderers[0] = textRend1;
+void ME::SceneUI::AddUIText(ME::Vec3 position, ME::Vec3 scale, ME::TextRenderer* textRenderer) {
+    ME::Transform* transform = new ME::Transform();
+    transform->SetPosition(position);
+    transform->SetScale(scale);
+    textTransforms[textRendererCount] = transform;
+    textRenderers[textRendererCount] = textRenderer;
+    ++textRendererCount;
 
-    textTransforms[0] = new ME::Transform();
-    textTransforms[0]->SetPosition(-(textRend1->GetRenderWidth() / 2.0f), 408.0f, 0.0f);
-    textTransforms[0]->SetScale(textRend1->width, textRend1->height);
+    for (uint32_t i = 0; i < textRenderer->GetCount(); ++i) {
+        ME::Transform tempTransform;
+        ME::Vec3 pos = textTransforms[textRendererCount - 1]->GetPosition();
+        pos.x += (i * (textRenderer->width + textRenderer->letterSpacing));
+        tempTransform.SetPosition(pos);
+        tempTransform.SetScale(textRenderer->width, textRenderer->height);
 
-    for (uint32_t i = 0; i < textRend1->GetCount(); ++i) {
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[0]->GetPosition();
-        position.x += (i * (textRend1->width + textRend1->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend1->width, textRend1->height);
-        textInstanceData[i].modelMatrixData = transform.GetModelMatrix().GetDataForShader();
-        textInstanceData[i].color = textRend1->color;
-        textInstanceData[i].atlasIndex = textRend1->text[i];
+        // TODO: Make this also dynamic updatable.
+        // Instance data is also set here because in update, only atlasIndex is updated.
+        textInstanceData[textInstanceDataCount].modelMatrixData = tempTransform.GetModelMatrix().GetDataForShader();
+        textInstanceData[textInstanceDataCount].color = textRenderer->color;
+        ++textInstanceDataCount;
     }
-
-    // Text 2
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 40, 40, -10, 0, 0};
-    textRenderers[1] = textRend2;
-
-    textTransforms[1] = new ME::Transform();
-    textTransforms[1]->SetPosition(-(textRend2->GetRenderWidth() / 2.0f), -410.0f, 0.0f);
-    textTransforms[1]->SetScale(textRend2->width, textRend2->height);
-
-    uint32_t j = textRend1->GetCount();
-
-    for (uint32_t i = 0; i < textRend2->GetCount(); ++i) {
-        ME::Transform transform;
-        ME::Vec3 position = textTransforms[1]->GetPosition();
-        position.x += (i * (textRend2->width + textRend2->letterSpacing));
-        transform.SetPosition(position);
-        transform.SetScale(textRend2->width, textRend2->height);
-        textInstanceData[i + j].modelMatrixData = transform.GetModelMatrix().GetDataForShader();
-        textInstanceData[i + j].color = textRend2->color;
-        textInstanceData[i + j].atlasIndex = textRend2->text[i];
-    }
-
-    textRendererCount = 2;
-    textTransformsCount = 2;
-    textInstanceDataCount = textRend1->GetCount() + textRend2->GetCount();
 }
 
 void ME::SceneUI::UpdateUISpriteRenderers() {

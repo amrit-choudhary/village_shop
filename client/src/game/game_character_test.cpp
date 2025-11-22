@@ -1,5 +1,7 @@
 #include "game_character_test.h"
 
+#include "../scene/scene_ui_hud.h"
+
 ME::GameCharacterTest::GameCharacterTest() : Game() {}
 
 ME::GameCharacterTest::~GameCharacterTest() {}
@@ -9,7 +11,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     scene = new ME::SceneCharacterTest();
     scene->Init();
     charScene = dynamic_cast<ME::SceneCharacterTest*>(scene);
-    uiScene = new ME::SceneUI();
+    uiScene = new ME::SceneUIHUD();
     uiScene->Init();
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);

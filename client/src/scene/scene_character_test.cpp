@@ -13,11 +13,11 @@ ME::SceneCharacterTest::SceneCharacterTest() {}
 ME::SceneCharacterTest::~SceneCharacterTest() {}
 
 void ME::SceneCharacterTest::Init() {
-    ME::Scene::Init();
+    Scene::Init();
 }
 
 void ME::SceneCharacterTest::CreateResources() {
-    ME::Scene::CreateResources();
+    Scene::CreateResources();
 
     quadPaths[0] = "meshes/quad.obj";
     quadCount = 1;
@@ -40,30 +40,31 @@ void ME::SceneCharacterTest::CreateResources() {
 }
 
 void ME::SceneCharacterTest::BuildLights() {
-    ME::Scene::BuildLights();
+    Scene::BuildLights();
 }
 
 void ME::SceneCharacterTest::BuildCamera() {
-    ME::Scene::BuildCamera();
+    Scene::BuildCamera();
     spriteCamera->orthographicSize = 50.0f;
 }
 
 void ME::SceneCharacterTest::BuildTransforms() {
-    ME::Scene::BuildTransforms();
+    Scene::BuildTransforms();
 }
 
 void ME::SceneCharacterTest::BuildMeshRenderers() {
-    ME::Scene::BuildMeshRenderers();
+    Scene::BuildMeshRenderers();
 }
 
 void ME::SceneCharacterTest::BuildSpriteTransforms() {
-    ME::Scene::BuildSpriteTransforms();
+    Scene::BuildSpriteTransforms();
+
     // Character Sprite
     AddSpriteTransform(ME::Vec3::Zero, ME::Vec3(charWidth, charHeight, 1.0f));
 }
 
 void ME::SceneCharacterTest::BuildSpriteRenderers() {
-    ME::Scene::BuildSpriteRenderers();
+    Scene::BuildSpriteRenderers();
 
     ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 1, ME::Color::White());
 
@@ -91,7 +92,7 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
-    ME::Scene::BuildInstancedSpriteTransforms();
+    Scene::BuildInstancedSpriteTransforms();
 
     // NPC Sprites.
     ME::Random rnd{"npc_position", true};
@@ -113,7 +114,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
-    ME::Scene::BuildInstancedSpriteRenderers();
+    Scene::BuildInstancedSpriteRenderers();
 
     ME::Random rnd{"npc_type", true};
     ME::SpriteAnimClip* clipBase = nullptr;  // Used as base to duplicate with offset. Deleted afterwards.
