@@ -47,30 +47,30 @@ class Scene {
      * Array of scene resources like meshes, textures, shaders, etc.
      * Items index in the array are file names and are used to create the mesh renderer.
      */
-    const char** meshPaths;
-    const char** quadPaths;
-    const char** texturePaths;
-    const char** spriteTexturePaths;
-    const char** shaderPaths;
-    ME::TextureSampler* textureSamplers;
-    ME::TextureAtlasProperties* textureAtlasProperties;
-    ME::Transform** transforms;
-    ME::MeshRenderer** meshRenderers;
-    ME::Transform** spriteTransforms;
-    ME::SpriteRenderer** spriteRenderers;
+    const char** meshPaths = nullptr;
+    const char** quadPaths = nullptr;
+    const char** texturePaths = nullptr;
+    const char** spriteTexturePaths = nullptr;
+    const char** shaderPaths = nullptr;
+    ME::TextureSampler* textureSamplers = nullptr;
+    ME::TextureAtlasProperties* textureAtlasProperties = nullptr;
+    ME::Transform** transforms = nullptr;
+    ME::MeshRenderer** meshRenderers = nullptr;
+    ME::Transform** spriteTransforms = nullptr;
+    ME::SpriteRenderer** spriteRenderers = nullptr;
 
     // First set of instanced sprite renderers.
-    ME::Transform** instancedSpriteTransforms0;
-    ME::SpriteRenderer** instancedSpriteRenderers0;
-    ME::SpriteRendererInstanceData* spriteInstanceData0;
+    ME::Transform** instancedSpriteTransforms0 = nullptr;
+    ME::SpriteRenderer** instancedSpriteRenderers0 = nullptr;
+    ME::SpriteRendererInstanceData* spriteInstanceData0 = nullptr;
 
     // Second set of instanced sprite renderers.
-    ME::Transform** instancedSpriteTransforms1;
-    ME::SpriteRenderer** instancedSpriteRenderers1;
-    ME::SpriteRendererInstanceData* spriteInstanceData1;
+    ME::Transform** instancedSpriteTransforms1 = nullptr;
+    ME::SpriteRenderer** instancedSpriteRenderers1 = nullptr;
+    ME::SpriteRendererInstanceData* spriteInstanceData1 = nullptr;
 
-    ME::ColliderAABB* staticColliders;
-    ME::ColliderAABB* dynamicColliders;
+    ME::ColliderAABB* staticColliders = nullptr;
+    ME::ColliderAABB* dynamicColliders = nullptr;
 
     uint8_t meshCount = 0;
     uint8_t quadCount = 0;
@@ -103,6 +103,35 @@ class Scene {
     virtual void BuildSpriteRenderers();
     virtual void BuildInstancedSpriteTransforms();
     virtual void BuildInstancedSpriteRenderers();
+
+   protected:
+    // Helper functions to add elements to the scene.
+
+    /**
+     * Creates and adds a sprite transform with the given position and scale.
+     * Will also increment the spriteTransformCount.
+     */
+    void AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale);
+
+    /**
+     * Adds a sprite renderer to the spriteRenderers array.
+     * Will also increment the spriteRendererCount.
+     */
+    void AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer);
+
+    /**
+     * Creates and adds an instanced sprite transform with the given position and scale.
+     * Will also increment the instancedSpriteTransformCount.
+     * buffer specifies which instance buffer to add to (0 or 1).
+     */
+    void AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer = 0);
+
+    /**
+     * Adds an instanced sprite renderer to the instancedSpriteRenderers array.
+     * Will also increment the instancedSpriteRendererCount.
+     * buffer specifies which instance buffer to add to (0 or 1).
+     */
+    void AddInstancedSpriteRenderer(ME::SpriteRenderer* spriteRenderer, uint8_t buffer = 0);
 
    private:
     /**

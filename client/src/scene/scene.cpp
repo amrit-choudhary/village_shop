@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include <src/logging.h>
+
 #include <cmath>
 #include <cstring>
 
@@ -107,46 +109,21 @@ void ME::Scene::CreateResources() {
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
 
-    // TODO: Make cubes pivot at center.
-    meshPaths[0] = "meshes/cube_unshared.obj";
-    meshPaths[1] = "meshes/grass.obj";
-    meshCount = 2;
+    meshCount = 0;
 
-    quadPaths[0] = "meshes/quad.obj";  // First one is default. Not loaded from obj.
-    quadCount = 1;
+    quadCount = 0;
 
-    // Textures for 3D objects.
-    texturePaths[0] = "textures/world/cobblestone.png";
-    texturePaths[1] = "textures/world/dirt.png";
-    texturePaths[2] = "textures/world/ice.png";
-    texturePaths[3] = "textures/world/grass_block_top.png";
-
-    texturePaths[4] = "textures/world/short_grass.png";
-    texturePaths[5] = "textures/world/torchflower.png";
-    texturePaths[6] = "textures/world/poppy.png";
-    texturePaths[7] = "textures/world/peony_top.png";
-    textureCount = 8;
+    // For 3d objects.
+    textureCount = 0;
 
     // Textures for 2D objects.
-    spriteTexturePaths[0] = "textures/sprites/tileGrey_01.png";
-    spriteTexturePaths[1] = "textures/sprites/monochrome.png";
-    spriteTexturePaths[2] = "textures/font/ascii.png";
-    spriteTexturePaths[3] = "textures/font/ascii_ibm_transparent.png";
-    spriteTextureCount = 4;
+    spriteTextureCount = 0;
 
-    shaderPaths[0] = "shaders/metal/basic.metal";
-    shaderPaths[1] = "shaders/metal/basic_alpha_coutout.metal";
-    shaderPaths[2] = "shaders/metal/sprite.metal";
-    shaderPaths[3] = "shaders/metal/sprite_instanced.metal";
-    shaderCount = 4;
+    shaderCount = 0;
 
-    textureAtlasProperties[0] = ME::TextureAtlasProperties{16, 16, 1, 1078, 49, 22, 832, 373};
-    textureAtlasProperties[1] = ME::TextureAtlasProperties{8, 8, 0, 224, 16, 14, 128, 128};
-    textureAtlasProperties[2] = ME::TextureAtlasProperties{10, 10, 0, 256, 16, 16, 160, 160};
-    textureAtlasPropertiesCount = 3;
+    textureAtlasPropertiesCount = 0;
 
-    textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
-    textureSamplerCount = 1;
+    textureSamplerCount = 0;
 }
 
 void ME::Scene::BuildLights() {
@@ -176,156 +153,88 @@ void ME::Scene::BuildCamera() {
     spriteCamera->aspectRatio = 1.33f;
 }
 
-void ME::Scene::BuildTransforms() {
-    int gridSize = 15;
-    int gridCount = gridSize * gridSize;
-    transformCount = gridCount * 3;
-    float spacing = 1.0f;
+void ME::Scene::BuildTransforms() {}
 
-    for (uint16_t i = 0; i < gridCount; ++i) {
-        int x = i % gridSize - 7;
-        int z = (i / gridSize) % gridSize;
+void ME::Scene::BuildMeshRenderers() {}
 
-        float px = x * spacing;
-        float pz = z * spacing;
+void ME::Scene::BuildSpriteTransforms() {}
 
-        transforms[i * 3 + 0] = new ME::Transform();
-        transforms[i * 3 + 0]->SetPosition(px, -1, pz);
-        transforms[i * 3 + 0]->SetScale(1.0f, 1.0f, 1.0f);
+void ME::Scene::BuildSpriteRenderers() {}
 
-        transforms[i * 3 + 1] = new ME::Transform();
-        transforms[i * 3 + 1]->SetPosition(px, 0, pz);
-        transforms[i * 3 + 1]->SetScale(1.0f, 1.0f, 1.0f);
+void ME::Scene::BuildInstancedSpriteTransforms() {}
 
-        transforms[i * 3 + 2] = new ME::Transform();
-        transforms[i * 3 + 2]->SetPosition(px, 1, pz);
-        transforms[i * 3 + 2]->SetScale(0.8f, 0.8f, 0.8f);
+void ME::Scene::BuildInstancedSpriteRenderers() {}
+
+void ME::Scene::AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale) {
+    if (spriteTransformCount >= Constants::MaxSpriteTransformCount) {
+        ME::LogError("Scene::AddSpriteTransform: Exceeded max sprite transform count.");
+        return;
     }
+
+    ME::Transform* transform = new ME::Transform();
+    transform->SetPosition(position);
+    transform->SetScale(scale);
+    spriteTransforms[spriteTransformCount] = transform;
+    ++spriteTransformCount;
 }
 
-void ME::Scene::BuildMeshRenderers() {
-    meshRendererCount = 15 * 15 * 3;
-    int gridSize = std::cbrt(meshRendererCount);
-
-    ME::Random randomTex("Tex", true);
-    ME::Random randomColor("Color", true);
-    for (uint16_t i = 0; i < meshRendererCount; ++i) {
-        uint8_t rndTexId = randomTex.NextRange(5, 7);
-        ME::Color color = ME::Color::RandomColorPretty(randomColor);
-
-        int y = transforms[i]->GetPosition().y;
-
-        if (y > 0.5f) {
-            meshRenderers[i] = new ME::MeshRenderer(1, 0, rndTexId, ME::Color::White());
-        } else if (y > -0.5f) {
-            meshRenderers[i] = new ME::MeshRenderer(0, 0, 1, ME::Color(0.0f, 0.6f, 0.0f));
-        } else {
-            meshRenderers[i] = new ME::MeshRenderer(0, 0, 0, ME::Color::White());
-        }
+void ME::Scene::AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer) {
+    if (spriteRendererCount >= Constants::MaxSpriteRendererCount) {
+        ME::LogError("Scene::AddSpriteRenderer: Exceeded max sprite renderer count.");
+        return;
     }
+
+    spriteRenderers[spriteRendererCount] = spriteRenderer;
+    ++spriteRendererCount;
 }
 
-void ME::Scene::BuildSpriteTransforms() {
-    spriteTransformCount = 10 * 10;
-    int spriteSize = 20;
-    int gridCount = 10;
-    int gridOffset = -90;
-
-    for (uint16_t i = 0; i < spriteTransformCount; ++i) {
-        int x = i % gridCount;
-        int y = (i / gridCount) % gridCount;
-
-        float px = x * spriteSize + gridOffset;
-        float py = y * spriteSize + gridOffset;
-
-        spriteTransforms[i] = new ME::Transform();
-        spriteTransforms[i]->SetPosition(px, py, 0.0f);
-        spriteTransforms[i]->SetScale(spriteSize, spriteSize);
-    }
-}
-
-void ME::Scene::BuildSpriteRenderers() {
-    spriteRendererCount = 10 * 10;
-    int gridCount = 10;
-
-    ME::Random randomColor("ColorSprite", true);
-    for (uint16_t i = 0; i < spriteRendererCount; ++i) {
-        int x = i % gridCount;
-        int y = (i / gridCount) % gridCount;
-
-        ME::Color color = ME::Color::RandomColorPretty(randomColor);
-        spriteRenderers[i] = new ME::SpriteRenderer(0, 0, 0, 1, 1, color);
-    }
-}
-
-void ME::Scene::BuildInstancedSpriteTransforms() {
-    instancedSpriteTransformCount0 = 64 * 64;
-    int spriteSize = 20;
-    int gridCount = 64;
-    int gridOffsetX = -670;
-    int gridOffsetY = -500;
-    int padding = 0;
-
-    for (uint32_t i = 0; i < instancedSpriteTransformCount0; ++i) {
-        int x = i % gridCount;
-        int y = (i / gridCount) % gridCount;
-
-        float px = x * (spriteSize + padding) + gridOffsetX;
-        float py = y * (spriteSize + padding) + gridOffsetY;
-
-        instancedSpriteTransforms0[i] = new ME::Transform();
-        instancedSpriteTransforms0[i]->SetPosition(px, py, 0.0f);
-        instancedSpriteTransforms0[i]->SetScale(spriteSize, spriteSize);
-    }
-}
-
-void ME::Scene::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount0 = 64 * 64;
-    int gridCount = 64;
-
-    ME::Random randomColor("ColorInstancedSprite", true);
-    ME::Random randomAtlasIndex("AtlasIndex", true);
-    ME::Random randomGround("Ground", true);
-    ME::Random randomPerlinSeed("PerlinSeed", true);
-    uint32_t perlinSeedR = randomPerlinSeed.Next();
-    uint32_t perlinSeedG = randomPerlinSeed.Next();
-    uint32_t perlinSeedB = randomPerlinSeed.Next();
-
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        int x = i % gridCount;
-        int y = (i / gridCount) % gridCount;
-
-        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
-
-        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetData();
-
-        if (x == 0 || x == gridCount - 1 || y == 0 || y == gridCount - 1) {
-            spriteInstanceData0[i].atlasIndex = 16;
-            spriteInstanceData0[i].color = ME::Color{200 / 255.0f, 200 / 255.0f, 200 / 255.0f};
-        } else {
-            uint32_t val = randomGround.NextRange(0, 3);
-            if (val < 3) {
-                // Ground.
-                spriteInstanceData0[i].atlasIndex = 1;
-                spriteInstanceData0[i].color = ME::Color{70 / 255.0f, 24 / 255.0f, 10 / 255.0f};
-            } else {
-                // Tiles
-
-                ME::Color color = ME::Color::RandomColorPretty(randomColor);
-                spriteInstanceData0[i].atlasIndex = static_cast<uint16_t>(randomAtlasIndex.NextRange(0, 1078));
-                spriteInstanceData0[i].color = color;
-            }
+void ME::Scene::AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer) {
+    if (buffer == 0) {
+        if (instancedSpriteTransformCount0 >= Constants::MaxInstancedSpriteTransformCount) {
+            ME::LogError(
+                "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 0.");
+            return;
         }
 
-        float octave = 0.045f;
-        float noiseR = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedR);
-        float noiseG = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedG);
-        float noiseB = stb_perlin_noise3_seed(x * octave, y * octave, 0, 0, 0, 0, perlinSeedB);
-        noiseR = (noiseR + 1.0f) / 2.0f;
-        noiseG = (noiseG + 1.0f) / 2.0f;
-        noiseB = (noiseB + 1.0f) / 2.0f;
-        spriteInstanceData0[i].atlasIndex = 253;
-        spriteInstanceData0[i].color = ME::Color{noiseR, noiseG, noiseB};
+        ME::Transform* transform = new ME::Transform();
+        transform->SetPosition(position);
+        transform->SetScale(scale);
+        instancedSpriteTransforms0[instancedSpriteTransformCount0] = transform;
+        ++instancedSpriteTransformCount0;
+    } else {
+        if (instancedSpriteTransformCount1 >= Constants::MaxInstancedSpriteTransformCount) {
+            ME::LogError(
+                "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 1.");
+            return;
+        }
+
+        ME::Transform* transform = new ME::Transform();
+        transform->SetPosition(position);
+        transform->SetScale(scale);
+        instancedSpriteTransforms1[instancedSpriteTransformCount1] = transform;
+        ++instancedSpriteTransformCount1;
+    }
+}
+
+void ME::Scene::AddInstancedSpriteRenderer(ME::SpriteRenderer* spriteRenderer, uint8_t buffer) {
+    if (buffer == 0) {
+        if (instancedSpriteRendererCount0 >= Constants::MaxInstancedSpriteRendererCount) {
+            ME::LogError(
+                "Scene::AddInstancedSpriteRenderer: Exceeded max instanced sprite renderer count for buffer 0.");
+            return;
+        }
+
+        instancedSpriteRenderers0[instancedSpriteRendererCount0] = spriteRenderer;
+        ++instancedSpriteRendererCount0;
+    } else {
+        if (instancedSpriteRendererCount1 >= Constants::MaxInstancedSpriteRendererCount) {
+            ME::LogError(
+                "Scene::AddInstancedSpriteRenderer: Exceeded max instanced sprite renderer count for buffer 1.");
+            return;
+        }
+
+        instancedSpriteRenderers1[instancedSpriteRendererCount1] = spriteRenderer;
+        ++instancedSpriteRendererCount1;
     }
 }
 

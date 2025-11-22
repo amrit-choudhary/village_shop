@@ -44,6 +44,7 @@ class Transform {
     void SetScale(float x, float y);
     // This will set the scale to the same value for all axes.
     void SetScale(float scale);
+    void SetScale(const ME::Vec3& scale);
 
     ME::Mat4 GetModelMatrix() const {
         // Create the model matrix using position, rotation, and scale.

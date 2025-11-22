@@ -42,3 +42,7 @@ void ME::Transform::SetScale(float x, float y) {
 void ME::Transform::SetScale(float scale) {
     SetScale(scale, scale, scale);
 }
+
+void ME::Transform::SetScale(const ME::Vec3& scale) {
+    this->scale = scale;
+}
