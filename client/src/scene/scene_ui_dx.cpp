@@ -32,7 +32,7 @@ ME::SceneUIDX::SceneUIDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
     textRenderers = scene->textRenderers;
     textRendererCount = scene->textRendererCount;
     textInstanceData = scene->textInstanceData;
-    textInstanceDataCount = scene->textInstanceDataCount;
+    textInstanceDataCount = &scene->textInstanceDataCount;
 
     MakeSpriteTextures();
     MakeConstantBuffers();
@@ -115,14 +115,20 @@ void ME::SceneUIDX::MakeUISpriteInstanceBuffer() {
 }
 
 void ME::SceneUIDX::MakeTextInstanceBuffer() {
-    if (textInstanceDataCount == 0) {
+    // Text overflow buffer to handle dynamic text count changes.
+    // Each text renderer can have varying number of characters,
+    // Preallocate double the current count to handle increases without frequent reallocations.
+
+    uint32_t textOverflowBufferCount = *textInstanceDataCount * 2;
+
+    if (textOverflowBufferCount == 0) {
         return;
     }
 
     textInstanceBuffer =
-        new ME::UploadBufferDX(device, false, textInstanceDataCount, sizeof(ME::TextRendererInstanceData));
+        new ME::UploadBufferDX(device, false, textOverflowBufferCount, sizeof(ME::TextRendererInstanceData));
     textInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData), textInstanceDataCount);
+        textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData), textOverflowBufferCount);
 }
 
 #endif  // VG_WIN

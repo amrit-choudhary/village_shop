@@ -21,7 +21,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->Init();
 
     playerTransform = charScene->spriteTransforms[0];
-    uiScene->textRenderers[0]->SetText("    Bullet Test   ");
+    uiScene->textRenderers[0]->SetText("Bullet Test");
 
     bulletDirs = new ME::Vec2[maxBulletCount]{};
 

@@ -529,7 +529,7 @@ void ME::RendererDX::Draw() {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, uiSceneDX->textInstanceDataCount, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, *uiSceneDX->textInstanceDataCount, 0, 0, 0);
     }
     // End Text Drawing.
 

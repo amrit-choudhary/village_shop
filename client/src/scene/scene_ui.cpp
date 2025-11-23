@@ -79,20 +79,7 @@ void ME::SceneUI::AddUIText(ME::Vec3 position, ME::Vec3 scale, ME::TextRenderer*
     textTransforms[textRendererCount] = transform;
     textRenderers[textRendererCount] = textRenderer;
     ++textRendererCount;
-
-    for (uint32_t i = 0; i < textRenderer->GetCount(); ++i) {
-        ME::Transform tempTransform;
-        ME::Vec3 pos = textTransforms[textRendererCount - 1]->GetPosition();
-        pos.x += (i * (textRenderer->width + textRenderer->letterSpacing));
-        tempTransform.SetPosition(pos);
-        tempTransform.SetScale(textRenderer->width, textRenderer->height);
-
-        // TODO: Make this also dynamic updatable.
-        // Instance data is also set here because in update, only atlasIndex is updated.
-        textInstanceData[textInstanceDataCount].modelMatrixData = tempTransform.GetModelMatrix().GetDataForShader();
-        textInstanceData[textInstanceDataCount].color = textRenderer->color;
-        ++textInstanceDataCount;
-    }
+    textInstanceDataCount += textRenderer->GetCount();
 }
 
 void ME::SceneUI::UpdateUISpriteRenderers() {
@@ -123,16 +110,49 @@ void ME::SceneUI::UpdateUISpriteRenderers() {
 }
 
 void ME::SceneUI::UpdateTextRenderers() {
+    // Update transform data.
     uint32_t count = 0;
     for (uint32_t i = 0; i < textRendererCount; ++i) {
         if (!textRenderers[i]->bDirty) {
             count += textRenderers[i]->GetCount();
             continue;
         }
+
+        for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
+            ME::Transform tempTransform;
+            ME::Vec3 pos = textTransforms[i]->GetPosition();
+            pos.x += (j * (textRenderers[i]->width + textRenderers[i]->letterSpacing));
+            tempTransform.SetPosition(pos);
+            tempTransform.SetScale(textRenderers[i]->width, textRenderers[i]->height);
+            textInstanceData[count].modelMatrixData = tempTransform.GetModelMatrix().GetDataForShader();
+            ++count;
+        }
+    }
+
+    // Update atlas indices and colors.
+    count = 0;
+    for (uint32_t i = 0; i < textRendererCount; ++i) {
+        if (!textRenderers[i]->bDirty) {
+            count += textRenderers[i]->GetCount();
+            continue;
+        }
+
         for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
             textInstanceData[count].atlasIndex = textRenderers[i]->text[j];
-            count++;
+            textInstanceData[count].color = textRenderers[i]->color;
+            ++count;
         }
-        textRenderers[i]->bDirty = false;
+    }
+
+    // TODO: change only if bDirty.
+    textInstanceDataCount = 0;
+    for (uint32_t i = 0; i < textRendererCount; ++i) {
+        textInstanceDataCount += textRenderers[i]->GetCount();
+    }
+
+    for (uint32_t i = 0; i < textRendererCount; ++i) {
+        if (textRenderers[i]->bDirty) {
+            textRenderers[i]->bDirty = false;
+        }
     }
 }

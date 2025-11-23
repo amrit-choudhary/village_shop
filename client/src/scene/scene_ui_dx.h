@@ -49,7 +49,7 @@ class SceneUIDX {
     uint32_t uiSpriteInstanceDataCount = 0;
     uint32_t textTransformsCount = 0;
     uint32_t textRendererCount = 0;
-    uint32_t textInstanceDataCount = 0;
+    uint32_t* textInstanceDataCount = 0;
 
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;

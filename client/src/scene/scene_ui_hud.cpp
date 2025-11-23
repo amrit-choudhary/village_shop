@@ -73,8 +73,7 @@ void ME::SceneUIHUD::BuildUISprites() {
 void ME::SceneUIHUD::BuildTextRenderers() {
     SceneUI::BuildTextRenderers();
 
-    ME::TextRenderer* textRend1 =
-        new ME::TextRenderer{"Game Name         ", 0, 2, 0, ME::Color{"#dfeaec"}, 40, 40, -10, 0, 0};
+    ME::TextRenderer* textRend1 = new ME::TextRenderer{"Game Name", 0, 2, 0, ME::Color{"#dfeaec"}, 40, 40, -10, 0, 0};
     float x1 = -(textRend1->GetRenderWidth() / 2.0f);
     float y1 = 408.0f;
     AddUIText(ME::Vec3{x1, y1, 0.0f}, ME::Vec3{(float)textRend1->width, (float)textRend1->height, 1.0f}, textRend1);
