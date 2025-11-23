@@ -4,13 +4,18 @@
 
 #pragma once
 
+#include <src/math/vec2.h>
+#include <src/math/vec2i.h>
 #include <stdint.h>
 
 #include <string>
 #include <thread>
 #include <unordered_map>
 
+#include "../misc/global_vars.h"
+
 namespace ME::Input {
+
 enum class KeyState : uint8_t {
     None = 0x00,
     UpWasUp = 0x01,      // Key is currently up and was previously up. Default state.
@@ -141,6 +146,14 @@ enum class KeyCode : uint16_t {
     MaxValue = 0xFFFF
 };
 
+enum class MouseButton : uint8_t {
+    Left = 0,
+    Right = 1,
+    Middle = 2,
+    Button4 = 3,
+    Button5 = 4,
+};
+
 /**
  * Base class for platform specific Input implementation.
  */
@@ -163,6 +176,13 @@ class InputManagerMac;
  */
 class InputManager {
    public:
+#ifdef VG_MAC
+    friend class InputManagerMac;
+#endif
+#ifdef VG_WIN
+    friend class InputManagerWin;
+#endif
+
     InputManager();
     ~InputManager();
 
@@ -184,13 +204,35 @@ class InputManager {
     // Check if key was pressed this frame.
     static bool GetKeyPressed(ME::Input::KeyCode keyCode);
 
-    static std::unordered_map<ME::Input::KeyCode, ME::Input::KeyState> GlobalKeyState;
+    /**
+     * Get mouse position.
+     * Bottm left is (0,0). which is different from default, which is top left (0,0).
+     */
+    static ME::Vec2i GetMousePos() {
+        return mousePos;
+    }
+
+    /**
+     * Get normalized mouse position (0.0 to 1.0).
+     * Bottom left is (0,0). which is different from default, which is top left (0,0).
+     */
+    static ME::Vec2 GetMousePosNorm() {
+        return ME::Vec2(static_cast<float>(mousePos.x) / ME::GlobalVars::GetWindowWidth(),
+                        static_cast<float>(mousePos.y) / ME::GlobalVars::GetWindowHeight());
+    }
 
     bool GetCLIInputString(std::string& input);
 
     PlatformInputManager* GetPlatformInputManager();
 
    private:
+    // Global key state map.
+    static std::unordered_map<ME::Input::KeyCode, ME::Input::KeyState> GlobalKeyState;
+
+    // Mouse position.
+    inline static ME::Vec2i mousePos = ME::Vec2i::Zero;
+
+    // Platform specific input manager.
     PlatformInputManager* platformInputManager;
 };
 

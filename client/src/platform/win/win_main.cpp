@@ -49,10 +49,16 @@ LRESULT CALLBACK WindowProcW(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
             return 0;
         }
 
+        // Handle input messages and forward them to the game instance, which gives them to the input system.
         case WM_SYSKEYUP:
         case WM_SYSKEYDOWN:
         case WM_KEYUP:
-        case WM_KEYDOWN: {
+        case WM_KEYDOWN:
+        case WM_MOUSEMOVE:
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONUP:
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP: {
             ME::GameMain* pGame = reinterpret_cast<ME::GameMain*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
             if (pGame) {
                 pGame->HandleInput(msg, wParam, lParam);

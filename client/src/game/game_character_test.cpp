@@ -127,6 +127,9 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
     uiScene->textRenderers[1]->SetText(scoreText);
 
+    ME::Vec2 mousePosNorm = inputManager->GetMousePosNorm();
+    ME::LogInfo("Mouse: ", mousePosNorm.x, ", ", mousePosNorm.y);
+
     // Bullet handling.
     ++frameCounter;
     if (frameCounter >= fireRate && inputManager->GetKeyDown(ME::Input::KeyCode::Space)) {

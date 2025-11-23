@@ -232,7 +232,15 @@ void ME::Input::InputManagerWin::PostUpdate() {
 void InputManagerWin::End() {}
 
 void InputManagerWin::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) {
-    writeBuffer->Push(msg, wParam, lParam);
+    if (msg == WM_MOUSEMOVE || msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN ||
+        msg == WM_RBUTTONUP) {
+        if (msg == WM_MOUSEMOVE) {
+            InputManager::mousePos.x = LOWORD(lParam);
+            InputManager::mousePos.y = ME::GlobalVars::GetWindowHeight() - HIWORD(lParam);
+        }
+    } else {
+        writeBuffer->Push(msg, wParam, lParam);
+    }
 }
 
 ME::Input::WinKeyEventBuffer::WinKeyEventBuffer() {
