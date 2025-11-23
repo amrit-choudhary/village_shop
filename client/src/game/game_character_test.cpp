@@ -128,7 +128,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     uiScene->textRenderers[1]->SetText(scoreText);
 
     ME::Vec2 mousePosNorm = inputManager->GetMousePosNorm();
-    ME::LogInfo("Mouse: ", mousePosNorm.x, ", ", mousePosNorm.y);
+    ME::Vec2 mousePos = mousePosNorm - ME::Vec2{0.5f, 0.5f};
+    float inputAngle = atan2(mousePos.y, mousePos.x);
 
     // Bullet handling.
     ++frameCounter;
@@ -142,7 +143,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             }
             if (bulletDirs[i].Length() < 1.0f) {
                 ++burstCounter;
-                float angle = bulletStartDirAngle + (rndBullet.NextDouble() - 0.5f) * ME::QUARTER_PI * 0.75f;
+                float angle = inputAngle + (rndBullet.NextDouble() - 0.5f) * ME::QUARTER_PI * 0.5f;
                 bulletDirs[i] = ME::Vec2{cos(angle), sin(angle)};
                 charScene->instancedSpriteTransforms1[i]->SetPosition(playerTransform->GetPosition());
                 charScene->instancedSpriteRenderers1[i]->atlasIndex = (cycleCounter % 4);
