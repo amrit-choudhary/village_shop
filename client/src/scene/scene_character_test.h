@@ -25,6 +25,10 @@ class SceneCharacterTest : public Scene {
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
 
+    const float enemyCollScaleMult = 0.7f;
+    const float bulletCollScaleMult = 0.8f;
+    const float charCollScaleMult = 0.8f;
+
    private:
     const float charWidth = 8.0f;
     const float charHeight = 12.0f;
@@ -34,7 +38,7 @@ class SceneCharacterTest : public Scene {
     const float uiSpriteSize = 80.0f;
     const size_t uiSpriteCount = 15;
     const size_t uiSpriteWidthCount = 5;
-    const size_t maxBulletCount = 9000;
+    const size_t maxBulletCount = 1000;
     const float bulletSize = 6.0f;
 };
 

@@ -25,19 +25,23 @@ class GameCharacterTest : public Game {
     // End game.
     virtual void End() override;
 
+    // This will be called from the PhysicsSystem when a collision is detected.
+    virtual void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) override;
+
    private:
     ME::SceneCharacterTest* charScene = nullptr;  // Scene for the game.
     ME::PhysicsScene* physicsScene = nullptr;     // Physics scene for the game.
 
     const float enemyBaseSpeed = 10.0f;
     const float enemySpeedVariance = 5.0f;
-    const float outThrowDistance = 70.0f;
+    const float outThrowDistance = 50.0f;
     const float minDistaneToPlayerSqr = 10.0f;
     const size_t maxNPCCount = 64;
     ME::Transform* playerTransform = nullptr;
     uint32_t score = 0;
+    uint32_t health = 100;
     ME::Vec2* bulletDirs = nullptr;
-    const size_t maxBulletCount = 9000;
+    const size_t maxBulletCount = 100;
     const float bulletSpeed = 80.0f;
     const size_t fireRate = 8;
     const size_t burstCount = 4;

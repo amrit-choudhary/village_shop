@@ -37,6 +37,9 @@ void ME::SceneCharacterTest::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[1]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
     textureAtlasPropertiesCount = 3;
+
+    staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
+    dynamicColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
 }
 
 void ME::SceneCharacterTest::BuildLights() {
@@ -99,8 +102,14 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
     for (size_t i = 0; i < maxNPCCount; ++i) {
         float x = rnd.NextDouble() * 70.0f - 35.0f;
         float y = rnd.NextDouble() * 80.0f - 40.0f;
+        ME::Vec2 dir = ME::Vec2(x, y).Normalised();
+        ME::Vec2 pos = dir * ME::Vec2{100.0f, 100.0f};
+
         // Adding to instance buffer 0;
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
+        AddInstancedSpriteTransform(ME::Vec3(pos.x, pos.y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
+        staticColliders[staticColliderCount] =
+            ME::ColliderAABB(i, true, true, *instancedSpriteTransforms0[i], enemyCollScaleMult);
+        ++staticColliderCount;
     }
 
     // Bullet Sprites.
@@ -110,6 +119,8 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         float y = 9000.0f;
         // Adding to instance buffer 1;
         AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(bulletSize, bulletSize, 1.0f), 1);
+        dynamicColliders[i] = ME::ColliderAABB(i, true, false, *instancedSpriteTransforms1[i], bulletCollScaleMult);
+        ++dynamicColliderCount;
     }
 }
 

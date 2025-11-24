@@ -1,6 +1,7 @@
 #include "game_character_test.h"
 
 #include "../scene/scene_ui_hud.h"
+#include "physics_scene_char.h"
 
 ME::GameCharacterTest::GameCharacterTest() : Game() {}
 
@@ -13,15 +14,19 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     charScene = dynamic_cast<ME::SceneCharacterTest*>(scene);
     uiScene = new ME::SceneUIHUD();
     uiScene->Init();
-    physicsScene = new ME::PhysicsScene();
+
+    physicsScene = new ME::PhysicsSceneChar();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);
     physicsSystem->SetScene(physicsScene);
+
     animationSystem->SetScene(scene);
     animationSystem->Init();
 
     playerTransform = charScene->spriteTransforms[0];
     uiScene->textRenderers[0]->SetText("Bullet Test");
+    uiScene->textRenderers[1]->SetText("Score:00000");
+    uiScene->textRenderers[2]->SetText("Health:100");
 
     bulletDirs = new ME::Vec2[maxBulletCount]{};
 
@@ -112,7 +117,11 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
             npcTransform->SetPosition(newPos);
             charScene->instancedSpriteRenderers0[i]->bDirty = true;
-            ++score;
+            --health;
+
+            char healthText[32];
+            snprintf(healthText, sizeof(healthText), "Health:%03u", health);
+            uiScene->textRenderers[2]->SetText(healthText);
         } else {
             // Move towards player.
             ME::Vec3 moveDir = dirToPlayer.Normalised();
@@ -121,6 +130,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             npcTransform->SetPosition(newPos);
             charScene->instancedSpriteRenderers0[i]->bDirty = true;
         }
+
+        charScene->staticColliders[i].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     }
 
     char scoreText[32];
@@ -158,13 +169,15 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         bulletPos.x += bulletDirs[i].x * bulletSpeed * static_cast<float>(deltaTime);
         bulletPos.y += bulletDirs[i].y * bulletSpeed * static_cast<float>(deltaTime);
 
-        if (bulletPos.Length() > 1000.0f) {
+        if ((bulletPos - playerTransform->GetPosition()).Length() > 40.0f) {
             bulletPos = bulletParkPos;
             bulletDirs[i] = ME::Vec2{0.0f, 0.0f};
         }
 
         bulletTransform->SetPosition(bulletPos);
         charScene->instancedSpriteRenderers1[i]->bDirty = true;
+
+        charScene->dynamicColliders[i].UpdateTransform(*bulletTransform, charScene->bulletCollScaleMult);
     }
 }
 
@@ -179,4 +192,18 @@ void ME::GameCharacterTest::End() {
 
     Game::End();
     ME::Log("Character Animation Test Game End!");
+}
+
+void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
+    uint32_t enemeyIndex = b->GetID();
+    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemeyIndex];
+    ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
+
+    ME::Vec3 throwDir = dirToPlayer.Normalised();
+    ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
+    npcTransform->SetPosition(newPos);
+    charScene->instancedSpriteRenderers0[enemeyIndex]->bDirty = true;
+    ++score;
+
+    delete result;
 }

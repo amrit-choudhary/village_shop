@@ -73,13 +73,18 @@ void ME::SceneUIHUD::BuildUISprites() {
 void ME::SceneUIHUD::BuildTextRenderers() {
     SceneUI::BuildTextRenderers();
 
-    ME::TextRenderer* textRend1 = new ME::TextRenderer{"Game Name", 0, 2, 0, ME::Color{"#dfeaec"}, 40, 40, -10, 0, 0};
+    ME::TextRenderer* textRend1 = new ME::TextRenderer{"Game Name", 0, 2, 0, ME::Color{"#060479"}, 40, 40, -10, 0, 0};
     float x1 = -(textRend1->GetRenderWidth() / 2.0f);
     float y1 = 408.0f;
     AddUIText(ME::Vec3{x1, y1, 0.0f}, ME::Vec3{(float)textRend1->width, (float)textRend1->height, 1.0f}, textRend1);
 
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 40, 40, -10, 0, 0};
+    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 35, 35, -8, 0, 0};
     float x2 = -(textRend2->GetRenderWidth() / 2.0f);
-    float y2 = -410.0f;
+    float y2 = -390.0f;
     AddUIText(ME::Vec3{x2, y2, 0.0f}, ME::Vec3{(float)textRend2->width, (float)textRend2->height, 1.0f}, textRend2);
+
+    ME::TextRenderer* textRend3 = new ME::TextRenderer{"Health:000", 0, 2, 0, ME::Color{"#039427ff"}, 35, 35, -8, 0, 0};
+    float x3 = -(textRend3->GetRenderWidth() / 2.0f);
+    float y3 = -430.0f;
+    AddUIText(ME::Vec3{x3, y3, 0.0f}, ME::Vec3{(float)textRend3->width, (float)textRend3->height, 1.0f}, textRend3);
 }
