@@ -38,8 +38,8 @@ void ME::SceneCharacterTest::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
     textureAtlasPropertiesCount = 3;
 
-    staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
-    dynamicColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
+    staticColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
 }
 
 void ME::SceneCharacterTest::BuildLights() {
@@ -107,9 +107,11 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 
         // Adding to instance buffer 0;
         AddInstancedSpriteTransform(ME::Vec3(pos.x, pos.y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
-        staticColliders[staticColliderCount] =
-            ME::ColliderAABB(i, true, true, *instancedSpriteTransforms0[i], enemyCollScaleMult);
-        ++staticColliderCount;
+
+        dynamicColliders[dynamicColliderCount] =
+            ME::ColliderAABB(i, true, false, PhysicsLayer::Enemy, PhysicsLayer::Projectile,
+                             *instancedSpriteTransforms0[i], enemyCollScaleMult);
+        ++dynamicColliderCount;
     }
 
     // Bullet Sprites.
@@ -119,7 +121,10 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         float y = 9000.0f;
         // Adding to instance buffer 1;
         AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(bulletSize, bulletSize, 1.0f), 1);
-        dynamicColliders[i] = ME::ColliderAABB(i, true, false, *instancedSpriteTransforms1[i], bulletCollScaleMult);
+
+        dynamicColliders[dynamicColliderCount] =
+            ME::ColliderAABB(i, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
+                             *instancedSpriteTransforms1[i], bulletCollScaleMult);
         ++dynamicColliderCount;
     }
 }

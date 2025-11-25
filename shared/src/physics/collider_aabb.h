@@ -45,12 +45,13 @@ class ColliderAABB : public Collider {
     // Default constructor
     ColliderAABB() : Collider(0, true, true), minX(0.0f), minY(0.0f), maxX(0.0f), maxY(0.0f) {}
     // Constructor to initialize the AABB collider with a given ID, min and max points.
-    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, float minX, float minY, float maxX, float maxY)
-        : Collider(id, isEnabled, isStatic), minX(minX), minY(minY), maxX(maxX), maxY(maxY) {}
+    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, PhysicsLayer category, PhysicsLayer mask, float minX,
+                 float minY, float maxX, float maxY)
+        : Collider(id, isEnabled, isStatic, category, mask), minX(minX), minY(minY), maxX(maxX), maxY(maxY) {}
 
     // Constructor to initialize the AABB collider with a transform and scale multiplier.
-    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, const ME::Transform& transform, float scaleMult = 1.0f);
-
+    ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, PhysicsLayer category, PhysicsLayer mask,
+                 const ME::Transform& transform, float scaleMult = 1.0f);
     float minX = 0.0f;  // Minimum X coordinate of the AABB.
     float minY = 0.0f;  // Minimum Y coordinate of the AABB.
     float maxX = 0.0f;  // Maximum X coordinate of the AABB.

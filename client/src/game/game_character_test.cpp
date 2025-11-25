@@ -131,7 +131,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             charScene->instancedSpriteRenderers0[i]->bDirty = true;
         }
 
-        charScene->staticColliders[i].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
+        charScene->dynamicColliders[i].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     }
 
     char scoreText[32];
