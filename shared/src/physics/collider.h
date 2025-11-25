@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+
+#include "physics_layer.h"
 
 namespace ME {
 

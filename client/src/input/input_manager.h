@@ -6,8 +6,8 @@
 
 #include <src/math/vec2.h>
 #include <src/math/vec2i.h>
-#include <stdint.h>
 
+#include <cstdint>
 #include <string>
 #include <thread>
 #include <unordered_map>

@@ -1,4 +1,5 @@
 /**
+ * NOTE: DEPRECATED: This is an old renderer used for testing purposes only.
  * ASCII Renderer
  * This class is used to render the game using ASCII characters.
  */
@@ -31,7 +32,7 @@ class RendererASCII : public PlatformRenderer {
     static const uint8_t ASCII_COUNT = 69;
     static const uint8_t ASCII_COUNT_SHORT = 10;
 
-    std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> frameBuffer;
+    // std::array<std::array<uint8_t, BUFFER_Y>, BUFFER_X> frameBuffer;
 
    protected:
 };

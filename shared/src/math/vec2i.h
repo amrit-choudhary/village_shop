@@ -4,9 +4,8 @@
  * Integer Vector2 class. Uses int32_t for components.
  */
 
-#include <stdint.h>
-
 #include <cmath>
+#include <cstdint>
 
 #include "vec2.h"
 

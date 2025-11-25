@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "src/math/vec2.h"
 #include "src/math/vec3.h"

@@ -5,9 +5,7 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include <array>
+#include <cstdint>
 
 #include "../anim/animation_system.h"
 #include "../input/input_manager.h"

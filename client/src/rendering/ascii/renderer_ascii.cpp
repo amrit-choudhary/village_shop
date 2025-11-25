@@ -13,7 +13,8 @@ void ME::RendererASCII::Update() {
     std::printf("\x1b[2J");
     for (int y = 0; y < BUFFER_Y; ++y) {
         for (int x = 0; x < BUFFER_X; ++x) {
-            uint8_t index = frameBuffer[x][y];
+            // uint8_t index = frameBuffer[x][y];
+            uint8_t index = 0;
             std::putchar(asciiMapShort[index - 1]);
         }
         std::putchar('\n');

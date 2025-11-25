@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "../../../client/src/scene/scene.h"
 #include "collider_aabb.h"

@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include <array>
+#include <cstdint>
 
 #include "../../game/game.h"
 

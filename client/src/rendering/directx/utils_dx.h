@@ -6,7 +6,8 @@
  */
 
 #include <d3d12.h>
-#include <stdint.h>
+
+#include <cstdint>
 
 #include "d3dx12.h"
 

@@ -8,7 +8,8 @@
  */
 
 #include <d3d12.h>
-#include <stdint.h>
+
+#include <cstdint>
 
 namespace ME {
 

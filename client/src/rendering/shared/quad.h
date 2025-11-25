@@ -5,7 +5,7 @@
  * Based on the Mesh class.
  */
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "src/math/vec2.h"
 #include "vertex.h"

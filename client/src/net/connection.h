@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "src/net/net_packet.h"
 #include "src/net/net_protocol.h"
