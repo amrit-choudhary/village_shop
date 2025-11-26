@@ -46,6 +46,10 @@ void ME::Game::SetAnimationSystemRef(ME::AnimationSystem* ptrAnimationSystem) {
     animationSystem = ptrAnimationSystem;
 }
 
+void ME::Game::SetAudioSystemRef(ME::AudioSystem* ptrAudioSystem) {
+    audioSystem = ptrAudioSystem;
+}
+
 void ME::Game::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
     delete result;
 }

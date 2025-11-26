@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "../anim/animation_system.h"
+#include "../audio/audio_system.h"
 #include "../input/input_manager.h"
 #include "../net/connection.h"
 #include "../scene/scene.h"
@@ -42,6 +43,7 @@ class Game {
     void SetConnectionRef(ME::Connection *ptrConnection);
     void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
     void SetAnimationSystemRef(ME::AnimationSystem *ptrAnimationSystem);
+    void SetAudioSystemRef(ME::AudioSystem *ptrAudioSystem);
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
@@ -58,5 +60,6 @@ class Game {
     ME::SceneUI *uiScene = nullptr;
     ME::PhysicsSystem *physicsSystem = nullptr;
     ME::AnimationSystem *animationSystem = nullptr;
+    ME::AudioSystem *audioSystem = nullptr;
 };
 }  // namespace ME
