@@ -6,9 +6,11 @@ ME::GameFallingSand::~GameFallingSand() {}
 
 void ME::GameFallingSand::Init(ME::Time::TimeManager *currentTimeManager) {
     Game::Init(currentTimeManager);
-    scene = new ME::SceneFallingSand();
+
+    sandScene = new ME::SceneFallingSand();
+    scene = sandScene;
     scene->Init();
-    sandScene = dynamic_cast<ME::SceneFallingSand *>(scene);
+
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);

@@ -6,9 +6,11 @@ ME::GameOfLife::~GameOfLife() {}
 
 void ME::GameOfLife::Init(ME::Time::TimeManager *currentTimeManager) {
     Game::Init(currentTimeManager);
-    scene = new ME::SceneGameOfLife();
+
+    golScene = new ME::SceneGameOfLife();
+    scene = golScene;
     scene->Init();
-    golScene = dynamic_cast<ME::SceneGameOfLife *>(scene);
+
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);

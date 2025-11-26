@@ -9,9 +9,11 @@ ME::GameRPG::~GameRPG() {}
 
 void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
-    scene = new ME::SceneRPG();
+
+    rpgScene = new ME::SceneRPG();
+    scene = rpgScene;
     scene->Init();
-    rpgScene = dynamic_cast<ME::SceneRPG*>(scene);
+
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);

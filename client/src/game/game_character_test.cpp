@@ -9,9 +9,11 @@ ME::GameCharacterTest::~GameCharacterTest() {}
 
 void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
+
     charScene = new ME::SceneCharacterTest();
     scene = charScene;
     scene->Init();
+
     uiScene = new ME::SceneUIHUD();
     uiScene->Init();
 

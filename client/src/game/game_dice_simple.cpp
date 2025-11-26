@@ -6,9 +6,11 @@ ME::GameDiceSimple::~GameDiceSimple() {}
 
 void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
-    scene = new ME::SceneDiceSimple();
+
+    diceScene = new ME::SceneDiceSimple();
+    scene = diceScene;
     scene->Init();
-    diceScene = dynamic_cast<ME::SceneDiceSimple*>(scene);
+
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
     physicsSystem->SetGame(this);
