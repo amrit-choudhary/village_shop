@@ -9,7 +9,7 @@
 
 namespace ME {
 
-class AudioImplMiniAudio : public IAudioImpl {
+class AudioImplMiniaudio : public IAudioImpl {
    public:
     // Initializes the audio implementation with the given audio system.
     void Init(AudioSystem* audioSystem) override;
@@ -21,10 +21,10 @@ class AudioImplMiniAudio : public IAudioImpl {
     void End() override;
 
     // Loads sound file into memory.
-    void LoadSound(uint8_t soundId, const char* filePath) override;
+    void LoadAudioFile(uint8_t soundId, const char* filePath) override;
 
     // Unloads sound file from memory.
-    void UnloadSound(uint8_t soundId) override;
+    void UnloadAudioFile(uint8_t soundId) override;
 
     // Plays music track. Used for background music.
     void PlayMusic(uint8_t musicId, bool bLoop) override;
@@ -33,10 +33,10 @@ class AudioImplMiniAudio : public IAudioImpl {
     void StopMusic() override;
 
     // Plays a sound effect. One shot.
-    void PlaySound(uint8_t soundId, bool bLoop) override;
+    void PlayAudio(uint8_t soundId, bool bLoop) override;
 
     // Stops a sound effect.
-    void StopSound(uint8_t soundId, bool bLoop) override;
+    void StopAudio(uint8_t soundId, bool bLoop) override;
 
     // Sets the master volume for all audio.
     void SetMasterVolume(float volume) override;

@@ -1,8 +1,14 @@
 #include "audio_system.h"
 
 #include "../scene/scene.h"
+#include "audio_impl_miniaudio.h"
 
-void ME::AudioSystem::Init() {}
+void ME::AudioSystem::Init() {
+    isInitialized = false;
+    audioImpl = new AudioImplMiniaudio();
+    audioImpl->Init(this);
+    isInitialized = true;
+}
 
 void ME::AudioSystem::Update(double deltaTime) {
     if (scene == nullptr || !isInitialized) {
@@ -10,9 +16,17 @@ void ME::AudioSystem::Update(double deltaTime) {
     }
 
     // Audio system update logic would go here.
+    audioImpl->Update(deltaTime);
 }
 
-void ME::AudioSystem::End() {}
+void ME::AudioSystem::End() {
+    if (audioImpl) {
+        audioImpl->End();
+        delete audioImpl;
+        audioImpl = nullptr;
+    }
+    isInitialized = false;
+}
 
 void ME::AudioSystem::SetScene(Scene* scene) {
     this->scene = scene;   // Set the current scene.
@@ -25,9 +39,9 @@ void ME::AudioSystem::PlayMusic(uint8_t musicId, bool bLoop) {}
 
 void ME::AudioSystem::StopMusic() {}
 
-void ME::AudioSystem::PlaySound(uint8_t soundId, bool bLoop) {}
+void ME::AudioSystem::PlayAudio(uint8_t soundId, bool bLoop) {}
 
-void ME::AudioSystem::StopSound(uint8_t soundId, bool bLoop) {}
+void ME::AudioSystem::StopAudio(uint8_t soundId, bool bLoop) {}
 
 void ME::AudioSystem::SetMasterVolume(float volume) {}
 

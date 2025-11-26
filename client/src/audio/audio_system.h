@@ -29,10 +29,10 @@ class IAudioImpl {
     virtual void End() = 0;
 
     // Loads sound file into memory.
-    virtual void LoadSound(uint8_t soundId, const char* filePath) = 0;
+    virtual void LoadAudioFile(uint8_t soundId, const char* filePath) = 0;
 
     // Unloads sound file from memory.
-    virtual void UnloadSound(uint8_t soundId) = 0;
+    virtual void UnloadAudioFile(uint8_t soundId) = 0;
 
     // Plays music track. Used for background music.
     virtual void PlayMusic(uint8_t musicId, bool bLoop) = 0;
@@ -41,10 +41,10 @@ class IAudioImpl {
     virtual void StopMusic() = 0;
 
     // Plays a sound effect. One shot.
-    virtual void PlaySound(uint8_t soundId, bool bLoop) = 0;
+    virtual void PlayAudio(uint8_t soundId, bool bLoop) = 0;
 
     // Stops a sound effect.
-    virtual void StopSound(uint8_t soundId, bool bLoop) = 0;
+    virtual void StopAudio(uint8_t soundId, bool bLoop) = 0;
 
     // Sets the master volume for all audio.
     virtual void SetMasterVolume(float volume) = 0;
@@ -82,10 +82,10 @@ class AudioSystem {
     void StopMusic();
 
     // Plays a sound effect. One shot.
-    void PlaySound(uint8_t soundId, bool bLoop);
+    void PlayAudio(uint8_t soundId, bool bLoop);
 
     // Stops a sound effect.
-    void StopSound(uint8_t soundId, bool bLoop);
+    void StopAudio(uint8_t soundId, bool bLoop);
 
     // Sets the master volume for all audio.
     void SetMasterVolume(float volume);

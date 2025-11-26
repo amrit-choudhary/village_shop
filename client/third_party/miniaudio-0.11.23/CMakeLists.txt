@@ -15,7 +15,14 @@ set_target_properties(miniaudio PROPERTIES
 
 # Platform-specific system libraries miniaudio may need
 if (WIN32)
-    target_link_libraries(miniaudio PRIVATE winmm ole32)
+    target_compile_definitions(miniaudio PUBLIC
+        MA_ENABLE_ONLY_SPECIFIC_BACKENDS
+        MA_ENABLE_WASAPI=1
+        MA_NO_DSOUND
+        MA_NO_WINMM
+    )
+    # Make system libs PUBLIC so linking is satisfied for consumers.
+    target_link_libraries(miniaudio PUBLIC ole32 avrt)
 elseif(APPLE)
     target_link_libraries(miniaudio PRIVATE "-framework CoreAudio" "-framework AudioUnit" "-framework AudioToolbox" "-framework CoreServices")
 else() # Linux/Unix
