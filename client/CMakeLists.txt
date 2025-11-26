@@ -32,6 +32,9 @@ set(PNG_TESTS   OFF CACHE BOOL "" FORCE)
 set(PNG_TOOLS   OFF CACHE BOOL "" FORCE)
 add_subdirectory(third_party/libpng-1.6.47)
 
+# Add miniaudio
+add_subdirectory(third_party/miniaudio-0.11.23)
+
 # Executable
 add_executable(VillageShop_Client ${SOURCES})
 
@@ -58,6 +61,7 @@ target_link_libraries(
     VillageShop_Shared
     png_static
     ZLIB::ZLIB
+    miniaudio
     )
 
 if(APPLE)
