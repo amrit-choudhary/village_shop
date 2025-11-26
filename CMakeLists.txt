@@ -7,6 +7,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Disable RTTI and Exceptions globally
+if (MSVC)
+    add_compile_options(/GR-)
+    add_compile_options(/EHsc)
+    add_compile_definitions(_HAS_EXCEPTIONS=0)
+else()
+  add_compile_options(-fno-rtti -fno-exceptions)
+endif()
+
 file(GLOB_RECURSE CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/*.cpp")
 list(REMOVE_ITEM CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/main.cpp")
 set(CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/client/src CACHE INTERNAL "Client include directory")
