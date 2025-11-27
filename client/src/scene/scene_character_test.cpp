@@ -38,8 +38,10 @@ void ME::SceneCharacterTest::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
     textureAtlasPropertiesCount = 3;
 
-    staticColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
-    dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    sfxPaths[0] = "audio/sfx/laser.wav";
+    sfxCount = 1;
+    musicPaths[0] = "audio/music/ambience.wav";
+    musicCount = 1;
 }
 
 void ME::SceneCharacterTest::BuildLights() {

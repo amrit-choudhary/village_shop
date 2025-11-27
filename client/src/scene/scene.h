@@ -93,6 +93,11 @@ class Scene {
     uint32_t staticColliderCount = 0;
     uint8_t dynamicColliderCount = 0;
 
+    const char** sfxPaths = nullptr;
+    uint8_t sfxCount = 0;
+    const char** musicPaths = nullptr;
+    uint8_t musicCount = 0;
+
     virtual void Init();
     virtual void CreateResources();
     virtual void BuildLights();

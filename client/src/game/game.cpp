@@ -18,6 +18,8 @@ void Game::Init(ME::Time::TimeManager* currentTimeManager) {
     timeManager = currentTimeManager;
 }
 
+void ME::Game::Start() {}
+
 void Game::Update(double deltaTime) {}
 
 void Game::End() {

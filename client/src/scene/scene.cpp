@@ -40,6 +40,9 @@ ME::Scene::~Scene() {
     delete[] staticColliders;
     delete[] dynamicColliders;
 
+    delete[] sfxPaths;
+    delete[] musicPaths;
+
     for (uint16_t i = 0; i < transformCount; ++i) {
         delete transforms[i];
     }
@@ -108,6 +111,11 @@ void ME::Scene::CreateResources() {
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
     dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+
+    sfxPaths = new const char*[Constants::MaxLoadedSFXCount];
+    sfxCount = 0;
+    musicPaths = new const char*[Constants::MaxLoadedMusicCount];
+    musicCount = 0;
 
     meshCount = 0;
 

@@ -19,6 +19,9 @@ class GameCharacterTest : public Game {
     // Init game
     virtual void Init(ME::Time::TimeManager* currentTimeManager) override;
 
+    // Start game. This is called after all systems are initialized and before Update.
+    virtual void Start() override;
+
     // Update game.
     virtual void Update(double deltaTime) override;
 

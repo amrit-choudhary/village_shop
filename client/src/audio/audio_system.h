@@ -29,10 +29,13 @@ class IAudioImpl {
     virtual void End() = 0;
 
     // Loads sound file into memory.
-    virtual void LoadAudioFile(uint8_t soundId, const char* filePath) = 0;
+    virtual void LoadAudioFile(uint8_t soundId, const char* filePath, bool bSFX) = 0;
 
     // Unloads sound file from memory.
-    virtual void UnloadAudioFile(uint8_t soundId) = 0;
+    virtual void UnloadAudioFile(uint8_t soundId, bool bSFX) = 0;
+
+    // Unload all sound files from memory.
+    virtual void UnloadAllAudioFiles() = 0;
 
     // Plays music track. Used for background music.
     virtual void PlayMusic(uint8_t musicId, bool bLoop) = 0;

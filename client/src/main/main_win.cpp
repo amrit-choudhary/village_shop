@@ -42,10 +42,15 @@ void ME::GameMain::Init(HWND hWnd) {
     renderer.InitDX(hWnd);
     renderer.SetScenes(game.GetScene(), game.GetUIScene());
 
+    audioSystem.SetScene(game.GetScene());
+
     // Clock init after all systems are initialized.
     timeManager.Init(fps, false);
     bool shouldTick = false;
     double deltaTime = 0.0f;
+
+    // Start the game.
+    game.Start();
 }
 
 void ME::GameMain::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) {

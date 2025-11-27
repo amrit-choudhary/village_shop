@@ -47,5 +47,12 @@ constexpr size_t MaxDynamicColliderCount = 100'000;
 constexpr size_t AnimGameFrameRate = 60;
 constexpr size_t MaxSpriteAnimClipsOnAnimator = 8;
 
+// Audio constants
+constexpr size_t MaxSimultaneousSounds = 32;
+constexpr size_t MaxAudioSources = 64;
+constexpr size_t MaxAudioListeners = 4;
+constexpr size_t MaxLoadedSFXCount = 64;
+constexpr size_t MaxLoadedMusicCount = 16;
+
 }  // namespace Constants
 }  // namespace ME

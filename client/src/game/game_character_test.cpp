@@ -35,6 +35,12 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     ME::Log("Character Animation Test Game Start!");
 }
 
+void ME::GameCharacterTest::Start() {
+    Game::Start();
+
+    audioSystem->PlayMusic(0, true);
+}
+
 void ME::GameCharacterTest::Update(double deltaTime) {
     Game::Update(deltaTime);
 
@@ -162,6 +168,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
                 charScene->instancedSpriteRenderers1[i]->atlasIndex = (cycleCounter % 4);
             }
         }
+
+        audioSystem->PlayAudio(0, false);
     }
 
     // Move bullets.

@@ -33,6 +33,9 @@ class Game {
     // Init game
     virtual void Init(ME::Time::TimeManager *currentTimeManager);
 
+    // Start game. This is called after all systems are initialized and before Update.
+    virtual void Start();
+
     // Update game.
     virtual void Update(double deltaTime);
 

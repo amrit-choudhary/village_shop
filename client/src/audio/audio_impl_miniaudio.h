@@ -11,6 +11,9 @@ namespace ME {
 
 class AudioImplMiniaudio : public IAudioImpl {
    public:
+    AudioImplMiniaudio();
+    ~AudioImplMiniaudio() override;
+
     // Initializes the audio implementation with the given audio system.
     void Init(AudioSystem* audioSystem) override;
 
@@ -21,10 +24,13 @@ class AudioImplMiniaudio : public IAudioImpl {
     void End() override;
 
     // Loads sound file into memory.
-    void LoadAudioFile(uint8_t soundId, const char* filePath) override;
+    void LoadAudioFile(uint8_t soundId, const char* filePath, bool bSFX) override;
 
     // Unloads sound file from memory.
-    void UnloadAudioFile(uint8_t soundId) override;
+    void UnloadAudioFile(uint8_t soundId, bool bSFX) override;
+
+    // Unload all sound files from memory.
+    void UnloadAllAudioFiles() override;
 
     // Plays music track. Used for background music.
     void PlayMusic(uint8_t musicId, bool bLoop) override;
@@ -50,6 +56,13 @@ class AudioImplMiniaudio : public IAudioImpl {
    private:
     float masterVolume = 1.0f;  // Master volume level.
     bool isMuted = false;       // Mute state.
+
+    size_t loadedSFXCount = 0;    // Number of loaded sound effects.
+    size_t loadedMusicCount = 0;  // Number of loaded music tracks.
+
+    // PIMPL implementation.
+    struct Impl;
+    Impl* pimpl = nullptr;
 };
 
 }  // namespace ME
