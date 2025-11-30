@@ -38,6 +38,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::GameCharacterTest::Start() {
     Game::Start();
 
+    audioSystem->SetMasterVolume(0.1f);
     audioSystem->PlayMusic(0, true);
 }
 

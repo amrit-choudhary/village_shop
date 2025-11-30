@@ -59,10 +59,12 @@ void ME::AudioSystem::PlayAudio(uint8_t soundId, bool bLoop) {
 
 void ME::AudioSystem::StopAudio(uint8_t soundId, bool bLoop) {}
 
-void ME::AudioSystem::SetMasterVolume(float volume) {}
+void ME::AudioSystem::SetMasterVolume(float volume) {
+    audioImpl->SetMasterVolume(volume);
+}
 
 float ME::AudioSystem::GetMasterVolume() {
-    return 0.0f;
+    return audioImpl->GetMasterVolume();
 }
 
 void ME::AudioSystem::ToggleMuteAllSounds(bool bMute) {}

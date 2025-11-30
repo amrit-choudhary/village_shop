@@ -152,6 +152,7 @@ void AudioImplMiniaudio::StopAudio(uint8_t soundId, bool bLoop) {}
 
 void AudioImplMiniaudio::SetMasterVolume(float volume) {
     masterVolume = volume;
+    ma_engine_set_volume(&pimpl->engine, masterVolume);
 }
 
 float AudioImplMiniaudio::GetMasterVolume() {
