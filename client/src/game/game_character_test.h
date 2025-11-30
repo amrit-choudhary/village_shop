@@ -50,7 +50,8 @@ class GameCharacterTest : public Game {
     const size_t burstCount = 4;
     size_t burstCounter = 0;
     size_t frameCounter = 0;
-    ME::Vec3 bulletParkPos{9000.0f, 9000.0f, 0.0f};
+    ME::Vec3 npcParkPos{9000.0f, 9000.0f, 0.0f};
+    ME::Vec3 bulletParkPos{-9000.0f, -9000.0f, 0.0f};
     ME::Vec3 bulletStartPos{0.0f, 0.0f, 0.0f};
     float bulletStartDirAngle = 0.0f;
     ME::Random rndBullet{"bullet", true};

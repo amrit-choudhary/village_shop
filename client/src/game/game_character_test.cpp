@@ -107,11 +107,9 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     charScene->spriteCamera->viewPosition += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
 
     if (inputManager->GetKeyPressed(ME::Input::KeyCode::Space)) {
-        ME::Log("Space key pressed Down!");
     }
 
     if (inputManager->GetKeyReleased(ME::Input::KeyCode::Space)) {
-        ME::Log("Space key released!");
     }
 
     for (int i = 0; i < maxNPCCount; ++i) {
@@ -187,7 +185,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         bulletTransform->SetPosition(bulletPos);
         charScene->instancedSpriteRenderers1[i]->bDirty = true;
 
-        charScene->dynamicColliders[i].UpdateTransform(*bulletTransform, charScene->bulletCollScaleMult);
+        charScene->dynamicColliders[(maxNPCCount + i)].UpdateTransform(*bulletTransform,
+                                                                       charScene->bulletCollScaleMult);
     }
 }
 
@@ -205,15 +204,28 @@ void ME::GameCharacterTest::End() {
 }
 
 void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
-    uint32_t enemeyIndex = b->GetID();
-    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemeyIndex];
+    // a is always enemy, b is always bullet.
+    uint32_t enemyIndex = a->GetID();
+    uint32_t bulletIndex = b->GetID() - maxNPCCount;
+
+    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemyIndex];
     ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
 
     ME::Vec3 throwDir = dirToPlayer.Normalised();
     ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
     npcTransform->SetPosition(newPos);
-    charScene->instancedSpriteRenderers0[enemeyIndex]->bDirty = true;
+    charScene->instancedSpriteRenderers0[enemyIndex]->bDirty = true;
+    charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     ++score;
+
+    ME::Vec3 bulletPos = bulletParkPos;
+    bulletDirs[bulletIndex] = ME::Vec2{0.0f, 0.0f};
+
+    ME::Transform* bulletTransform = charScene->instancedSpriteTransforms1[bulletIndex];
+    bulletTransform->SetPosition(bulletPos);
+    charScene->instancedSpriteRenderers1[bulletIndex]->bDirty = true;
+    charScene->dynamicColliders[(maxNPCCount + bulletIndex)].UpdateTransform(*bulletTransform,
+                                                                             charScene->bulletCollScaleMult);
 
     delete result;
 }

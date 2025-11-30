@@ -111,7 +111,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         AddInstancedSpriteTransform(ME::Vec3(pos.x, pos.y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
 
         dynamicColliders[dynamicColliderCount] =
-            ME::ColliderAABB(i, false, false, PhysicsLayer::Enemy, PhysicsLayer::Projectile,
+            ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Enemy, PhysicsLayer::Projectile,
                              *instancedSpriteTransforms0[i], enemyCollScaleMult);
         ++dynamicColliderCount;
     }
@@ -119,13 +119,13 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
     // Bullet Sprites.
     ME::Random rnd2{"bullet_position", true};
     for (size_t i = 0; i < maxBulletCount; ++i) {
-        float x = 9000.0f;
-        float y = 9000.0f;
+        float x = -9000.0f;
+        float y = -9000.0f;
         // Adding to instance buffer 1;
         AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(bulletSize, bulletSize, 1.0f), 1);
 
         dynamicColliders[dynamicColliderCount] =
-            ME::ColliderAABB(i, false, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
+            ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
                              *instancedSpriteTransforms1[i], bulletCollScaleMult);
         ++dynamicColliderCount;
     }
