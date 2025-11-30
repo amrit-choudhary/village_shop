@@ -44,6 +44,23 @@ class PhysicsSystem {
     bool isInitialized = false;     // Flag to check if the system is initialized.
     PhysicsScene* scene = nullptr;  // Current physics scene being managed.
     Game* game = nullptr;           // Reference to the game instance, if needed.
+
+    /**
+     * Setup collision categories for optimized collision checks.
+     * This organizes colliders indices into categories based on their physics layers,
+     */
+    void SetupCollisionCategories();
+
+    /**
+     * Array of collider indices categorized by physics layer category.
+     * This is used to optimize collision checks by only checking colliders
+     * that belong to layers that can interact with each other.
+     */
+    uint32_t** categoryIndices = nullptr;
+    /**
+     * Count of colliders in each category index.
+     */
+    uint32_t* categoryCounts = nullptr;
 };
 
 }  // namespace ME

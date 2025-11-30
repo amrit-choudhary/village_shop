@@ -91,7 +91,7 @@ class Scene {
     uint32_t instancedSpriteRendererCount1 = 0;
 
     uint32_t staticColliderCount = 0;
-    uint8_t dynamicColliderCount = 0;
+    uint32_t dynamicColliderCount = 0;
 
     const char** sfxPaths = nullptr;
     uint8_t sfxCount = 0;

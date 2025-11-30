@@ -42,6 +42,7 @@ constexpr size_t MaxDescriptorsOnDescriptorHeap = 256;
 // Physics constants
 constexpr size_t MaxStaticColliderCount = 100'000;
 constexpr size_t MaxDynamicColliderCount = 100'000;
+constexpr size_t MaxPhysicsLayerCount = 16;
 
 // Animation constants
 constexpr size_t AnimGameFrameRate = 60;

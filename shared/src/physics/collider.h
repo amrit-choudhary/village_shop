@@ -25,7 +25,7 @@ class Collider {
         return id;
     }
 
-    bool isEnabled = true;
+    bool isEnabled = false;
     bool isStatic = true;  // Indicates if the collider is static (not moving).
 
     // Physics layer category of the collider.

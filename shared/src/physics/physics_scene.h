@@ -31,7 +31,7 @@ class PhysicsScene {
     ColliderAABB* dynamicColliders;
 
     uint32_t staticColliderCount = 0;
-    uint8_t dynamicColliderCount = 0;
+    uint32_t dynamicColliderCount = 0;
 
     Collider* GetStaticColliderById(uint32_t id) const;
     Collider* GetDynamicColliderById(uint32_t id) const;
