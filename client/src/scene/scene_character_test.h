@@ -30,7 +30,7 @@ class SceneCharacterTest : public Scene {
     const float charCollScaleMult = 0.8f;
 
    private:
-    const float charWidth = 8.0f;
+    const float charWidth = 12.0f;
     const float charHeight = 12.0f;
     const float npcWidth = 8.0f;
     const float npcHeight = 8.0f;

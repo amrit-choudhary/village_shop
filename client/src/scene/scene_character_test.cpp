@@ -24,7 +24,7 @@ void ME::SceneCharacterTest::CreateResources() {
 
     textureCount = 0;
 
-    spriteTexturePaths[0] = "textures/characters/character_walk_8.png";
+    spriteTexturePaths[0] = "textures/characters/princess.png";
     spriteTexturePaths[1] = "textures/enemies/enemy_atlas.png";
     spriteTexturePaths[2] = "textures/sprites/fireball.png";
     spriteTextureCount = 3;
@@ -33,7 +33,7 @@ void ME::SceneCharacterTest::CreateResources() {
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
     shaderCount = 2;
 
-    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_char_8.json", textureAtlasProperties[0]);
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_princess.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[1]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
     textureAtlasPropertiesCount = 3;
@@ -76,22 +76,16 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
     ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(spRend, 8);
     spRend->animator = animator0;
 
-    ME::SpriteAnimClip* clip0 = nullptr;
-    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_up.json", &clip0);
+    ME::SpriteAnimClip* clipUp = nullptr;
+    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_princess_up.json", &clipUp);
+    SpriteAnimClip* clipLeft = ME::SpriteAnimClip::DuplicateWithOffset(clipUp, static_cast<int16_t>(9));
+    SpriteAnimClip* clipDown = ME::SpriteAnimClip::DuplicateWithOffset(clipUp, static_cast<int16_t>(18));
+    SpriteAnimClip* clipRight = ME::SpriteAnimClip::DuplicateWithOffset(clipUp, static_cast<int16_t>(27));
 
-    ME::SpriteAnimClip* clip1 = nullptr;
-    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_right.json", &clip1);
-
-    ME::SpriteAnimClip* clip2 = nullptr;
-    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_down.json", &clip2);
-
-    ME::SpriteAnimClip* clip3 = nullptr;
-    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/char_anim_left.json", &clip3);
-
-    animator0->AddClip(clip0);
-    animator0->AddClip(clip1);
-    animator0->AddClip(clip2);
-    animator0->AddClip(clip3);
+    animator0->AddClip(clipUp);
+    animator0->AddClip(clipRight);
+    animator0->AddClip(clipDown);
+    animator0->AddClip(clipLeft);
 
     AddSpriteRenderer(spRend);
 }
