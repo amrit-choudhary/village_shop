@@ -13,6 +13,8 @@ namespace ME {
 // Forward Declarations
 class TextureAtlasProperties;
 class SpriteAnimClip;
+class SingleWave;
+class WaveData;
 
 class JsonUtils {
    public:
@@ -30,6 +32,11 @@ class JsonUtils {
      * Returns True if the clips was loaded successfully, false otherwise.
      */
     static bool LoadSpriteAnimClipFromJSON(const char* filePath, ME::SpriteAnimClip** outSpriteAnimClip);
+
+    /**
+     * Load wave data fronm a JSON file.
+     */
+    static bool LoadWaveDataFromJSON(const char* filePath, WaveData** outWaveData);
 
    private:
     /**

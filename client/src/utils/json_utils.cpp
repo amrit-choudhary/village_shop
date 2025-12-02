@@ -9,6 +9,7 @@
 #include <string>
 
 #include "../anim/sprite_anim_clip.h"
+#include "../game/wave_data.h"
 #include "../rendering/shared/texture.h"
 #include "src/third_party/json/cJSON.h"
 
@@ -54,6 +55,36 @@ bool ME::JsonUtils::LoadSpriteAnimClipFromJSON(const char* filePath, ME::SpriteA
         cJSON_Delete(json);
         return true;
     }
+    return false;
+}
+
+bool ME::JsonUtils::LoadWaveDataFromJSON(const char* filePath, WaveData** outWaveData) {
+    *outWaveData = nullptr;
+
+    cJSON* json = LoadJSONFromFile(filePath);
+    if (json != nullptr) {
+        uint32_t waveCount = static_cast<uint32_t>(cJSON_GetObjectItem(json, "waveCount")->valueint);
+        ME::WaveData* waveData = new ME::WaveData();
+        waveData->waveCount = waveCount;
+        waveData->waves = new ME::SingleWave[waveCount]{};
+
+        cJSON* wavesArray = cJSON_GetObjectItem(json, "waves");
+        for (uint32_t i = 0; i < waveCount; i++) {
+            cJSON* waveItem = cJSON_GetArrayItem(wavesArray, i);
+            ME::SingleWave& wave = waveData->waves[i];
+            wave.enemyType = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "enemyType")->valueint);
+            wave.enemyCount = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "enemyCount")->valueint);
+            wave.health = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "health")->valueint);
+            wave.spriteIndex = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "spriteIndex")->valueint);
+            wave.speedMult = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "speedMult")->valueint);
+        }
+
+        *outWaveData = waveData;
+
+        cJSON_Delete(json);
+        return true;
+    }
+
     return false;
 }
 

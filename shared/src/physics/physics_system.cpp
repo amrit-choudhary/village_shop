@@ -20,26 +20,6 @@ void ME::PhysicsSystem::Update(double deltaTime) {
         return;
     }
 
-    // for (int i = 0; i < scene->staticColliderCount; ++i) {
-    //     ColliderAABB* staticCollider = &scene->staticColliders[i];
-    //     if (!staticCollider->isEnabled || !staticCollider->isStatic) {
-    //         continue;
-    //     }
-
-    //     for (int j = 0; j < scene->dynamicColliderCount; ++j) {
-    //         ColliderAABB* dynamicCollider = &scene->dynamicColliders[j];
-    //         if (!dynamicCollider->isEnabled || dynamicCollider->isStatic) {
-    //             continue;
-    //         }
-    //         CollisionResultAABB* result = dynamicCollider->GetCollisionResult(*staticCollider);
-    //         if (result == nullptr) {
-    //             continue;  // No collision detected.
-    //         } else {
-    //             ReportCollision(dynamicCollider, staticCollider, result);
-    //         }
-    //     }
-    // }
-
     /**
      * Basic NxN collision detection between dynamic colliders only.
      * This is optimized by categorizing colliders based on their physics layers at startup.
@@ -113,9 +93,9 @@ void ME::PhysicsSystem::End() {
 }
 
 void ME::PhysicsSystem::SetScene(ME::PhysicsScene* physicsScene) {
-    scene = physicsScene;  // Set the current physics scene.
+    scene = physicsScene;
     SetupCollisionCategories();
-    isInitialized = true;  // Mark the system as initialized.
+    isInitialized = true;
 }
 
 void ME::PhysicsSystem::SetGame(ME::Game* game) {
@@ -126,7 +106,7 @@ void ME::PhysicsSystem::ReportCollision(ColliderAABB* a, ColliderAABB* b, Collis
     if (game != nullptr) {
         game->CollisionCallback(a, b, result);
     } else {
-        // __builtin_printf("Collision detected between colliders %u and %u\n", a->GetID(), b->GetID());
+        delete result;  // No game to report to, just delete the result.
     }
 }
 

@@ -1,6 +1,7 @@
 #include "game_character_test.h"
 
 #include "../scene/scene_ui_hud.h"
+#include "../utils/json_utils.h"
 #include "physics_scene_char.h"
 
 ME::GameCharacterTest::GameCharacterTest() : Game() {}
@@ -31,6 +32,8 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     uiScene->textRenderers[2]->SetText("Health:100");
 
     bulletDirs = new ME::Vec2[maxBulletCount]{};
+
+    ME::JsonUtils::LoadWaveDataFromJSON("game_data/wave_data.json", &waveData);
 
     ME::Log("Character Animation Test Game Start!");
 }

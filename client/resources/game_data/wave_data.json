@@ -1,0 +1,89 @@
+{
+    "waveCount": 12,
+    "waves": [
+        {
+            "enemyType": 0,
+            "enemyCount": 20,
+            "health": 1,
+            "spriteIndex": 0,
+            "speedMult": 100
+        },
+        {
+            "enemyType": 1,
+            "enemyCount": 20,
+            "health": 2,
+            "spriteIndex": 1,
+            "speedMult": 110
+        },
+        {
+            "enemyType": 2,
+            "enemyCount": 30,
+            "health": 3,
+            "spriteIndex": 2,
+            "speedMult": 120
+        },
+        {
+            "enemyType": 3,
+            "enemyCount": 30,
+            "health": 2,
+            "spriteIndex": 3,
+            "speedMult": 130
+        },
+        {
+            "enemyType": 4,
+            "enemyCount": 40,
+            "health": 3,
+            "spriteIndex": 4,
+            "speedMult": 130
+        },
+        {
+            "enemyType": 5,
+            "enemyCount": 40,
+            "health": 4,
+            "spriteIndex": 5,
+            "speedMult": 140
+        },
+        {
+            "enemyType": 6,
+            "enemyCount": 40,
+            "health": 3,
+            "spriteIndex": 6,
+            "speedMult": 150
+        },
+        {
+            "enemyType": 7,
+            "enemyCount": 50,
+            "health": 4,
+            "spriteIndex": 7,
+            "speedMult": 150
+        },
+        {
+            "enemyType": 8,
+            "enemyCount": 50,
+            "health": 5,
+            "spriteIndex": 8,
+            "speedMult": 150
+        },
+        {
+            "enemyType": 9,
+            "enemyCount": 60,
+            "health": 4,
+            "spriteIndex": 9,
+            "speedMult": 160
+        },
+        {
+            "enemyType": 10,
+            "enemyCount": 60,
+            "health": 5,
+            "spriteIndex": 10,
+            "speedMult": 170
+        },
+        {
+            "enemyType": 11,
+            "enemyCount": 70,
+            "health": 6,
+            "spriteIndex": 11,
+            "speedMult": 200
+        }
+    ]
+}

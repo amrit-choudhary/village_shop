@@ -6,6 +6,7 @@
 
 #include "../scene/scene_character_test.h"
 #include "game.h"
+#include "wave_data.h"
 
 namespace ME {
 
@@ -56,6 +57,9 @@ class GameCharacterTest : public Game {
     float bulletStartDirAngle = 0.0f;
     ME::Random rndBullet{"bullet", true};
     size_t cycleCounter = 0;
+    WaveData* waveData = nullptr;
+    size_t currentWaveIndex = 0;
+    size_t enemiesRemainingInWave = 0;
 };
 
 }  // namespace ME
