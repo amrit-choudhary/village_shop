@@ -1,7 +1,8 @@
 # CMake for the whole project.
 
 cmake_minimum_required(VERSION 3.31)
-project(VilageShop VERSION 0.0.1 LANGUAGES CXX)
+
+project(VilageShop VERSION 0.0.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

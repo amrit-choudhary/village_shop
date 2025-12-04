@@ -84,11 +84,8 @@ endif()
 # Copy client resources folder
 set(RES_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 
-if(APPLE)
-set(RES_DESTINATION_FOLDER "${CMAKE_BINARY_DIR}/client/resources")
-else()
-set(RES_DESTINATION_FOLDER "${CMAKE_BINARY_DIR}/client/Debug/resources")
-endif()
+# Use the current directory's binary dir so this works for single-config and multi-config generators
+set(RES_DESTINATION_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
 add_custom_target(copy_resources
     COMMAND ${CMAKE_COMMAND} -E make_directory "${RES_DESTINATION_FOLDER}"
