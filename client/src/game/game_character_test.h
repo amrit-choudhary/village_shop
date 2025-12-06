@@ -45,7 +45,7 @@ class GameCharacterTest : public Game {
     uint32_t score = 0;
     uint32_t health = 100;
     ME::Vec2* bulletDirs = nullptr;
-    const size_t maxBulletCount = 100;
+    const size_t maxBulletCount = 1000;
     const float bulletSpeed = 80.0f;
     const size_t fireRate = 8;
     const size_t burstCount = 4;
@@ -70,6 +70,8 @@ class GameCharacterTest : public Game {
     void SpawnNextEnemy();
 
     ME::SpriteAnimClip* clipBase = nullptr;
+
+    void EnemyTouchedPlayer(uint32_t enemyIndex);
 };
 
 }  // namespace ME

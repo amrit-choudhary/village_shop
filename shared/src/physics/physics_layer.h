@@ -37,8 +37,6 @@ enum class PhysicsLayer : uint32_t {
     All = 0xFFFFFFFFu       // All layers.
 };
 
-namespace Physics {
-
 constexpr inline PhysicsLayer operator|(PhysicsLayer a, PhysicsLayer b) {
     return static_cast<PhysicsLayer>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
 }
@@ -60,6 +58,8 @@ constexpr inline PhysicsLayer& operator&=(PhysicsLayer& a, PhysicsLayer b) {
 constexpr inline PhysicsLayer operator~(PhysicsLayer a) {
     return static_cast<PhysicsLayer>(~static_cast<uint32_t>(a));
 }
+
+namespace Physics {
 
 /** Returns the bit representation of the given PhysicsLayer. */
 constexpr inline uint32_t ToBits(PhysicsLayer layer) {

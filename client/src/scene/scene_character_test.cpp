@@ -66,6 +66,11 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
 
     // Character Sprite
     AddSpriteTransform(ME::Vec3::Zero, ME::Vec3(charWidth, charHeight, 1.0f));
+
+    dynamicColliders[dynamicColliderCount] =
+        ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Player, PhysicsLayer::Enemy,
+                         *spriteTransforms[0], charCollScaleMult);
+    ++dynamicColliderCount;
 }
 
 void ME::SceneCharacterTest::BuildSpriteRenderers() {
@@ -102,9 +107,9 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         // Adding to instance buffer 0;
         AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
 
-        dynamicColliders[dynamicColliderCount] =
-            ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Enemy, PhysicsLayer::Projectile,
-                             *instancedSpriteTransforms0[i], enemyCollScaleMult);
+        dynamicColliders[dynamicColliderCount] = ME::ColliderAABB(
+            dynamicColliderCount, true, false, PhysicsLayer::Enemy, (PhysicsLayer::Player | PhysicsLayer::Projectile),
+            *instancedSpriteTransforms0[i], enemyCollScaleMult);
         ++dynamicColliderCount;
     }
 

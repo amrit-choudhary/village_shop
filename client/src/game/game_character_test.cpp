@@ -124,6 +124,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     ME::Vec3 currentPosition = playerTransform->GetPosition() + movementVector;
     playerTransform->SetPosition(currentPosition);
     charScene->spriteRenderers[0]->bDirty = true;
+    charScene->dynamicColliders[0].UpdateTransform(*playerTransform, charScene->charCollScaleMult);
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::UpArrow)) {
         charScene->spriteCamera->orthographicSize -= zoomSpeed;
@@ -142,30 +143,22 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
         ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
         ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
-        float distSqr = dirToPlayer.Length();
 
-        if (distSqr < minDistaneToPlayerSqr) {
-            // Teleport NPC away.
-            ME::Vec3 throwDir = dirToPlayer.Normalised();
-            ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
-            npcTransform->SetPosition(newPos);
-            charScene->instancedSpriteRenderers0[i]->bDirty = true;
-            enemies[i].bActive = false;
-            --health;
+        // Move towards player.
+        ME::Vec3 moveDir = dirToPlayer.Normalised();
 
-            char healthText[32];
-            snprintf(healthText, sizeof(healthText), "Health:%03u", health);
-            uiScene->textRenderers[2]->SetText(healthText);
+        if (moveDir.x > 0.0f) {
+            charScene->instancedSpriteRenderers0[i]->ToggleFlipHorizontal(false);
         } else {
-            // Move towards player.
-            ME::Vec3 moveDir = dirToPlayer.Normalised();
-            float speedEnem = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
-            ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speedEnem * static_cast<float>(deltaTime);
-            npcTransform->SetPosition(newPos);
-            charScene->instancedSpriteRenderers0[i]->bDirty = true;
+            charScene->instancedSpriteRenderers0[i]->ToggleFlipHorizontal(true);
         }
 
-        charScene->dynamicColliders[i].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
+        float speedEnem = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
+        ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speedEnem * static_cast<float>(deltaTime);
+        npcTransform->SetPosition(newPos);
+        charScene->instancedSpriteRenderers0[i]->bDirty = true;
+
+        charScene->dynamicColliders[(i + 1)].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     }
 
     char scoreText[32];
@@ -213,8 +206,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         bulletTransform->SetPosition(bulletPos);
         charScene->instancedSpriteRenderers1[i]->bDirty = true;
 
-        charScene->dynamicColliders[(maxNPCCount + i)].UpdateTransform(*bulletTransform,
-                                                                       charScene->bulletCollScaleMult);
+        charScene->dynamicColliders[((maxNPCCount + i + 1))].UpdateTransform(*bulletTransform,
+                                                                             charScene->bulletCollScaleMult);
     }
 
     // Spawn enemies based on current wave data.
@@ -239,9 +232,16 @@ void ME::GameCharacterTest::End() {
 }
 
 void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
+    if (a->GetID() == 0) {
+        EnemyTouchedPlayer(b->GetID());
+        delete result;
+        return;
+    }
+
     // a is always enemy, b is always bullet.
-    uint32_t enemyIndex = a->GetID();
-    uint32_t bulletIndex = b->GetID() - maxNPCCount;
+    // first one is player.
+    uint32_t enemyIndex = a->GetID() - 1;
+    uint32_t bulletIndex = b->GetID() - maxNPCCount - 1;
 
     ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemyIndex];
     ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
@@ -250,7 +250,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
     npcTransform->SetPosition(newPos);
     charScene->instancedSpriteRenderers0[enemyIndex]->bDirty = true;
-    charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
+    charScene->dynamicColliders[enemyIndex + 1].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     enemies[enemyIndex].bActive = false;
     ++score;
 
@@ -260,8 +260,8 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     ME::Transform* bulletTransform = charScene->instancedSpriteTransforms1[bulletIndex];
     bulletTransform->SetPosition(bulletPos);
     charScene->instancedSpriteRenderers1[bulletIndex]->bDirty = true;
-    charScene->dynamicColliders[(maxNPCCount + bulletIndex)].UpdateTransform(*bulletTransform,
-                                                                             charScene->bulletCollScaleMult);
+    charScene->dynamicColliders[(maxNPCCount + bulletIndex + 1)].UpdateTransform(*bulletTransform,
+                                                                                 charScene->bulletCollScaleMult);
 
     delete result;
 }
@@ -302,4 +302,22 @@ void ME::GameCharacterTest::SpawnNextEnemy() {
             break;
         }
     }
+}
+
+void ME::GameCharacterTest::EnemyTouchedPlayer(uint32_t enemyIndex) {
+    uint32_t enemyIdx = enemyIndex - 1;
+    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemyIdx];
+    npcTransform->SetPosition(npcParkPos);
+    charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
+    charScene->instancedSpriteRenderers0[enemyIdx]->bDirty = true;
+    enemies[enemyIdx].bActive = false;
+
+    --health;
+    if (health > 200) {
+        health = 0;
+    }
+
+    char healthText[32];
+    snprintf(healthText, sizeof(healthText), "Health:%03u", health);
+    uiScene->textRenderers[2]->SetText(healthText);
 }
