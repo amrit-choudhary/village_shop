@@ -3,6 +3,7 @@
 #include "../scene/scene_ui_hud.h"
 #include "../utils/json_utils.h"
 #include "physics_scene_char.h"
+#include "src/random/random_utils.h"
 
 ME::GameCharacterTest::GameCharacterTest() : Game() {}
 
@@ -34,6 +35,16 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     bulletDirs = new ME::Vec2[maxBulletCount]{};
 
     ME::JsonUtils::LoadWaveDataFromJSON("game_data/wave_data.json", &waveData);
+    enemies = new Enemy[maxNPCCount]{};
+    for (size_t i = 0; i < maxNPCCount; ++i) {
+        enemies[i].type = 0;
+        enemies[i].health = 100;
+        enemies[i].maxHealth = 100;
+        enemies[i].speed = 10;
+        enemies[i].spriteIndex = 0;
+        enemies[i].bActive = false;
+    }
+    SpawnNextEnemy();
 
     ME::Log("Character Animation Test Game Start!");
 }
@@ -49,6 +60,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     Game::Update(deltaTime);
 
     const float speed = 30.0f * deltaTime;
+    const float zoomSpeed = 20.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
     ME::SpriteAnimator* animator = charScene->spriteRenderers[0]->animator;
@@ -107,16 +119,24 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     ME::Vec3 currentPosition = playerTransform->GetPosition() + movementVector;
     playerTransform->SetPosition(currentPosition);
     charScene->spriteRenderers[0]->bDirty = true;
-    charScene->spriteCamera->position += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
+
+    float cameraZDelta = 0.0f;
+
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::UpArrow)) {
+        charScene->spriteCamera->orthographicSize -= zoomSpeed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::DownArrow)) {
+        charScene->spriteCamera->orthographicSize += zoomSpeed;
+    }
+
+    charScene->spriteCamera->position += ME::Vec3{movementVector.x, movementVector.y, 0};
     charScene->spriteCamera->viewPosition += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
 
-    if (inputManager->GetKeyPressed(ME::Input::KeyCode::Space)) {
-    }
-
-    if (inputManager->GetKeyReleased(ME::Input::KeyCode::Space)) {
-    }
-
     for (int i = 0; i < maxNPCCount; ++i) {
+        if (!enemies[i].bActive) {
+            continue;
+        }
+
         ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
         ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
         float distSqr = dirToPlayer.Length();
@@ -232,4 +252,16 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
                                                                              charScene->bulletCollScaleMult);
 
     delete result;
+}
+
+void ME::GameCharacterTest::SpawnNextEnemy() {
+    ME::Random rndPos{"npc_spawn_pos", true};
+    for (int i = 0; i < 10; ++i) {
+        if (!enemies[i].bActive) {
+            enemies[i].bActive = true;
+            ME::Vec2 pos = ME::Utils::RandomVec2OnCircle(rndPos) * 100.0f;
+            charScene->instancedSpriteTransforms0[i]->SetPosition(ME::Vec3{pos.x, pos.y, 0.0f});
+            // return;
+        }
+    }
 }

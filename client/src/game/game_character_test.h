@@ -40,7 +40,7 @@ class GameCharacterTest : public Game {
     const float enemySpeedVariance = 5.0f;
     const float outThrowDistance = 50.0f;
     const float minDistaneToPlayerSqr = 10.0f;
-    const size_t maxNPCCount = 64;
+    const size_t maxNPCCount = 256;
     ME::Transform* playerTransform = nullptr;
     uint32_t score = 0;
     uint32_t health = 100;
@@ -57,9 +57,14 @@ class GameCharacterTest : public Game {
     float bulletStartDirAngle = 0.0f;
     ME::Random rndBullet{"bullet", true};
     size_t cycleCounter = 0;
+
+    // Wave data.
     WaveData* waveData = nullptr;
     size_t currentWaveIndex = 0;
     size_t enemiesRemainingInWave = 0;
+    Enemy* enemies = nullptr;
+
+    void SpawnNextEnemy();
 };
 
 }  // namespace ME

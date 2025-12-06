@@ -34,7 +34,7 @@ class SceneCharacterTest : public Scene {
     const float charHeight = 12.0f;
     const float npcWidth = 8.0f;
     const float npcHeight = 8.0f;
-    const size_t maxNPCCount = 64;
+    const size_t maxNPCCount = 256;
     const float uiSpriteSize = 80.0f;
     const size_t uiSpriteCount = 15;
     const size_t uiSpriteWidthCount = 5;

@@ -63,4 +63,19 @@ Vec2 operator/(const Vec2& a, const Vec2& b);
 bool operator==(const Vec2& a, const Vec2& b);
 bool operator!=(const Vec2& a, const Vec2& b);
 
+Vec2 operator*(const Vec2& a, float b);
+Vec2 operator*(float a, const Vec2& b);
+
+////////////////////////////////////////
+// Implementation of inline functions.
+////////////////////////////////////////
+
+inline Vec2 operator*(const Vec2& a, float b) {
+    return Vec2{a.x * b, a.y * b};
+}
+
+inline Vec2 operator*(float a, const Vec2& b) {
+    return Vec2{a * b.x, a * b.y};
+}
+
 }  // namespace ME
