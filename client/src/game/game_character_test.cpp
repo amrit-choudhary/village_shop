@@ -34,7 +34,13 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
 
     bulletDirs = new ME::Vec2[maxBulletCount]{};
 
+    clipBase = nullptr;
+    ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/enemy_base_anim.json", &clipBase);
     ME::JsonUtils::LoadWaveDataFromJSON("game_data/wave_data.json", &waveData);
+    currentWave = &waveData->waves[currentWaveIndex];
+    spawnCounter = 0;
+    enemiesRemainingInWave = currentWave->enemyCount;
+
     enemies = new Enemy[maxNPCCount]{};
     for (size_t i = 0; i < maxNPCCount; ++i) {
         enemies[i].type = 0;
@@ -44,7 +50,6 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
         enemies[i].spriteIndex = 0;
         enemies[i].bActive = false;
     }
-    SpawnNextEnemy();
 
     ME::Log("Character Animation Test Game Start!");
 }
@@ -52,7 +57,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
 void ME::GameCharacterTest::Start() {
     Game::Start();
 
-    audioSystem->SetMasterVolume(0.1f);
+    audioSystem->SetMasterVolume(0.01f);
     audioSystem->PlayMusic(0, true);
 }
 
@@ -120,8 +125,6 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     playerTransform->SetPosition(currentPosition);
     charScene->spriteRenderers[0]->bDirty = true;
 
-    float cameraZDelta = 0.0f;
-
     if (inputManager->GetKeyDown(ME::Input::KeyCode::UpArrow)) {
         charScene->spriteCamera->orthographicSize -= zoomSpeed;
     }
@@ -132,7 +135,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     charScene->spriteCamera->position += ME::Vec3{movementVector.x, movementVector.y, 0};
     charScene->spriteCamera->viewPosition += ME::Vec3{movementVector.x, movementVector.y, 0.0f};
 
-    for (int i = 0; i < maxNPCCount; ++i) {
+    for (size_t i = 0; i < maxNPCCount; ++i) {
         if (!enemies[i].bActive) {
             continue;
         }
@@ -155,8 +158,8 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         } else {
             // Move towards player.
             ME::Vec3 moveDir = dirToPlayer.Normalised();
-            float speed = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
-            ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speed * static_cast<float>(deltaTime);
+            float speedEnem = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
+            ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speedEnem * static_cast<float>(deltaTime);
             npcTransform->SetPosition(newPos);
             charScene->instancedSpriteRenderers0[i]->bDirty = true;
         }
@@ -212,6 +215,13 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         charScene->dynamicColliders[(maxNPCCount + i)].UpdateTransform(*bulletTransform,
                                                                        charScene->bulletCollScaleMult);
     }
+
+    // Spawn enemies based on current wave data.
+    ++spawnSpeedCounter;
+    if (spawnSpeedCounter >= currentWave->spawnRate) {
+        spawnSpeedCounter = 0;
+        SpawnNextEnemy();
+    }
 }
 
 void ME::GameCharacterTest::End() {
@@ -256,12 +266,38 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
 
 void ME::GameCharacterTest::SpawnNextEnemy() {
     ME::Random rndPos{"npc_spawn_pos", true};
-    for (int i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < maxNPCCount; ++i) {
         if (!enemies[i].bActive) {
             enemies[i].bActive = true;
+
+            ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
+            ME::SpriteRenderer* npcRenderer = charScene->instancedSpriteRenderers0[i];
+
+            if (npcRenderer->animator != nullptr) {
+                delete npcRenderer->animator;
+            }
+            npcRenderer->animator = new ME::SpriteAnimator(npcRenderer, 6);
+            ME::SpriteAnimClip* clip =
+                ME::SpriteAnimClip::DuplicateWithOffset(clipBase, static_cast<int16_t>(currentWave->enemyType * 4));
+            npcRenderer->animator->AddClip(clip);
+            npcRenderer->animator->ChangeClip(0);
+
             ME::Vec2 pos = ME::Utils::RandomVec2OnCircle(rndPos) * 100.0f;
-            charScene->instancedSpriteTransforms0[i]->SetPosition(ME::Vec3{pos.x, pos.y, 0.0f});
-            // return;
+            npcTransform->SetPosition(ME::Vec3{pos.x, pos.y, 0.0f});
+
+            npcRenderer->bDirty = true;
+
+            --enemiesRemainingInWave;
+            if (enemiesRemainingInWave <= 0) {
+                // Move to next wave.
+                ++currentWaveIndex;
+                if (currentWaveIndex >= waveData->waveCount) {
+                    currentWaveIndex = 0;  // Loop back to first wave.
+                }
+                currentWave = &waveData->waves[currentWaveIndex];
+                enemiesRemainingInWave = currentWave->enemyCount;
+            }
+            break;
         }
     }
 }

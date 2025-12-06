@@ -77,6 +77,7 @@ bool ME::JsonUtils::LoadWaveDataFromJSON(const char* filePath, WaveData** outWav
             wave.health = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "health")->valueint);
             wave.spriteIndex = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "spriteIndex")->valueint);
             wave.speedMult = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "speedMult")->valueint);
+            wave.spawnRate = static_cast<uint32_t>(cJSON_GetObjectItem(waveItem, "spawnRate")->valueint);
         }
 
         *outWaveData = waveData;

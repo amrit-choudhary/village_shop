@@ -132,7 +132,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
 
     for (size_t i = 0; i < maxNPCCount; ++i) {
         uint32_t type = rnd.NextRange(0, 11) * 4;
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, type);
+        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, static_cast<uint16_t>(type));
 
         // Flip if on left side.
         if (instancedSpriteTransforms0[i]->GetPosition().x > 0) {

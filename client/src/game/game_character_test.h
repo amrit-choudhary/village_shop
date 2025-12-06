@@ -13,7 +13,7 @@ namespace ME {
 class GameCharacterTest : public Game {
    public:
     GameCharacterTest();
-    ~GameCharacterTest();
+    virtual ~GameCharacterTest();
 
     // Game control functions.
 
@@ -60,11 +60,16 @@ class GameCharacterTest : public Game {
 
     // Wave data.
     WaveData* waveData = nullptr;
-    size_t currentWaveIndex = 0;
-    size_t enemiesRemainingInWave = 0;
+    SingleWave* currentWave = nullptr;
+    uint32_t currentWaveIndex = 0;
+    uint32_t enemiesRemainingInWave = 0;
     Enemy* enemies = nullptr;
+    uint32_t spawnSpeedCounter = 0;
+    uint32_t spawnCounter = 0;
 
     void SpawnNextEnemy();
+
+    ME::SpriteAnimClip* clipBase = nullptr;
 };
 
 }  // namespace ME
