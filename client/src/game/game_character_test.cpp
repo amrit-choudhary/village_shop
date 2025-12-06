@@ -150,6 +150,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
             npcTransform->SetPosition(newPos);
             charScene->instancedSpriteRenderers0[i]->bDirty = true;
+            enemies[i].bActive = false;
             --health;
 
             char healthText[32];
@@ -250,6 +251,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     npcTransform->SetPosition(newPos);
     charScene->instancedSpriteRenderers0[enemyIndex]->bDirty = true;
     charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
+    enemies[enemyIndex].bActive = false;
     ++score;
 
     ME::Vec3 bulletPos = bulletParkPos;
