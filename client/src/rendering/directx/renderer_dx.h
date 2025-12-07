@@ -108,8 +108,8 @@ class RendererDX : public PlatformRenderer {
     ComPtr<ID3D12DescriptorHeap> cbvSrvUavDescHeap;
 
     D3D_DRIVER_TYPE d3dDriverType = D3D_DRIVER_TYPE_HARDWARE;
-    // TODO: Make this SRGB later.
-    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    DXGI_FORMAT swapChainFormat = DXGI_FORMAT_R8G8B8A8_UNORM;  // DX12 reasons for UNORM.
+    DXGI_FORMAT backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     DXGI_FORMAT depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     uint32_t clientWidth;
     uint32_t clientHeight;

@@ -151,7 +151,7 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     scDesc.BufferCount = 2;
     scDesc.Width = clientWidth;
     scDesc.Height = clientHeight;
-    scDesc.Format = backBufferFormat;
+    scDesc.Format = swapChainFormat;
     scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     scDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     scDesc.SampleDesc.Count = 1;
@@ -166,10 +166,16 @@ bool ME::RendererDX::InitDX(HWND currenthWnd) {
     rtvDescHeapDesc.NodeMask = 0;
     device->CreateDescriptorHeap(&rtvDescHeapDesc, IID_PPV_ARGS(&rtvDescHeap));
 
+    D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+    rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+    rtvDesc.Format = backBufferFormat;
+    rtvDesc.Texture2D.MipSlice = 0;
+    rtvDesc.Texture2D.PlaneSlice = 0;
+
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(rtvDescHeap->GetCPUDescriptorHandleForHeapStart());
     for (size_t i = 0; i < swapChainBufferCount; ++i) {
         swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainBuffers[i]));
-        device->CreateRenderTargetView(swapChainBuffers[i].Get(), nullptr, rtvHeapHandle);
+        device->CreateRenderTargetView(swapChainBuffers[i].Get(), &rtvDesc, rtvHeapHandle);
         rtvHeapHandle.Offset(1, rtvDescriptorSize);
     }
 

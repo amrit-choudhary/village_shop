@@ -27,7 +27,7 @@ uint32_t ME::DescHeapManagerDX::CreateCBV(ID3D12Resource* resource, const uint32
 uint32_t ME::DescHeapManagerDX::CreateSRVTexture(ID3D12Resource* resource) {
     D3D12_SHADER_RESOURCE_VIEW_DESC descDesc{};
     descDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    descDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    descDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     descDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
     descDesc.Texture2D.MostDetailedMip = 0;
     descDesc.Texture2D.MipLevels = -1;
