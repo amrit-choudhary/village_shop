@@ -69,11 +69,12 @@ class Texture {
     }
 
    protected:
-    uint16_t width;
-    uint16_t height;
-    uint8_t channels;
-    bool hasAlpha;
-    uint8_t* data;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint8_t channels = 0;
+    uint32_t bytesPerPixel = 0;
+    bool hasAlpha = false;
+    uint8_t* data = nullptr;
 };
 
 }  // namespace ME

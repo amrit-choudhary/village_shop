@@ -17,8 +17,8 @@ void ME::SceneUIHUD::CreateResources() {
     SceneUI::CreateResources();
 
     // UI Sprite paths.
-    spriteTexturePaths[0] = "textures/ui/ui_atlas.png";
-    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.png";
+    spriteTexturePaths[0] = "textures/ui/ui_atlas.dds";
+    spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.dds";
     spriteTextureCount = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[0]);

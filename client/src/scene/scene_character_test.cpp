@@ -24,9 +24,9 @@ void ME::SceneCharacterTest::CreateResources() {
 
     textureCount = 0;
 
-    spriteTexturePaths[0] = "textures/characters/princess.png";
-    spriteTexturePaths[1] = "textures/enemies/enemy_atlas.png";
-    spriteTexturePaths[2] = "textures/sprites/fireball.png";
+    spriteTexturePaths[0] = "textures/characters/princess.dds";
+    spriteTexturePaths[1] = "textures/enemies/enemy_atlas.dds";
+    spriteTexturePaths[2] = "textures/sprites/fireball.dds";
     spriteTextureCount = 3;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";

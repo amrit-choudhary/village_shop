@@ -9,3 +9,7 @@
 # ffmpeg -y -i input.mp4 -vf "scale=iw:-1:flags=lanczos,palettegen=stats_mode=full" palette.png
 # ffmpeg -y -i input.mp4 -i palette.png -filter_complex "scale=iw:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=sierra2_4a" -loop 0 output.gif
 # rm palette.png
+
+# Convert to DDS from png
+# Normal textures are already srgb so no need to convert color space.
+# texconv -f R8G8B8A8_UNORM -m 1 -ft dds -y input.png
