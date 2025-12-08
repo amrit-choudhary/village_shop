@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED: Using platform specific image loading now.
+ *
  * Loads PNG files and converts them to a common image format
  */
 
