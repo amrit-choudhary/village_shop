@@ -11,21 +11,21 @@
 #include "../anim/sprite_anim_clip.h"
 #include "../game/wave_data.h"
 #include "../rendering/shared/texture.h"
-#include "src/third_party/json/cJSON.h"
+#include "third_party/json/cJSON.h"
 
 bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlasProperties& outAtlasProps) {
     cJSON* json = LoadJSONFromFile(filePath);
     if (json != nullptr) {
         // Extract properties from the JSON object. This is case insensitive.
-        outAtlasProps.tileSizeX = cJSON_GetObjectItem(json, "tileSizeX")->valueint;
-        outAtlasProps.tileSizeY = cJSON_GetObjectItem(json, "tileSizeY")->valueint;
-        outAtlasProps.padding = cJSON_GetObjectItem(json, "padding")->valueint;
-        outAtlasProps.numTextures = cJSON_GetObjectItem(json, "numTextures")->valueint;
-        outAtlasProps.numTilesX = cJSON_GetObjectItem(json, "numTilesX")->valueint;
-        outAtlasProps.numTilesY = cJSON_GetObjectItem(json, "numTilesY")->valueint;
-        outAtlasProps.width = cJSON_GetObjectItem(json, "width")->valueint;
-        outAtlasProps.height = cJSON_GetObjectItem(json, "height")->valueint;
-        outAtlasProps.paddingType = cJSON_GetObjectItem(json, "paddingType")->valueint;
+        outAtlasProps.tileSizeX = static_cast<uint32_t>(cJSON_GetObjectItem(json, "tileSizeX")->valueint);
+        outAtlasProps.tileSizeY = static_cast<uint32_t>(cJSON_GetObjectItem(json, "tileSizeY")->valueint);
+        outAtlasProps.padding = static_cast<uint32_t>(cJSON_GetObjectItem(json, "padding")->valueint);
+        outAtlasProps.numTextures = static_cast<uint32_t>(cJSON_GetObjectItem(json, "numTextures")->valueint);
+        outAtlasProps.numTilesX = static_cast<uint32_t>(cJSON_GetObjectItem(json, "numTilesX")->valueint);
+        outAtlasProps.numTilesY = static_cast<uint32_t>(cJSON_GetObjectItem(json, "numTilesY")->valueint);
+        outAtlasProps.width = static_cast<uint32_t>(cJSON_GetObjectItem(json, "width")->valueint);
+        outAtlasProps.height = static_cast<uint32_t>(cJSON_GetObjectItem(json, "height")->valueint);
+        outAtlasProps.paddingType = static_cast<uint32_t>(cJSON_GetObjectItem(json, "paddingType")->valueint);
 
         cJSON_Delete(json);
         return true;
