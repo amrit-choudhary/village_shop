@@ -45,6 +45,53 @@ static bool parseArrayToVector(cJSON* root, const char* name, std::vector<std::s
     return true;
 }
 
+static std::filesystem::path GetResPathSource(const std::filesystem::path& p) {
+    std::filesystem::path out;
+    for (const auto& part : p) {
+        const std::string s = part.string();
+        if (s == "build") continue;
+        if (s == "client_package") {
+            out /= "client";
+        } else {
+            out /= part;
+        }
+    }
+    return out;
+}
+
+static std::filesystem::path GetResPathDest(const std::filesystem::path& p) {
+    std::filesystem::path out;
+    for (const auto& part : p) {
+        const std::string s = part.string();
+        if (s == "client_package") {
+            out /= "client";
+        } else {
+            out /= part;
+        }
+    }
+    return out;
+}
+
+static std::filesystem::path GetPathByReplacingClientPackage(const std::filesystem::path& p) {
+    std::filesystem::path out;
+    for (const auto& part : p) {
+        const std::string s = part.string();
+        if (s == "client_package") {
+            out /= "client";
+        } else
+            out /= part;
+    }
+    return out;
+}
+
+static bool CopyFileEnsureDir(const std::filesystem::path& src, const std::filesystem::path& dest) {
+    if (!std::filesystem::exists(dest.parent_path())) {
+        std::filesystem::create_directories(dest.parent_path());
+    }
+    std::filesystem::copy_file(src, dest, std::filesystem::copy_options::overwrite_existing);
+    return true;
+}
+
 bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& buildPath) {
     std::cout << "Packaging Client for Windows" << '\n';
 
@@ -52,6 +99,9 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
     std::filesystem::path exeDir = exeFullPath.parent_path();
     std::filesystem::path resourceDirPath = exeDir / "resources";
     std::filesystem::path resListPath = resourceDirPath / "res_list_win.json";
+
+    std::filesystem::path clientExeDir = GetPathByReplacingClientPackage(exeDir);
+    std::filesystem::path clientResDir = clientExeDir / "resources";
 
     cJSON* root = LoadJSONFromFile(resListPath.string().c_str());
     if (!root) {
@@ -69,42 +119,71 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
 
     cJSON_Delete(root);
 
+    if (!std::filesystem::exists(clientResDir)) {
+        std::filesystem::create_directories(clientResDir);
+    }
+
     // Animation Resources
+    if (!std::filesystem::exists(clientResDir / "anim")) {
+        std::filesystem::create_directories(clientResDir / "anim");
+    }
+
     for (const auto& animPath : resList.anim) {
         std::filesystem::path fullAnimPath = resourceDirPath / "anim" / animPath;
-        std::cout << "Packaging Animation: " << fullAnimPath << '\n';
+        CopyFileEnsureDir(GetResPathSource(fullAnimPath), GetResPathDest(fullAnimPath));
     }
 
     // Audio Resources
+    if (!std::filesystem::exists(clientResDir / "audio")) {
+        std::filesystem::create_directories(clientResDir / "audio");
+    }
+
     for (const auto& audioPath : resList.audio) {
         std::filesystem::path fullAudioPath = resourceDirPath / "audio" / audioPath;
-        std::cout << "Packaging Audio: " << fullAudioPath << '\n';
+        CopyFileEnsureDir(GetResPathSource(fullAudioPath), GetResPathDest(fullAudioPath));
     }
 
     // Config Resources
+    if (!std::filesystem::exists(clientResDir / "config")) {
+        std::filesystem::create_directories(clientResDir / "config");
+    }
+
     for (const auto& configPath : resList.config) {
         std::filesystem::path fullConfigPath = resourceDirPath / "config" / configPath;
-        std::cout << "Packaging Config: " << fullConfigPath << '\n';
+        CopyFileEnsureDir(GetResPathSource(fullConfigPath), GetResPathDest(fullConfigPath));
     }
 
     // Shader Resources
+    if (!std::filesystem::exists(clientResDir / "shaders")) {
+        std::filesystem::create_directories(clientResDir / "shaders");
+    }
+
     for (const auto& shaderPath : resList.shaders) {
         std::filesystem::path fullShaderPath = resourceDirPath / "shaders" / shaderPath;
-        std::cout << "Packaging Shader: " << fullShaderPath << '\n';
+        CopyFileEnsureDir(GetResPathSource(fullShaderPath), GetResPathDest(fullShaderPath));
     }
 
     // Texture Data Resources
+    if (!std::filesystem::exists(clientResDir / "texture_data")) {
+        std::filesystem::create_directories(clientResDir / "texture_data");
+    }
+
     for (const auto& texDataPath : resList.texture_data) {
         std::filesystem::path fullTexDataPath = resourceDirPath / "texture_data" / texDataPath;
-        std::cout << "Packaging Texture Data: " << fullTexDataPath << '\n';
+        CopyFileEnsureDir(GetResPathSource(fullTexDataPath), GetResPathDest(fullTexDataPath));
     }
 
     // Texture Resources
-    for (const auto& texturePath : resList.textures) {
-        std::filesystem::path fullTexturePath = resourceDirPath / "textures" / texturePath;
-        std::cout << "Packaging Texture: " << fullTexturePath << '\n';
+    if (!std::filesystem::exists(clientResDir / "textures")) {
+        std::filesystem::create_directories(clientResDir / "textures");
     }
 
+    for (const auto& texturePath : resList.textures) {
+        std::filesystem::path fullTexturePath = resourceDirPath / "textures" / texturePath;
+        CopyFileEnsureDir(GetResPathSource(fullTexturePath), GetResPathDest(fullTexturePath));
+    }
+
+    std::cout << "Successfully packaged Client for Windows." << '\n';
     return true;
 }
 

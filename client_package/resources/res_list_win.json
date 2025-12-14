@@ -11,12 +11,12 @@
         "settings.ini"
     ],
     "shaders": [
-        "structs.hlsl",
-        "helpers.hlsl",
-        "sprite_atlas.hlsl",
-        "sprite_instanced_atlas.hlsl",
-        "ui_text.hlsl",
-        "ui_sprite.hlsl"
+        "hlsl/structs.hlsl",
+        "hlsl/helpers.hlsl",
+        "hlsl/sprite_atlas.hlsl",
+        "hlsl/sprite_instanced_atlas.hlsl",
+        "hlsl/ui_text.hlsl",
+        "hlsl/ui_sprite.hlsl"
     ],
     "texture_data": [
         "atlas_princess.json",
@@ -26,10 +26,10 @@
         "font_atlas_01.json"
     ],
     "textures": [
-        "characters/princess.png",
-        "sprites/fireball.png",
-        "enemies/enemy_atlas.png",
-        "ui/ui_atlas.png",
-        "font/ascii_ibm_transparent.png"
+        "characters/princess.dds",
+        "sprites/fireball.dds",
+        "enemies/enemy_atlas.dds",
+        "ui/ui_atlas.dds",
+        "font/ascii_ibm_transparent.dds"
     ]
 }
