@@ -10,6 +10,9 @@
     "config": [
         "settings.ini"
     ],
+    "game_data": [
+        "wave_data.json"
+    ],
     "shaders": [
         "hlsl/structs.hlsl",
         "hlsl/helpers.hlsl",

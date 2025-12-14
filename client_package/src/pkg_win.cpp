@@ -113,6 +113,7 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
     parseArrayToVector(root, "anim", resList.anim);
     parseArrayToVector(root, "audio", resList.audio);
     parseArrayToVector(root, "config", resList.config);
+    parseArrayToVector(root, "game_data", resList.game_data);
     parseArrayToVector(root, "shaders", resList.shaders);
     parseArrayToVector(root, "texture_data", resList.texture_data);
     parseArrayToVector(root, "textures", resList.textures);
@@ -151,6 +152,16 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
     for (const auto& configPath : resList.config) {
         std::filesystem::path fullConfigPath = resourceDirPath / "config" / configPath;
         CopyFileEnsureDir(GetResPathSource(fullConfigPath), GetResPathDest(fullConfigPath));
+    }
+
+    // Game Data Resources
+    if (!std::filesystem::exists(clientResDir / "game_data")) {
+        std::filesystem::create_directories(clientResDir / "game_data");
+    }
+
+    for (const auto& gameDataPath : resList.game_data) {
+        std::filesystem::path fullGameDataPath = resourceDirPath / "game_data" / gameDataPath;
+        CopyFileEnsureDir(GetResPathSource(fullGameDataPath), GetResPathDest(fullGameDataPath));
     }
 
     // Shader Resources

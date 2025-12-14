@@ -17,6 +17,7 @@ class ResourceList {
     std::vector<std::string> anim;
     std::vector<std::string> audio;
     std::vector<std::string> config;
+    std::vector<std::string> game_data;
     std::vector<std::string> shaders;
     std::vector<std::string> texture_data;
     std::vector<std::string> textures;
