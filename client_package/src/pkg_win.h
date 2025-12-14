@@ -9,7 +9,7 @@
 
 namespace ME::Package {
 
-bool PackageClientWin(const std::string& buildPath);
+bool PackageClientWin(const std::string& exePath, const std::string& buildPath);
 
 }  // namespace ME::Package
 

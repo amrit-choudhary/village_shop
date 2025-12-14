@@ -12,8 +12,9 @@ int main(int argc, char** argv) {
     std::cout << "Client Package Application Started." << '\n';
 
 #ifdef VG_WIN
-    std::string buildPath = "build/client_win/";
-    if (!ME::Package::PackageClientWin(buildPath)) {
+    std::string exePath = argv[0];
+    std::string buildPath = "";
+    if (!ME::Package::PackageClientWin(exePath, buildPath)) {
         std::cerr << "Failed to package Client for Windows." << '\n';
         return -1;
     }
