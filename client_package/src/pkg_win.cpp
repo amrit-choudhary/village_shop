@@ -92,6 +92,15 @@ static bool CopyFileEnsureDir(const std::filesystem::path& src, const std::files
     return true;
 }
 
+static bool RunDXCCompile(const std::filesystem::path& src, const std::filesystem::path& includeDir,
+                          const std::string& target, const std::string& entry, const std::filesystem::path& outPath) {
+    const std::string dxc = "dxc.exe";
+    std::string cmd = dxc + " -T " + target + " -E " + entry + " -Fo \"" + outPath.string() + "\"" + " -O3 -I \"" +
+                      includeDir.string() + "\" \"" + src.string() + "\"";
+    int rc = std::system(cmd.c_str());
+    return rc == 0 && std::filesystem::exists(outPath);
+}
+
 bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& buildPath) {
     std::cout << "Packaging Client for Windows" << '\n';
 
@@ -171,7 +180,27 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
 
     for (const auto& shaderPath : resList.shaders) {
         std::filesystem::path fullShaderPath = resourceDirPath / "shaders" / shaderPath;
-        CopyFileEnsureDir(GetResPathSource(fullShaderPath), GetResPathDest(fullShaderPath));
+        // Original hlsl shader path in client project.
+        std::filesystem::path src = GetResPathSource(fullShaderPath);
+        std::filesystem::path includeDir = src.parent_path();
+        std::filesystem::path dest = GetResPathDest(fullShaderPath);
+        std::filesystem::path destDir = dest.parent_path();
+
+        if (!std::filesystem::exists(destDir)) {
+            std::filesystem::create_directories(destDir);
+        }
+
+        std::string stem = src.stem().string();
+        std::filesystem::path vsOutPath = destDir / (stem + "_vs.cso");
+        std::filesystem::path psOutPath = destDir / (stem + "_ps.cso");
+
+        bool bVSCompiled = RunDXCCompile(src, includeDir, "vs_6_0", "VS", vsOutPath);
+        bool bPSCompiled = RunDXCCompile(src, includeDir, "ps_6_0", "PS", psOutPath);
+
+        if (!bVSCompiled || !bPSCompiled) {
+            std::cerr << "Failed to compile shader: " << shaderPath << '\n';
+            return false;
+        }
     }
 
     // Texture Data Resources

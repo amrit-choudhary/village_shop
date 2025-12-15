@@ -14,8 +14,6 @@
         "wave_data.json"
     ],
     "shaders": [
-        "hlsl/structs.hlsl",
-        "hlsl/helpers.hlsl",
         "hlsl/sprite_atlas.hlsl",
         "hlsl/sprite_instanced_atlas.hlsl",
         "hlsl/ui_text.hlsl",

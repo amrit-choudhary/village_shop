@@ -13,3 +13,11 @@
 # Convert to DDS from png
 # Normal textures are already srgb so no need to convert color space.
 # texconv -f R8G8B8A8_UNORM -m 1 -ft dds -y input.png
+
+# Shader compilation
+# Release
+# dxc -T vs_6_0 -E VS -Fo "sprite_atlas_vs.cso" -O3 -I . "sprite_atlas.hlsl"
+# dxc -T ps_6_0 -E PS -Fo "sprite_atlas_ps.cso" -O3 -I . "sprite_atlas.hlsl"
+# Debug
+# dxc -T vs_6_0 -E VS -Fo "sprite_atlas_vs.cso" -Zi -Qembed_debug -Od -I . "sprite_atlas.hlsl"
+# dxc -T ps_6_0 -E PS -Fo "sprite_atlas_ps.cso" -Zi -Qembed_debug -Od -I . "sprite_atlas.hlsl" 
