@@ -101,6 +101,14 @@ static bool RunDXCCompile(const std::filesystem::path& src, const std::filesyste
     return rc == 0 && std::filesystem::exists(outPath);
 }
 
+static bool RunTexconv(const std::filesystem::path& src, const std::filesystem::path& outPath) {
+    const std::string texconv = "texconv.exe";
+    std::string cmd = texconv + " -f R8G8B8A8_UNORM -m 1 -ft DDS -o \"" + outPath.parent_path().string() + "\" \"" +
+                      src.string() + "\"";
+    int rc = std::system(cmd.c_str());
+    return rc == 0 && std::filesystem::exists(outPath);
+}
+
 bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& buildPath) {
     std::cout << "Packaging Client for Windows" << '\n';
 

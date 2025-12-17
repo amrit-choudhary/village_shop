@@ -27,10 +27,10 @@
         "font_atlas_01.json"
     ],
     "textures": [
-        "characters/princess.dds",
-        "sprites/fireball.dds",
-        "enemies/enemy_atlas.dds",
-        "ui/ui_atlas.dds",
-        "font/ascii_ibm_transparent.dds"
+        "characters/princess.png",
+        "sprites/fireball.png",
+        "enemies/enemy_atlas.png",
+        "ui/ui_atlas.png",
+        "font/ascii_ibm_transparent.png"
     ]
 }

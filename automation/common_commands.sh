@@ -11,7 +11,7 @@
 # rm palette.png
 
 # Convert to DDS from png
-# Normal textures are already srgb so no need to convert color space.
+# General textures are already srgb so no need to convert color space.
 # texconv -f R8G8B8A8_UNORM -m 1 -ft dds -y input.png
 
 # Shader compilation
