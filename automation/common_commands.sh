@@ -14,6 +14,10 @@
 # General textures are already srgb so no need to convert color space.
 # texconv -f R8G8B8A8_UNORM -m 1 -ft dds -y input.png
 
+# Strip metadata from png, so that texconv treats all of them as same.
+# Use this if a texture is not being converted properly.
+# magick input.png -strip PNG32:out.png
+
 # Shader compilation
 # Release
 # dxc -T vs_6_0 -E VS -Fo "sprite_atlas_vs.cso" -O3 -I . "sprite_atlas.hlsl"
