@@ -101,12 +101,12 @@ static bool RunDXCCompile(const std::filesystem::path& src, const std::filesyste
     return rc == 0 && std::filesystem::exists(outPath);
 }
 
-static bool RunTexconv(const std::filesystem::path& src, const std::filesystem::path& outPath) {
+static bool RunTexconv(const std::filesystem::path& src, const std::filesystem::path& outDir) {
     const std::string texconv = "texconv.exe";
-    std::string cmd = texconv + " -f R8G8B8A8_UNORM -m 1 -ft DDS -o \"" + outPath.parent_path().string() + "\" \"" +
-                      src.string() + "\"";
+    std::string cmd =
+        texconv + " -f R8G8B8A8_UNORM -m 1 -ft DDS -y -o \"" + outDir.string() + "\" \"" + src.string() + "\"";
     int rc = std::system(cmd.c_str());
-    return rc == 0 && std::filesystem::exists(outPath);
+    return (rc == 0);
 }
 
 bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& buildPath) {
@@ -228,7 +228,19 @@ bool ME::Package::PackageClientWin(const std::string& exePath, const std::string
 
     for (const auto& texturePath : resList.textures) {
         std::filesystem::path fullTexturePath = resourceDirPath / "textures" / texturePath;
-        CopyFileEnsureDir(GetResPathSource(fullTexturePath), GetResPathDest(fullTexturePath));
+        std::filesystem::path src = GetResPathSource(fullTexturePath);
+        std::filesystem::path dest = GetResPathDest(fullTexturePath);
+        std::filesystem::path destDir = dest.parent_path();
+
+        if (!std::filesystem::exists(destDir)) {
+            std::filesystem::create_directories(destDir);
+        }
+
+        bool bTexConverted = RunTexconv(src, destDir);
+        if (!bTexConverted) {
+            std::cerr << "Failed to convert texture: " << texturePath << '\n';
+            return false;
+        }
     }
 
     std::cout << "Successfully packaged Client for Windows." << '\n';
