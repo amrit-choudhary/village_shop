@@ -28,7 +28,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->Init();
 
     playerTransform = charScene->spriteTransforms[0];
-    uiScene->textRenderers[0]->SetText("Bullet Test");
+    uiScene->textRenderers[0]->SetText("Survivors");
     uiScene->textRenderers[1]->SetText("Score:00000");
     uiScene->textRenderers[2]->SetText("Health:100");
 

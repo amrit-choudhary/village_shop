@@ -1,7 +1,7 @@
 # The Village Shop
 
 <p align="center">
-<img src="/screenshots/SceneAndUIDemo.gif" width="500px" />
+<img src="/screenshots/survivors_final.gif" width="700px" />
 </p>
 
 <p align="center">
