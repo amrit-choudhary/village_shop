@@ -20,11 +20,13 @@ class Geometry {
     void SetAbsolutePosition(const Vec2& absPos);
     Vec2 GetSize() const;
     void SetSize(const Vec2& sz);
+    Vec2 GetAbsoluteSize() const;
+    void SetAbsoluteSize(const Vec2& absSz);
 
    private:
     Vec2 position = Vec2();          // local position
-    Vec2 absolutePosition = Vec2();  // absolute position in the UI
     Vec2 size = Vec2();              // local size
+    Vec2 absolutePosition = Vec2();  // absolute position in the UI
     Vec2 absoluteSize = Vec2();      // absolute size in the UI
 };
 

@@ -27,3 +27,11 @@ ME::Vec2 ME::Geometry::GetSize() const {
 void ME::Geometry::SetSize(const Vec2& sz) {
     size = sz;
 }
+
+ME::Vec2 ME::Geometry::GetAbsoluteSize() const {
+    return absoluteSize;
+}
+
+void ME::Geometry::SetAbsoluteSize(const Vec2& absSz) {
+    absoluteSize = absSz;
+}
