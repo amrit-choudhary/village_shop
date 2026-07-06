@@ -20,24 +20,18 @@ ME::GameMain::~GameMain() {
     connection.End();
     inputManager.End();
     timeManager.End();
-    // renderer.End();
+    renderer.End();
     physicsSystem.End();
 }
 
-void ME::GameMain::SetViewAndDevice(void* view, void* device) {}
-
-void ME::GameMain::Init() {
+void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     // Read game params from file.
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
     maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
-    // Init global variables.
-    timeManager.Init(fps, false);
-    bool shouldTick = false;
-    double deltaTime = 0.0f;
-
     inputManager.Init();
+    macInputManager = static_cast<ME::Input::InputManagerMac*>(inputManager.GetPlatformInputManager());
     connection.Init();
     physicsSystem.Init();
 
@@ -46,8 +40,33 @@ void ME::GameMain::Init() {
     game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
 
-    // renderer.InitMTL(device, view);
-    // renderer.SetScene(game.GetScene());
+    renderer.InitMTL(device, view);
+    renderer.SetScene(game.GetScene());
+
+    // Clock init after all systems are initialized.
+    timeManager.Init(fps, false);
+    bool shouldTick = false;
+    double deltaTime = 0.0f;
+
+    game.Start();
+}
+
+void ME::GameMain::HandleKeyEvent(uint16_t keyCode, bool isDown) {
+    if (macInputManager != nullptr) {
+        macInputManager->HandleKeyEvent(keyCode, isDown);
+    }
+}
+
+void ME::GameMain::HandleMouseMove(float x, float y) {
+    if (macInputManager != nullptr) {
+        macInputManager->HandleMouseMove(x, y);
+    }
+}
+
+void ME::GameMain::HandleMouseButton(int button, bool isDown) {
+    if (macInputManager != nullptr) {
+        macInputManager->HandleMouseButton(button, isDown);
+    }
 }
 
 void ME::GameMain::Update() {
@@ -57,27 +76,24 @@ void ME::GameMain::Update() {
     if (shouldTick) {
         deltaTime = timeManager.GetDeltaTime();
 
+        inputManager.PreUpdate();
         inputManager.Update(deltaTime);
 
         game.Update(deltaTime);
 
-        // renderer.Update();
-        // renderer.Draw(view);
+        inputManager.PostUpdate();
+
+        renderer.Update();
+        renderer.Draw();
 
         connection.Update(deltaTime);
 
         physicsSystem.Update(deltaTime);
     }
 
-    // Perform Rendering
-    // The Renderer::DrawFrame method needs to be adapted to use the
-    // pView's currentRenderPassDescriptor and currentDrawable.
-    // _renderer.DrawFrame(pView);  // Example: Pass the view to the renderer
-
     // Check for exit condition (e.g., max run time)
     if (maxRunTime > 0 && timeManager.GetTimeSinceStartup() > maxRunTime) {
         ShutDownGameSystems();
-        // NS::Application::sharedApplication()->windows()->object<NS::Window>(0)->close();
     }
 }
 
@@ -91,7 +107,7 @@ void ME::GameMain::ShutDownGameSystems() {
     connection.End();
     inputManager.End();
     timeManager.End();
-    // renderer.End();
+    renderer.End();
     physicsSystem.End();
 }
 

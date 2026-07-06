@@ -43,10 +43,7 @@ class RendererMetal : public PlatformRenderer {
 
     void InitMTL(MTL::Device* device, MTK::View* view);
 
-   private:
-   protected:
-   public:
-    void Draw(MTK::View* view);
+    void Draw();
 
    private:
     MTL::Device* device;

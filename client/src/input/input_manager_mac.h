@@ -5,13 +5,7 @@
 
 #pragma once
 
-#include <ApplicationServices/ApplicationServices.h>
-#include <CoreFoundation/CoreFoundation.h>
-
-#include <atomic>
-#include <chrono>
-#include <iostream>
-#include <thread>
+#include <cstdint>
 
 #include "input_manager.h"
 
@@ -21,12 +15,13 @@ class InputManagerMac : public PlatformInputManager {
    public:
     void Init() override;
     void Update(double deltaTime) override;
+    void PostUpdate() override;
     void End() override;
 
-   private:
-    std::thread inputThread;
-    static CGEventRef InputCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon);
-    void StartEventLoop();
+    // Handle macOS-specific input events, forwarded synchronously from MEView (NSEvent-derived).
+    void HandleKeyEvent(uint16_t keyCode, bool isDown);
+    void HandleMouseMove(float x, float y);
+    void HandleMouseButton(int button, bool isDown);
 };
 
 }  // namespace ME::Input

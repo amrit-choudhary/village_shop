@@ -141,7 +141,7 @@ InputManager::~InputManager() {}
 
 void InputManager::Init() {
 #ifdef VG_MAC
-    platformInputManager = new InputManagerCLIMac();
+    platformInputManager = new InputManagerMac();
 #endif
 #ifdef VG_WIN
     platformInputManager = new InputManagerWin();

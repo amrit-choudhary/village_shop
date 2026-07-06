@@ -50,7 +50,7 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     view = inView;
 }
 
-void ME::RendererMetal::Draw(MTK::View* view) {
+void ME::RendererMetal::Draw() {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
     MTL::CommandBuffer* cmd = commandQueue->commandBuffer();

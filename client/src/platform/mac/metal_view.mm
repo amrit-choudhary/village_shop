@@ -2,7 +2,7 @@
 
 #import "metal_view.h"
 
-#import <iostream>
+#import "view_delegate.h"
 
 @implementation MEView
 
@@ -10,38 +10,64 @@
     return YES;
 }
 
+- (ME::GameMain*)gameMain {
+    MEViewDelegate* delegate = (MEViewDelegate*)self.delegate;
+    return delegate.gameMain;
+}
+
 // Keyboard events
 - (void)keyDown:(NSEvent *)event {
-    NSString *characters = [event characters];
-    if (characters.length > 0) {
-        unichar keyChar = [characters characterAtIndex:0];
-        std::cout << "Key down: " << keyChar << std::endl;
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleKeyEvent(event.keyCode, true);
     }
 }
 - (void)keyUp:(NSEvent *)event {
-    NSString *characters = [event characters];
-    if (characters.length > 0) {
-        unichar keyChar = [characters characterAtIndex:0];
-        std::cout << "Key up: " << keyChar << std::endl;
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleKeyEvent(event.keyCode, false);
     }
 }
 
 // Mouse button events
 - (void)mouseDown:(NSEvent *)event {
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleMouseButton(0, true);
+    }
 }
 - (void)mouseUp:(NSEvent *)event {
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleMouseButton(0, false);
+    }
 }
 - (void)rightMouseDown:(NSEvent *)event {
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleMouseButton(1, true);
+    }
 }
 - (void)rightMouseUp:(NSEvent *)event {
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        gameMain->HandleMouseButton(1, false);
+    }
 }
 
 // Mouse movement
 - (void)mouseMoved:(NSEvent *)event {
+    ME::GameMain* gameMain = [self gameMain];
+    if (gameMain != nullptr) {
+        NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+        gameMain->HandleMouseMove(point.x, point.y);
+    }
 }
 - (void)mouseDragged:(NSEvent *)event {
+    [self mouseMoved:event];
 }
 - (void)rightMouseDragged:(NSEvent *)event {
+    [self mouseMoved:event];
 }
 
 // Scroll wheel

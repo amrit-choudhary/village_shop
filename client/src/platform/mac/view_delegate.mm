@@ -17,8 +17,12 @@
         self.view = view;
         self.device = device;
 
+        // Bridge the Objective-C Metal handles to the metal-cpp types GameMain expects.
+        MTL::Device* mtlDevice = reinterpret_cast<MTL::Device*>((__bridge void*)device);
+        MTK::View* mtkView = reinterpret_cast<MTK::View*>((__bridge void*)view);
+
         self.gameMain = new ME::GameMain();
-        self.gameMain->Init();
+        self.gameMain->Init(mtlDevice, mtkView);
     }
     return self;
 }

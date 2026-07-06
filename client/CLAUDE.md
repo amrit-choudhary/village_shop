@@ -8,10 +8,23 @@ Game client. See root [CLAUDE.md](../CLAUDE.md) for project-level context.
   AudioSystem → AnimationSystem → `Game::Init/Start` → `Renderer::InitDX` + `SetScenes`.
   Fixed-tick loop via shared `TimeManager`: Input pre/update/post → `game.Update` →
   `renderer.Update/Draw` → connection/physics/animation/audio `.Update`.
-- `src/main/main_mac.cpp` / `main_mac2.cpp` — Mac/Metal/Cocoa mirror of the above.
-- `src/main/main_cli.cpp` — headless console variant (ASCII renderer, CLI input manager).
+- `src/main/main_mac.cpp` (`ME::GameMain`, Metal) — same shape as Windows: `Init(MTL::Device*, MTK::View*)`
+  receives the Metal handles once (mirrors `Init(HWND)`), wires `RendererMetal::InitMTL` +
+  `SetScene`, and `Update()` ends with `renderer.Update(); renderer.Draw();`. Input arrives via
+  `HandleKeyEvent`/`HandleMouseMove`/`HandleMouseButton`, forwarded synchronously from
+  `platform/mac/metal_view.mm`'s NSEvent handlers — mirrors `WindowProcW` → `GameMain::HandleInput`.
+  As of the last pass this was fixed after being disconnected mid-refactor (renderer commented
+  out, dead `SetViewAndDevice`, input routed through a stdin-reading `InputManagerCLIMac` instead
+  of a real `InputManagerMac`) — see git history around commit `b020075` for context if similar
+  drift happens again.
+- `src/main/main_cli.cpp` — headless console variant (ASCII renderer, CLI input manager). Note:
+  gated by `VG_CLI`, which is **not currently defined anywhere in CMakeLists** — this file
+  currently compiles to nothing; the headless build isn't actually wired up yet.
 - `src/platform/` — platform glue: mac `NSApplication`/Metal (`app_delegate`, `metal_view`,
-  `view_delegate`), win `WinMain`/window proc (`platform/win/win_main.cpp`).
+  `view_delegate`), win `WinMain`/window proc (`platform/win/win_main.cpp`). On mac, each `.mm`
+  file is a thin forwarder into `GameMain`/engine classes, deliberately mirroring the Windows
+  shape: `app_delegate.mm` ≈ `win_main.cpp`'s window setup, `view_delegate.mm`'s `drawInMTKView:`
+  ≈ the Windows message loop's `game.Update()` call, `metal_view.mm`'s event handlers ≈ `WindowProcW`.
 
 ## Architecture (not ECS)
 Data-oriented "Scene as struct-of-arrays," not an entity-component system:
