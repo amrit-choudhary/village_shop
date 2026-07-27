@@ -13,6 +13,7 @@
 #include "../net/connection.h"
 #include "../scene/scene.h"
 #include "../scene/scene_ui.h"
+#include "../ui/ui_system.h"
 #include "src/datastructure/ring_buffer.h"
 #include "src/logging.h"
 #include "src/math/math.h"
@@ -47,6 +48,7 @@ class Game {
     void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
     void SetAnimationSystemRef(ME::AnimationSystem *ptrAnimationSystem);
     void SetAudioSystemRef(ME::AudioSystem *ptrAudioSystem);
+    void SetUISystemRef(ME::UISystem *ptrUISystem);
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
@@ -64,5 +66,6 @@ class Game {
     ME::PhysicsSystem *physicsSystem = nullptr;
     ME::AnimationSystem *animationSystem = nullptr;
     ME::AudioSystem *audioSystem = nullptr;
+    ME::UISystem *uiSystem = nullptr;
 };
 }  // namespace ME

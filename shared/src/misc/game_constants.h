@@ -36,6 +36,10 @@ constexpr size_t MaxTextTransformsCount = 1'000;
 constexpr size_t MaxTextRendererCount = 1'000;
 constexpr size_t MaxTextInstanceDataCount = 10'000;
 
+// UI element tree constants
+constexpr size_t MaxUIElementCount = 512;       // total UIElement instances registered at once
+constexpr size_t MaxUIChildrenPerElement = 16;  // fixed children array size per UIElement
+
 constexpr size_t MaxConstantBuffersCount = 256;
 constexpr size_t MaxDescriptorsOnDescriptorHeap = 256;
 

@@ -22,6 +22,7 @@ ME::GameMain::~GameMain() {
     timeManager.End();
     renderer.End();
     physicsSystem.End();
+    uiSystem.End();
 }
 
 void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
@@ -39,6 +40,10 @@ void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     game.SetConnectionRef(&connection);
     game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
+
+    uiSystem.Init();
+    uiSystem.SetUIScene(game.GetUIScene());
+    game.SetUISystemRef(&uiSystem);
 
     renderer.InitMTL(device, view);
     renderer.SetScene(game.GetScene());
@@ -80,6 +85,7 @@ void ME::GameMain::Update() {
         inputManager.Update(deltaTime);
 
         game.Update(deltaTime);
+        uiSystem.Update(deltaTime);
 
         inputManager.PostUpdate();
 
@@ -109,6 +115,7 @@ void ME::GameMain::ShutDownGameSystems() {
     timeManager.End();
     renderer.End();
     physicsSystem.End();
+    uiSystem.End();
 }
 
 #endif  // VG_MAC

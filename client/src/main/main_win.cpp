@@ -14,6 +14,7 @@ ME::GameMain::~GameMain() {
     physicsSystem.End();
     animationSystem.End();
     audioSystem.End();
+    uiSystem.End();
     renderer.End();
 }
 
@@ -38,6 +39,10 @@ void ME::GameMain::Init(HWND hWnd) {
     game.SetAnimationSystemRef(&animationSystem);
     game.SetAudioSystemRef(&audioSystem);
     game.Init(&timeManager);
+
+    uiSystem.Init();
+    uiSystem.SetUIScene(game.GetUIScene());
+    game.SetUISystemRef(&uiSystem);
 
     renderer.InitDX(hWnd);
     renderer.SetScenes(game.GetScene(), game.GetUIScene());
@@ -70,6 +75,7 @@ void ME::GameMain::Update() {
         inputManager.Update(deltaTime);
 
         game.Update(deltaTime);
+        uiSystem.Update(deltaTime);
 
         inputManager.PostUpdate();
 
@@ -103,6 +109,7 @@ void ME::GameMain::ShutDownGameSystems() {
     physicsSystem.End();
     animationSystem.End();
     audioSystem.End();
+    uiSystem.End();
     renderer.End();
 }
 

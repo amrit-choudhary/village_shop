@@ -11,12 +11,14 @@
 
 #include "../game/game.h"
 #include "../game/game_breakout.h"
+#include "../game/game_ui_demo.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
 #include "../input/input_manager_mac.h"
 #include "../misc/global_vars.h"
 #include "../net/connection.h"
 #include "../rendering/metal/renderer_metal.h"
+#include "../ui/ui_system.h"
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"
@@ -47,9 +49,11 @@ class GameMain {
     ME::Input::InputManager inputManager;
     ME::Input::InputManagerMac* macInputManager = nullptr;
     ME::Connection connection;
-    ME::GameBreakout game;
+    // ME::GameBreakout game;
+    ME::GameUIDemo game;
     ME::RendererMetal renderer;
     ME::PhysicsSystem physicsSystem;
+    ME::UISystem uiSystem;
 
     int fps = 0;
     int maxRunTime = 0;

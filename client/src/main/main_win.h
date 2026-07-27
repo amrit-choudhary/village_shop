@@ -18,12 +18,14 @@
 #include "../game/game_falling_sand.h"
 #include "../game/game_game_of_life.h"
 #include "../game/game_rpg.h"
+#include "../game/game_ui_demo.h"
 #include "../game/village_game.h"
 #include "../input/input_manager.h"
 #include "../input/input_manager_win.h"
 #include "../misc/global_vars.h"
 #include "../net/connection.h"
 #include "../rendering/directx/renderer_dx.h"
+#include "../ui/ui_system.h"
 #include "src/file_io/ini/ini_parser.h"
 #include "src/logging.h"
 #include "src/misc/utils.h"
@@ -58,10 +60,12 @@ class GameMain {
     // ME::GameFallingSand game;
     // ME::GameRPG game;
     // ME::GameDiceSimple game;
-    ME::GameCharacterTest game;
+    // ME::GameCharacterTest game;
+    ME::GameUIDemo game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;
+    ME::UISystem uiSystem;
     ME::RendererDX renderer;
 
     int fps = 0;
