@@ -2,8 +2,8 @@
 
 #include "scene_ui_dx.h"
 
-#include "../rendering/directx/pso_dx.h"
 #include "src/misc/game_constants.h"
+#include "src/rendering/directx/pso_dx.h"
 
 ME::SceneUIDX::SceneUIDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
                          ME::DescHeapManagerDX* descHeapManager, ME::SceneUI* uiScene) {
@@ -71,7 +71,18 @@ void ME::SceneUIDX::PostInitCleanup() {
     }
 }
 
-void ME::SceneUIDX::Update() {}
+void ME::SceneUIDX::Update() {
+    // The dynamic UIElement/UISystem path (unlike the static SceneUIHUD Build*() path) can add
+    // elements after this object was constructed — re-sync the live counts every frame so the
+    // draw calls in renderer_dx.cpp see current data. The transform/renderer/instance-data
+    // array pointers themselves don't need re-syncing: they alias SceneUI's own arrays, which
+    // are allocated once at max capacity and never reallocated, so RebuildUISprites/
+    // RebuildUIText writes are already visible through these same pointers.
+    uiSpriteRendererCount = scene->uiSpriteRendererCount;
+    uiSpriteInstanceDataCount = scene->uiSpriteInstanceDataCount;
+    textTransformsCount = scene->textTransformsCount;
+    textRendererCount = scene->textRendererCount;
+}
 
 void ME::SceneUIDX::End() {}
 
@@ -104,31 +115,20 @@ void ME::SceneUIDX::MakeConstantBuffers() {
 }
 
 void ME::SceneUIDX::MakeUISpriteInstanceBuffer() {
-    if (uiSpriteRendererCount == 0) {
-        return;
-    }
-
-    uiSpriteInstanceBuffer =
-        new ME::UploadBufferDX(device, false, uiSpriteRendererCount, sizeof(ME::UISpriteRendererInstanceData));
-    uiSpriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        uiSpriteInstanceBuffer->GetResource(), sizeof(ME::UISpriteRendererInstanceData), uiSpriteRendererCount);
+    // Initialize to a big number to support dynamic ui elements after construction.
+    uiSpriteInstanceBuffer = new ME::UploadBufferDX(device, false, Constants::MaxUISpriteInstanceDataCount,
+                                                    sizeof(ME::UISpriteRendererInstanceData));
+    uiSpriteInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(uiSpriteInstanceBuffer->GetResource(),
+                                                                             sizeof(ME::UISpriteRendererInstanceData),
+                                                                             Constants::MaxUISpriteInstanceDataCount);
 }
 
 void ME::SceneUIDX::MakeTextInstanceBuffer() {
-    // Text overflow buffer to handle dynamic text count changes.
-    // Each text renderer can have varying number of characters,
-    // Preallocate double the current count to handle increases without frequent reallocations.
-
-    uint32_t textOverflowBufferCount = *textInstanceDataCount * 2;
-
-    if (textOverflowBufferCount == 0) {
-        return;
-    }
-
-    textInstanceBuffer =
-        new ME::UploadBufferDX(device, false, textOverflowBufferCount, sizeof(ME::TextRendererInstanceData));
+    // Initialize to a big number to support dynamic ui elements after construction.
+    textInstanceBuffer = new ME::UploadBufferDX(device, false, Constants::MaxTextInstanceDataCount,
+                                                sizeof(ME::TextRendererInstanceData));
     textInstanceBufferHeapIndex = descHeapManager->CreateSRVInstanceData(
-        textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData), textOverflowBufferCount);
+        textInstanceBuffer->GetResource(), sizeof(ME::TextRendererInstanceData), Constants::MaxTextInstanceDataCount);
 }
 
 #endif  // VG_WIN

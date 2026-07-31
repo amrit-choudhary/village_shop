@@ -32,7 +32,7 @@ class Game {
     // Game control functions.
 
     // Init game
-    virtual void Init(ME::Time::TimeManager *currentTimeManager);
+    virtual void Init(ME::Time::TimeManager* currentTimeManager);
 
     // Start game. This is called after all systems are initialized and before Update.
     virtual void Start();
@@ -43,29 +43,29 @@ class Game {
     // End game.
     virtual void End();
 
-    void SetInputManagerRef(ME::Input::InputManager *ptrInput);
-    void SetConnectionRef(ME::Connection *ptrConnection);
-    void SetPhysicsSystemRef(ME::PhysicsSystem *ptrPhysicsSystem);
-    void SetAnimationSystemRef(ME::AnimationSystem *ptrAnimationSystem);
-    void SetAudioSystemRef(ME::AudioSystem *ptrAudioSystem);
-    void SetUISystemRef(ME::UISystem *ptrUISystem);
+    void SetInputManagerRef(ME::Input::InputManager* ptrInput);
+    void SetConnectionRef(ME::Connection* ptrConnection);
+    void SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem);
+    void SetAnimationSystemRef(ME::AnimationSystem* ptrAnimationSystem);
+    void SetAudioSystemRef(ME::AudioSystem* ptrAudioSystem);
+    void SetUISystemRef(ME::UISystem* ptrUISystem);
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
-    virtual void CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result);
+    virtual void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result);
 
-    ME::Scene *GetScene();
-    ME::SceneUI *GetUIScene();
+    ME::Scene* GetScene();
+    ME::SceneUI* GetUIScene();
 
    protected:
-    ME::Time::TimeManager *timeManager = nullptr;
-    ME::Connection *connection = nullptr;
-    ME::Input::InputManager *inputManager = nullptr;
-    ME::Scene *scene = nullptr;
-    ME::SceneUI *uiScene = nullptr;
-    ME::PhysicsSystem *physicsSystem = nullptr;
-    ME::AnimationSystem *animationSystem = nullptr;
-    ME::AudioSystem *audioSystem = nullptr;
-    ME::UISystem *uiSystem = nullptr;
+    ME::Time::TimeManager* timeManager = nullptr;
+    ME::Connection* connection = nullptr;
+    ME::Input::InputManager* inputManager = nullptr;
+    ME::Scene* scene = nullptr;
+    ME::SceneUI* uiScene = nullptr;
+    ME::PhysicsSystem* physicsSystem = nullptr;
+    ME::AnimationSystem* animationSystem = nullptr;
+    ME::AudioSystem* audioSystem = nullptr;
+    ME::UISystem* uiSystem = nullptr;
 };
 }  // namespace ME

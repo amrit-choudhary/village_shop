@@ -55,8 +55,8 @@ Data-oriented "Scene as struct-of-arrays," not an entity-component system:
 - `world/tile.h/.cpp` — `TileData`/`Tile` structs exist; `world/tilemap.h/.cpp` (`TileMap`)
   is still an **empty stub** — the tile-based village map is not implemented yet.
 - `ui/ui_layout_engine.h/.cpp` (`UILayoutEngine`) — small retained-mode layout system that
-  feeds positions into `SceneUI`'s sprite/text transform arrays. `ui/geometry.*` has the
-  rect/bounds math it uses.
+  feeds positions into `SceneUI`'s sprite/text transform arrays. `ui/ui_rect.*` has the
+  `UIRect`/`UIAnchor` rect/bounds math it uses.
 
 ## Data-driven resources
 `utils/json_utils.h/.cpp` parses JSON (via vendored cJSON) into `TextureAtlasProperties`,

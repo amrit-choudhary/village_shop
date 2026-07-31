@@ -9,6 +9,7 @@
 #include "../rendering/shared/sprite_renderer.h"
 #include "../rendering/shared/text_renderer.h"
 #include "../rendering/shared/texture.h"
+#include "../ui/ui_element.h"
 #include "src/physics/collider_aabb.h"
 
 namespace ME {
@@ -41,6 +42,11 @@ class SceneUI {
     ME::TextRenderer** textRenderers;
     ME::TextRendererInstanceData* textInstanceData;
 
+    // Dumb registry of all UIElements (roots and children alike), populated/queried by
+    // UISystem. Purely bookkeeping — no layout math, no rendering here.
+    ME::UIElement** uiElements = nullptr;
+    uint32_t uiElementCount = 0;
+
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t spriteTextureCount = 0;
 
@@ -54,6 +60,29 @@ class SceneUI {
     virtual void CreateResources();
     virtual void BuildUISprites();
     virtual void BuildTextRenderers();
+
+    /**
+     * Override to construct this scene's dynamic UIElement tree (Panel/Label/Image/Container)
+     * and register each root/child via AddUIElement. Called once from Init(), after
+     * BuildTextRenderers() — mirrors that method's shape, but for the newer UIElement-based
+     * path rather than the static sprite/text arrays.
+     */
+    virtual void BuildUIElements();
+
+    // UIElement registry — false if AddUIElement is called at capacity (Constants::MaxUIElementCount).
+    bool AddUIElement(ME::UIElement* element);
+    void RemoveUIElement(ME::UIElement* element);
+    ME::UIElement** GetUIElements() const;
+    uint32_t GetUIElementCount() const;
+
+    /**
+     * Overwrites the live UI sprite/text arrays with externally-owned pointers (no allocation).
+     * Existing entries beyond `count` are simply not iterated by Update() — no need to clear them.
+     * Used by UISystem's per-frame rebuild of the dynamic UIElement tree; separate from the
+     * additive AddUISprite/AddUIText path used by static Build*() overrides.
+     */
+    void RebuildUISprites(ME::Transform** transforms, ME::SpriteRenderer** renderers, uint32_t count);
+    void RebuildUIText(ME::Transform** transforms, ME::TextRenderer** renderers, uint32_t count);
 
    protected:
     // Helper functions to add elements to the UI scene.
