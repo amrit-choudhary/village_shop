@@ -88,6 +88,26 @@ void ME::RendererDX::SetScenes(ME::Scene* gameScene, ME::SceneUI* uiScene) {
     // uiScene->PostInitCleanup();
 }
 
+void ME::RendererDX::SetDebugUIScene(ME::SceneUI* debugUiScene) {
+    // Do Initilization that need command list.
+    directCmdListAlloc->Reset();
+    commandList->Reset(directCmdListAlloc.Get(), pso2DAtl);
+
+    if (debugUiSceneDX != nullptr) {
+        delete debugUiSceneDX;
+    }
+    this->debugUiScene = debugUiScene;
+
+    // Create a new UI scene with the provided debug UI scene.
+    debugUiSceneDX = new ME::SceneUIDX(device.Get(), commandList.Get(), descHeapManager, debugUiScene);
+
+    commandList->Close();
+    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
+    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+    FlushCommandQueue();
+}
+
 void ME::RendererDX::Update() {
     // If some of the scene render related data changed, update the scene.
     // Drawing is done after this.
@@ -99,6 +119,12 @@ void ME::RendererDX::Update() {
     if (uiScene != nullptr) {
         uiScene->Update();
         uiSceneDX->Update();
+    }
+
+    // If the debug system's UI scene is set, update it too.
+    if (debugUiScene != nullptr) {
+        debugUiScene->Update();
+        debugUiSceneDX->Update();
     }
 }
 
@@ -449,8 +475,37 @@ void ME::RendererDX::Draw() {
     // End Sprite Drawing.
 
     ///////////////////////////
+    // UI Drawing (game's own UI, then the debug system on top of it).
+    DrawUIScene(uiSceneDX);
+
+    DrawUIScene(debugUiSceneDX);
+
+    /////////////////////
+    // Drawing End
+
+    CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
+        swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    commandList->ResourceBarrier(1, &renderTargetToPresentBarrier);
+
+    commandList->Close();
+
+    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
+    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+    swapChain->Present(0, 0);
+    currentBackBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
+
+    FlushCommandQueue();
+}
+
+void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
+    if (uiSceneDX == nullptr) {
+        return;
+    }
+
+    ///////////////////////////
     // UI Sprite Drawing.
-    if (uiSceneDX != nullptr && uiSceneDX->uiSpriteRendererCount != 0) {
+    if (uiSceneDX->uiSpriteRendererCount != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DUISprite);
         commandList->SetGraphicsRootSignature(rootSig2DUISprite);
@@ -496,7 +551,7 @@ void ME::RendererDX::Draw() {
 
     ///////////////////////////
     // Start Text Drawing.
-    if (uiSceneDX != nullptr && uiSceneDX->textRendererCount != 0) {
+    if (uiSceneDX->textRendererCount != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DUIText);
         commandList->SetGraphicsRootSignature(rootSig2DUIText);
@@ -538,23 +593,6 @@ void ME::RendererDX::Draw() {
         commandList->DrawIndexedInstanced(quad->indexCount, *uiSceneDX->textInstanceDataCount, 0, 0, 0);
     }
     // End Text Drawing.
-
-    /////////////////////
-    // Drawing End
-
-    CD3DX12_RESOURCE_BARRIER renderTargetToPresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(
-        swapChainBuffers[currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    commandList->ResourceBarrier(1, &renderTargetToPresentBarrier);
-
-    commandList->Close();
-
-    ID3D12CommandList* cmdsLists[] = {commandList.Get()};
-    commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-    swapChain->Present(0, 0);
-    currentBackBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
-
-    FlushCommandQueue();
 }
 
 void ME::RendererDX::FlushCommandQueue() {

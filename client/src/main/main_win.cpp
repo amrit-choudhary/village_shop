@@ -16,6 +16,9 @@ ME::GameMain::~GameMain() {
     audioSystem.End();
     uiSystem.End();
     renderer.End();
+
+    ME::DebugSystem::SetInstance(nullptr);
+    debugSystem.End();
 }
 
 void ME::GameMain::Init(HWND hWnd) {
@@ -25,6 +28,9 @@ void ME::GameMain::Init(HWND hWnd) {
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
     maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
+
+    debugSystem.Init();
+    ME::DebugSystem::SetInstance(&debugSystem);
 
     inputManager.Init();
     winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
@@ -46,6 +52,7 @@ void ME::GameMain::Init(HWND hWnd) {
 
     renderer.InitDX(hWnd);
     renderer.SetScenes(game.GetScene(), game.GetUIScene());
+    renderer.SetDebugUIScene(debugSystem.GetUIScene());
 
     audioSystem.SetScene(game.GetScene());
 
@@ -76,6 +83,7 @@ void ME::GameMain::Update() {
 
         game.Update(deltaTime);
         uiSystem.Update(deltaTime);
+        debugSystem.Update(deltaTime);
 
         inputManager.PostUpdate();
 
@@ -111,6 +119,9 @@ void ME::GameMain::ShutDownGameSystems() {
     audioSystem.End();
     uiSystem.End();
     renderer.End();
+
+    ME::DebugSystem::SetInstance(nullptr);
+    debugSystem.End();
 }
 
 #endif  // VG_WIN

@@ -15,6 +15,18 @@
 namespace ME {
 
 /**
+ * Horizontal alignment of a text run within its owning widget's box (see UIElement::SetSize).
+ * Anchor/pivot control where the box itself sits; this controls where the text sits within it.
+ *
+ * TODO: vertical alignment (Top/Middle/Bottom)
+ */
+enum class TextAlignment : uint8_t {
+    Left = 0,
+    Center = 1,
+    Right = 2,
+};
+
+/**
  * Data to hold the text renderer instance data.
  * Used for instanced rendering.
  */
@@ -30,22 +42,24 @@ class TextRenderer {
    public:
     TextRenderer() = delete;
     TextRenderer(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId, const ME::Color& color,
-                 uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine);
+                 uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine,
+                 TextAlignment alignment = TextAlignment::Left);
     ~TextRenderer();
 
     // Marks the text renderer as dirty, indicating that its data has changed and needs to be updated.
     bool bDirty = true;
 
-    char* text = nullptr;                  // Text to render
-    const uint8_t quadId = 0;              // ID of the quad to render
-    const uint8_t textureId = 0;           // ID of the texture to use
-    const uint8_t materialId = 0;          // ID of the material to use
-    ME::Color color = ME::Color::White();  // Color of the text
-    uint16_t height = 12;                  // Height of the text in pixels
-    uint16_t width = 12;                   // Width of the text in pixels
-    int16_t letterSpacing = 2;             // Spacing between letters in pixels
-    int16_t lineGap = 2;                   // Gap between lines in pixels
-    uint16_t charsPerLine = 80;            // Number of characters per line
+    char* text = nullptr;                           // Text to render
+    const uint8_t quadId = 0;                       // ID of the quad to render
+    const uint8_t textureId = 0;                    // ID of the texture to use
+    const uint8_t materialId = 0;                   // ID of the material to use
+    ME::Color color = ME::Color::White();           // Color of the text
+    uint16_t height = 12;                           // Height of the text in pixels
+    uint16_t width = 12;                            // Width of the text in pixels
+    int16_t letterSpacing = 2;                      // Spacing between letters in pixels
+    int16_t lineGap = 2;                            // Gap between lines in pixels
+    uint16_t charsPerLine = 80;                     // Number of characters per line
+    TextAlignment alignment = TextAlignment::Left;  // Horizontal alignment within the owning box
 
     // Sets new text to render and marks the renderer as dirty.
     void SetText(const char* newText);

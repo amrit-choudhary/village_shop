@@ -46,6 +46,9 @@ class RendererDX : public PlatformRenderer {
     // Sets both game and UI scenes for the renderer.
     void SetScenes(ME::Scene* gameScene, ME::SceneUI* uiScene) override;
 
+    // Sets the debug system's UI scene, drawn in its own pass after the main UI scene.
+    void SetDebugUIScene(ME::SceneUI* debugUiScene) override;
+
     // Will return true if game should tick based on FFR.
     void Update() override;
 
@@ -62,6 +65,8 @@ class RendererDX : public PlatformRenderer {
     ME::SceneDX* sceneDX = nullptr;
     ME::SceneUI* uiScene = nullptr;
     ME::SceneUIDX* uiSceneDX = nullptr;
+    ME::SceneUI* debugUiScene = nullptr;
+    ME::SceneUIDX* debugUiSceneDX = nullptr;
 
     HWND hWnd;
     ComPtr<IDXGIFactory4> factory;
@@ -115,6 +120,11 @@ class RendererDX : public PlatformRenderer {
     uint32_t clientHeight;
 
     void FlushCommandQueue();
+
+    // Issues the UI Sprite + UI Text draw passes for one SceneUIDX. Shared by the main UI scene
+    // and the debug system's UI scene — same PSOs, same draw commands, different data. No-op if
+    // uiSceneDX is nullptr.
+    void DrawUIScene(ME::SceneUIDX* uiSceneDX);
 
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferHandle() const;
     D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentFrontBufferHandle() const;

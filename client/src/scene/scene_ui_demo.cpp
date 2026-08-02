@@ -35,7 +35,8 @@ void ME::SceneUIDemo::BuildUIElements() {
     topBarPanel->Init();
     AddUIElement(topBarPanel);
 
-    titleLabel = new ME::Label("Village Shop UI Test", 0, 1, 0, ME::Color::White(), 32, 32, 2, 2, 80);
+    titleLabel = new ME::Label("Village Shop UI Test", 0, 1, 0, ME::Color::White(), 32, 32, 2, 2, 80,
+                               ME::TextAlignment::Center);
     titleLabel->SetAnchor(ME::UIAnchor::Center);
     titleLabel->SetPivot(ME::UIPivot::Center);
     titleLabel->SetOffset(ME::Vec2{0.0f, 0.0f});
@@ -52,7 +53,7 @@ void ME::SceneUIDemo::BuildUIElements() {
     centerImage->Init();
     AddUIElement(centerImage);
 
-    healthLabel = new ME::Label("Health: 100", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80);
+    healthLabel = new ME::Label("Health: 100", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80, ME::TextAlignment::Right);
     healthLabel->SetAnchor(ME::UIAnchor::BottomRight);
     healthLabel->SetPivot(ME::UIPivot::BottomRight);
     healthLabel->SetOffset(ME::Vec2{-20.0f, -20.0f});
@@ -60,7 +61,7 @@ void ME::SceneUIDemo::BuildUIElements() {
     healthLabel->Init();
     AddUIElement(healthLabel);
 
-    scoreLabel = new ME::Label("Score: 0", 0, 1, 0, ME::Color::Green(), 24, 24, 0, 2, 80);
+    scoreLabel = new ME::Label("Score: 0", 0, 1, 0, ME::Color::Green(), 24, 24, 0, 2, 80, ME::TextAlignment::Left);
     scoreLabel->SetAnchor(ME::UIAnchor::BottomLeft);
     scoreLabel->SetPivot(ME::UIPivot::BottomLeft);
     scoreLabel->SetOffset(ME::Vec2{20.0f, -20.0f});

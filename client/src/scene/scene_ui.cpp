@@ -169,10 +169,32 @@ void ME::SceneUI::UpdateTextRenderers() {
 
         float totalWidth = static_cast<float>(textRenderers[i]->GetRenderWidth());
         float glyphStep = static_cast<float>(textRenderers[i]->width + textRenderers[i]->letterSpacing);
+
+        // textTransforms[i]'s position is always the owning box's center (see UISystem/
+        // UISystemDebug's SyncToScene), and its scale.x is the box's width (same call sets
+        // both) — startOffset picks where the run begins relative to that center, per
+        // alignment. Left/Right are expressed in terms of boxWidth rather than totalWidth
+        // specifically so they land exactly on the box edge regardless of any mismatch between
+        // the box's declared size and the text's actual rendered width.
+        float boxWidth = textTransforms[i]->GetScale().x;
+        float startOffset;
+        switch (textRenderers[i]->alignment) {
+            case ME::TextAlignment::Left:
+                startOffset = -boxWidth / 2.0f;
+                break;
+            case ME::TextAlignment::Right:
+                startOffset = boxWidth / 2.0f - totalWidth;
+                break;
+            case ME::TextAlignment::Center:
+            default:
+                startOffset = -totalWidth / 2.0f;
+                break;
+        }
+
         for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
             ME::Transform tempTransform;
             ME::Vec3 pos = textTransforms[i]->GetPosition();
-            pos.x += -totalWidth / 2.0f + j * glyphStep + textRenderers[i]->width / 2.0f;
+            pos.x += startOffset + j * glyphStep + textRenderers[i]->width / 2.0f;
             tempTransform.SetPosition(pos);
             tempTransform.SetScale(textRenderers[i]->width, textRenderers[i]->height);
             textInstanceData[count].modelMatrixData = tempTransform.GetModelMatrix().GetDataForShader();

@@ -11,6 +11,7 @@
 
 #include "../anim/animation_system.h"
 #include "../audio/audio_system.h"
+#include "../debug/debug_system.h"
 #include "../game/game.h"
 #include "../game/game_breakout.h"
 #include "../game/game_character_test.h"
@@ -66,6 +67,7 @@ class GameMain {
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;
     ME::UISystem uiSystem;
+    ME::DebugSystem debugSystem;
     ME::RendererDX renderer;
 
     int fps = 0;

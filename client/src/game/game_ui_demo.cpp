@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+#include "src/debug/debug_system.h"
+
 ME::GameUIDemo::GameUIDemo() : Game() {}
 
 ME::GameUIDemo::~GameUIDemo() {}
@@ -55,11 +57,13 @@ void ME::GameUIDemo::Update(double deltaTime) {
         char buf[32];
         snprintf(buf, sizeof(buf), "Health: %d", health);
         sceneUIDemo->GetHealthLabel()->SetText(buf);
+        DebugSystem::ScreenPrintSlot(1, buf);
     }
     if (scoreChanged) {
         char buf[32];
         snprintf(buf, sizeof(buf), "Score: %d", score);
         sceneUIDemo->GetScoreLabel()->SetText(buf);
+        DebugSystem::ScreenPrint(buf, 2.0f);
     }
 
     // Continuous WASD movement for the center image (held, not edge-triggered, unlike the

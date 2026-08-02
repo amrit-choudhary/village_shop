@@ -4,7 +4,7 @@
 
 ME::TextRenderer::TextRenderer(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId,
                                const ME::Color& color, uint16_t height, uint16_t width, int16_t letterSpacing,
-                               int16_t lineGap, uint16_t charsPerLine)
+                               int16_t lineGap, uint16_t charsPerLine, TextAlignment alignment)
     : quadId(quadId), textureId(textureId), materialId(materialId) {
     size_t length = strlen(text) + 1;
     this->text = new char[length];
@@ -16,6 +16,7 @@ ME::TextRenderer::TextRenderer(const char* text, uint8_t quadId, uint8_t texture
     this->letterSpacing = letterSpacing;
     this->lineGap = lineGap;
     this->charsPerLine = charsPerLine;
+    this->alignment = alignment;
 }
 
 ME::TextRenderer::~TextRenderer() {

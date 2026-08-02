@@ -21,10 +21,13 @@ class PlatformRenderer {
 
     // Sets the scene for the renderer.
     // This will be called by the game to set the scene for the renderer.
-    virtual void SetScene(ME::Scene *gameScene) = 0;
+    virtual void SetScene(ME::Scene* gameScene) = 0;
 
     // Sets both game and UI scenes for the renderer.
-    virtual void SetScenes(ME::Scene *gameScene, ME::SceneUI *uiScene) = 0;
+    virtual void SetScenes(ME::Scene* gameScene, ME::SceneUI* uiScene) = 0;
+
+    // Sets the debug system's UI scene, drawn in its own pass after the main UI scene.
+    virtual void SetDebugUIScene(ME::SceneUI* debugUiScene) = 0;
 };
 
 /**
@@ -49,7 +52,7 @@ class Renderer {
     void End();
 
    private:
-    PlatformRenderer *platformRenderer;
+    PlatformRenderer* platformRenderer;
 };
 
 }  // namespace ME

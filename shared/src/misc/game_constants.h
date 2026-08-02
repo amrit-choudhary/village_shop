@@ -40,6 +40,10 @@ constexpr size_t MaxTextInstanceDataCount = 10'000;
 constexpr size_t MaxUIElementCount = 512;       // total UIElement instances registered at once
 constexpr size_t MaxUIChildrenPerElement = 16;  // fixed children array size per UIElement
 
+// Debug system constants
+constexpr size_t MaxDebugSlotCount = 16;     // persistent, index-addressed debug text rows
+constexpr size_t MaxDebugLogLineCount = 16;  // transient, time-limited debug text rows
+
 constexpr size_t MaxConstantBuffersCount = 256;
 constexpr size_t MaxDescriptorsOnDescriptorHeap = 256;
 
