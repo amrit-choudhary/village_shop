@@ -24,6 +24,9 @@ class RendererASCII : public PlatformRenderer {
     // Will stop the timers to let it calculate average FPS.
     void End() override;
 
+    // No-op: ASCII output has no display/vsync concept to toggle.
+    void SetVsyncEnabled(bool enabled) override {}
+
    private:
     static const uint8_t BUFFER_X = 80;
     static const uint8_t BUFFER_X_2 = 40;

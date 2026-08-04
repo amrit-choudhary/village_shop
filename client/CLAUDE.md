@@ -3,11 +3,14 @@
 Game client. See root [CLAUDE.md](../CLAUDE.md) for project-level context.
 
 ## Entry points / boot flow
-- `src/main/main_win.cpp` (`ME::GameMain`, DX12) — reads `fps`/`maxRunTime` from an INI,
-  then initializes systems in order: InputManager → Connection → PhysicsSystem →
-  AudioSystem → AnimationSystem → `Game::Init/Start` → `Renderer::InitDX` + `SetScenes`.
-  Fixed-tick loop via shared `TimeManager`: Input pre/update/post → `game.Update` →
-  `renderer.Update/Draw` → connection/physics/animation/audio `.Update`.
+- `src/main/main_win.cpp` (`ME::GameMain`, DX12) — reads `fps`/`vsync` from an INI, then
+  initializes systems in order: InputManager → Connection → PhysicsSystem → AudioSystem →
+  AnimationSystem → `Game::Init/Start` → `Renderer::InitDX` + `SetScenes`. Loop via shared
+  `TimeManager::BeginFrame()`: Input pre/update → 0..N `game.FixedUpdate`/physics/animation
+  steps at a constant simulation dt (`TimeConfig::fixedStepFPS`) → `game.Update`/UI/debug at
+  the real, variable per-frame dt → `renderer.Update/Draw` → connection/audio `.Update`. Vsync
+  is on by default (`RendererDX::SetVsyncEnabled`), which paces presentation to the display's
+  refresh rate; `TimeConfig::frameRateCapFPS` (sleep-based) only takes over when vsync is off.
 - `src/main/main_mac.cpp` (`ME::GameMain`, Metal) — same shape as Windows: `Init(MTL::Device*, MTK::View*)`
   receives the Metal handles once (mirrors `Init(HWND)`), wires `RendererMetal::InitMTL` +
   `SetScene`, and `Update()` ends with `renderer.Update(); renderer.Draw();`. Input arrives via

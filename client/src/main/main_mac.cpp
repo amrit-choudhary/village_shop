@@ -29,7 +29,6 @@ void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     // Read game params from file.
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
-    maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     inputManager.Init();
     macInputManager = static_cast<ME::Input::InputManagerMac*>(inputManager.GetPlatformInputManager());
@@ -95,11 +94,6 @@ void ME::GameMain::Update() {
         connection.Update(deltaTime);
 
         physicsSystem.Update(deltaTime);
-    }
-
-    // Check for exit condition (e.g., max run time)
-    if (maxRunTime > 0 && timeManager.GetTimeSinceStartup() > maxRunTime) {
-        ShutDownGameSystems();
     }
 }
 

@@ -2,6 +2,7 @@
 
 #include "main_win.h"
 
+#include <cstdio>
 #include <iostream>
 
 ME::GameMain::GameMain() {}
@@ -26,8 +27,8 @@ void ME::GameMain::Init(HWND hWnd) {
 
     // Read game params from file.
     INIMap iniMap = Load();
-    fps = std::atoi(iniMap["settings"]["fps"].c_str());
-    maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
+    fixedFrameRate = std::atoi(iniMap["settings"]["fixedFrameRate"].c_str());
+    vsync = std::atoi(iniMap["settings"]["vsync"].c_str()) != 0;
 
     debugSystem.Init();
     ME::DebugSystem::SetInstance(&debugSystem);
@@ -51,15 +52,16 @@ void ME::GameMain::Init(HWND hWnd) {
     game.SetUISystemRef(&uiSystem);
 
     renderer.InitDX(hWnd);
+    renderer.SetVsyncEnabled(vsync);
     renderer.SetScenes(game.GetScene(), game.GetUIScene());
     renderer.SetDebugUIScene(debugSystem.GetUIScene());
 
     audioSystem.SetScene(game.GetScene());
 
     // Clock init after all systems are initialized.
-    timeManager.Init(fps, false);
-    bool shouldTick = false;
-    double deltaTime = 0.0f;
+    ME::Time::TimeConfig timeConfig;
+    timeConfig.fixedStepFPS = static_cast<double>(fixedFrameRate);
+    timeManager.Init(timeConfig);
 
     // Start the game.
     game.Start();
@@ -72,36 +74,35 @@ void ME::GameMain::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 void ME::GameMain::Update() {
-    bool shouldTick = timeManager.Update();
-    double deltaTime = 0.0f;
+    timeManager.BeginFrame();
+    double deltaTime = timeManager.GetFrameDeltaTime();
 
-    if (shouldTick) {
-        deltaTime = timeManager.GetDeltaTime();
+    char fpsBuf[64];
+    snprintf(fpsBuf, sizeof(fpsBuf), "FPS: %.0f", timeManager.GetCurrentFPS());
+    ME::DebugSystem::ScreenPrintSlot(0, fpsBuf);
 
-        inputManager.PreUpdate();
-        inputManager.Update(deltaTime);
+    inputManager.PreUpdate();
+    inputManager.Update(deltaTime);
 
-        game.Update(deltaTime);
-        uiSystem.Update(deltaTime);
-        debugSystem.Update(deltaTime);
+    for (int i = 0; i < timeManager.GetPendingFixedSteps(); ++i) {
+        double fixedDeltaTime = timeManager.GetFixedDeltaTime();
 
-        inputManager.PostUpdate();
-
-        renderer.Update();
-        renderer.Draw();
-
-        connection.Update(deltaTime);
-        physicsSystem.Update(deltaTime);
-        animationSystem.Update(deltaTime);
-        audioSystem.Update(deltaTime);
+        game.FixedUpdate(fixedDeltaTime);
+        physicsSystem.Update(fixedDeltaTime);
+        animationSystem.Update(fixedDeltaTime);
     }
 
-    // Perform Rendering
+    game.Update(deltaTime);
+    uiSystem.Update(deltaTime);
+    debugSystem.Update(deltaTime);
 
-    // Check for exit condition (e.g., max run time)
-    if (maxRunTime > 0 && timeManager.GetTimeSinceStartup() > maxRunTime) {
-        ShutDownGameSystems();
-    }
+    inputManager.PostUpdate();
+
+    renderer.Update();
+    renderer.Draw();
+
+    connection.Update(deltaTime);
+    audioSystem.Update(deltaTime);
 }
 
 void ME::GameMain::Exit() {

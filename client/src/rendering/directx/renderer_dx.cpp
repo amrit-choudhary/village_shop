@@ -108,6 +108,10 @@ void ME::RendererDX::SetDebugUIScene(ME::SceneUI* debugUiScene) {
     FlushCommandQueue();
 }
 
+void ME::RendererDX::SetVsyncEnabled(bool enabled) {
+    vsyncEnabled = enabled;
+}
+
 void ME::RendererDX::Update() {
     // If some of the scene render related data changed, update the scene.
     // Drawing is done after this.
@@ -492,7 +496,7 @@ void ME::RendererDX::Draw() {
     ID3D12CommandList* cmdsLists[] = {commandList.Get()};
     commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    swapChain->Present(0, 0);
+    swapChain->Present(vsyncEnabled ? 1 : 0, 0);
     currentBackBuffer = (currentBackBuffer + 1) % swapChainBufferCount;
 
     FlushCommandQueue();

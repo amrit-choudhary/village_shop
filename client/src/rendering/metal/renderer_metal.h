@@ -45,11 +45,14 @@ class RendererMetal : public PlatformRenderer {
 
     void Draw();
 
+    void SetVsyncEnabled(bool enabled) override;
+
    private:
     MTL::Device* device;
     MTK::View* view;
     MTL::CommandQueue* commandQueue;
     ME::SceneMetal* scene;
+    bool vsyncEnabled = true;
 };
 
 }  // namespace ME

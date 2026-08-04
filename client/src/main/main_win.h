@@ -40,6 +40,11 @@ class GameMain {
     GameMain();
     virtual ~GameMain();
 
+    GameMain(const GameMain&) = delete;
+    GameMain& operator=(const GameMain&) = delete;
+    GameMain(GameMain&&) = delete;
+    GameMain& operator=(GameMain&&) = delete;
+
     void Init(HWND hwnd);
     void Update();
     void Exit();
@@ -70,8 +75,8 @@ class GameMain {
     ME::DebugSystem debugSystem;
     ME::RendererDX renderer;
 
-    int fps = 0;
-    int maxRunTime = 0;
+    int fixedFrameRate = 0;
+    bool vsync = true;
 };
 
 }  // namespace ME

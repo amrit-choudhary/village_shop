@@ -26,3 +26,7 @@ void ME::Renderer::Update() {
 void ME::Renderer::End() {
     platformRenderer->End();
 }
+
+void ME::Renderer::SetVsyncEnabled(bool enabled) {
+    platformRenderer->SetVsyncEnabled(enabled);
+}

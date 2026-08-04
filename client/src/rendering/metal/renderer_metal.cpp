@@ -50,6 +50,17 @@ void ME::RendererMetal::InitMTL(MTL::Device* inDevice, MTK::View* inView) {
     view = inView;
 }
 
+void ME::RendererMetal::SetVsyncEnabled(bool enabled) {
+    // TODO: not actually wired to presentation yet - real vsync control on Metal is
+    // CAMetalLayer::displaySyncEnabled, which isn't exposed by the vendored metal-cpp headers
+    // in client/third_party/metal (treated as opaque per client/CLAUDE.md). MTKView is
+    // vsync-paced by default via its display-linked draw callback either way. Wiring this
+    // properly needs either extending that vendored bridge or reaching the layer from the
+    // Objective-C side (metal_view.mm). Stored for now so the setting round-trips correctly
+    // once that's done.
+    vsyncEnabled = enabled;
+}
+
 void ME::RendererMetal::Draw() {
     NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 

@@ -21,7 +21,6 @@ int main2(int argc, char **argv) {
     // Read game params from file.
     INIMap iniMap = Load();
     int fps = std::atoi(iniMap["settings"]["fps"].c_str());
-    int maxRunTime = std::atoi(iniMap["settings"]["maxRunTime"].c_str());
 
     // Init global variables.
     ME::Time::TimeManager timeManager;
@@ -54,10 +53,6 @@ int main2(int argc, char **argv) {
             game.Update(deltaTime);
             renderer.Update();
             connection.Update(deltaTime);
-        }
-
-        if (timeManager.GetTimeSinceStartup() > maxRunTime) {
-            GameRunning = false;
         }
     }
 

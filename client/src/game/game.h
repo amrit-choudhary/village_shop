@@ -27,7 +27,7 @@ namespace ME {
 class Game {
    public:
     Game();
-    ~Game();
+    virtual ~Game();
 
     // Game control functions.
 
@@ -37,8 +37,14 @@ class Game {
     // Start game. This is called after all systems are initialized and before Update.
     virtual void Start();
 
-    // Update game.
+    // Update game. Called once per real frame with a variable delta time -
+    // input/UI/render-facing logic that doesn't need a constant dt.
     virtual void Update(double deltaTime);
+
+    // Fixed-timestep update. Called 0, 1, or several times per real frame with a constant
+    // delta time (ME::Time::TimeManager::GetFixedDeltaTime()) - gameplay/physics logic that
+    // needs to behave the same regardless of render frame rate.
+    virtual void FixedUpdate(double fixedDeltaTime);
 
     // End game.
     virtual void End();

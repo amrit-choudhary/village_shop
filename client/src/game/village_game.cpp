@@ -10,8 +10,8 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
     ME::Game::Init(currentTimeManager);
     ME::Log("Village Game Start!");
 
-    framesPerDay = 180;
-    frameCount = 0;
+    secondsPerDay = 3.0;
+    dayTimer = 0.0;
     day = 0;
 
     buyPrice = FP{10.0f};
@@ -46,10 +46,14 @@ void ME::VillageGame::Update(double deltaTime) {
     if (ME::Input::InputManager::GetKeyDown(ME::Input::KeyCode::A)) {
         BuyStock();
     }
+}
 
-    ++frameCount;
-    if (frameCount >= framesPerDay) {
-        frameCount = 0;
+void ME::VillageGame::FixedUpdate(double fixedDeltaTime) {
+    ME::Game::FixedUpdate(fixedDeltaTime);
+
+    dayTimer += fixedDeltaTime;
+    if (dayTimer >= secondsPerDay) {
+        dayTimer -= secondsPerDay;
         DayChange();
     }
 }

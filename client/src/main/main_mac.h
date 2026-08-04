@@ -56,7 +56,6 @@ class GameMain {
     ME::UISystem uiSystem;
 
     int fps = 0;
-    int maxRunTime = 0;
 };
 
 }  // namespace ME

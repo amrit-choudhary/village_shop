@@ -1,80 +1,97 @@
-
 #include "time_manager.h"
 
-#include <thread>
+#include <algorithm>
 
 using namespace ME::Time;
 
-// Defining constants.
 namespace {
-constexpr double NANO_TO_SEC = 1'000'000'000.0f;
-}
+/** How often GetCurrentFPS() recalculates its rolling average. */
+constexpr double FPS_WINDOW_INTERVAL = 0.5;
+}  // namespace
 
 TimeManager::TimeManager() {}
 
 TimeManager::~TimeManager() {}
 
-void TimeManager::Init(double fixedFrameRateFPS, bool inSleepNeeded) {
-    timeScale = 1.0f;
-    deltaTime = 0.0f;
-    frameCout = 0;
-    gameStartTP = std::chrono::high_resolution_clock::now();
-    previousFrameEndTP = std::chrono::high_resolution_clock::now();
-    ffrFps = fixedFrameRateFPS;
-    ffrTimeStep = 1.0f / ffrFps;
-    ffrTimeAcc = 0.0f;
-    ffrFrameCout = 0;
-    sleepNeeded = inSleepNeeded;
+void TimeManager::Init(const TimeConfig& inConfig) {
+    config = inConfig;
+
+    fixedDeltaTime = 1.0 / config.fixedStepFPS;
+    frameDeltaTime = 0.0;
+    accumulator = 0.0;
+    pendingFixedSteps = 0;
+
+    frameCount = 0;
+    fixedStepCount = 0;
+    timeSinceStartup = 0.0;
+
+    currentFPS = 0.0;
+    fpsWindowTime = 0.0;
+    fpsWindowFrames = 0;
+
+    gameStartTP = Clock::now();
+    previousFrameEndTP = gameStartTP;
 }
 
-bool TimeManager::Update() {
-    // TODO: Replace with exact values of sleep time.
-    if (sleepNeeded) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+void TimeManager::BeginFrame() {
+    auto now = Clock::now();
+    frameDeltaTime = std::chrono::duration<double>(now - previousFrameEndTP).count();
+    frameDeltaTime = std::min(frameDeltaTime, config.maxFrameTime);
+    previousFrameEndTP = now;
+
+    timeSinceStartup = std::chrono::duration<double>(now - gameStartTP).count();
+    ++frameCount;
+
+    accumulator += frameDeltaTime;
+
+    pendingFixedSteps = 0;
+    while (accumulator >= fixedDeltaTime && pendingFixedSteps < config.maxFixedStepsPerFrame) {
+        accumulator -= fixedDeltaTime;
+        ++pendingFixedSteps;
     }
+    fixedStepCount += pendingFixedSteps;
 
-    thisFrameEndTP = std::chrono::high_resolution_clock::now();
-
-    auto frameDuration = thisFrameEndTP - previousFrameEndTP;
-    // Convert nanoseconds to seconds.
-    deltaTime = frameDuration.count() / NANO_TO_SEC;
-
-    auto timeStartup = thisFrameEndTP - gameStartTP;
-    // Convert nanoseconds to seconds.
-    timeSinceStartup = timeStartup.count() / NANO_TO_SEC;
-
-    ++frameCout;
-    previousFrameEndTP = thisFrameEndTP;
-
-    ffrTimeAcc += deltaTime;
-    // If need to tick
-    if (ffrTimeAcc >= ffrTimeStep) {
-        ffrDeltaTime = ffrTimeAcc;
-        ffrTimeAcc = 0.0f;
-        ++ffrFrameCout;
-        return true;
-    } else {
-        return false;
+    fpsWindowTime += frameDeltaTime;
+    ++fpsWindowFrames;
+    if (fpsWindowTime >= FPS_WINDOW_INTERVAL) {
+        currentFPS = static_cast<double>(fpsWindowFrames) / fpsWindowTime;
+        fpsWindowTime = 0.0;
+        fpsWindowFrames = 0;
     }
 }
 
 void TimeManager::End() {
-    Update();
-    gameEndTP = std::chrono::high_resolution_clock::now();
+    gameEndTP = Clock::now();
 }
 
-double TimeManager::GetDeltaTime() const {
-    return ffrDeltaTime * timeScale;
+double TimeManager::GetFrameDeltaTime() const {
+    return frameDeltaTime;
+}
+
+int TimeManager::GetPendingFixedSteps() const {
+    return pendingFixedSteps;
+}
+
+double TimeManager::GetFixedDeltaTime() const {
+    return fixedDeltaTime;
 }
 
 uint64_t TimeManager::GetFrameCount() const {
-    return ffrFrameCout;
+    return frameCount;
 }
 
-uint64_t TimeManager::GetNotFFRFrameCount() const {
-    return frameCout;
+uint64_t TimeManager::GetFixedStepCount() const {
+    return fixedStepCount;
 }
 
 double TimeManager::GetTimeSinceStartup() const {
     return timeSinceStartup;
+}
+
+double TimeManager::GetCurrentFPS() const {
+    return currentFPS;
+}
+
+double TimeManager::GetFixedStepFPS() const {
+    return config.fixedStepFPS;
 }

@@ -29,11 +29,13 @@ class VillageGame : public Game {
 
     void Update(double deltaTime) override;
 
+    void FixedUpdate(double fixedDeltaTime) override;
+
     void End() override;
 
    private:
-    uint32_t framesPerDay;
-    uint32_t frameCount;
+    double secondsPerDay;
+    double dayTimer;
     uint32_t day;
 
     FP buyPrice;

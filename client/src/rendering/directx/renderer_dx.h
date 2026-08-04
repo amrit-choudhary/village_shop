@@ -60,7 +60,11 @@ class RendererDX : public PlatformRenderer {
 
     void Draw();
 
+    void SetVsyncEnabled(bool enabled) override;
+
    private:
+    bool vsyncEnabled = true;
+
     ME::Scene* scene = nullptr;
     ME::SceneDX* sceneDX = nullptr;
     ME::SceneUI* uiScene = nullptr;

@@ -22,10 +22,12 @@ void ME::Game::Start() {}
 
 void Game::Update(double deltaTime) {}
 
+void Game::FixedUpdate(double fixedDeltaTime) {}
+
 void Game::End() {
     std::cout << "Game Run Time: " << timeManager->GetTimeSinceStartup() << '\n';
-    std::cout << "Average FPS: " << timeManager->GetFrameCount() / timeManager->GetTimeSinceStartup() << '\n';
-    std::cout << "Average Uncapped FPS: " << timeManager->GetNotFFRFrameCount() / timeManager->GetTimeSinceStartup()
+    std::cout << "Average Frame Rate: " << timeManager->GetFrameCount() / timeManager->GetTimeSinceStartup() << '\n';
+    std::cout << "Average Sim Tick Rate: " << timeManager->GetFixedStepCount() / timeManager->GetTimeSinceStartup()
               << '\n';
     std::cout << "Total Frames: " << timeManager->GetFrameCount() << '\n';
 

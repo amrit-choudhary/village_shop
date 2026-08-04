@@ -28,6 +28,8 @@ class PlatformRenderer {
 
     // Sets the debug system's UI scene, drawn in its own pass after the main UI scene.
     virtual void SetDebugUIScene(ME::SceneUI* debugUiScene) = 0;
+
+    virtual void SetVsyncEnabled(bool enabled) = 0;
 };
 
 /**
@@ -50,6 +52,8 @@ class Renderer {
 
     // Cleanup renderer
     void End();
+
+    void SetVsyncEnabled(bool enabled);
 
    private:
     PlatformRenderer* platformRenderer;
