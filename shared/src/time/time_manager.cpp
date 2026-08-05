@@ -1,7 +1,5 @@
 #include "time_manager.h"
 
-#include <algorithm>
-
 using namespace ME::Time;
 
 namespace {
@@ -36,7 +34,9 @@ void TimeManager::Init(const TimeConfig& inConfig) {
 void TimeManager::BeginFrame() {
     auto now = Clock::now();
     frameDeltaTime = std::chrono::duration<double>(now - previousFrameEndTP).count();
-    frameDeltaTime = std::min(frameDeltaTime, config.maxFrameTime);
+    if (frameDeltaTime > config.maxFrameTime) {
+        frameDeltaTime = config.maxFrameTime;
+    }
     previousFrameEndTP = now;
 
     timeSinceStartup = std::chrono::duration<double>(now - gameStartTP).count();
