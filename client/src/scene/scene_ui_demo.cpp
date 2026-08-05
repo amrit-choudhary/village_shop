@@ -5,6 +5,9 @@
 ME::SceneUIDemo::SceneUIDemo() {}
 
 ME::SceneUIDemo::~SceneUIDemo() {
+    delete scoreButtonLabel;
+    delete scoreButtonPanel;
+    delete scoreButton;
     delete healthLabel;
     delete scoreLabel;
     delete centerImage;
@@ -35,8 +38,7 @@ void ME::SceneUIDemo::BuildUIElements() {
     topBarPanel->Init();
     AddUIElement(topBarPanel);
 
-    titleLabel = new ME::Label("Village Shop UI Test", 0, 1, 0, ME::Color::White(), 32, 32, 2, 2, 80,
-                               ME::TextAlignment::Center);
+    titleLabel = new ME::Label("UI Test", 0, 1, 0, ME::Color::White(), 32, 32, 2, 2, 80, ME::TextAlignment::Center);
     titleLabel->SetAnchor(ME::UIAnchor::Center);
     titleLabel->SetPivot(ME::UIPivot::Center);
     titleLabel->SetOffset(ME::Vec2{0.0f, 0.0f});
@@ -53,7 +55,8 @@ void ME::SceneUIDemo::BuildUIElements() {
     centerImage->Init();
     AddUIElement(centerImage);
 
-    healthLabel = new ME::Label("Health: 100", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80, ME::TextAlignment::Right);
+    healthLabel =
+        new ME::Label("Health: 100", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80, ME::TextAlignment::Right);
     healthLabel->SetAnchor(ME::UIAnchor::BottomRight);
     healthLabel->SetPivot(ME::UIPivot::BottomRight);
     healthLabel->SetOffset(ME::Vec2{-20.0f, -20.0f});
@@ -68,6 +71,33 @@ void ME::SceneUIDemo::BuildUIElements() {
     scoreLabel->SetSize(ME::Vec2{260.0f, 40.0f});
     scoreLabel->Init();
     AddUIElement(scoreLabel);
+
+    scoreButton = new ME::Button();
+    scoreButton->SetAnchor(ME::UIAnchor::BottomCenter);
+    scoreButton->SetPivot(ME::UIPivot::BottomCenter);
+    scoreButton->SetOffset(ME::Vec2{0.0f, -20.0f});
+    scoreButton->SetSize(ME::Vec2{200.0f, 50.0f});
+    scoreButton->Init();
+    AddUIElement(scoreButton);
+
+    scoreButtonPanel = new ME::Panel(0, 0, 0, 0, 660);
+    scoreButtonPanel->SetAnchor(ME::UIAnchor::Center);
+    scoreButtonPanel->SetPivot(ME::UIPivot::Center);
+    scoreButtonPanel->SetSize(ME::Vec2{200.0f, 50.0f});
+    scoreButtonPanel->SetParent(scoreButton);
+    scoreButtonPanel->Init();
+    AddUIElement(scoreButtonPanel);
+
+    scoreButtonLabel =
+        new ME::Label("Button", 0, 1, 0, ME::Color::Black(), 24, 24, 0, 2, 40, ME::TextAlignment::Center);
+    scoreButtonLabel->SetAnchor(ME::UIAnchor::Center);
+    scoreButtonLabel->SetPivot(ME::UIPivot::Center);
+    scoreButtonLabel->SetSize(ME::Vec2{200.0f, 50.0f});
+    scoreButtonLabel->SetParent(scoreButton);
+    scoreButtonLabel->Init();
+    AddUIElement(scoreButtonLabel);
+
+    scoreButton->SetPanel(scoreButtonPanel);
 }
 
 ME::Label* ME::SceneUIDemo::GetHealthLabel() const {
@@ -80,4 +110,8 @@ ME::Label* ME::SceneUIDemo::GetScoreLabel() const {
 
 ME::Image* ME::SceneUIDemo::GetCenterImage() const {
     return centerImage;
+}
+
+ME::Button* ME::SceneUIDemo::GetScoreButton() const {
+    return scoreButton;
 }

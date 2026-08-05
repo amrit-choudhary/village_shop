@@ -205,29 +205,68 @@ class InputManager {
     static bool GetKeyPressed(ME::Input::KeyCode keyCode);
 
     /**
-     * Get mouse position.
-     * Bottm left is (0,0). which is different from default, which is top left (0,0).
+     * Get mouse position, native to the platform: top-left is (0,0), Y increases downward.
+     * Matches UI space (see ui_rect.h) directly — no conversion needed for UI hit-testing.
      */
     static ME::Vec2i GetMousePos() {
         return mousePos;
     }
 
     /**
-     * Get normalized mouse position (0.0 to 1.0).
-     * Bottom left is (0,0). which is different from default, which is top left (0,0).
+     * Get normalized mouse position (0.0 to 1.0), same top-left/Y-down origin as GetMousePos().
      */
     static ME::Vec2 GetMousePosNorm() {
         return ME::Vec2(static_cast<float>(mousePos.x) / ME::GlobalVars::GetWindowWidth(),
                         static_cast<float>(mousePos.y) / ME::GlobalVars::GetWindowHeight());
     }
 
+    /**
+     * Mouse position in world space (bottom-left origin, Y-up) — the engine's general
+     * world-space convention, for gameplay math (e.g. aim-direction) rather than UI hit-testing.
+     */
+    static ME::Vec2i GetMouseWorldPos() {
+        return ME::Vec2i{mousePos.x, ME::GlobalVars::GetWindowHeight() - mousePos.y};
+    }
+
+    // Normalized (0.0 to 1.0) version of GetMouseWorldPos().
+    static ME::Vec2 GetMouseWorldPosNorm() {
+        ME::Vec2 norm = GetMousePosNorm();
+        return ME::Vec2(norm.x, 1.0f - norm.y);
+    }
+
+    // Check if a mouse button is down.
+    static bool GetMouseButtonDown(MouseButton button);
+
+    // Check if a mouse button is up.
+    static bool GetMouseButtonUp(MouseButton button);
+
+    // Check if a mouse button was released this frame.
+    static bool GetMouseButtonReleased(MouseButton button);
+
+    // Check if a mouse button was pressed this frame.
+    static bool GetMouseButtonPressed(MouseButton button);
+
     bool GetCLIInputString(std::string& input);
 
     PlatformInputManager* GetPlatformInputManager();
 
    private:
+    static const size_t kMouseButtonCount = 5;
+
+    // Shared down/up transition logic for both platform backends. Mouse messages carry no
+    // repeat bits (unlike WM_KEYDOWN), so state is derived from the previous frame instead.
+    static void SetMouseButtonState(MouseButton button, bool isDown);
+
+    // Advance DownWasUp -> DownWasDown and UpWasDown -> UpWasUp for all mouse buttons, same as
+    // each platform backend already does for GlobalKeyState in its own PostUpdate().
+    static void AdvanceMouseButtonStates();
+
     // Global key state map.
     static std::unordered_map<ME::Input::KeyCode, ME::Input::KeyState> GlobalKeyState;
+
+    // Mouse button state, indexed by MouseButton. Reuses KeyState since the same
+    // down/up/held/released transitions apply.
+    static ME::Input::KeyState GlobalMouseButtonState[kMouseButtonCount];
 
     // Mouse position.
     inline static ME::Vec2i mousePos = ME::Vec2i::Zero;

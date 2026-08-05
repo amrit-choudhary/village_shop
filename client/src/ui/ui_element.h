@@ -25,6 +25,7 @@ enum class UIElementType : uint8_t {
     Panel = 2,
     Label = 3,
     Image = 4,
+    Button = 5,
 };
 
 /**

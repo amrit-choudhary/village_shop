@@ -26,7 +26,11 @@ class GameUIDemo : public Game {
     virtual void Update(double deltaTime) override;
     virtual void End() override;
 
+    void OnScoreButtonClick();
+
    private:
+    void UpdateScoreLabel();
+
     // Same object as the base Game::uiScene, kept here with its concrete type so Update() can
     // reach SceneUIDemo::GetHealthLabel()/GetScoreLabel() without a cast.
     ME::SceneUIDemo* sceneUIDemo = nullptr;

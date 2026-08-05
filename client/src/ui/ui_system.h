@@ -48,6 +48,7 @@ class UISystem {
     TextRenderer** textRendererScratch = nullptr;
 
     void SyncToScene();
+    void UpdateButtonInteractions();
 };
 
 }  // namespace ME

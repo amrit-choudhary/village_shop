@@ -12,6 +12,11 @@ ME::Vec2 ME::UIRect::GetSize() const {
     return size;
 }
 
+bool ME::UIRect::Contains(const Vec2& point) const {
+    return point.x >= position.x && point.x <= position.x + size.x && point.y >= position.y &&
+           point.y <= position.y + size.y;
+}
+
 void ME::UIRect::ComputeAbsolute(const UIRect& parentRect, UIAnchor anchor, UIPivot pivot, const Vec2& offset,
                                  const Vec2& ownSize) {
     // See the ComputeAbsolute doc comment in ui_rect.h: anchorPoint (step 1) and pivotCorrection

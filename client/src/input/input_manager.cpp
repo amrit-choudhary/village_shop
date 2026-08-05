@@ -135,6 +135,9 @@ std::unordered_map<KeyCode, KeyState> InputManager::GlobalKeyState = {
     // Sentinel / max
     {KeyCode::MaxValue, KeyState::None}};
 
+KeyState InputManager::GlobalMouseButtonState[InputManager::kMouseButtonCount] = {
+    KeyState::UpWasUp, KeyState::UpWasUp, KeyState::UpWasUp, KeyState::UpWasUp, KeyState::UpWasUp};
+
 InputManager::InputManager() {}
 
 InputManager::~InputManager() {}
@@ -180,6 +183,50 @@ bool ME::Input::InputManager::GetKeyReleased(ME::Input::KeyCode keyCode) {
 
 bool ME::Input::InputManager::GetKeyPressed(ME::Input::KeyCode keyCode) {
     return (GlobalKeyState[keyCode] == KeyState::DownWasUp);
+}
+
+bool InputManager::GetMouseButtonDown(MouseButton button) {
+    KeyState state = GlobalMouseButtonState[static_cast<uint8_t>(button)];
+    return state == KeyState::DownWasDown || state == KeyState::DownWasUp;
+}
+
+bool InputManager::GetMouseButtonUp(MouseButton button) {
+    KeyState state = GlobalMouseButtonState[static_cast<uint8_t>(button)];
+    return state == KeyState::UpWasUp || state == KeyState::UpWasDown;
+}
+
+bool InputManager::GetMouseButtonReleased(MouseButton button) {
+    return GlobalMouseButtonState[static_cast<uint8_t>(button)] == KeyState::UpWasDown;
+}
+
+bool InputManager::GetMouseButtonPressed(MouseButton button) {
+    return GlobalMouseButtonState[static_cast<uint8_t>(button)] == KeyState::DownWasUp;
+}
+
+void InputManager::SetMouseButtonState(MouseButton button, bool isDown) {
+    KeyState& state = GlobalMouseButtonState[static_cast<uint8_t>(button)];
+    bool wasPreviouslyDown = (state == KeyState::DownWasDown || state == KeyState::DownWasUp);
+
+    if (isDown) {
+        state = wasPreviouslyDown ? KeyState::DownWasDown : KeyState::DownWasUp;
+    } else {
+        state = wasPreviouslyDown ? KeyState::UpWasDown : KeyState::UpWasUp;
+    }
+}
+
+void InputManager::AdvanceMouseButtonStates() {
+    for (size_t i = 0; i < kMouseButtonCount; ++i) {
+        switch (GlobalMouseButtonState[i]) {
+            case KeyState::DownWasUp:
+                GlobalMouseButtonState[i] = KeyState::DownWasDown;
+                break;
+            case KeyState::UpWasDown:
+                GlobalMouseButtonState[i] = KeyState::UpWasUp;
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 bool InputManager::GetCLIInputString(std::string& input) {

@@ -1,5 +1,7 @@
 #include "ui_system.h"
 
+#include "button.h"
+#include "src/input/input_manager.h"
 #include "src/math/transform.h"
 #include "src/misc/game_constants.h"
 #include "src/misc/global_vars.h"
@@ -27,6 +29,7 @@ void ME::UISystem::Update(double deltaTime) {
     }
 
     layoutEngine.RecalculateLayouts(uiScene->GetUIElements(), uiScene->GetUIElementCount());
+    UpdateButtonInteractions();
     SyncToScene();
 }
 
@@ -56,6 +59,21 @@ void ME::UISystem::RemoveElement(UIElement* element) {
         return;
     }
     uiScene->RemoveUIElement(element);
+}
+
+void ME::UISystem::UpdateButtonInteractions() {
+    ME::Vec2i rawMousePos = ME::Input::InputManager::GetMousePos();
+    Vec2 mousePos{static_cast<float>(rawMousePos.x), static_cast<float>(rawMousePos.y)};
+    bool mouseDown = ME::Input::InputManager::GetMouseButtonPressed(ME::Input::MouseButton::Left);
+
+    UIElement** elements = uiScene->GetUIElements();
+    uint32_t elementCount = uiScene->GetUIElementCount();
+    for (uint32_t i = 0; i < elementCount; ++i) {
+        UIElement* element = elements[i];
+        if (element->GetType() == UIElementType::Button) {
+            static_cast<Button*>(element)->UpdateInteraction(mousePos, mouseDown);
+        }
+    }
 }
 
 namespace {

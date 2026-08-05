@@ -10,6 +10,7 @@
  */
 
 #include "scene_ui.h"
+#include "src/ui/button.h"
 #include "src/ui/image.h"
 #include "src/ui/label.h"
 #include "src/ui/panel.h"
@@ -29,6 +30,7 @@ class SceneUIDemo : public ME::SceneUI {
     ME::Label* GetHealthLabel() const;
     ME::Label* GetScoreLabel() const;
     ME::Image* GetCenterImage() const;
+    ME::Button* GetScoreButton() const;
 
    private:
     ME::Panel* topBarPanel = nullptr;
@@ -36,6 +38,10 @@ class SceneUIDemo : public ME::SceneUI {
     ME::Image* centerImage = nullptr;
     ME::Label* healthLabel = nullptr;
     ME::Label* scoreLabel = nullptr;
+
+    ME::Button* scoreButton = nullptr;
+    ME::Panel* scoreButtonPanel = nullptr;
+    ME::Label* scoreButtonLabel = nullptr;
 };
 
 }  // namespace ME

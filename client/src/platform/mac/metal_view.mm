@@ -10,6 +10,12 @@
     return YES;
 }
 
+// AppKit views default to bottom-left/Y-up; flipping makes this view top-left/Y-down, the
+// engine's mouse-position convention on every platform.
+- (BOOL)isFlipped {
+    return YES;
+}
+
 - (ME::GameMain*)gameMain {
     MEViewDelegate* delegate = (MEViewDelegate*)self.delegate;
     return delegate.gameMain;

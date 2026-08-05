@@ -3,6 +3,7 @@
 #include <cstdio>
 
 #include "src/debug/debug_system.h"
+#include "src/ui/button.h"
 
 ME::GameUIDemo::GameUIDemo() : Game() {}
 
@@ -22,6 +23,8 @@ void ME::GameUIDemo::Init(ME::Time::TimeManager* currentTimeManager) {
     sceneUIDemo = new ME::SceneUIDemo();
     sceneUIDemo->Init();
     uiScene = sceneUIDemo;
+
+    ME::Delegate::Bind<GameUIDemo, &GameUIDemo::OnScoreButtonClick>(sceneUIDemo->GetScoreButton()->onClick, this);
 
     ME::Log("UI Demo Game Start!");
 }
@@ -60,10 +63,7 @@ void ME::GameUIDemo::Update(double deltaTime) {
         DebugSystem::ScreenPrintSlot(1, buf);
     }
     if (scoreChanged) {
-        char buf[32];
-        snprintf(buf, sizeof(buf), "Score: %d", score);
-        sceneUIDemo->GetScoreLabel()->SetText(buf);
-        DebugSystem::ScreenPrint(buf, 2.0f);
+        UpdateScoreLabel();
     }
 
     // Continuous WASD movement for the center image (held, not edge-triggered, unlike the
@@ -83,6 +83,18 @@ void ME::GameUIDemo::Update(double deltaTime) {
         imageOffset.y -= moveDelta;
     }
     sceneUIDemo->GetCenterImage()->SetOffset(imageOffset);
+}
+
+void ME::GameUIDemo::UpdateScoreLabel() {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "Score: %d", score);
+    sceneUIDemo->GetScoreLabel()->SetText(buf);
+    DebugSystem::ScreenPrint(buf, 2.0f);
+}
+
+void ME::GameUIDemo::OnScoreButtonClick() {
+    score += 50;
+    UpdateScoreLabel();
 }
 
 void ME::GameUIDemo::End() {

@@ -143,6 +143,8 @@ void InputManagerMac::PostUpdate() {
                 break;
         }
     }
+
+    InputManager::AdvanceMouseButtonStates();
 }
 
 void InputManagerMac::End() {}
@@ -170,8 +172,12 @@ void InputManagerMac::HandleMouseMove(float x, float y) {
 }
 
 void InputManagerMac::HandleMouseButton(int button, bool isDown) {
-    // Mouse button state is not yet tracked in the shared InputManager (no MouseButton state map exists).
-    // Placeholder for when that support is added; kept here to mirror the Windows event surface.
+    // MEView (metal_view.mm) only forwards button 0 (left) and 1 (right) today.
+    if (button == 0) {
+        InputManager::SetMouseButtonState(MouseButton::Left, isDown);
+    } else if (button == 1) {
+        InputManager::SetMouseButtonState(MouseButton::Right, isDown);
+    }
 }
 
 #endif  // VG_MAC

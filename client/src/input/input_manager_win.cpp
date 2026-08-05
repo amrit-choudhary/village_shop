@@ -227,6 +227,8 @@ void ME::Input::InputManagerWin::PostUpdate() {
                 break;
         }
     }
+
+    InputManager::AdvanceMouseButtonStates();
 }
 
 void InputManagerWin::End() {}
@@ -235,8 +237,15 @@ void InputManagerWin::HandleInput(UINT msg, WPARAM wParam, LPARAM lParam) {
     if (msg == WM_MOUSEMOVE || msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP || msg == WM_RBUTTONDOWN ||
         msg == WM_RBUTTONUP) {
         if (msg == WM_MOUSEMOVE) {
-            InputManager::mousePos.x = LOWORD(lParam);
-            InputManager::mousePos.y = ME::GlobalVars::GetWindowHeight() - HIWORD(lParam);
+            // Win32 client coords are already top-left/Y-down. Signed cast handles negative
+            // multi-monitor coordinates correctly, unlike plain LOWORD/HIWORD.
+            InputManager::mousePos.x = static_cast<int16_t>(LOWORD(lParam));
+            InputManager::mousePos.y = static_cast<int16_t>(HIWORD(lParam));
+        } else {
+            MouseButton button =
+                (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP) ? MouseButton::Left : MouseButton::Right;
+            bool isDown = (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN);
+            InputManager::SetMouseButtonState(button, isDown);
         }
     } else {
         writeBuffer->Push(msg, wParam, lParam);

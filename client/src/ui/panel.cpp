@@ -23,6 +23,14 @@ void ME::Panel::Init() {
     transform = new Transform();
 }
 
+void ME::Panel::SetColor(const Color& newColor) {
+    color = newColor;
+    if (spriteRenderer != nullptr) {
+        spriteRenderer->color = newColor;
+        spriteRenderer->bDirty = true;
+    }
+}
+
 ME::SpriteRenderer* ME::Panel::GetSpriteRenderer() {
     return spriteRenderer;
 }

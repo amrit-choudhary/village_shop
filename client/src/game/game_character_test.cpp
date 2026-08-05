@@ -165,7 +165,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
     uiScene->textRenderers[1]->SetText(scoreText);
 
-    ME::Vec2 mousePosNorm = inputManager->GetMousePosNorm();
+    ME::Vec2 mousePosNorm = inputManager->GetMouseWorldPosNorm();
     ME::Vec2 mousePos = mousePosNorm - ME::Vec2{0.5f, 0.5f};
     float inputAngle = atan2(mousePos.y, mousePos.x);
 

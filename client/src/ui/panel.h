@@ -23,6 +23,8 @@ class Panel : public UIElement {
 
     void Init() override;
 
+    void SetColor(const Color& newColor);
+
     SpriteRenderer* GetSpriteRenderer() override;
     Transform* GetTransform() override;
     UIElementType GetType() const override;
@@ -33,7 +35,7 @@ class Panel : public UIElement {
     const uint8_t textureId;
     const uint8_t textureAtlasPropsId;
     const uint16_t atlasIndex;
-    const Color color;
+    Color color;
 
     SpriteRenderer* spriteRenderer = nullptr;
     Transform* transform = nullptr;

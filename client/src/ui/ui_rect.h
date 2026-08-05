@@ -57,6 +57,9 @@ class UIRect {
     // Resolved width/height — just `ownSize` as passed to ComputeAbsolute (no stretch/fill yet).
     Vec2 GetSize() const;
 
+    // Point-in-rect test, in the same top-left-origin, Y-down UI space as GetPosition()/GetSize().
+    bool Contains(const Vec2& point) const;
+
     /**
      * Compute this rect's absolute position and size, given the parent's rect, the anchor, the
      * pivot, the offset, and the ownSize.
