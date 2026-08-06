@@ -8,7 +8,7 @@
 
 #include "../math/vec2.h"
 #include "random_engine.h"
-#include "src/math/math.h"
+#include "shared/src/math/math.h"
 
 namespace ME {
 

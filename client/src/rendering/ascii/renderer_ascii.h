@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../shared/renderer.h"
+#include "client/src/rendering/shared/renderer.h"
 
 namespace ME {
 

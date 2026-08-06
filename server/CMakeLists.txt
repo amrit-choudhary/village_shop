@@ -4,6 +4,8 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
 add_executable(VillageShop_Server ${SOURCES})
 
+target_include_directories(VillageShop_Server PRIVATE ${CMAKE_SOURCE_DIR})
+
 # Set preprocessor options.
 if(WIN32)
     target_compile_definitions(VillageShop_Server PRIVATE VG_WIN)

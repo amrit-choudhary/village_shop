@@ -18,7 +18,7 @@ elseif(APPLE)
 endif()
 # End Set preprocessor options.
 
-target_include_directories(VillageShop_Shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(VillageShop_Shared PUBLIC ${CMAKE_SOURCE_DIR})
 
 # Link libraries
 target_link_libraries(

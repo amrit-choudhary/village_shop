@@ -11,7 +11,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../shared/material.h"
+#include "client/src/rendering/shared/material.h"
 
 namespace ME {
 

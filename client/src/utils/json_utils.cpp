@@ -1,6 +1,6 @@
 #include "json_utils.h"
 
-#include <src/misc/utils.h>
+#include "shared/src/misc/utils.h"
 
 #include <fstream>
 #include <iostream>
@@ -8,10 +8,10 @@
 #include <sstream>
 #include <string>
 
-#include "../anim/sprite_anim_clip.h"
-#include "../game/wave_data.h"
-#include "../rendering/shared/texture.h"
-#include "third_party/json/cJSON.h"
+#include "client/src/anim/sprite_anim_clip.h"
+#include "client/src/game/wave_data.h"
+#include "client/src/rendering/shared/texture.h"
+#include "shared/third_party/json/cJSON.h"
 
 bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlasProperties& outAtlasProps) {
     cJSON* json = LoadJSONFromFile(filePath);

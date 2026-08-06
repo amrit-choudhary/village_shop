@@ -4,9 +4,9 @@
  * Falling Sand.
  */
 
-#include <src/datastructure/grid.h>
+#include "shared/src/datastructure/grid.h"
 
-#include "../scene/scene_falling_sand.h"
+#include "client/src/scene/scene_falling_sand.h"
 #include "game.h"
 
 namespace ME {

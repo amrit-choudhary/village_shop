@@ -4,8 +4,8 @@
  * Physics scene for the Character Test game.
  */
 
-#include "src/physics/collider_aabb.h"
-#include "src/physics/physics_scene.h"
+#include "shared/src/physics/collider_aabb.h"
+#include "shared/src/physics/physics_scene.h"
 
 namespace ME {
 

@@ -10,7 +10,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <iostream>
-#include "src/misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 
 int main(int argc, char* argv[]) {

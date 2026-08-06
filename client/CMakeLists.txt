@@ -20,7 +20,7 @@ add_subdirectory(third_party/miniaudio-0.11.23)
 add_executable(VillageShop_Client ${SOURCES})
 
 # Add include directories
-target_include_directories(VillageShop_Client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(VillageShop_Client PRIVATE ${CMAKE_SOURCE_DIR})
 
 # Define that this is a Windows application not a CLI.
 if(WIN32)

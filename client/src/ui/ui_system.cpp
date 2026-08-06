@@ -1,13 +1,13 @@
 #include "ui_system.h"
 
 #include "button.h"
-#include "src/input/input_manager.h"
-#include "src/math/transform.h"
-#include "src/misc/game_constants.h"
-#include "src/misc/global_vars.h"
-#include "src/rendering/shared/sprite_renderer.h"
-#include "src/rendering/shared/text_renderer.h"
-#include "src/scene/scene_ui.h"
+#include "client/src/input/input_manager.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/misc/game_constants.h"
+#include "client/src/misc/global_vars.h"
+#include "client/src/rendering/shared/sprite_renderer.h"
+#include "client/src/rendering/shared/text_renderer.h"
+#include "client/src/scene/scene_ui.h"
 #include "ui_element.h"
 
 ME::UISystem::UISystem() {}

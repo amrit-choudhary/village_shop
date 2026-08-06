@@ -10,7 +10,7 @@
 #include <cstdint>
 
 #include "color.h"
-#include "src/math/vec16.h"
+#include "shared/src/math/vec16.h"
 
 namespace ME {
 

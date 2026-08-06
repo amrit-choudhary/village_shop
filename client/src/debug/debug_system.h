@@ -12,7 +12,7 @@
 #include <cstdint>
 
 #include "scene_ui_debug.h"
-#include "src/rendering/shared/color.h"
+#include "client/src/rendering/shared/color.h"
 #include "ui_system_debug.h"
 
 namespace ME {

@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "../../game/game.h"
+#include "client/src/game/game.h"
 
 namespace ME {
 

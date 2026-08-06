@@ -1,7 +1,7 @@
 #include "game_rpg.h"
 
-#include "../world/tile.h"
-#include "src/file_io/csv/csv_parser.h"
+#include "client/src/world/tile.h"
+#include "shared/src/file_io/csv/csv_parser.h"
 
 ME::GameRPG::GameRPG() : Game() {}
 

@@ -6,9 +6,9 @@
 
 #include <cstdint>
 
-#include "src/math/vec2.h"
-#include "src/math/vec3.h"
-#include "src/math/vec4.h"
+#include "shared/src/math/vec2.h"
+#include "shared/src/math/vec3.h"
+#include "shared/src/math/vec4.h"
 #include "vertex.h"
 
 namespace ME {

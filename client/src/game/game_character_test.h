@@ -4,7 +4,7 @@
  * Character Animation Test Game.
  */
 
-#include "../scene/scene_character_test.h"
+#include "client/src/scene/scene_character_test.h"
 #include "game.h"
 #include "wave_data.h"
 

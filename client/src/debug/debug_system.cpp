@@ -1,6 +1,6 @@
 #include "debug_system.h"
 
-#include "src/utils/string_utils.h"
+#include "client/src/utils/string_utils.h"
 
 ME::DebugSystem* ME::DebugSystem::instance = nullptr;
 

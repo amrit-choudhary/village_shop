@@ -1,6 +1,6 @@
 #include "ui_element.h"
 
-#include "src/misc/game_constants.h"
+#include "shared/src/misc/game_constants.h"
 
 // children stays nullptr here — lazily allocated on first AddChild() call, since most widgets
 // (e.g. leaf Labels) never have children and shouldn't pay for the array up front.

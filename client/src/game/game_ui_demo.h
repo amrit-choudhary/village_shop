@@ -11,8 +11,8 @@
  */
 
 #include "game.h"
-#include "src/math/vec2.h"
-#include "src/scene/scene_ui_demo.h"
+#include "shared/src/math/vec2.h"
+#include "client/src/scene/scene_ui_demo.h"
 
 namespace ME {
 

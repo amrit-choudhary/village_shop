@@ -7,7 +7,7 @@
 #include <cstdint>
 
 #include "collider_aabb.h"
-#include "src/misc/game_constants.h"
+#include "shared/src/misc/game_constants.h"
 
 namespace ME {
 

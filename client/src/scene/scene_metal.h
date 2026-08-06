@@ -13,9 +13,9 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../rendering/metal/mesh_metal.h"
-#include "../rendering/metal/quad_metal.h"
-#include "../rendering/metal/texture_metal.h"
+#include "client/src/rendering/metal/mesh_metal.h"
+#include "client/src/rendering/metal/quad_metal.h"
+#include "client/src/rendering/metal/texture_metal.h"
 #include "scene.h"
 
 namespace ME {

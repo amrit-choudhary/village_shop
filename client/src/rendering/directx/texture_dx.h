@@ -5,7 +5,7 @@
  * DirectX's specific texture class.
  */
 
-#include "../shared/texture.h"
+#include "client/src/rendering/shared/texture.h"
 #include "d3dx12.h"
 
 namespace ME {

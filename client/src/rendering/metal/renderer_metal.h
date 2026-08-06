@@ -12,9 +12,9 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../../src/scene/scene_metal.h"
-#include "../shared/light.h"
-#include "../shared/renderer.h"
+#include "client/src/scene/scene_metal.h"
+#include "client/src/rendering/shared/light.h"
+#include "client/src/rendering/shared/renderer.h"
 #include "depth_stencil_state_metal.h"
 #include "mesh_metal.h"
 #include "quad_metal.h"

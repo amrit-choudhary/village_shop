@@ -4,9 +4,9 @@
  * Simple Dice Game..
  */
 
-#include "../scene/scene_dice_simple.h"
+#include "client/src/scene/scene_dice_simple.h"
 #include "game.h"
-#include "src/random/random_engine.h"
+#include "shared/src/random/random_engine.h"
 
 namespace ME {
 

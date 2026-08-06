@@ -4,16 +4,16 @@
 #include <iostream>
 #include <thread>
 
-#include "game/game.h"
-#include "game/village_game.h"
-#include "input/input_manager.h"
-#include "misc/global_vars.h"
-#include "net/connection.h"
+#include "client/src/game/game.h"
+#include "client/src/game/village_game.h"
+#include "client/src/input/input_manager.h"
+#include "client/src/misc/global_vars.h"
+#include "client/src/net/connection.h"
 #include "rendering/renderer.h"
-#include "src/file_io/ini/ini_parser.h"
-#include "src/logging.h"
-#include "src/misc/utils.h"
-#include "src/time/time_manager.h"
+#include "shared/src/file_io/ini/ini_parser.h"
+#include "logging/src/logging.h"
+#include "shared/src/misc/utils.h"
+#include "shared/src/time/time_manager.h"
 
 int main2(int argc, char **argv) {
     ME::SetPaths(argv[0], argv[1]);

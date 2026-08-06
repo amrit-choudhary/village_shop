@@ -1,8 +1,8 @@
 #include "audio_impl_miniaudio.h"
 
-#include "../../third_party/miniaudio-0.11.23/miniaudio.h"
-#include "src/logging.h"
-#include "src/misc/game_constants.h"
+#include "client/third_party/miniaudio-0.11.23/miniaudio.h"
+#include "logging/src/logging.h"
+#include "shared/src/misc/game_constants.h"
 
 namespace ME {
 

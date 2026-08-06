@@ -1,6 +1,6 @@
 #include "camera.h"
 
-#include <src/math/math.h>
+#include "shared/src/math/math.h"
 
 #include <cmath>
 

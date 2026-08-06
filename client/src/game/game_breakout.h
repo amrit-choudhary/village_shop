@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "../scene/scene_breakout.h"
+#include "client/src/scene/scene_breakout.h"
 #include "game.h"
 #include "physics_scene_breakout.h"
-#include "src/physics/collider_aabb.h"
+#include "shared/src/physics/collider_aabb.h"
 
 namespace ME {
 

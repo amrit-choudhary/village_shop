@@ -7,19 +7,19 @@
 
 #include <cstdint>
 
-#include "../anim/animation_system.h"
-#include "../audio/audio_system.h"
-#include "../input/input_manager.h"
-#include "../net/connection.h"
-#include "../scene/scene.h"
-#include "../scene/scene_ui.h"
-#include "../ui/ui_system.h"
-#include "src/datastructure/ring_buffer.h"
-#include "src/logging.h"
-#include "src/math/math.h"
-#include "src/physics/physics_system.h"
-#include "src/random/random_engine.h"
-#include "src/time/time_manager.h"
+#include "client/src/anim/animation_system.h"
+#include "client/src/audio/audio_system.h"
+#include "client/src/input/input_manager.h"
+#include "client/src/net/connection.h"
+#include "client/src/scene/scene.h"
+#include "client/src/scene/scene_ui.h"
+#include "client/src/ui/ui_system.h"
+#include "shared/src/datastructure/ring_buffer.h"
+#include "logging/src/logging.h"
+#include "shared/src/math/math.h"
+#include "shared/src/physics/physics_system.h"
+#include "shared/src/random/random_engine.h"
+#include "shared/src/time/time_manager.h"
 #include "villager.h"
 
 namespace ME {

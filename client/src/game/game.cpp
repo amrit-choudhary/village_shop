@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "../input/input_manager.h"
+#include "client/src/input/input_manager.h"
 
 using namespace ME;
 using namespace ME::Input;

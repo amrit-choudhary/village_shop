@@ -9,7 +9,7 @@
 #include <iostream>
 #include <thread>
 
-#include "src/net/net_packet.h"
+#include "shared/src/net/net_packet.h"
 
 constexpr unsigned short PORT = 9310;
 

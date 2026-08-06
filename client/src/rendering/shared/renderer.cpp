@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "../directx/renderer_dx.h"
-#include "../metal/renderer_metal.h"
+#include "client/src/rendering/directx/renderer_dx.h"
+#include "client/src/rendering/metal/renderer_metal.h"
 
 ME::Renderer::Renderer() {}
 

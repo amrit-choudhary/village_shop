@@ -18,7 +18,7 @@
 #include <windows.h>
 #include <wrl.h>
 
-#include "../shared/renderer.h"
+#include "client/src/rendering/shared/renderer.h"
 #include "desc_heap_manager_dx.h"
 
 using Microsoft::WRL::ComPtr;

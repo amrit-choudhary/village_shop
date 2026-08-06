@@ -2,10 +2,10 @@
 
 #include <cstddef>
 
-#include "../utils/json_utils.h"
+#include "client/src/utils/json_utils.h"
 #include "level_breakout.h"
-#include "src/misc/game_constants.h"
-#include "src/random/random_engine.h"
+#include "shared/src/misc/game_constants.h"
+#include "shared/src/random/random_engine.h"
 
 ME::SceneBreakout::SceneBreakout() : Scene() {}
 

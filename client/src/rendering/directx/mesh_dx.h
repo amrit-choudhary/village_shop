@@ -9,7 +9,7 @@
 
 #include <d3d12.h>
 
-#include "../shared/mesh.h"
+#include "client/src/rendering/shared/mesh.h"
 
 namespace ME {
 

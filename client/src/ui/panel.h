@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "src/rendering/shared/color.h"
+#include "client/src/rendering/shared/color.h"
 #include "ui_element.h"
 
 namespace ME {

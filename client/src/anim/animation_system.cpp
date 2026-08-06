@@ -1,6 +1,6 @@
 #include "animation_system.h"
 
-#include "../scene/scene.h"
+#include "client/src/scene/scene.h"
 
 void ME::AnimationSystem::Init() {}
 

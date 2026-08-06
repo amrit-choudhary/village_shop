@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../../../shared/src/math/vec2.h"
+#include "shared/src/math/vec2.h"
 #include "scene.h"
 
 namespace ME {

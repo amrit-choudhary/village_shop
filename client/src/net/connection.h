@@ -7,8 +7,8 @@
 
 #include <cstdint>
 
-#include "src/net/net_packet.h"
-#include "src/net/net_protocol.h"
+#include "shared/src/net/net_packet.h"
+#include "shared/src/net/net_protocol.h"
 
 namespace ME {
 

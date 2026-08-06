@@ -2,9 +2,9 @@
 
 #include <cstddef>
 
-#include "../utils/json_utils.h"
-#include "src/misc/game_constants.h"
-#include "src/random/random_engine.h"
+#include "client/src/utils/json_utils.h"
+#include "shared/src/misc/game_constants.h"
+#include "shared/src/random/random_engine.h"
 
 ME::SceneRPG::SceneRPG() {}
 

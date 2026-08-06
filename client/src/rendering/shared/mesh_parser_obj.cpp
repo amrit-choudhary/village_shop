@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "mesh.h"
-#include "src/misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 void ME::CreateMeshFromOBJ(const char* fileName, ME::Mesh& mesh) {
     std::string filePath = ME::Utils::GetResourcesPath() + fileName;

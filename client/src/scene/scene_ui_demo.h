@@ -10,10 +10,10 @@
  */
 
 #include "scene_ui.h"
-#include "src/ui/button.h"
-#include "src/ui/image.h"
-#include "src/ui/label.h"
-#include "src/ui/panel.h"
+#include "client/src/ui/button.h"
+#include "client/src/ui/image.h"
+#include "client/src/ui/label.h"
+#include "client/src/ui/panel.h"
 
 namespace ME {
 

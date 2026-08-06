@@ -2,8 +2,8 @@
 
 #include "utils_dx.h"
 
-#include "../shared/vertex.h"
-#include "src/math/vec2.h"
+#include "client/src/rendering/shared/vertex.h"
+#include "shared/src/math/vec2.h"
 
 ID3D12Resource* ME::UtilsDirectX::CreateDefaultBufferResource(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
                                                               const void* initData, uint32_t byteSize,

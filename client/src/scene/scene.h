@@ -10,15 +10,15 @@
  * UI related functionalities are handled in a separate SceneUI class.
  */
 
-#include "../rendering/shared/camera.h"
-#include "../rendering/shared/light.h"
-#include "../rendering/shared/material.h"
-#include "../rendering/shared/mesh_renderer.h"
-#include "../rendering/shared/sprite_renderer.h"
-#include "../rendering/shared/text_renderer.h"
-#include "../rendering/shared/texture.h"
-#include "../rendering/shared/texture_sampler.h"
-#include "src/physics/collider_aabb.h"
+#include "client/src/rendering/shared/camera.h"
+#include "client/src/rendering/shared/light.h"
+#include "client/src/rendering/shared/material.h"
+#include "client/src/rendering/shared/mesh_renderer.h"
+#include "client/src/rendering/shared/sprite_renderer.h"
+#include "client/src/rendering/shared/text_renderer.h"
+#include "client/src/rendering/shared/texture.h"
+#include "client/src/rendering/shared/texture_sampler.h"
+#include "shared/src/physics/collider_aabb.h"
 
 namespace ME {
 

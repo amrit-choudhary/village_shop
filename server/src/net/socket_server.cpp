@@ -8,9 +8,9 @@
 
 #include <iostream>
 
-#include "src/net/net_packet.h"
-#include "src/net/net_protocol.h"
-#include "src/net/net_utils.h"
+#include "shared/src/net/net_packet.h"
+#include "shared/src/net/net_protocol.h"
+#include "shared/src/net/net_utils.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wswitch"

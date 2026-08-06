@@ -1,13 +1,13 @@
 #include "scene.h"
 
-#include <src/logging.h>
+#include "logging/src/logging.h"
 
 #include <cmath>
 #include <cstring>
 
-#include "src/misc/game_constants.h"
-#include "src/random/random_engine.h"
-#include "src/random/stb_perlin.h"
+#include "shared/src/misc/game_constants.h"
+#include "shared/src/random/random_engine.h"
+#include "shared/src/random/stb_perlin.h"
 
 ME::Scene::Scene() {}
 

@@ -3,7 +3,7 @@
 #include "scene_metal.h"
 
 #include "scene_breakout.h"
-#include "src/misc/game_constants.h"
+#include "shared/src/misc/game_constants.h"
 
 ME::SceneMetal::SceneMetal(MTL::Device* device, MTL::CommandQueue* cmdQueue, ME::Scene* gameScene) {
     this->device = device;

@@ -2,8 +2,8 @@
 
 #include "scene_ui_dx.h"
 
-#include "src/misc/game_constants.h"
-#include "src/rendering/directx/pso_dx.h"
+#include "shared/src/misc/game_constants.h"
+#include "client/src/rendering/directx/pso_dx.h"
 
 ME::SceneUIDX::SceneUIDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList,
                          ME::DescHeapManagerDX* descHeapManager, ME::SceneUI* uiScene) {

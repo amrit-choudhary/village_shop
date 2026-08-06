@@ -12,7 +12,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../shared/texture.h"
+#include "client/src/rendering/shared/texture.h"
 
 namespace ME {
 

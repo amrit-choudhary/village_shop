@@ -5,8 +5,8 @@
  * children they want via AddChild(). Generic across any game built on this engine.
  */
 
-#include "src/misc/delegate.h"
-#include "src/rendering/shared/color.h"
+#include "client/src/misc/delegate.h"
+#include "client/src/rendering/shared/color.h"
 #include "ui_element.h"
 
 namespace ME {

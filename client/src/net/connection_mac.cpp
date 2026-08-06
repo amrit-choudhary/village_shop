@@ -11,8 +11,8 @@
 
 #include <iostream>
 
-#include "src/net/net_protocol.h"
-#include "src/net/net_utils.h"
+#include "shared/src/net/net_protocol.h"
+#include "shared/src/net/net_utils.h"
 
 static const char* SERVER_IP = "127.0.0.1";
 static const unsigned short PORT = 9310;

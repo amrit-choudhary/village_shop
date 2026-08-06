@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "src/math/matrix4.h"
-#include "src/math/vec3.h"
-#include "src/math/vec4.h"
+#include "shared/src/math/matrix4.h"
+#include "shared/src/math/vec3.h"
+#include "shared/src/math/vec4.h"
 
 namespace ME {
 

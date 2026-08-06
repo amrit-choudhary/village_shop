@@ -1,6 +1,6 @@
 #include "village_game.h"
 
-#include "src/misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 ME::VillageGame::VillageGame() {}
 

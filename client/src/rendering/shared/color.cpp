@@ -4,8 +4,8 @@
 
 #include <cstdlib>
 
-#include "../../../../shared/src/random/random_engine.h"
-#include "src/math/math.h"
+#include "shared/src/random/random_engine.h"
+#include "shared/src/math/math.h"
 
 ME::Color::Color(const char* hexColor) {
     if (hexColor[0] == '#') {

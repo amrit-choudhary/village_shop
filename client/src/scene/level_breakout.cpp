@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-#include "../../../shared/src/misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 ME::Level::Level() : gridX(0), gridY(0), brickCount(0), bricks(nullptr) {}
 

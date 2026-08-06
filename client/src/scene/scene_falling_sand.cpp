@@ -2,8 +2,8 @@
 
 #include <cstddef>
 
-#include "src/misc/game_constants.h"
-#include "src/random/random_engine.h"
+#include "shared/src/misc/game_constants.h"
+#include "shared/src/random/random_engine.h"
 
 ME::SceneFallingSand::SceneFallingSand() {}
 

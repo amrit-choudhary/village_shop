@@ -14,4 +14,4 @@ elseif(APPLE)
 endif()
 # End Set preprocessor options.
 
-target_include_directories(VillageShop_Logging PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(VillageShop_Logging PUBLIC ${CMAKE_SOURCE_DIR})

@@ -8,7 +8,7 @@
 #include <sstream>
 #include <string>
 
-#include "src/misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 ME::Shader::Shader(MTL::Device* device, const char* shaderName)
     : device(device), library(nullptr), vertexFunction(nullptr), fragmentFunction(nullptr) {

@@ -4,9 +4,9 @@
  * RPG Game Demo.
  */
 
-#include "../scene/scene_rpg.h"
+#include "client/src/scene/scene_rpg.h"
 #include "game.h"
-#include "src/datastructure/grid.h"
+#include "shared/src/datastructure/grid.h"
 
 namespace ME {
 

@@ -23,7 +23,7 @@
 #include <iostream>
 #include <thread>
 
-#include "../../main/main_win.h"
+#include "client/src/main/main_win.h"
 
 void AttachDebugConsole() {
     AllocConsole();

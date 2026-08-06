@@ -1,9 +1,9 @@
 #include "game_character_test.h"
 
-#include "../scene/scene_ui_hud.h"
-#include "../utils/json_utils.h"
+#include "client/src/scene/scene_ui_hud.h"
+#include "client/src/utils/json_utils.h"
 #include "physics_scene_char.h"
-#include "src/random/random_utils.h"
+#include "shared/src/random/random_utils.h"
 
 ME::GameCharacterTest::GameCharacterTest() : Game() {}
 

@@ -7,10 +7,10 @@
 
 #include <cstdint>
 
-#include "../../anim/sprite_animator.h"
+#include "client/src/anim/sprite_animator.h"
 #include "color.h"
-#include "src/math/transform.h"
-#include "src/math/vec16.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/math/vec16.h"
 
 namespace ME {
 

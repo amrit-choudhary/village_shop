@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "src/math/vec2.h"
+#include "shared/src/math/vec2.h"
 #include "vertex.h"
 
 namespace ME {

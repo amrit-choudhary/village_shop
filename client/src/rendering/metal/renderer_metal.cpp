@@ -4,17 +4,17 @@
 
 #include <cmath>
 
-#include "../shared/camera.h"
-#include "../shared/color.h"
-#include "../shared/image_loader_png.h"
-#include "../shared/mesh.h"
-#include "../shared/mesh_parser_obj.h"
-#include "../shared/texture.h"
+#include "client/src/rendering/shared/camera.h"
+#include "client/src/rendering/shared/color.h"
+#include "client/src/rendering/shared/image_loader_png.h"
+#include "client/src/rendering/shared/mesh.h"
+#include "client/src/rendering/shared/mesh_parser_obj.h"
+#include "client/src/rendering/shared/texture.h"
 #include "shader/shader_mac.h"
-#include "src/logging.h"
-#include "src/math/transform.h"
-#include "src/math/vec16.h"
-#include "src/math/vec3.h"
+#include "logging/src/logging.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/math/vec16.h"
+#include "shared/src/math/vec3.h"
 #include "texture_metal.h"
 
 void ME::RendererMetal::Init() {

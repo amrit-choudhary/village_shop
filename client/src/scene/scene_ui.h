@@ -5,12 +5,12 @@
  * This will have ui related things like sprites and texts.
  */
 
-#include "../rendering/shared/camera.h"
-#include "../rendering/shared/sprite_renderer.h"
-#include "../rendering/shared/text_renderer.h"
-#include "../rendering/shared/texture.h"
-#include "../ui/ui_element.h"
-#include "src/physics/collider_aabb.h"
+#include "client/src/rendering/shared/camera.h"
+#include "client/src/rendering/shared/sprite_renderer.h"
+#include "client/src/rendering/shared/text_renderer.h"
+#include "client/src/rendering/shared/texture.h"
+#include "client/src/ui/ui_element.h"
+#include "shared/src/physics/collider_aabb.h"
 
 namespace ME {
 

@@ -1,6 +1,6 @@
 #include "scene_ui_demo.h"
 
-#include "src/utils/json_utils.h"
+#include "client/src/utils/json_utils.h"
 
 ME::SceneUIDemo::SceneUIDemo() {}
 

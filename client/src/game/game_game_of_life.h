@@ -4,9 +4,9 @@
  * Game of Life.
  */
 
-#include <src/datastructure/grid.h>
+#include "shared/src/datastructure/grid.h"
 
-#include "../scene/scene_game_of_life.h"
+#include "client/src/scene/scene_game_of_life.h"
 #include "game.h"
 
 namespace ME {

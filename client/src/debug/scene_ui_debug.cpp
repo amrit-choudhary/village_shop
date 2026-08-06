@@ -1,7 +1,7 @@
 #include "scene_ui_debug.h"
 
-#include "src/math/vec2.h"
-#include "src/utils/json_utils.h"
+#include "shared/src/math/vec2.h"
+#include "client/src/utils/json_utils.h"
 
 namespace {
 constexpr float kRowStartX = 20.0f;

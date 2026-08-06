@@ -2,10 +2,10 @@
 
 #include "render_pipeline_state_metal.h"
 
-#include "../shared/vertex.h"
+#include "client/src/rendering/shared/vertex.h"
 #include "shader/shader_mac.h"
-#include "src/math/vec16.h"
-#include "src/math/vec3.h"
+#include "shared/src/math/vec16.h"
+#include "shared/src/math/vec3.h"
 
 ME::RenderPipelineStateMetal::RenderPipelineStateMetal() {}
 

@@ -7,7 +7,7 @@
 
 #include <d3d12.h>
 
-#include "../shared/quad.h"
+#include "client/src/rendering/shared/quad.h"
 
 namespace ME {
 

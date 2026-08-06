@@ -2,11 +2,11 @@
 
 #include <cstddef>
 
-#include "../anim/sprite_anim_clip.h"
-#include "../anim/sprite_animator.h"
-#include "../utils/json_utils.h"
-#include "src/misc/game_constants.h"
-#include "src/random/random_engine.h"
+#include "client/src/anim/sprite_anim_clip.h"
+#include "client/src/anim/sprite_animator.h"
+#include "client/src/utils/json_utils.h"
+#include "shared/src/misc/game_constants.h"
+#include "shared/src/random/random_engine.h"
 
 ME::SceneCharacterTest::SceneCharacterTest() {}
 

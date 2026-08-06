@@ -1,8 +1,8 @@
 #include "audio_system.h"
 
-#include <src/misc/utils.h>
+#include "shared/src/misc/utils.h"
 
-#include "../scene/scene.h"
+#include "client/src/scene/scene.h"
 #include "audio_impl_miniaudio.h"
 
 void ME::AudioSystem::Init() {

@@ -8,12 +8,12 @@
 
 #include <d3d12.h>
 
-#include "../rendering/directx/d3dx12.h"
-#include "../rendering/directx/desc_heap_manager_dx.h"
-#include "../rendering/directx/mesh_dx.h"
-#include "../rendering/directx/quad_dx.h"
-#include "../rendering/directx/texture_dx.h"
-#include "../rendering/directx/upload_buffer_dx.h"
+#include "client/src/rendering/directx/d3dx12.h"
+#include "client/src/rendering/directx/desc_heap_manager_dx.h"
+#include "client/src/rendering/directx/mesh_dx.h"
+#include "client/src/rendering/directx/quad_dx.h"
+#include "client/src/rendering/directx/texture_dx.h"
+#include "client/src/rendering/directx/upload_buffer_dx.h"
 #include "scene.h"
 
 namespace ME {

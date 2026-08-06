@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include "color.h"
-#include "src/math/vec3.h"
+#include "shared/src/math/vec3.h"
 
 namespace ME {
 

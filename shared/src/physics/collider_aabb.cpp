@@ -1,6 +1,6 @@
 #include "collider_aabb.h"
 
-#include "src/math/math.h"
+#include "shared/src/math/math.h"
 
 ME::ColliderAABB::ColliderAABB(uint32_t id, bool isEnabled, bool isStatic, PhysicsLayer category, PhysicsLayer mask,
                                const ME::Transform& transform, float scaleMult)

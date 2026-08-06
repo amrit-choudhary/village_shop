@@ -5,7 +5,7 @@
 #include <D3Dcompiler.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <src/misc/utils.h>
+#include "shared/src/misc/utils.h"
 
 #include <string>
 

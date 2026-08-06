@@ -15,10 +15,10 @@
 
 #include <cstdint>
 
-#include "src/misc/game_constants.h"
-#include "src/rendering/shared/color.h"
-#include "src/scene/scene_ui.h"
-#include "src/ui/label.h"
+#include "shared/src/misc/game_constants.h"
+#include "client/src/rendering/shared/color.h"
+#include "client/src/scene/scene_ui.h"
+#include "client/src/ui/label.h"
 
 namespace ME {
 

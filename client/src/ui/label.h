@@ -6,8 +6,8 @@
 
 #include <cstdint>
 
-#include "src/rendering/shared/color.h"
-#include "src/rendering/shared/text_renderer.h"
+#include "client/src/rendering/shared/color.h"
+#include "client/src/rendering/shared/text_renderer.h"
 #include "ui_element.h"
 
 namespace ME {

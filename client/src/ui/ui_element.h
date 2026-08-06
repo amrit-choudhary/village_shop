@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "src/math/vec2.h"
+#include "shared/src/math/vec2.h"
 #include "ui_rect.h"
 
 namespace ME {

@@ -10,7 +10,7 @@
 #include <string>
 
 #include "resource_list.h"
-#include "third_party/json/cJSON.h"
+#include "shared/third_party/json/cJSON.h"
 
 static cJSON* LoadJSONFromFile(const char* filePath) {
     std::ifstream file(filePath);

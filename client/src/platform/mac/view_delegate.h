@@ -11,7 +11,7 @@
 #import <MetalKit/MetalKit.h>
 #import <Metal/Metal.h>
 
-#include "../../main/main_mac.h"
+#include "client/src/main/main_mac.h"
 
 @interface MEViewDelegate : NSObject <MTKViewDelegate>
 

@@ -1,6 +1,6 @@
 #include "ui_layout_engine.h"
 
-#include "src/misc/global_vars.h"
+#include "client/src/misc/global_vars.h"
 #include "ui_element.h"
 
 ME::UILayoutEngine::UILayoutEngine() {}

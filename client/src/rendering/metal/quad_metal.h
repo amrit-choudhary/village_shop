@@ -13,7 +13,7 @@
 #include <Metal/Metal.hpp>
 #include <MetalKit/MetalKit.hpp>
 
-#include "../shared/quad.h"
+#include "client/src/rendering/shared/quad.h"
 
 namespace ME {
 

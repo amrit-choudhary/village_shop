@@ -4,7 +4,7 @@
 
 #include "misc/global_vars.h"
 #include "net/socket_server.h"
-#include "src/time/time_manager.h"
+#include "shared/src/time/time_manager.h"
 
 int main(int argc, char** argv) {
     ME::Time::TimeManager timeManager;

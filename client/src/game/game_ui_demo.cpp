@@ -2,8 +2,8 @@
 
 #include <cstdio>
 
-#include "src/debug/debug_system.h"
-#include "src/ui/button.h"
+#include "client/src/debug/debug_system.h"
+#include "client/src/ui/button.h"
 
 ME::GameUIDemo::GameUIDemo() : Game() {}
 

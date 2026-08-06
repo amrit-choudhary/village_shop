@@ -2,8 +2,8 @@
 
 #include <cstring>
 
-#include "src/math/transform.h"
-#include "src/rendering/shared/text_renderer.h"
+#include "shared/src/math/transform.h"
+#include "client/src/rendering/shared/text_renderer.h"
 
 ME::Label::Label(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId, const Color& color,
                  uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine,
