@@ -12,15 +12,15 @@ void ME::PhysicsScene::Init() {
     mapDynamicIdToIndex = new uint32_t[Constants::MaxDynamicColliderCount];
 }
 
-void ME::PhysicsScene::Init(ColliderAABB* staticColliders, uint32_t staticColliderCount,
-                             ColliderAABB* dynamicColliders, uint32_t dynamicColliderCount) {
+void ME::PhysicsScene::Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount,
+                             ColliderAABB* inDynamicColliders, uint32_t inDynamicColliderCount) {
     Init();
 
-    this->staticColliders = staticColliders;
-    this->dynamicColliders = dynamicColliders;
+    staticColliders = inStaticColliders;
+    dynamicColliders = inDynamicColliders;
 
-    this->staticColliderCount = staticColliderCount;
-    this->dynamicColliderCount = dynamicColliderCount;
+    staticColliderCount = inStaticColliderCount;
+    dynamicColliderCount = inDynamicColliderCount;
 
     // TODO FIX sparse array.
 

@@ -24,8 +24,8 @@ class PhysicsScene {
     virtual void Init();
 
     // Initializes the physics scene with the given static/dynamic collider arrays.
-    virtual void Init(ColliderAABB* staticColliders, uint32_t staticColliderCount, ColliderAABB* dynamicColliders,
-                       uint32_t dynamicColliderCount);
+    virtual void Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount, ColliderAABB* inDynamicColliders,
+                       uint32_t inDynamicColliderCount);
 
     ColliderAABB* staticColliders;
     ColliderAABB* dynamicColliders;
