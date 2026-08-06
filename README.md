@@ -12,7 +12,9 @@
 This is a C++ game about establishing a profitable shop in a functioning village. Villagers will have multitudes of demands like food, shelter, luxury goods etc. and it will be your choice to venture in a business that you think will make you the most profit.
 
 ## Technical
-- This is a pure C++ multiplayer game with no external dependencies. Right now, it runs minimally on the console. However, gradually different GUIs will be added.
+- This is a C++20 multiplayer game with minimal external dependencies (a few vendored
+  third-party libraries — see below). It builds with native renderer backends (DX12 on
+  Windows, Metal on Mac) plus an ASCII/CLI renderer for a console-only build.
 - Every person in the village will be simulated and will behave like a real person. They will have their needs and will go to shops to buy items.
 - You will have AI competitiors that will open shops with same or different items.
 - Multiplayer mode will also be available where players can compete with each other in the same village simulation.
@@ -21,30 +23,37 @@ This is a C++ game about establishing a profitable shop in a functioning village
 ## Project
 ### Folders
 ```
-shared/                Code that will be shared by client and server.
+shared/                Code shared by client and server: networking protocol, math,
+                        physics, RNG, data structures, file I/O parsers.
+  /src                 Source code.
+  /third_party         Vendored third-party libraries (e.g. cJSON).
 
 client/                Folder for client application.
   /doc                 Technical design documents.
   /src                 Source code for client application.
   /resources           Game assets.
-  /external            External libraries and plugins.
+  /third_party         Vendored third-party libraries (miniaudio, Metal helper headers).
 
 server/                Folder for server application.
   /doc                 Technical design documents.
   /src                 Source for server application.
   /resources           Game assets.
-  /external            External libraries and plugins.
 
-client_tests/          Project containing unit tests for client code.
+client_package/        Separate CLI tool that cooks/packages client/resources for
+                        distribution (HLSL->CSO via dxc.exe, textures->DDS via texconv.exe).
+
+client_tests/          Unit tests for client code (currently disabled in the root build).
 
 logging/               A minimal logging library.
 
-automation/            Automation and test scripts.
+automation/            Local dev-helper scripts (formatting, codesigning, LOC counts,
+                        a smoke test). Not a CI pipeline.
 
 design/                Game design documents.
 
 ```
 
 ### Development
-- This is developed in C++ language with CMake for builds. VS Code is the editor and its compiled using clang.
-- To run this project, simply dowload this from github and run CMkakeList.txt files from client or server folder.
+- This is developed in C++20 with CMake for builds.
+- To run this project, download it from github and build via the root `CMakeLists.txt`,
+  which builds `logging` -> `shared` -> `client` -> `server` -> `client_package` in order.
