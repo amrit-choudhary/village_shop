@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "../math/transform.h"
-#include "../math/vec2.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/math/vec2.h"
 #include "collider.h"
 
 namespace ME {

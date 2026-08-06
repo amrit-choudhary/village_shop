@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "../math/fp_24_8.h"
+#include "shared/src/math/fp_24_8.h"
 
 namespace ME {
 

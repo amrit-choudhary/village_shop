@@ -1,6 +1,6 @@
 #include "ini_parser.h"
 
-#include "../../misc/utils.h"
+#include "shared/src/misc/utils.h"
 
 std::string fileName = "config/settings.ini";
 
