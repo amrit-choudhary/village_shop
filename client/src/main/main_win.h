@@ -66,8 +66,8 @@ class GameMain {
     // ME::GameFallingSand game;
     // ME::GameRPG game;
     // ME::GameDiceSimple game;
-    // ME::GameCharacterTest game;
-    ME::GameUIDemo game;
+    ME::GameCharacterTest game;
+    // ME::GameUIDemo game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;
