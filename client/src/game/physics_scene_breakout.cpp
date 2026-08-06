@@ -8,6 +8,7 @@ void ME::PhysicsSceneBreakout::Init() {
     ME::PhysicsScene::Init();
 }
 
-void ME::PhysicsSceneBreakout::Init(const ME::Scene* scene) {
-    ME::PhysicsScene::Init(scene);
+void ME::PhysicsSceneBreakout::Init(ColliderAABB* staticColliders, uint32_t staticColliderCount,
+                                     ColliderAABB* dynamicColliders, uint32_t dynamicColliderCount) {
+    ME::PhysicsScene::Init(staticColliders, staticColliderCount, dynamicColliders, dynamicColliderCount);
 }

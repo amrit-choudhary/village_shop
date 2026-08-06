@@ -17,7 +17,8 @@ void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
 
     // Initialize the physics scene for Breakout.
     physicsScene = new ME::PhysicsSceneBreakout();
-    physicsScene->Init(scene);
+    physicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
+                        scene->dynamicColliderCount);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 

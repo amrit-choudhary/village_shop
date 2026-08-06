@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "../scene/scene_breakout.h"
 #include "src/physics/collider_aabb.h"
 #include "src/physics/physics_scene.h"
 
@@ -18,8 +17,9 @@ class PhysicsSceneBreakout : public ME::PhysicsScene {
     // Initializes the physics scene with collider objects specific to Breakout.
     void Init() override;
 
-    // Initializes the physics scene with a given scene specific to Breakout.
-    void Init(const ME::Scene* scene) override;
+    // Initializes the physics scene with the given static/dynamic collider arrays specific to Breakout.
+    void Init(ColliderAABB* staticColliders, uint32_t staticColliderCount, ColliderAABB* dynamicColliders,
+              uint32_t dynamicColliderCount) override;
 };
 
 }  // namespace ME

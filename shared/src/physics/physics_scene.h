@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "../../../client/src/scene/scene.h"
 #include "collider_aabb.h"
 #include "src/misc/game_constants.h"
 
@@ -24,8 +23,9 @@ class PhysicsScene {
     // Initializes the physics scene with collider objects.
     virtual void Init();
 
-    // Initializes the physics scene with a given scene.
-    virtual void Init(const ME::Scene* scene);
+    // Initializes the physics scene with the given static/dynamic collider arrays.
+    virtual void Init(ColliderAABB* staticColliders, uint32_t staticColliderCount, ColliderAABB* dynamicColliders,
+                       uint32_t dynamicColliderCount);
 
     ColliderAABB* staticColliders;
     ColliderAABB* dynamicColliders;

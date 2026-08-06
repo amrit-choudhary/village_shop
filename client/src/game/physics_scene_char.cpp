@@ -10,8 +10,9 @@ void PhysicsSceneChar::Init() {
     ME::PhysicsScene::Init();
 }
 
-void PhysicsSceneChar::Init(const ME::Scene* scene) {
-    ME::PhysicsScene::Init(scene);
+void PhysicsSceneChar::Init(ColliderAABB* staticColliders, uint32_t staticColliderCount,
+                             ColliderAABB* dynamicColliders, uint32_t dynamicColliderCount) {
+    ME::PhysicsScene::Init(staticColliders, staticColliderCount, dynamicColliders, dynamicColliderCount);
 }
 
 }  // namespace ME

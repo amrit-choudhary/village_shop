@@ -4,7 +4,6 @@
  * Physics scene for the Character Test game.
  */
 
-#include "../scene/scene_character_test.h"
 #include "src/physics/collider_aabb.h"
 #include "src/physics/physics_scene.h"
 
@@ -18,8 +17,9 @@ class PhysicsSceneChar : public ME::PhysicsScene {
     // Initializes the physics scene with collider objects specific to Character Test.
     virtual void Init() override;
 
-    // Initializes the physics scene with a given scene specific to Character Test.
-    virtual void Init(const ME::Scene* scene) override;
+    // Initializes the physics scene with the given static/dynamic collider arrays specific to Character Test.
+    virtual void Init(ColliderAABB* staticColliders, uint32_t staticColliderCount, ColliderAABB* dynamicColliders,
+                       uint32_t dynamicColliderCount) override;
 };
 
 }  // namespace ME

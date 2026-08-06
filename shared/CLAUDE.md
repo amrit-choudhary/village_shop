@@ -32,12 +32,11 @@ across client/server over the network should go through `FP_24_8`, not raw float
   move-unsafe; pass by pointer/reference, don't expect value semantics.
 
 ## Physics (`src/physics/`)
-`Collider`/`ColliderAABB`, `PhysicsScene` (static/dynamic collider arrays + id-to-index maps),
-`PhysicsSystem` (layer-based collision categorization via `physics_layer.h`, `ReportCollision`
-callback pattern). **Known layering issue**: `physics_scene.h` `#include`s
-`../../../client/src/scene/scene.h` — despite living in `shared/`, this file is not actually
-client-independent today. Be aware of this coupling if touching physics or trying to build
-`shared/` standalone (e.g. for a future dedicated server).
+`Collider`/`ColliderAABB`, `PhysicsScene` (static/dynamic collider arrays + id-to-index maps,
+`Init` takes raw collider arrays/counts, not a `client/` `Scene*`), `PhysicsSystem`
+(layer-based collision categorization via `physics_layer.h`, reports collisions through the
+`ICollisionListener` interface it defines rather than a concrete `client/` `Game*`). `shared/`
+has no `client/` includes as of this writing — keep it that way if touching physics.
 
 ## Random (`src/random/`)
 `Random` (`random_engine.h/.cpp`) — xoshiro128** PRNG implemented from scratch. `RandomWt` —

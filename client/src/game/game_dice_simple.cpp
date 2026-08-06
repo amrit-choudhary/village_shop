@@ -12,7 +12,8 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
     scene->Init();
 
     physicsScene = new ME::PhysicsScene();
-    physicsScene->Init(scene);
+    physicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
+                        scene->dynamicColliderCount);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
     animationSystem->SetScene(scene);
