@@ -21,7 +21,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
 
     physicsScene = new ME::PhysicsSceneChar();
     physicsScene->Init(scene);
-    physicsSystem->SetGame(this);
+    physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 
     animationSystem->SetScene(scene);

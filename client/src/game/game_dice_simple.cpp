@@ -13,7 +13,7 @@ void ME::GameDiceSimple::Init(ME::Time::TimeManager* currentTimeManager) {
 
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
-    physicsSystem->SetGame(this);
+    physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
     animationSystem->SetScene(scene);
     animationSystem->Init();

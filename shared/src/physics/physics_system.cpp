@@ -1,7 +1,5 @@
 #include "physics_system.h"
 
-#include "../../../client/src/game/game.h"
-
 void ME::PhysicsSystem::Init() {
     // Init the category indices and count for collision optimization.
     categoryIndices = new uint32_t*[ME::Constants::MaxPhysicsLayerCount];
@@ -98,15 +96,15 @@ void ME::PhysicsSystem::SetScene(ME::PhysicsScene* physicsScene) {
     isInitialized = true;
 }
 
-void ME::PhysicsSystem::SetGame(ME::Game* game) {
-    this->game = game;
+void ME::PhysicsSystem::SetCollisionListener(ME::ICollisionListener* listener) {
+    this->listener = listener;
 }
 
 void ME::PhysicsSystem::ReportCollision(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
-    if (game != nullptr) {
-        game->CollisionCallback(a, b, result);
+    if (listener != nullptr) {
+        listener->CollisionCallback(a, b, result);
     } else {
-        delete result;  // No game to report to, just delete the result.
+        delete result;  // No listener to report to, just delete the result.
     }
 }
 

@@ -13,7 +13,7 @@ void ME::GameOfLife::Init(ME::Time::TimeManager *currentTimeManager) {
 
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
-    physicsSystem->SetGame(this);
+    physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 
     currentGen = new ME::Grid<uint8_t>(gridWidth, gridHeight);

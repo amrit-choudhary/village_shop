@@ -16,7 +16,7 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
 
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene);
-    physicsSystem->SetGame(this);
+    physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 
     CSVData levelData;

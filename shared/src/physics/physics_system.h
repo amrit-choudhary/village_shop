@@ -12,8 +12,16 @@
 
 namespace ME {
 
-// Forward declarations.
-class Game;
+// Implemented by anything that wants to be notified when PhysicsSystem detects a collision.
+// Keeps PhysicsSystem decoupled from any concrete game class.
+class ICollisionListener {
+   public:
+    virtual ~ICollisionListener() = default;
+
+    // By convention, the first collider is always the dynamic one (e.g., a ball), and the
+    // second is static. Remember to delete the result after use.
+    virtual void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) = 0;
+};
 
 class PhysicsSystem {
    public:
@@ -29,8 +37,8 @@ class PhysicsSystem {
     // Set Scene for the physics system.
     void SetScene(PhysicsScene* physicsScene);
 
-    // Set the current game instance, if needed.
-    void SetGame(Game* game);
+    // Set the listener to be notified when a collision is detected, if needed.
+    void SetCollisionListener(ICollisionListener* listener);
 
     /**
      * Report collision between two colliders. Other systems can hook to this function to handle collisions.
@@ -41,9 +49,9 @@ class PhysicsSystem {
     void ReportCollision(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result);
 
    private:
-    bool isInitialized = false;     // Flag to check if the system is initialized.
-    PhysicsScene* scene = nullptr;  // Current physics scene being managed.
-    Game* game = nullptr;           // Reference to the game instance, if needed.
+    bool isInitialized = false;              // Flag to check if the system is initialized.
+    PhysicsScene* scene = nullptr;           // Current physics scene being managed.
+    ICollisionListener* listener = nullptr;  // Listener to notify on collision, if needed.
 
     /**
      * Setup collision categories for optimized collision checks.

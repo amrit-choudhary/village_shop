@@ -24,7 +24,7 @@
 
 namespace ME {
 
-class Game {
+class Game : public ICollisionListener {
    public:
     Game();
     virtual ~Game();
@@ -58,7 +58,7 @@ class Game {
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
-    virtual void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result);
+    void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) override;
 
     ME::Scene* GetScene();
     ME::SceneUI* GetUIScene();
