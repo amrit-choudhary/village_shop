@@ -12,6 +12,7 @@
 #include "client/src/anim/animation_system.h"
 #include "client/src/audio/audio_system.h"
 #include "client/src/debug/debug_system.h"
+#include "client/src/game/evolution/game_evolution.h"
 #include "client/src/game/game.h"
 #include "client/src/game/game_breakout.h"
 #include "client/src/game/game_character_test.h"
@@ -66,8 +67,9 @@ class GameMain {
     // ME::GameFallingSand game;
     // ME::GameRPG game;
     // ME::GameDiceSimple game;
-    ME::GameCharacterTest game;
+    // ME::GameCharacterTest game;
     // ME::GameUIDemo game;
+    ME::GameEvolution game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;
