@@ -43,3 +43,7 @@ void ME::SceneEvolution::BuildInstancedSpriteTransforms() {
 void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
     Scene::BuildInstancedSpriteRenderers();
 }
+
+const char* ME::SceneEvolution::GetDisplayName() const {
+    return "Evolution Scene";
+}

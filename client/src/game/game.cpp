@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "client/src/debug/debug_system.h"
 #include "client/src/input/input_manager.h"
 
 using namespace ME;
@@ -16,6 +17,8 @@ void Game::Init(ME::Time::TimeManager* currentTimeManager) {
     ME::Log("Game Start!");
 
     timeManager = currentTimeManager;
+
+    ME::DebugSystem::ScreenPrintSlot(1, GetDisplayName());
 }
 
 void ME::Game::Start() {}
@@ -68,4 +71,8 @@ ME::Scene* ME::Game::GetScene() {
 
 ME::SceneUI* ME::Game::GetUIScene() {
     return uiScene;
+}
+
+const char* ME::Game::GetDisplayName() const {
+    return "Game";
 }

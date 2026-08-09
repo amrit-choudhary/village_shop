@@ -42,3 +42,7 @@ void ME::GameEvolution::End() {
 
     Game::End();
 }
+
+const char* ME::GameEvolution::GetDisplayName() const {
+    return "Evolution Game";
+}

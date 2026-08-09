@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstring>
 
+#include "client/src/debug/debug_system.h"
 #include "shared/src/misc/game_constants.h"
 #include "shared/src/random/random_engine.h"
 #include "shared/src/random/stb_perlin.h"
@@ -21,6 +22,8 @@ void ME::Scene::Init() {
     BuildSpriteRenderers();
     BuildInstancedSpriteTransforms();
     BuildInstancedSpriteRenderers();
+
+    ME::DebugSystem::ScreenPrintSlot(2, GetDisplayName());
 }
 
 ME::Scene::~Scene() {
@@ -172,6 +175,10 @@ void ME::Scene::BuildSpriteRenderers() {}
 void ME::Scene::BuildInstancedSpriteTransforms() {}
 
 void ME::Scene::BuildInstancedSpriteRenderers() {}
+
+const char* ME::Scene::GetDisplayName() const {
+    return "Scene";
+}
 
 void ME::Scene::AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale) {
     if (spriteTransformCount >= Constants::MaxSpriteTransformCount) {

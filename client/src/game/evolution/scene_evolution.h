@@ -23,6 +23,8 @@ class SceneEvolution : public Scene {
     virtual void BuildSpriteRenderers() override;
     virtual void BuildInstancedSpriteTransforms() override;
     virtual void BuildInstancedSpriteRenderers() override;
+
+    virtual const char* GetDisplayName() const override;
 };
 
 }  // namespace ME

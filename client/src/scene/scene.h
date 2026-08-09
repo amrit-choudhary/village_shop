@@ -109,6 +109,9 @@ class Scene {
     virtual void BuildInstancedSpriteTransforms();
     virtual void BuildInstancedSpriteRenderers();
 
+    // Human-readable label for this scene, shown on the debug overlay. Override to customize.
+    virtual const char* GetDisplayName() const;
+
    protected:
     // Helper functions to add elements to the scene.
 

@@ -30,6 +30,8 @@ class GameEvolution : public Game {
     // End game.
     virtual void End() override;
 
+    virtual const char* GetDisplayName() const override;
+
    private:
     ME::SceneEvolution* evoScene = nullptr;                // Scene for the game.
     ME::SceneUIEvolution* evoUIScene = nullptr;            // UI scene for the game.

@@ -63,6 +63,9 @@ class Game : public ICollisionListener {
     ME::Scene* GetScene();
     ME::SceneUI* GetUIScene();
 
+    // Human-readable label for this game, shown on the debug overlay. Override to customize.
+    virtual const char* GetDisplayName() const;
+
    protected:
     ME::Time::TimeManager* timeManager = nullptr;
     ME::Connection* connection = nullptr;
