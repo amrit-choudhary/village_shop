@@ -66,17 +66,53 @@ class Grid {
         return height;
     }
 
-    // No bounds checking. Use carefully.
-    T* GetUnsafe(size_t x, size_t y) const {
+    /** No bounds checking. Use carefully. */
+    T* GetUnsafe(size_t x, size_t y) {
         return &data[width * y + x];
     }
 
-    // Does upper bounds checking.
-    T* Get(size_t x, size_t y) const {
+    /** No bounds checking. Use carefully. */
+    const T* GetUnsafe(size_t x, size_t y) const {
+        return &data[width * y + x];
+    }
+
+    /** Does upper bounds checking. */
+    T* Get(size_t x, size_t y) {
         if (x >= width || y >= height) {
             return nullptr;
         }
         return &data[width * y + x];
+    }
+    /** Does upper bounds checking. */
+    const T* Get(size_t x, size_t y) const {
+        if (x >= width || y >= height) {
+            return nullptr;
+        }
+        return &data[width * y + x];
+    }
+
+    /** Get neighbor in specified grid direction. Returns nullptr if out of bounds. */
+    T* GetNeighbor(size_t x, size_t y, GridDirection direction) {
+        switch (direction) {
+            case GridDirection::E:
+                return GetInternal(x + 1, y);
+            case GridDirection::NE:
+                return GetInternal(x + 1, y + 1);
+            case GridDirection::N:
+                return GetInternal(x, y + 1);
+            case GridDirection::NW:
+                return GetInternal(x - 1, y + 1);
+            case GridDirection::W:
+                return GetInternal(x - 1, y);
+            case GridDirection::SW:
+                return GetInternal(x - 1, y - 1);
+            case GridDirection::S:
+                return GetInternal(x, y - 1);
+            case GridDirection::SE:
+                return GetInternal(x + 1, y - 1);
+            default:
+                return nullptr;
+        }
     }
 
     /** Get neighbor in specified grid direction. Returns nullptr if out of bounds. */
@@ -107,7 +143,18 @@ class Grid {
      * Get 4 orthogonal neighbors: E, N, W, S. Fills outNeighbors array of size 4.
      * Pass it an T* array of size 4.
      * */
-    void GetNeighbors4Ortho(size_t x, size_t y, T** outNeighbors) const {
+    void GetNeighbors4Ortho(size_t x, size_t y, T** outNeighbors) {
+        outNeighbors[0] = GetInternal(x + 1, y);  // E
+        outNeighbors[1] = GetInternal(x, y + 1);  // N
+        outNeighbors[2] = GetInternal(x - 1, y);  // W
+        outNeighbors[3] = GetInternal(x, y - 1);  // S
+    }
+
+    /**
+     * Get 4 orthogonal neighbors: E, N, W, S. Fills outNeighbors array of size 4.
+     * Pass it a const T* array of size 4.
+     * */
+    void GetNeighbors4Ortho(size_t x, size_t y, const T** outNeighbors) const {
         outNeighbors[0] = GetInternal(x + 1, y);  // E
         outNeighbors[1] = GetInternal(x, y + 1);  // N
         outNeighbors[2] = GetInternal(x - 1, y);  // W
@@ -118,7 +165,18 @@ class Grid {
      * Get 4 diagonal neighbors: NE, NW, SW, SE. Fills outNeighbors array of size 4.
      * Pass it an T* array of size 4.
      * */
-    void GetNeighbors4Diag(size_t x, size_t y, T** outNeighbors) const {
+    void GetNeighbors4Diag(size_t x, size_t y, T** outNeighbors) {
+        outNeighbors[0] = GetInternal(x + 1, y + 1);  // NE
+        outNeighbors[1] = GetInternal(x - 1, y + 1);  // NW
+        outNeighbors[2] = GetInternal(x - 1, y - 1);  // SW
+        outNeighbors[3] = GetInternal(x + 1, y - 1);  // SE
+    }
+
+    /**
+     * Get 4 diagonal neighbors: NE, NW, SW, SE. Fills outNeighbors array of size 4.
+     * Pass it a const T* array of size 4.
+     * */
+    void GetNeighbors4Diag(size_t x, size_t y, const T** outNeighbors) const {
         outNeighbors[0] = GetInternal(x + 1, y + 1);  // NE
         outNeighbors[1] = GetInternal(x - 1, y + 1);  // NW
         outNeighbors[2] = GetInternal(x - 1, y - 1);  // SW
@@ -129,7 +187,7 @@ class Grid {
      * Get all 8 neighbors. Fills outNeighbors array of size 8.
      * Pass it an T* array of size 8.
      */
-    void GetNeighbors8(size_t x, size_t y, T** outNeighbors) const {
+    void GetNeighbors8(size_t x, size_t y, T** outNeighbors) {
         outNeighbors[0] = GetInternal(x + 1, y);      // E
         outNeighbors[1] = GetInternal(x + 1, y + 1);  // NE
         outNeighbors[2] = GetInternal(x, y + 1);      // N
@@ -140,7 +198,11 @@ class Grid {
         outNeighbors[7] = GetInternal(x + 1, y - 1);  // SE
     }
 
-    void GetNeighbors8(size_t x, size_t y, T** outNeighbors) {
+    /**
+     * Get all 8 neighbors. Fills outNeighbors array of size 8.
+     * Pass it a const T* array of size 8.
+     */
+    void GetNeighbors8(size_t x, size_t y, const T** outNeighbors) const {
         outNeighbors[0] = GetInternal(x + 1, y);      // E
         outNeighbors[1] = GetInternal(x + 1, y + 1);  // NE
         outNeighbors[2] = GetInternal(x, y + 1);      // N
