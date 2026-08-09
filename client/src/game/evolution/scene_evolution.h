@@ -25,6 +25,12 @@ class SceneEvolution : public Scene {
     virtual void BuildInstancedSpriteRenderers() override;
 
     virtual const char* GetDisplayName() const override;
+
+   private:
+    const float tileSize = 8.0f;
+    const float tileSizeHalf = tileSize / 2.0f;
+    const float originX = -200.0f;
+    const float originY = -200.0f;
 };
 
 }  // namespace ME

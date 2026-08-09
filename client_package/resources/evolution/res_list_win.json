@@ -1,18 +1,10 @@
 {
-    "anim": [
-        "char_princess_up.json",
-        "enemy_base_anim.json"
-    ],
-    "audio": [
-        "sfx/laser.wav",
-        "music/ambience.wav"
-    ],
+    "anim": [],
+    "audio": [],
     "config": [
         "settings.ini"
     ],
-    "game_data": [
-        "wave_data.json"
-    ],
+    "game_data": [],
     "shaders": [
         "hlsl/sprite_atlas.hlsl",
         "hlsl/sprite_instanced_atlas.hlsl",
@@ -20,16 +12,12 @@
         "hlsl/ui_sprite.hlsl"
     ],
     "texture_data": [
-        "atlas_princess.json",
-        "atlas_enemy.json",
-        "atlas_fireball.json",
+        "atlas_tileset_evolution.json",
         "atlas_ui.json",
         "font_atlas_01.json"
     ],
     "textures": [
-        "characters/princess.png",
-        "sprites/fireball.png",
-        "enemies/enemy_atlas.png",
+        "world/tileset_evolution.png",
         "ui/ui_atlas.png",
         "font/ascii_ibm_transparent.png"
     ]

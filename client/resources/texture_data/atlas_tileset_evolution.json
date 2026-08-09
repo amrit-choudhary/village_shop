@@ -1,0 +1,11 @@
+    {
+        "tileSizeX": 16,
+        "tileSizeY": 16,
+        "padding": 2,
+        "numTextures": 9,
+        "numTilesX": 3,
+        "numTilesY": 3,
+        "width": 52,
+        "height": 52,
+        "paddingType": 1
+    }

@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 #ifdef VG_WIN
     std::string exePath = argv[0];
     std::string buildPath = "";
-    std::string gameName = "game";
+    std::string gameName = "evolution";
     if (!ME::Package::PackageClientWin(exePath, gameName, buildPath)) {
         std::cerr << "Failed to package Client for Windows." << '\n';
         return -1;

@@ -29,6 +29,11 @@ class Game : public ICollisionListener {
     Game();
     virtual ~Game();
 
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+    Game(Game&&) = delete;
+    Game& operator=(Game&&) = delete;
+
     // Game control functions.
 
     // Init game

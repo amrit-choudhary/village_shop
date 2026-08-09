@@ -1,14 +1,15 @@
 #include "scene_ui_debug.h"
 
-#include "shared/src/math/vec2.h"
 #include "client/src/utils/json_utils.h"
+#include "shared/src/math/vec2.h"
+
 
 namespace {
 constexpr float kRowStartX = 20.0f;
 constexpr float kRowStartY = 10.0f;
 constexpr float kRowHeight = 18.0f;
-constexpr uint16_t kFontHeight = 14;
-constexpr uint16_t kFontWidth = 14;
+constexpr uint16_t kFontHeight = 16;
+constexpr uint16_t kFontWidth = 16;
 constexpr int16_t kLetterSpacing = 0;
 constexpr int16_t kLineGap = 2;
 constexpr uint16_t kCharsPerLine = 120;

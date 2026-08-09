@@ -4,7 +4,7 @@ ME::GameOfLife::GameOfLife() : Game() {}
 
 ME::GameOfLife::~GameOfLife() {}
 
-void ME::GameOfLife::Init(ME::Time::TimeManager *currentTimeManager) {
+void ME::GameOfLife::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
 
     golScene = new ME::SceneGameOfLife();
@@ -13,7 +13,7 @@ void ME::GameOfLife::Init(ME::Time::TimeManager *currentTimeManager) {
 
     physicsScene = new ME::PhysicsScene();
     physicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
-                        scene->dynamicColliderCount);
+                       scene->dynamicColliderCount);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 
@@ -76,12 +76,12 @@ void ME::GameOfLife::InitializeGameOfLifeLogic() {
 }
 
 void ME::GameOfLife::UpdateGameOfLifeLogic() {
-    uint8_t *currentGenPtr = currentGen->GetData();
-    uint8_t *nextGenPtr = nextGen->GetData();
+    uint8_t* currentGenPtr = currentGen->GetData();
+    uint8_t* nextGenPtr = nextGen->GetData();
 
     for (size_t y = 0; y < gridHeight; y++) {
         for (size_t x = 0; x < gridWidth; x++) {
-            uint8_t *neighs[8];
+            uint8_t* neighs[8];
             currentGen->GetNeighbors8(x, y, neighs);
 
             size_t liveNeighbors = 0;
@@ -118,7 +118,7 @@ void ME::GameOfLife::UpdateGameOfLifeLogic() {
     nextGen = tempGrid;
 
     // Update drawing.
-    uint8_t *cellPtr = currentGen->GetData();
+    uint8_t* cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 1) {
             golScene->spriteInstanceData0[i].color = ME::Color("#a7ce47");
@@ -129,12 +129,12 @@ void ME::GameOfLife::UpdateGameOfLifeLogic() {
 }
 
 void ME::GameOfLife::UpdateGameOfLifeLogicBriansBrain() {
-    uint8_t *currentGenPtr = currentGen->GetData();
-    uint8_t *nextGenPtr = nextGen->GetData();
+    uint8_t* currentGenPtr = currentGen->GetData();
+    uint8_t* nextGenPtr = nextGen->GetData();
 
     for (size_t y = 0; y < gridHeight; y++) {
         for (size_t x = 0; x < gridWidth; x++) {
-            uint8_t *neighs[8];
+            uint8_t* neighs[8];
             currentGen->GetNeighbors8(x, y, neighs);
 
             size_t liveNeighbors = 0;
@@ -170,7 +170,7 @@ void ME::GameOfLife::UpdateGameOfLifeLogicBriansBrain() {
     nextGen = tempGrid;
 
     // Update drawing.
-    uint8_t *cellPtr = currentGen->GetData();
+    uint8_t* cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 2) {
             golScene->spriteInstanceData0[i].color = ME::Color("#deeff3");

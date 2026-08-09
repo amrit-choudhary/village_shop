@@ -1,5 +1,9 @@
 #include "client/src/game/evolution/game_evolution.h"
 
+// Local helpers.
+static void TerrainGen(ME::Grid<uint8_t>* terrain, size_t width, size_t height);
+// End local helpers.
+
 ME::GameEvolution::GameEvolution() : Game() {}
 
 ME::GameEvolution::~GameEvolution() {}
@@ -17,9 +21,12 @@ void ME::GameEvolution::Init(ME::Time::TimeManager* currentTimeManager) {
 
     evoPhysicsScene = new ME::PhysicsSceneEvolution();
     evoPhysicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
-                           scene->dynamicColliderCount);
+                          scene->dynamicColliderCount);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(evoPhysicsScene);
+
+    terrain = new ME::Grid<uint8_t>(gridWidth, gridHeight);
+    TerrainGen(terrain, gridWidth, gridHeight);
 
     ME::Log("Evolution Game Start!");
 }
@@ -30,6 +37,25 @@ void ME::GameEvolution::Start() {
 
 void ME::GameEvolution::Update(double deltaTime) {
     Game::Update(deltaTime);
+
+    const float speed = cameraSpeed * static_cast<float>(deltaTime);
+    ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
+
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::W)) {
+        movementVector.y += speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::S)) {
+        movementVector.y -= speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::A)) {
+        movementVector.x -= speed;
+    }
+    if (inputManager->GetKeyDown(ME::Input::KeyCode::D)) {
+        movementVector.x += speed;
+    }
+
+    evoScene->spriteCamera->position += movementVector;
+    evoScene->spriteCamera->viewPosition += movementVector;
 }
 
 void ME::GameEvolution::End() {
@@ -45,4 +71,8 @@ void ME::GameEvolution::End() {
 
 const char* ME::GameEvolution::GetDisplayName() const {
     return "Evolution Game";
+}
+
+static void TerrainGen(ME::Grid<uint8_t>* terrain, size_t width, size_t height) {
+    terrain->Fill(0);
 }
