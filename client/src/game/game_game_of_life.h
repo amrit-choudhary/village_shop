@@ -4,10 +4,9 @@
  * Game of Life.
  */
 
-#include "shared/src/datastructure/grid.h"
-
 #include "client/src/scene/scene_game_of_life.h"
 #include "game.h"
+#include "shared/src/datastructure/grid.h"
 
 namespace ME {
 
@@ -19,7 +18,7 @@ class GameOfLife : public Game {
     // Game control functions.
 
     // Init game
-    virtual void Init(ME::Time::TimeManager *currentTimeManager) override;
+    virtual void Init(ME::Time::TimeManager* currentTimeManager) override;
 
     // Update game.
     virtual void Update(double deltaTime) override;
@@ -28,16 +27,16 @@ class GameOfLife : public Game {
     virtual void End() override;
 
    private:
-    SceneGameOfLife *golScene = nullptr;   // Scene for the game.
-    PhysicsScene *physicsScene = nullptr;  // Physics scene for the game.
+    SceneGameOfLife* golScene = nullptr;   // Scene for the game.
+    PhysicsScene* physicsScene = nullptr;  // Physics scene for the game.
     const size_t gridWidth = 100;
     const size_t gridHeight = 100;
     const size_t gridCount = gridWidth * gridHeight;
 
     // Grids for the Game of Life.
-    ME::Grid<uint8_t> *currentGen;
-    ME::Grid<uint8_t> *nextGen;
-    ME::Grid<uint8_t> *tempGrid;
+    ME::Grid<uint8_t>* currentGen;
+    ME::Grid<uint8_t>* nextGen;
+    ME::Grid<uint8_t>* tempGrid;
 
     uint32_t frameCounter = 0;
     uint32_t updateIntervalFrames = 2;

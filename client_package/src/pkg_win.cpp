@@ -109,13 +109,14 @@ static bool RunTexconv(const std::filesystem::path& src, const std::filesystem::
     return (rc == 0);
 }
 
-bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& buildPath) {
+bool ME::Package::PackageClientWin(const std::string& exePath, const std::string& gameName,
+                                   const std::string& buildPath) {
     std::cout << "Packaging Client for Windows" << '\n';
 
     std::filesystem::path exeFullPath = std::filesystem::absolute(exePath);
     std::filesystem::path exeDir = exeFullPath.parent_path();
     std::filesystem::path resourceDirPath = exeDir / "resources";
-    std::filesystem::path resListPath = resourceDirPath / "res_list_win.json";
+    std::filesystem::path resListPath = resourceDirPath / gameName / "res_list_win.json";
 
     std::filesystem::path clientExeDir = GetPathByReplacingClientPackage(exeDir);
     std::filesystem::path clientResDir = clientExeDir / "resources";
