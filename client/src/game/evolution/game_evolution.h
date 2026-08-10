@@ -38,11 +38,6 @@ class GameEvolution : public Game {
     ME::SceneUIEvolution* evoUIScene = nullptr;            // UI scene for the game.
     ME::PhysicsSceneEvolution* evoPhysicsScene = nullptr;  // Physics scene for the game.
 
-    // Game params.
-    const size_t gridWidth = 10'000;
-    const size_t gridHeight = 10'000;
-    const size_t gridCount = gridWidth * gridHeight;
-    ME::Grid<uint8_t>* terrain;
     const float cameraSpeed = 100.0f;
 };
 

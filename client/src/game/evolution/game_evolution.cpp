@@ -1,9 +1,5 @@
 #include "client/src/game/evolution/game_evolution.h"
 
-// Local helpers.
-static void TerrainGen(ME::Grid<uint8_t>* terrain, size_t width, size_t height);
-// End local helpers.
-
 ME::GameEvolution::GameEvolution() : Game() {}
 
 ME::GameEvolution::~GameEvolution() {}
@@ -24,9 +20,6 @@ void ME::GameEvolution::Init(ME::Time::TimeManager* currentTimeManager) {
                           scene->dynamicColliderCount);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(evoPhysicsScene);
-
-    terrain = new ME::Grid<uint8_t>(gridWidth, gridHeight);
-    TerrainGen(terrain, gridWidth, gridHeight);
 
     ME::Log("Evolution Game Start!");
 }
@@ -71,8 +64,4 @@ void ME::GameEvolution::End() {
 
 const char* ME::GameEvolution::GetDisplayName() const {
     return "Evolution Game";
-}
-
-static void TerrainGen(ME::Grid<uint8_t>* terrain, size_t width, size_t height) {
-    terrain->Fill(0);
 }
