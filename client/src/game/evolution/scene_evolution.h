@@ -37,8 +37,8 @@ class SceneEvolution : public Scene {
 
     // Game params.
     const size_t oceanMapSize = ME::POW2(4);
-    const size_t biomeMapSize = ME::POW2(8);
-    const size_t mapSize = ME::POW2(12);
+    const size_t biomeMapSize = ME::POW2(5);
+    const size_t mapSize = ME::POW2(6);
 
     ME::Grid<uint8_t>* terrain;
     ME::Grid<uint8_t>* oceanBase;

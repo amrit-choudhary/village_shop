@@ -2,10 +2,10 @@
         "tileSizeX": 16,
         "tileSizeY": 16,
         "padding": 2,
-        "numTextures": 9,
+        "numTextures": 12,
         "numTilesX": 3,
-        "numTilesY": 3,
+        "numTilesY": 4,
         "width": 52,
-        "height": 52,
+        "height": 70,
         "paddingType": 1
     }

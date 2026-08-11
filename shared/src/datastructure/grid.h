@@ -250,6 +250,23 @@ class Grid {
         std::memcpy(data, source.data, GetSizeBytes());
     }
 
+    /**
+     * Fill this grid by nearest-neighbor upscaling a smaller source grid.
+     * This grid's width/height must equal source dimensions * scalingFactor.
+     * No resizing is done.
+     */
+    void FillFrom(const Grid<T>& source, size_t scalingFactor) {
+        if (scalingFactor == 0 || source.GetWidth() * scalingFactor != width ||
+            source.GetHeight() * scalingFactor != height) {
+            return;
+        }
+        for (size_t y = 0; y < height; ++y) {
+            for (size_t x = 0; x < width; ++x) {
+                data[width * y + x] = *source.GetUnsafe(x / scalingFactor, y / scalingFactor);
+            }
+        }
+    }
+
    private:
     size_t width = 0;
     size_t height = 0;
