@@ -133,6 +133,20 @@ const char* ME::SceneEvolution::GetDisplayName() const {
     return "Evolution Scene";
 }
 
+void ME::SceneEvolution::UpdateCreatures(float deltaTime) {
+    for (size_t i = 0; i < creatureCount; ++i) {
+        ME::Vec2 prevPosition = creatures[i].position;
+        creatures[i].Update(deltaTime, walkableMap, creatureRnd);
+
+        if (creatures[i].position != prevPosition) {
+            float x = creatures[i].position.x * tileSize + originX;
+            float y = creatures[i].position.y * tileSize + originY;
+            instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
+            instancedSpriteRenderers1[i]->bDirty = true;
+        }
+    }
+}
+
 static void TerrainGen(ME::Grid<ME::TerrainType>* oceanBase, ME::Grid<ME::TerrainType>* ocean,
                        ME::Grid<ME::TerrainType>* biome, ME::Grid<ME::TerrainType>* terrain, size_t oceanMapSize,
                        size_t biomeMapSize, size_t mapSize) {

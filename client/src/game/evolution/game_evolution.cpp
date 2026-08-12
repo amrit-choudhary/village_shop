@@ -31,6 +31,8 @@ void ME::GameEvolution::Start() {
 void ME::GameEvolution::Update(double deltaTime) {
     Game::Update(deltaTime);
 
+    evoScene->UpdateCreatures(static_cast<float>(deltaTime));
+
     const float speed = cameraSpeed * static_cast<float>(deltaTime);
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 

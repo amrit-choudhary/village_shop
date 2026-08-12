@@ -6,6 +6,7 @@
 
 #include <shared/src/datastructure/grid.h>
 #include <shared/src/math/math.h>
+#include <shared/src/random/random_engine.h>
 
 #include "client/src/scene/scene.h"
 #include "creature.h"
@@ -42,6 +43,10 @@ class SceneEvolution : public Scene {
 
     virtual const char* GetDisplayName() const override;
 
+    // Ticks every creature's movement cooldown/AI and syncs moved creatures'
+    // instanced sprite transforms. Called every frame from GameEvolution::Update.
+    void UpdateCreatures(float deltaTime);
+
    private:
     const float tileSize = 12.0f;
     const float tileSizeHalf = tileSize / 2.0f;
@@ -52,7 +57,7 @@ class SceneEvolution : public Scene {
     const size_t oceanMapSize = ME::POW2(4);
     const size_t biomeMapSize = ME::POW2(5);
     const size_t mapSize = ME::POW2(8);
-    const size_t creatureCount = 10'000;
+    const size_t creatureCount = 2'000;
 
     ME::Grid<TerrainType>* terrain = nullptr;
     ME::Grid<TerrainType>* oceanBase = nullptr;
@@ -61,6 +66,7 @@ class SceneEvolution : public Scene {
     ME::Grid<uint8_t>* walkableMap = nullptr;
 
     Creature* creatures = nullptr;
+    ME::Random creatureRnd{"creatureMove", true};
 };
 
 }  // namespace ME
