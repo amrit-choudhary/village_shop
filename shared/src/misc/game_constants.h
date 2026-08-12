@@ -24,9 +24,9 @@ constexpr size_t MaxMeshRendererCount = 1'000;
 constexpr size_t MaxSpriteTransformCount = 1'000;
 constexpr size_t MaxSpriteRendererCount = 1'000;
 
-constexpr size_t MaxInstancedSpriteTransformCount = 10'000;
-constexpr size_t MaxInstancedSpriteRendererCount = 10'000;
-constexpr size_t MaxSpriteInstanceDataCount = 10'000;
+constexpr size_t MaxInstancedSpriteTransformCount = 100'000;
+constexpr size_t MaxInstancedSpriteRendererCount = 100'000;
+constexpr size_t MaxSpriteInstanceDataCount = 100'000;
 
 constexpr size_t MaxUISpriteTransformCount = 10'000;
 constexpr size_t MaxUISpriteRendererCount = 10'000;

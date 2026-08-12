@@ -30,15 +30,15 @@ class SceneEvolution : public Scene {
     virtual const char* GetDisplayName() const override;
 
    private:
-    const float tileSize = 8.0f;
+    const float tileSize = 12.0f;
     const float tileSizeHalf = tileSize / 2.0f;
-    const float originX = -50.0f;
-    const float originY = -50.0f;
+    const float originX = -150.0f;
+    const float originY = -150.0f;
 
     // Game params.
     const size_t oceanMapSize = ME::POW2(4);
     const size_t biomeMapSize = ME::POW2(5);
-    const size_t mapSize = ME::POW2(6);
+    const size_t mapSize = ME::POW2(8);
 
     ME::Grid<uint8_t>* terrain;
     ME::Grid<uint8_t>* oceanBase;

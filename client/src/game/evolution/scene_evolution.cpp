@@ -2,8 +2,9 @@
 
 #include <client/src/utils/json_utils.h>
 
+#include "shared/src/math/math.h"
+#include "shared/src/random/perlin_noise.h"
 #include "shared/src/random/random_engine.h"
-#include "shared/src/random/stb_perlin.h"
 
 // Local helpers.
 static void TerrainGen(ME::Grid<uint8_t>* oceanBase, ME::Grid<uint8_t>* ocean, ME::Grid<uint8_t>* biome,
@@ -84,23 +85,66 @@ void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
     Scene::BuildInstancedSpriteRenderers();
 
     ME::Random rnd{"tile", true};
-    const uint8_t kHeightLevels = 8;
+    const uint8_t kHeightLevels = 16;
     for (size_t i = 0; i < mapSize * mapSize; ++i) {
         uint8_t height = *(terrain->GetUnsafe(i % mapSize, i / mapSize));
         uint8_t tileIndex;
         ME::Color color = ME::Color::White();
-        if (height == 0) {
-            tileIndex = 8;  // Ocean tile
-        } else if (height == 1 || height == 2) {
-            tileIndex = 7;  // Lake
-        } else if (height == 3) {
-            tileIndex = 6;  // Beach
-        } else if (height == 5) {
-            tileIndex = 2;  // Forest
-        } else if (height > 5) {
-            tileIndex = 3;  // Mountain
-        } else {
-            tileIndex = 0;
+        switch (height) {
+            case 0:
+                tileIndex = 8;
+                break;
+            case 1:
+                tileIndex = 7;
+                break;
+            case 2:
+                tileIndex = 7;
+                break;
+            case 3:
+                tileIndex = 6;
+                break;
+            case 4:
+                tileIndex = 6;
+                break;
+            case 5:
+                tileIndex = 6;
+                break;
+            case 6:
+                tileIndex = 0;
+                break;
+            case 7:
+                tileIndex = 0;
+                break;
+            case 8:
+                tileIndex = 0;
+                break;
+            case 9:
+                tileIndex = 0;
+                break;
+            case 10:
+                tileIndex = 0;
+                break;
+            case 11:
+                tileIndex = 0;
+                break;
+            case 12:
+                tileIndex = 0;
+                break;
+            case 13:
+                tileIndex = 1;
+                break;
+            case 14:
+                tileIndex = 1;
+                break;
+            case 15:
+                tileIndex = 2;
+                break;
+            case 16:
+                tileIndex = 3;
+                break;
+            default:
+                tileIndex = 0;
+                break;
         }
         if (height > 0) {
             float shade =
@@ -123,7 +167,7 @@ RETRY_OCEAN_GEN:
     ME::Random rnd{"oceanBase", true};
     for (size_t i = 0; i < oceanMapSize * oceanMapSize; ++i) {
         double f = rnd.NextDouble();
-        if (f < 0.4f) {
+        if (f < 0.3f) {
             *(oceanBase->GetUnsafe(i % oceanMapSize, i / oceanMapSize)) = 0;  // Set as ocean tile
         } else {
             *(oceanBase->GetUnsafe(i % oceanMapSize, i / oceanMapSize)) = 1;  // Set as land tile
@@ -190,19 +234,33 @@ RETRY_OCEAN_GEN:
         }
     }
 
-    if (oceanCount < (oceanMapSize * oceanMapSize * 0.3f) || oceanCount > (oceanMapSize * oceanMapSize * 0.5f)) {
+    if (oceanCount < (oceanMapSize * oceanMapSize * 0.2f) || oceanCount > (oceanMapSize * oceanMapSize * 0.4f)) {
         goto RETRY_OCEAN_GEN;
     }
 
     terrain->FillFrom(*ocean, mapSize / oceanMapSize);
 
-    // Fill height map based on perline noise.
+    // Fill height map based on fractal perlin noise.
+    ME::Random rnd2{"perlin", true};
+    ME::PerlinNoise noise{rnd2};
+    // lacunarity=2.0, gain=0.5, octaves=6 -- typical fbm defaults (see stb_perlin.h).
+    const float kFbmLacunarity = 2.0f;
+    const float kFbmGain = 0.5f;
+    const int kFbmOctaves = 6;
+    // Octaves partially cancel each other out, so fbm's output almost never approaches its
+    // analytic max amplitude -- normalizing against that max leaves values clustered near 0.
+    // kFbmContrast pulls the typically-observed spread back out to fill [-1, 1]; retune by eye
+    // if the level distribution still looks off.
+    const float kFbmContrast = 3.5f;
+    const float kFbmMaxAmplitude = ME::PerlinNoise::FbmMaxAmplitude(kFbmGain, kFbmOctaves);
     for (size_t y = 0; y < mapSize; y++) {
         for (size_t x = 0; x < mapSize; x++) {
             if (*(terrain->GetUnsafe(x, y)) == 1) {  // Only for land tiles
-                float noiseValue =
-                    stb_perlin_noise3(static_cast<float>(x) * 0.1f, static_cast<float>(y) * 0.1f, 0.0f, 0, 0, 0);
-                const uint8_t kHeightLevels = 8;
+                float noiseValue = noise.Fbm(static_cast<float>(x) * 0.1f, static_cast<float>(y) * 0.1f, 0.0f,
+                                             kFbmLacunarity, kFbmGain, kFbmOctaves) /
+                                   kFbmMaxAmplitude * kFbmContrast;
+                noiseValue = ME::Math::Clamp(noiseValue, -1.0f, 1.0f);
+                const uint8_t kHeightLevels = 16;
                 uint8_t level = static_cast<uint8_t>((noiseValue + 1.0f) * 0.5f * kHeightLevels);
                 if (level >= kHeightLevels) {
                     level = kHeightLevels - 1;
