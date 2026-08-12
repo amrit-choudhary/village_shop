@@ -76,6 +76,15 @@ class Grid {
         return &data[width * y + x];
     }
 
+    /** No bounds checking. Use carefully. Index is a linear index (y * width + x). */
+    T* GetUnsafe(size_t index) {
+        return &data[index];
+    }
+    /** No bounds checking. Use carefully. Index is a linear index (y * width + x). */
+    const T* GetUnsafe(size_t index) const {
+        return &data[index];
+    }
+
     /** Does upper bounds checking. */
     T* Get(size_t x, size_t y) {
         if (x >= width || y >= height) {
@@ -89,6 +98,21 @@ class Grid {
             return nullptr;
         }
         return &data[width * y + x];
+    }
+
+    /** Does upper bounds checking. Index is a linear index (y * width + x). */
+    T* Get(size_t index) {
+        if (index >= width * height) {
+            return nullptr;
+        }
+        return &data[index];
+    }
+    /** Does upper bounds checking. Index is a linear index (y * width + x). */
+    const T* Get(size_t index) const {
+        if (index >= width * height) {
+            return nullptr;
+        }
+        return &data[index];
     }
 
     /** Get neighbor in specified grid direction. Returns nullptr if out of bounds. */

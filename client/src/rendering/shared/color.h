@@ -107,6 +107,10 @@ class Color {
         return Color(0.75f, 0.75f, 0.75f, 1.0f);
     }
 
+    static constexpr Color Zero() {
+        return Color(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
     // This uses it's own random seed that depends on time. Do not use in loop since it will
     // generate the same color as seed will be same. Use this for one off random color.
     static Color RandomColor();

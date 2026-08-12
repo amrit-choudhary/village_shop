@@ -8,8 +8,21 @@
 #include <shared/src/math/math.h>
 
 #include "client/src/scene/scene.h"
+#include "creature.h"
 
 namespace ME {
+
+enum class TerrainType : uint8_t {
+    Grass = 0,
+    DarkGrass = 1,
+    Forest = 2,
+    Rocky = 3,
+    Dirst = 4,
+    Desert = 5,
+    Beach = 6,
+    Lake = 7,
+    Ocean = 8
+};
 
 class SceneEvolution : public Scene {
    public:
@@ -32,18 +45,22 @@ class SceneEvolution : public Scene {
    private:
     const float tileSize = 12.0f;
     const float tileSizeHalf = tileSize / 2.0f;
-    const float originX = -150.0f;
-    const float originY = -150.0f;
+    const float originX = -50.0f;
+    const float originY = -50.0f;
 
     // Game params.
     const size_t oceanMapSize = ME::POW2(4);
     const size_t biomeMapSize = ME::POW2(5);
     const size_t mapSize = ME::POW2(8);
+    const size_t creatureCount = 10'000;
 
-    ME::Grid<uint8_t>* terrain;
-    ME::Grid<uint8_t>* oceanBase;
-    ME::Grid<uint8_t>* ocean;
-    ME::Grid<uint8_t>* biome;
+    ME::Grid<TerrainType>* terrain = nullptr;
+    ME::Grid<TerrainType>* oceanBase = nullptr;
+    ME::Grid<TerrainType>* ocean = nullptr;
+    ME::Grid<TerrainType>* biome = nullptr;
+    ME::Grid<uint8_t>* walkableMap = nullptr;
+
+    Creature* creatures = nullptr;
 };
 
 }  // namespace ME

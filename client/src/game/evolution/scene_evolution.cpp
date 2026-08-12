@@ -7,8 +7,12 @@
 #include "shared/src/random/random_engine.h"
 
 // Local helpers.
-static void TerrainGen(ME::Grid<uint8_t>* oceanBase, ME::Grid<uint8_t>* ocean, ME::Grid<uint8_t>* biome,
-                       ME::Grid<uint8_t>* terrain, size_t oceanMapSize, size_t biomeMapSize, size_t mapSize);
+static void TerrainGen(ME::Grid<ME::TerrainType>* oceanBase, ME::Grid<ME::TerrainType>* ocean,
+                       ME::Grid<ME::TerrainType>* biome, ME::Grid<ME::TerrainType>* terrain, size_t oceanMapSize,
+                       size_t biomeMapSize, size_t mapSize);
+
+static void CreatureGen(ME::Creature* creatures, size_t creatureCount, ME::Grid<uint8_t>* walkableMap, size_t mapSize);
+
 // End local helpers.
 
 ME::SceneEvolution::SceneEvolution() {}
@@ -18,14 +22,30 @@ ME::SceneEvolution::~SceneEvolution() {
     delete ocean;
     delete biome;
     delete terrain;
+    delete walkableMap;
+    delete[] creatures;
 }
 
 void ME::SceneEvolution::Init() {
-    oceanBase = new ME::Grid<uint8_t>(oceanMapSize, oceanMapSize);
-    ocean = new ME::Grid<uint8_t>(oceanMapSize, oceanMapSize);
-    biome = new ME::Grid<uint8_t>(biomeMapSize, biomeMapSize);
-    terrain = new ME::Grid<uint8_t>(mapSize, mapSize);
+    oceanBase = new ME::Grid<TerrainType>(oceanMapSize, oceanMapSize);
+    ocean = new ME::Grid<TerrainType>(oceanMapSize, oceanMapSize);
+    biome = new ME::Grid<TerrainType>(biomeMapSize, biomeMapSize);
+    terrain = new ME::Grid<TerrainType>(mapSize, mapSize);
     TerrainGen(oceanBase, ocean, biome, terrain, oceanMapSize, biomeMapSize, mapSize);
+    walkableMap = new ME::Grid<uint8_t>(mapSize, mapSize);
+
+    for (size_t i = 0; i < mapSize * mapSize; ++i) {
+        ME::TerrainType tileType = *(terrain->GetUnsafe(i));
+        if (tileType == ME::TerrainType::Ocean || tileType == ME::TerrainType::Lake ||
+            tileType == ME::TerrainType::Rocky || tileType == ME::TerrainType::Forest) {
+            *(walkableMap->GetUnsafe(i)) = 0;
+        } else {
+            *(walkableMap->GetUnsafe(i)) = 1;
+        }
+    }
+
+    creatures = new Creature[creatureCount];
+    CreatureGen(creatures, creatureCount, walkableMap, mapSize);
 
     Scene::Init();
 }
@@ -37,11 +57,13 @@ void ME::SceneEvolution::CreateResources() {
 
     spriteTexturePaths[0] = "textures/world/tileset_evolution.dds";
     spriteTexturePaths[1] = "textures/world/tileset_evolution.dds";
-    spriteTextureCount = 2;
+    spriteTexturePaths[2] = "textures/world/tileset_evolution.dds";
+    spriteTextureCount = 3;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[2]);
+    textureAtlasPropertiesCount = 3;
 }
 
 void ME::SceneEvolution::BuildLights() {
@@ -72,88 +94,38 @@ void ME::SceneEvolution::BuildSpriteRenderers() {
 void ME::SceneEvolution::BuildInstancedSpriteTransforms() {
     Scene::BuildInstancedSpriteTransforms();
 
+    // Add terrain.
     for (size_t i = 0; i < mapSize * mapSize; ++i) {
         float x = static_cast<float>(i % mapSize) * tileSize + originX;
         float y = static_cast<float>(i / mapSize) * tileSize + originY;
 
-        // Adding to instance buffer 0;
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 0);
+        // Adding to instance buffer 0; pushed behind buffer 1 (creatures) in depth so they draw on top.
+        AddInstancedSpriteTransform(ME::Vec3(x, y, 1.0f), ME::Vec3(tileSize, tileSize, 1.0f), 0);
+    }
+
+    // Add creatures.
+    for (size_t i = 0; i < creatureCount; ++i) {
+        float x = static_cast<float>(creatures[i].position.x) * tileSize + originX;
+        float y = static_cast<float>(creatures[i].position.y) * tileSize + originY;
+
+        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 1);
     }
 }
 
 void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
     Scene::BuildInstancedSpriteRenderers();
 
-    ME::Random rnd{"tile", true};
-    const uint8_t kHeightLevels = 16;
+    // Add terrain.
     for (size_t i = 0; i < mapSize * mapSize; ++i) {
-        uint8_t height = *(terrain->GetUnsafe(i % mapSize, i / mapSize));
-        uint8_t tileIndex;
-        ME::Color color = ME::Color::White();
-        switch (height) {
-            case 0:
-                tileIndex = 8;
-                break;
-            case 1:
-                tileIndex = 7;
-                break;
-            case 2:
-                tileIndex = 7;
-                break;
-            case 3:
-                tileIndex = 6;
-                break;
-            case 4:
-                tileIndex = 6;
-                break;
-            case 5:
-                tileIndex = 6;
-                break;
-            case 6:
-                tileIndex = 0;
-                break;
-            case 7:
-                tileIndex = 0;
-                break;
-            case 8:
-                tileIndex = 0;
-                break;
-            case 9:
-                tileIndex = 0;
-                break;
-            case 10:
-                tileIndex = 0;
-                break;
-            case 11:
-                tileIndex = 0;
-                break;
-            case 12:
-                tileIndex = 0;
-                break;
-            case 13:
-                tileIndex = 1;
-                break;
-            case 14:
-                tileIndex = 1;
-                break;
-            case 15:
-                tileIndex = 2;
-                break;
-            case 16:
-                tileIndex = 3;
-                break;
-            default:
-                tileIndex = 0;
-                break;
-        }
-        if (height > 0) {
-            float shade =
-                static_cast<float>(height - 1) / static_cast<float>(kHeightLevels - 1);  // [0,1], black to white
-            color = ME::Color(shade, shade, shade, 1.0f);
-            color = ME::Color::White();
-        }
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, tileIndex, color);
-        AddInstancedSpriteRenderer(spRend);
+        uint8_t tileIndex = static_cast<uint8_t>(*(terrain->GetUnsafe(i)));
+        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, tileIndex, ME::Color::White(), 0);
+        AddInstancedSpriteRenderer(spRend, 0);
+    }
+
+    // Add creatures.
+    for (size_t i = 0; i < creatureCount; ++i) {
+        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 10, ME::Color::White(), 0);
+        AddInstancedSpriteRenderer(spRend, 1);
     }
 }
 
@@ -161,16 +133,20 @@ const char* ME::SceneEvolution::GetDisplayName() const {
     return "Evolution Scene";
 }
 
-static void TerrainGen(ME::Grid<uint8_t>* oceanBase, ME::Grid<uint8_t>* ocean, ME::Grid<uint8_t>* biome,
-                       ME::Grid<uint8_t>* terrain, size_t oceanMapSize, size_t biomeMapSize, size_t mapSize) {
+static void TerrainGen(ME::Grid<ME::TerrainType>* oceanBase, ME::Grid<ME::TerrainType>* ocean,
+                       ME::Grid<ME::TerrainType>* biome, ME::Grid<ME::TerrainType>* terrain, size_t oceanMapSize,
+                       size_t biomeMapSize, size_t mapSize) {
+    biome->Fill(ME::TerrainType::Grass);  // For now, biome is not used. Fill with Grass.
+    biomeMapSize = 0;                     // Not used for now.
+
 RETRY_OCEAN_GEN:
     ME::Random rnd{"oceanBase", true};
     for (size_t i = 0; i < oceanMapSize * oceanMapSize; ++i) {
         double f = rnd.NextDouble();
         if (f < 0.3f) {
-            *(oceanBase->GetUnsafe(i % oceanMapSize, i / oceanMapSize)) = 0;  // Set as ocean tile
+            *(oceanBase->GetUnsafe(i)) = ME::TerrainType::Ocean;
         } else {
-            *(oceanBase->GetUnsafe(i % oceanMapSize, i / oceanMapSize)) = 1;  // Set as land tile
+            *(oceanBase->GetUnsafe(i)) = ME::TerrainType::Grass;
         }
     }
 
@@ -178,24 +154,24 @@ RETRY_OCEAN_GEN:
 
     for (size_t y = 0; y < oceanMapSize; y++) {
         for (size_t x = 0; x < oceanMapSize; x++) {
-            uint8_t* neighs[8];
+            ME::TerrainType* neighs[8];
             oceanBase->GetNeighbors8(x, y, neighs);
 
             size_t oceanNeighbors = 0;
             for (size_t n = 0; n < 8; n++) {
-                if (neighs[n] != nullptr && *(neighs[n]) == 0) {
+                if (neighs[n] != nullptr && *(neighs[n]) == ME::TerrainType::Ocean) {
                     oceanNeighbors++;
                 }
             }
 
             // If a cell is land and has 4 or more ocean neighbors, it becomes ocean.
-            if (*(oceanBase->GetUnsafe(x, y)) == 1 && oceanNeighbors >= 4) {
-                *(ocean->GetUnsafe(x, y)) = 0;
+            if (*(oceanBase->GetUnsafe(x, y)) == ME::TerrainType::Grass && oceanNeighbors >= 4) {
+                *(ocean->GetUnsafe(x, y)) = ME::TerrainType::Ocean;
             }
 
             // If a cell is ocean and has 4 or more land neighbors, it becomes land.
-            if (*(oceanBase->GetUnsafe(x, y)) == 0 && oceanNeighbors <= 4) {
-                *(ocean->GetUnsafe(x, y)) = 1;
+            if (*(oceanBase->GetUnsafe(x, y)) == ME::TerrainType::Ocean && oceanNeighbors <= 4) {
+                *(ocean->GetUnsafe(x, y)) = ME::TerrainType::Grass;
             }
         }
     }
@@ -204,24 +180,24 @@ RETRY_OCEAN_GEN:
 
     for (size_t y = 0; y < oceanMapSize; y++) {
         for (size_t x = 0; x < oceanMapSize; x++) {
-            uint8_t* neighs[8];
+            ME::TerrainType* neighs[8];
             oceanBase->GetNeighbors8(x, y, neighs);
 
             size_t oceanNeighbors = 0;
             for (size_t n = 0; n < 8; n++) {
-                if (neighs[n] != nullptr && *(neighs[n]) == 0) {
+                if (neighs[n] != nullptr && *(neighs[n]) == ME::TerrainType::Ocean) {
                     oceanNeighbors++;
                 }
             }
 
             // If a cell is land and has 4 or more ocean neighbors, it becomes ocean.
-            if (*(oceanBase->GetUnsafe(x, y)) == 1 && oceanNeighbors >= 4) {
-                *(ocean->GetUnsafe(x, y)) = 0;
+            if (*(oceanBase->GetUnsafe(x, y)) == ME::TerrainType::Grass && oceanNeighbors >= 4) {
+                *(ocean->GetUnsafe(x, y)) = ME::TerrainType::Ocean;
             }
 
             // If a cell is ocean and has 4 or more land neighbors, it becomes land.
-            if (*(oceanBase->GetUnsafe(x, y)) == 0 && oceanNeighbors <= 4) {
-                *(ocean->GetUnsafe(x, y)) = 1;
+            if (*(oceanBase->GetUnsafe(x, y)) == ME::TerrainType::Ocean && oceanNeighbors <= 4) {
+                *(ocean->GetUnsafe(x, y)) = ME::TerrainType::Grass;
             }
         }
     }
@@ -229,7 +205,7 @@ RETRY_OCEAN_GEN:
     // Check if less than 30% ocean tiles. If so, regenerate.
     size_t oceanCount = 0;
     for (size_t i = 0; i < oceanMapSize * oceanMapSize; ++i) {
-        if (*(ocean->GetUnsafe(i % oceanMapSize, i / oceanMapSize)) == 0) {
+        if (*(ocean->GetUnsafe(i)) == ME::TerrainType::Ocean) {
             oceanCount++;
         }
     }
@@ -255,7 +231,7 @@ RETRY_OCEAN_GEN:
     const float kFbmMaxAmplitude = ME::PerlinNoise::FbmMaxAmplitude(kFbmGain, kFbmOctaves);
     for (size_t y = 0; y < mapSize; y++) {
         for (size_t x = 0; x < mapSize; x++) {
-            if (*(terrain->GetUnsafe(x, y)) == 1) {  // Only for land tiles
+            if (*(terrain->GetUnsafe(x, y)) == ME::TerrainType::Grass) {  // Only for land tiles
                 float noiseValue = noise.Fbm(static_cast<float>(x) * 0.1f, static_cast<float>(y) * 0.1f, 0.0f,
                                              kFbmLacunarity, kFbmGain, kFbmOctaves) /
                                    kFbmMaxAmplitude * kFbmContrast;
@@ -265,7 +241,84 @@ RETRY_OCEAN_GEN:
                 if (level >= kHeightLevels) {
                     level = kHeightLevels - 1;
                 }
-                *(terrain->GetUnsafe(x, y)) = static_cast<uint8_t>(level + 1);
+
+                uint8_t terrainIndex = 0;
+                switch (level) {
+                    case 0:
+                        terrainIndex = 7;
+                        break;
+                    case 1:
+                        terrainIndex = 7;
+                        break;
+                    case 2:
+                        terrainIndex = 7;
+                        break;
+                    case 3:
+                        terrainIndex = 6;
+                        break;
+                    case 4:
+                        terrainIndex = 6;
+                        break;
+                    case 5:
+                        terrainIndex = 6;
+                        break;
+                    case 6:
+                        terrainIndex = 0;
+                        break;
+                    case 7:
+                        terrainIndex = 0;
+                        break;
+                    case 8:
+                        terrainIndex = 0;
+                        break;
+                    case 9:
+                        terrainIndex = 0;
+                        break;
+                    case 10:
+                        terrainIndex = 0;
+                        break;
+                    case 11:
+                        terrainIndex = 0;
+                        break;
+                    case 12:
+                        terrainIndex = 1;
+                        break;
+                    case 13:
+                        terrainIndex = 1;
+                        break;
+                    case 14:
+                        terrainIndex = 2;
+                        break;
+                    case 15:
+                        terrainIndex = 3;
+                        break;
+                    case 16:
+                        terrainIndex = 3;
+                        break;
+                    default:
+                        terrainIndex = 0;
+                        break;
+                }
+
+                *(terrain->GetUnsafe(x, y)) = static_cast<ME::TerrainType>(terrainIndex);
+            }
+        }
+    }
+}
+
+static void CreatureGen(ME::Creature* creatures, size_t creatureCount, ME::Grid<uint8_t>* walkableMap, size_t mapSize) {
+    ME::Random rnd{"creatureGen", true};
+
+    for (size_t i = 0; i < creatureCount; ++i) {
+        ME::Creature* creature = &creatures[i];
+
+        // Randomly place creature on walkable tile.
+        while (true) {
+            size_t x = rnd.NextRange(0, mapSize - 1);
+            size_t y = rnd.NextRange(0, mapSize - 1);
+            if (*(walkableMap->GetUnsafe(x, y)) == 1) {
+                creature->position = ME::Vec2(static_cast<float>(x), static_cast<float>(y));
+                break;
             }
         }
     }
