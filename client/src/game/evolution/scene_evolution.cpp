@@ -104,14 +104,19 @@ void ME::SceneEvolution::BuildInstancedSpriteTransforms() {
         AddInstancedSpriteTransform(ME::Vec3(x, y, 1.0f), ME::Vec3(tileSize, tileSize, 1.0f), 0);
     }
 
-    // Add Creature.
-    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
-        ME::Creature* creature = &(*creaturePool)[i];
-
-        float x = static_cast<float>(creature->position.x) * tileSize + originX;
-        float y = static_cast<float>(creature->position.y) * tileSize + originY;
-
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 1);
+    // Add creatures. Pre-create one instanced transform per pool slot (not just the currently
+    // active ones), so the DX instance buffer is sized for the pool's full capacity up front.
+    // Slots beyond the pool's active count aren't spawned yet, so they're parked off-screen
+    // until Acquire()'d.
+    for (size_t i = 0; i < creatureCount; ++i) {
+        if (i < creaturePool->GetActiveCount()) {
+            ME::Creature* creature = &(*creaturePool)[i];
+            float x = static_cast<float>(creature->position.x) * tileSize + originX;
+            float y = static_cast<float>(creature->position.y) * tileSize + originY;
+            AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 1);
+        } else {
+            AddInstancedSpriteTransform(creatureParkPos, ME::Vec3(tileSize, tileSize, 1.0f), 1);
+        }
     }
 }
 
@@ -125,8 +130,8 @@ void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
         AddInstancedSpriteRenderer(spRend, 0);
     }
 
-    // Add creatures.
-    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
+    // Add creatures. Matches the full pool capacity used above, not just the active count.
+    for (size_t i = 0; i < creatureCount; ++i) {
         ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 10, ME::Color::White(), 0);
         AddInstancedSpriteRenderer(spRend, 1);
     }

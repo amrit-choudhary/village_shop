@@ -51,8 +51,8 @@ class SceneEvolution : public Scene {
    private:
     const float tileSize = 12.0f;
     const float tileSizeHalf = tileSize / 2.0f;
-    const float originX = -50.0f;
-    const float originY = -50.0f;
+    const float originX = -150.0f;
+    const float originY = -150.0f;
 
     // Game params.
     const size_t oceanMapSize = ME::POW2(4);
@@ -60,6 +60,7 @@ class SceneEvolution : public Scene {
     const size_t mapSize = ME::POW2(8);
     const size_t creatureCount = 20'000;
     const size_t initialCreatureCount = 1'000;
+    ME::Vec3 creatureParkPos{9000.0f, 9000.0f, 0.0f};
 
     ME::Grid<TerrainType>* terrain = nullptr;
     ME::Grid<TerrainType>* oceanBase = nullptr;
