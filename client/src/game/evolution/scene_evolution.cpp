@@ -11,7 +11,8 @@ static void TerrainGen(ME::Grid<ME::TerrainType>* oceanBase, ME::Grid<ME::Terrai
                        ME::Grid<ME::TerrainType>* biome, ME::Grid<ME::TerrainType>* terrain, size_t oceanMapSize,
                        size_t biomeMapSize, size_t mapSize);
 
-static void CreatureGen(ME::Creature* creatures, size_t creatureCount, ME::Grid<uint8_t>* walkableMap, size_t mapSize);
+static void CreatureGen(ME::Pool<ME::Creature>* creaturePool, size_t initialCreatureCount,
+                        ME::Grid<uint8_t>* walkableMap, size_t mapSize);
 
 // End local helpers.
 
@@ -23,7 +24,7 @@ ME::SceneEvolution::~SceneEvolution() {
     delete biome;
     delete terrain;
     delete walkableMap;
-    delete[] creatures;
+    delete creaturePool;
 }
 
 void ME::SceneEvolution::Init() {
@@ -44,8 +45,8 @@ void ME::SceneEvolution::Init() {
         }
     }
 
-    creatures = new Creature[creatureCount];
-    CreatureGen(creatures, creatureCount, walkableMap, mapSize);
+    creaturePool = new ME::Pool<Creature>(creatureCount);
+    CreatureGen(creaturePool, initialCreatureCount, walkableMap, mapSize);
 
     Scene::Init();
 }
@@ -103,10 +104,12 @@ void ME::SceneEvolution::BuildInstancedSpriteTransforms() {
         AddInstancedSpriteTransform(ME::Vec3(x, y, 1.0f), ME::Vec3(tileSize, tileSize, 1.0f), 0);
     }
 
-    // Add creatures.
-    for (size_t i = 0; i < creatureCount; ++i) {
-        float x = static_cast<float>(creatures[i].position.x) * tileSize + originX;
-        float y = static_cast<float>(creatures[i].position.y) * tileSize + originY;
+    // Add Creature.
+    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
+        ME::Creature* creature = &(*creaturePool)[i];
+
+        float x = static_cast<float>(creature->position.x) * tileSize + originX;
+        float y = static_cast<float>(creature->position.y) * tileSize + originY;
 
         AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 1);
     }
@@ -123,7 +126,7 @@ void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
     }
 
     // Add creatures.
-    for (size_t i = 0; i < creatureCount; ++i) {
+    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
         ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 10, ME::Color::White(), 0);
         AddInstancedSpriteRenderer(spRend, 1);
     }
@@ -134,13 +137,16 @@ const char* ME::SceneEvolution::GetDisplayName() const {
 }
 
 void ME::SceneEvolution::UpdateCreatures(float deltaTime) {
-    for (size_t i = 0; i < creatureCount; ++i) {
-        ME::Vec2 prevPosition = creatures[i].position;
-        creatures[i].Update(deltaTime, walkableMap, creatureRnd);
+    ME::Random creatureRnd{"creatureMove", true};
 
-        if (creatures[i].position != prevPosition) {
-            float x = creatures[i].position.x * tileSize + originX;
-            float y = creatures[i].position.y * tileSize + originY;
+    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
+        ME::Creature* creature = &(*creaturePool)[i];
+        ME::Vec2 prevPosition = creature->position;
+        creature->Update(deltaTime, walkableMap, creatureRnd);
+
+        if (creature->position != prevPosition) {
+            float x = creature->position.x * tileSize + originX;
+            float y = creature->position.y * tileSize + originY;
             instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
             instancedSpriteRenderers1[i]->bDirty = true;
         }
@@ -320,13 +326,16 @@ RETRY_OCEAN_GEN:
     }
 }
 
-static void CreatureGen(ME::Creature* creatures, size_t creatureCount, ME::Grid<uint8_t>* walkableMap, size_t mapSize) {
-    ME::Random rnd{"creatureGen", true};
+void CreatureGen(ME::Pool<ME::Creature>* creaturePool, size_t initialCreatureCount, ME::Grid<uint8_t>* walkableMap,
+                 size_t mapSize) {
+    // Create initial pool.
+    creaturePool->Acquire(initialCreatureCount);
 
-    for (size_t i = 0; i < creatureCount; ++i) {
-        ME::Creature* creature = &creatures[i];
+    for (size_t i = 0; i < initialCreatureCount; ++i) {
+        ME::Creature* creature = &(*creaturePool)[i];
 
         // Randomly place creature on walkable tile.
+        ME::Random rnd{"creatureGen2", true};
         while (true) {
             size_t x = rnd.NextRange(0, mapSize - 1);
             size_t y = rnd.NextRange(0, mapSize - 1);

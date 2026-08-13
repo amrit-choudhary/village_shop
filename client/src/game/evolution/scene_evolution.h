@@ -5,6 +5,7 @@
 #pragma once
 
 #include <shared/src/datastructure/grid.h>
+#include <shared/src/datastructure/pool.h>
 #include <shared/src/math/math.h>
 #include <shared/src/random/random_engine.h>
 
@@ -57,7 +58,8 @@ class SceneEvolution : public Scene {
     const size_t oceanMapSize = ME::POW2(4);
     const size_t biomeMapSize = ME::POW2(5);
     const size_t mapSize = ME::POW2(8);
-    const size_t creatureCount = 2'000;
+    const size_t creatureCount = 20'000;
+    const size_t initialCreatureCount = 1'000;
 
     ME::Grid<TerrainType>* terrain = nullptr;
     ME::Grid<TerrainType>* oceanBase = nullptr;
@@ -65,8 +67,7 @@ class SceneEvolution : public Scene {
     ME::Grid<TerrainType>* biome = nullptr;
     ME::Grid<uint8_t>* walkableMap = nullptr;
 
-    Creature* creatures = nullptr;
-    ME::Random creatureRnd{"creatureMove", true};
+    ME::Pool<Creature>* creaturePool = nullptr;
 };
 
 }  // namespace ME
