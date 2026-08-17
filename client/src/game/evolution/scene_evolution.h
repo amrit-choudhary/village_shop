@@ -49,7 +49,7 @@ class SceneEvolution : public Scene {
     void UpdateCreatures(float deltaTime);
 
    private:
-    const float tileSize = 12.0f;
+    const float tileSize = 4.0f;
     const float tileSizeHalf = tileSize / 2.0f;
     const float originX = -150.0f;
     const float originY = -150.0f;

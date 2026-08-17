@@ -2,6 +2,9 @@
 
 #include <client/src/utils/json_utils.h>
 
+#include <cstdio>
+
+#include "client/src/debug/debug_system.h"
 #include "shared/src/math/math.h"
 #include "shared/src/random/perlin_noise.h"
 #include "shared/src/random/random_engine.h"
@@ -146,16 +149,66 @@ void ME::SceneEvolution::UpdateCreatures(float deltaTime) {
 
     for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
         ME::Creature* creature = &(*creaturePool)[i];
-        ME::Vec2 prevPosition = creature->position;
         creature->Update(deltaTime, walkableMap, creatureRnd);
+    }
 
-        if (creature->position != prevPosition) {
-            float x = creature->position.x * tileSize + originX;
-            float y = creature->position.y * tileSize + originY;
-            instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
-            instancedSpriteRenderers1[i]->bDirty = true;
+    // Reproduction: spawn a fresh creature at the parent's position, then send the parent back to Moving
+    size_t birthsThisFrame = 0;
+    for (size_t i = 0; i < creaturePool->GetActiveCount(); ++i) {
+        ME::Creature* creature = &(*creaturePool)[i];
+        if (creature->state == CreatureState::Reproducing) {
+            ME::Creature* offspring = creaturePool->Acquire();
+            if (offspring != nullptr) {
+                offspring->Spawn(creature->position, creatureRnd);
+                ++birthsThisFrame;
+            }
+
+            creature->state = CreatureState::Moving;
+            creature->reproCooldown = 0.0f;
         }
     }
+
+    size_t activeCountBeforeRemoval = creaturePool->GetActiveCount();
+
+    for (size_t i = creaturePool->GetActiveCount(); i-- > 0;) {
+        ME::Creature* creature = &(*creaturePool)[i];
+        if (creature->state == CreatureState::Dying) {
+            creaturePool->Release(creature);
+        }
+    }
+
+    size_t activeCount = creaturePool->GetActiveCount();
+
+    // Resync every remaining active slot's sprite against the pool's final state for this
+    // frame, since slot identities may have shifted above.
+    for (size_t i = 0; i < activeCount; ++i) {
+        ME::Creature* creature = &(*creaturePool)[i];
+        float x = creature->position.x * tileSize + originX;
+        float y = creature->position.y * tileSize + originY;
+        instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
+        instancedSpriteRenderers1[i]->bDirty = true;
+    }
+
+    // Park any slots freed this frame so released creatures actually disappear.
+    // Just for little optimization, we only need to park the slots that were released this frame, not all the
+    for (size_t i = activeCount; i < activeCountBeforeRemoval; ++i) {
+        instancedSpriteTransforms1[i]->SetPosition(creatureParkPos.x, creatureParkPos.y, creatureParkPos.z);
+        instancedSpriteRenderers1[i]->bDirty = true;
+    }
+
+    size_t deathsThisFrame = activeCountBeforeRemoval - activeCount;
+
+    char aliveBuf[32];
+    snprintf(aliveBuf, sizeof(aliveBuf), "Creatures alive: %zu", activeCount);
+    ME::DebugSystem::ScreenPrintSlot(3, aliveBuf);
+
+    char birthsBuf[32];
+    snprintf(birthsBuf, sizeof(birthsBuf), "Births this frame: %zu", birthsThisFrame);
+    ME::DebugSystem::ScreenPrintSlot(4, birthsBuf);
+
+    char deathsBuf[32];
+    snprintf(deathsBuf, sizeof(deathsBuf), "Deaths this frame: %zu", deathsThisFrame);
+    ME::DebugSystem::ScreenPrintSlot(5, deathsBuf);
 }
 
 static void TerrainGen(ME::Grid<ME::TerrainType>* oceanBase, ME::Grid<ME::TerrainType>* ocean,
@@ -336,16 +389,18 @@ void CreatureGen(ME::Pool<ME::Creature>* creaturePool, size_t initialCreatureCou
     // Create initial pool.
     creaturePool->Acquire(initialCreatureCount);
 
+    // Single rnd stream shared across the whole batch, so creatures spawned in the same tight
+    // loop don't collide on the same seed and end up with identical positions/lifetimes.
+    ME::Random rnd{"creatureGen2", true};
     for (size_t i = 0; i < initialCreatureCount; ++i) {
         ME::Creature* creature = &(*creaturePool)[i];
 
         // Randomly place creature on walkable tile.
-        ME::Random rnd{"creatureGen2", true};
         while (true) {
             size_t x = rnd.NextRange(0, mapSize - 1);
             size_t y = rnd.NextRange(0, mapSize - 1);
             if (*(walkableMap->GetUnsafe(x, y)) == 1) {
-                creature->position = ME::Vec2(static_cast<float>(x), static_cast<float>(y));
+                creature->Spawn(ME::Vec2(static_cast<float>(x), static_cast<float>(y)), rnd);
                 break;
             }
         }
