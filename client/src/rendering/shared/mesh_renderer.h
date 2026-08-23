@@ -15,15 +15,15 @@ namespace ME {
 
 class MeshRenderer {
    public:
-    MeshRenderer() = delete;
+    MeshRenderer() = default;
     MeshRenderer(uint8_t meshId, uint8_t materialId, uint8_t textureId, const Color& color)
         : meshId(meshId), materialId(materialId), textureId(textureId), color(color) {}
     ~MeshRenderer();
 
-    const uint8_t meshId = 0;
-    const uint8_t materialId = 0;
-    const uint8_t textureId = 0;
-    const ME::Color color;
+    uint8_t meshId = 0;
+    uint8_t materialId = 0;
+    uint8_t textureId = 0;
+    ME::Color color;
 };
 
 }  // namespace ME

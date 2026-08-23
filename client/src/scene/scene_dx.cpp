@@ -36,7 +36,6 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     instancedSpriteTransforms1 = scene->instancedSpriteTransforms1;
 
     meshRenderers = scene->meshRenderers;
-    meshRendererCount = scene->meshRendererCount;
     spriteRenderers = scene->spriteRenderers;
     spriteRendererCount = scene->spriteRendererCount;
 

@@ -51,7 +51,7 @@ class SceneDX {
     ME::TextureDX** spriteTextures;
     ME::TextureAtlasProperties* textureAtlasProperties;
     ME::Span<ME::Transform> transforms;
-    ME::MeshRenderer** meshRenderers;
+    ME::Span<ME::MeshRenderer> meshRenderers;
     ME::Span<ME::Transform> spriteTransforms;
     ME::SpriteRenderer** spriteRenderers;
 
@@ -61,7 +61,6 @@ class SceneDX {
     ME::Span<ME::Transform> instancedSpriteTransforms1;
     ME::SpriteRenderer** instancedSpriteRenderers1;
 
-    uint16_t meshRendererCount = 0;
     uint16_t spriteRendererCount = 0;
 
     uint32_t instancedSpriteRendererCount0 = 0;

@@ -56,7 +56,7 @@ class Scene {
     ME::TextureSampler* textureSamplers = nullptr;
     ME::TextureAtlasProperties* textureAtlasProperties = nullptr;
     ME::Span<ME::Transform> transforms;
-    ME::MeshRenderer** meshRenderers = nullptr;
+    ME::Span<ME::MeshRenderer> meshRenderers;
     ME::Span<ME::Transform> spriteTransforms;
     ME::SpriteRenderer** spriteRenderers = nullptr;
 
@@ -80,7 +80,6 @@ class Scene {
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t shaderCount = 0;
     uint8_t textureSamplerCount = 0;
-    uint16_t meshRendererCount = 0;
     uint16_t spriteRendererCount = 0;
 
     uint32_t instancedSpriteRendererCount0 = 0;

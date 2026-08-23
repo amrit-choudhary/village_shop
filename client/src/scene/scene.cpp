@@ -48,10 +48,7 @@ ME::Scene::~Scene() {
 
     delete[] transforms.data;
 
-    for (uint16_t i = 0; i < meshRendererCount; ++i) {
-        delete meshRenderers[i];
-    }
-    delete[] meshRenderers;
+    delete[] meshRenderers.data;
 
     delete[] spriteTransforms.data;
 
@@ -89,7 +86,8 @@ void ME::Scene::CreateResources() {
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
-    meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
+    meshRenderers.data = new ME::MeshRenderer[Constants::MaxMeshRendererCount];
+    meshRenderers.count = 0;
     spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
     spriteTransforms.count = 0;
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
