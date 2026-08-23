@@ -12,28 +12,24 @@ void ME::PhysicsScene::Init() {
     mapDynamicIdToIndex = new uint32_t[Constants::MaxDynamicColliderCount];
 }
 
-void ME::PhysicsScene::Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount,
-                             ColliderAABB* inDynamicColliders, uint32_t inDynamicColliderCount) {
+void ME::PhysicsScene::Init(ME::Span<ColliderAABB> inStaticColliders, ME::Span<ColliderAABB> inDynamicColliders) {
     Init();
 
     staticColliders = inStaticColliders;
     dynamicColliders = inDynamicColliders;
 
-    staticColliderCount = inStaticColliderCount;
-    dynamicColliderCount = inDynamicColliderCount;
-
     // TODO FIX sparse array.
 
-    // for (uint32_t i = 0; i < staticColliderCount; ++i) {
+    // for (size_t i = 0; i < staticColliders.count; ++i) {
     //     mapStaticIdToIndex[staticColliders[i].GetID()] = i;
     // }
-    // for (uint8_t i = 0; i < dynamicColliderCount; ++i) {
+    // for (size_t i = 0; i < dynamicColliders.count; ++i) {
     //     mapDynamicIdToIndex[dynamicColliders[i].GetID()] = i;
     // }
 }
 
 ME::Collider* ME::PhysicsScene::GetStaticColliderById(uint32_t id) const {
-    if (id < staticColliderCount) {
+    if (id < staticColliders.count) {
         return &staticColliders[mapStaticIdToIndex[id]];
     } else {
         return nullptr;
@@ -41,7 +37,7 @@ ME::Collider* ME::PhysicsScene::GetStaticColliderById(uint32_t id) const {
 }
 
 ME::Collider* ME::PhysicsScene::GetDynamicColliderById(uint32_t id) const {
-    if (id < dynamicColliderCount) {
+    if (id < dynamicColliders.count) {
         return &dynamicColliders[mapDynamicIdToIndex[id]];
     } else {
         return nullptr;

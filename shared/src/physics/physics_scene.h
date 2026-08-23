@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "collider_aabb.h"
+#include "shared/src/datastructure/span.h"
 #include "shared/src/misc/game_constants.h"
 
 namespace ME {
@@ -24,14 +25,10 @@ class PhysicsScene {
     virtual void Init();
 
     // Initializes the physics scene with the given static/dynamic collider arrays.
-    virtual void Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount, ColliderAABB* inDynamicColliders,
-                       uint32_t inDynamicColliderCount);
+    virtual void Init(ME::Span<ColliderAABB> inStaticColliders, ME::Span<ColliderAABB> inDynamicColliders);
 
-    ColliderAABB* staticColliders;
-    ColliderAABB* dynamicColliders;
-
-    uint32_t staticColliderCount = 0;
-    uint32_t dynamicColliderCount = 0;
+    ME::Span<ColliderAABB> staticColliders;
+    ME::Span<ColliderAABB> dynamicColliders;
 
     Collider* GetStaticColliderById(uint32_t id) const;
     Collider* GetDynamicColliderById(uint32_t id) const;

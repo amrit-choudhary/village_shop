@@ -69,10 +69,10 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
     spriteTransforms[0].SetScale(ME::Vec3(charWidth, charHeight, 1.0f));
     spriteTransforms.count = 1;
 
-    dynamicColliders[dynamicColliderCount] =
-        ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Player, PhysicsLayer::Enemy,
+    dynamicColliders[dynamicColliders.count] =
+        ME::ColliderAABB(dynamicColliders.count, true, false, PhysicsLayer::Player, PhysicsLayer::Enemy,
                          spriteTransforms[0], charCollScaleMult);
-    ++dynamicColliderCount;
+    ++dynamicColliders.count;
 }
 
 void ME::SceneCharacterTest::BuildSpriteRenderers() {
@@ -110,10 +110,10 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         instancedSpriteTransforms0[i].SetPosition(x, y, 0.0f);
         instancedSpriteTransforms0[i].SetScale(ME::Vec3(npcWidth, npcHeight, 1.0f));
 
-        dynamicColliders[dynamicColliderCount] = ME::ColliderAABB(
-            dynamicColliderCount, true, false, PhysicsLayer::Enemy, (PhysicsLayer::Player | PhysicsLayer::Projectile),
+        dynamicColliders[dynamicColliders.count] = ME::ColliderAABB(
+            dynamicColliders.count, true, false, PhysicsLayer::Enemy, (PhysicsLayer::Player | PhysicsLayer::Projectile),
             instancedSpriteTransforms0[i], enemyCollScaleMult);
-        ++dynamicColliderCount;
+        ++dynamicColliders.count;
     }
 
     // Bullet Sprites.
@@ -125,10 +125,10 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
         instancedSpriteTransforms1[i].SetPosition(x, y, 0.0f);
         instancedSpriteTransforms1[i].SetScale(ME::Vec3(bulletSize, bulletSize, 1.0f));
 
-        dynamicColliders[dynamicColliderCount] =
-            ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
+        dynamicColliders[dynamicColliders.count] =
+            ME::ColliderAABB(dynamicColliders.count, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
                              instancedSpriteTransforms1[i], bulletCollScaleMult);
-        ++dynamicColliderCount;
+        ++dynamicColliders.count;
     }
 }
 

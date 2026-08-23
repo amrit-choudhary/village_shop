@@ -43,8 +43,10 @@ void ME::SceneGameOfLife::CreateResources() {
     instancedSpriteRenderers0.count = 0;
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
-    staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
-    dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    staticColliders.data = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
+    staticColliders.count = 0;
+    dynamicColliders.data = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    dynamicColliders.count = 0;
 
     meshCount = 0;
 

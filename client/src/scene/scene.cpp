@@ -38,8 +38,8 @@ ME::Scene::~Scene() {
     delete[] shaderPaths;
     delete[] textureSamplers;
 
-    delete[] staticColliders;
-    delete[] dynamicColliders;
+    delete[] staticColliders.data;
+    delete[] dynamicColliders.data;
 
     delete[] sfxPaths;
     delete[] musicPaths;
@@ -94,8 +94,10 @@ void ME::Scene::CreateResources() {
     instancedSpriteRenderers1.count = 0;
     spriteInstanceData1 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
-    staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
-    dynamicColliders = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    staticColliders.data = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
+    staticColliders.count = 0;
+    dynamicColliders.data = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
+    dynamicColliders.count = 0;
 
     sfxPaths = new const char*[Constants::MaxLoadedSFXCount];
     sfxCount = 0;

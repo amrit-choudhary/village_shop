@@ -18,8 +18,7 @@ class PhysicsSceneBreakout : public ME::PhysicsScene {
     void Init() override;
 
     // Initializes the physics scene with the given static/dynamic collider arrays specific to Breakout.
-    void Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount, ColliderAABB* inDynamicColliders,
-              uint32_t inDynamicColliderCount) override;
+    void Init(ME::Span<ColliderAABB> inStaticColliders, ME::Span<ColliderAABB> inDynamicColliders) override;
 };
 
 }  // namespace ME

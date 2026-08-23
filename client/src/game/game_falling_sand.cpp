@@ -12,8 +12,7 @@ void ME::GameFallingSand::Init(ME::Time::TimeManager *currentTimeManager) {
     scene->Init();
 
     physicsScene = new ME::PhysicsScene();
-    physicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
-                        scene->dynamicColliderCount);
+    physicsScene->Init(scene->staticColliders, scene->dynamicColliders);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 

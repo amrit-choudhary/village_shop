@@ -18,8 +18,7 @@ class PhysicsSceneChar : public ME::PhysicsScene {
     virtual void Init() override;
 
     // Initializes the physics scene with the given static/dynamic collider arrays specific to Character Test.
-    virtual void Init(ColliderAABB* inStaticColliders, uint32_t inStaticColliderCount, ColliderAABB* inDynamicColliders,
-                       uint32_t inDynamicColliderCount) override;
+    virtual void Init(ME::Span<ColliderAABB> inStaticColliders, ME::Span<ColliderAABB> inDynamicColliders) override;
 };
 
 }  // namespace ME

@@ -20,8 +20,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     uiScene->Init();
 
     physicsScene = new ME::PhysicsSceneChar();
-    physicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
-                        scene->dynamicColliderCount);
+    physicsScene->Init(scene->staticColliders, scene->dynamicColliders);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(physicsScene);
 

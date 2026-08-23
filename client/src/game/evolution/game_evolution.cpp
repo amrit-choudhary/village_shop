@@ -16,8 +16,7 @@ void ME::GameEvolution::Init(ME::Time::TimeManager* currentTimeManager) {
     uiScene->Init();
 
     evoPhysicsScene = new ME::PhysicsSceneEvolution();
-    evoPhysicsScene->Init(scene->staticColliders, scene->staticColliderCount, scene->dynamicColliders,
-                          scene->dynamicColliderCount);
+    evoPhysicsScene->Init(scene->staticColliders, scene->dynamicColliders);
     physicsSystem->SetCollisionListener(this);
     physicsSystem->SetScene(evoPhysicsScene);
 

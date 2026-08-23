@@ -113,7 +113,7 @@ void ME::PhysicsSystem::SetupCollisionCategories() {
         categoryCounts[i] = 0;
     }
 
-    for (uint32_t i = 0; i < scene->dynamicColliderCount; ++i) {
+    for (size_t i = 0; i < scene->dynamicColliders.count; ++i) {
         ColliderAABB* dynamicCollider = &scene->dynamicColliders[i];
         if (dynamicCollider->isStatic) {
             continue;

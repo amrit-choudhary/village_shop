@@ -70,8 +70,8 @@ class Scene {
     ME::Span<ME::SpriteRenderer> instancedSpriteRenderers1;
     ME::SpriteRendererInstanceData* spriteInstanceData1 = nullptr;
 
-    ME::ColliderAABB* staticColliders = nullptr;
-    ME::ColliderAABB* dynamicColliders = nullptr;
+    ME::Span<ME::ColliderAABB> staticColliders;
+    ME::Span<ME::ColliderAABB> dynamicColliders;
 
     uint8_t meshCount = 0;
     uint8_t quadCount = 0;
@@ -80,9 +80,6 @@ class Scene {
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t shaderCount = 0;
     uint8_t textureSamplerCount = 0;
-
-    uint32_t staticColliderCount = 0;
-    uint32_t dynamicColliderCount = 0;
 
     const char** sfxPaths = nullptr;
     uint8_t sfxCount = 0;
