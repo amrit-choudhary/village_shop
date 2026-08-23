@@ -28,9 +28,9 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->Init();
 
     playerTransform = &charScene->spriteTransforms[0];
-    uiScene->textRenderers[0]->SetText("Survivors");
-    uiScene->textRenderers[1]->SetText("Score:00000");
-    uiScene->textRenderers[2]->SetText("Health:100");
+    uiScene->textRenderers[0].SetText("Survivors");
+    uiScene->textRenderers[1].SetText("Score:00000");
+    uiScene->textRenderers[2].SetText("Health:100");
 
     bulletDirs = new ME::Vec2[maxBulletCount]{};
 
@@ -163,7 +163,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score:%05u", score);
-    uiScene->textRenderers[1]->SetText(scoreText);
+    uiScene->textRenderers[1].SetText(scoreText);
 
     ME::Vec2 mousePosNorm = inputManager->GetMouseWorldPosNorm();
     ME::Vec2 mousePos = mousePosNorm - ME::Vec2{0.5f, 0.5f};
@@ -319,5 +319,5 @@ void ME::GameCharacterTest::EnemyTouchedPlayer(uint32_t enemyIndex) {
 
     char healthText[32];
     snprintf(healthText, sizeof(healthText), "Health:%03u", health);
-    uiScene->textRenderers[2]->SetText(healthText);
+    uiScene->textRenderers[2].SetText(healthText);
 }

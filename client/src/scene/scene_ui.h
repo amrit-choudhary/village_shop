@@ -10,6 +10,7 @@
 #include "client/src/rendering/shared/text_renderer.h"
 #include "client/src/rendering/shared/texture.h"
 #include "client/src/ui/ui_element.h"
+#include "shared/src/datastructure/span.h"
 #include "shared/src/physics/collider_aabb.h"
 
 namespace ME {
@@ -31,30 +32,22 @@ class SceneUI {
 
    public:
     // Resources
-    const char** spriteTexturePaths;
+    ME::Span<const char*> spriteTexturePaths;
     ME::TextureAtlasProperties* textureAtlasProperties;
 
-    ME::Transform** uiSpriteTransforms;
-    ME::SpriteRenderer** uiSpriteRenderers;
-    ME::UISpriteRendererInstanceData* uiSpriteInstanceData;
+    ME::Span<ME::Transform> uiSpriteTransforms;
+    ME::Span<ME::SpriteRenderer> uiSpriteRenderers;
+    ME::Span<ME::UISpriteRendererInstanceData> uiSpriteInstanceData;
 
-    ME::Transform** textTransforms;
-    ME::TextRenderer** textRenderers;
-    ME::TextRendererInstanceData* textInstanceData;
+    ME::Span<ME::Transform> textTransforms;
+    ME::Span<ME::TextRenderer> textRenderers;
+    ME::Span<ME::TextRendererInstanceData> textInstanceData;
 
     // Dumb registry of all UIElements (roots and children alike), populated/queried by
     // UISystem. Purely bookkeeping — no layout math, no rendering here.
-    ME::UIElement** uiElements = nullptr;
-    uint32_t uiElementCount = 0;
+    ME::Span<ME::UIElement*> uiElements;
 
     uint8_t textureAtlasPropertiesCount = 0;
-    uint8_t spriteTextureCount = 0;
-
-    uint32_t uiSpriteRendererCount = 0;
-    uint32_t uiSpriteInstanceDataCount = 0;
-    uint32_t textRendererCount = 0;
-    uint32_t textTransformsCount = 0;
-    uint32_t textInstanceDataCount = 0;
 
     virtual void Init();
     virtual void CreateResources();
@@ -90,12 +83,12 @@ class SceneUI {
     /**
      * Creates and adds a UI sprite with the given position and scale.
      */
-    void AddUISprite(ME::Vec3 position, ME::Vec3 scale, ME::SpriteRenderer* spriteRenderer);
+    void AddUISprite(ME::Vec3 position, ME::Vec3 scale, const ME::SpriteRenderer& spriteRenderer);
 
     /**
      * Creates and adds a Text renderer with the given parameters.
      */
-    void AddUIText(ME::Vec3 position, ME::Vec3 scale, ME::TextRenderer* textRenderer);
+    void AddUIText(ME::Vec3 position, ME::Vec3 scale, const ME::TextRenderer& textRenderer);
 
    private:
     /**

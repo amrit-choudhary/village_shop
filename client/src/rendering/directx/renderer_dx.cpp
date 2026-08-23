@@ -509,7 +509,7 @@ void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
 
     ///////////////////////////
     // UI Sprite Drawing.
-    if (uiSceneDX->uiSpriteRendererCount != 0) {
+    if (uiSceneDX->uiSpriteRenderers.count != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DUISprite);
         commandList->SetGraphicsRootSignature(rootSig2DUISprite);
@@ -537,7 +537,7 @@ void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->spriteTextures[textureIndex]->descHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(2, textureHandleUISprite);
 
-        uiSceneDX->uiSpriteInstanceBuffer->CopyData(uiSceneDX->uiSpriteInstanceData);
+        uiSceneDX->uiSpriteInstanceBuffer->CopyData(uiSceneDX->uiSpriteInstanceData.data);
 
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataUISprite =
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->uiSpriteInstanceBufferHeapIndex);
@@ -549,13 +549,13 @@ void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, uiSceneDX->uiSpriteInstanceDataCount, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, uiSceneDX->uiSpriteInstanceData.count, 0, 0, 0);
         // End Sprite Drawing.
     }
 
     ///////////////////////////
     // Start Text Drawing.
-    if (uiSceneDX->textRendererCount != 0) {
+    if (uiSceneDX->textRenderers.count != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DUIText);
         commandList->SetGraphicsRootSignature(rootSig2DUIText);
@@ -582,7 +582,7 @@ void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->spriteTextures[textureIndex]->descHeapIndex);
         commandList->SetGraphicsRootDescriptorTable(2, textureHandleText);
 
-        uiSceneDX->textInstanceBuffer->CopyData(uiSceneDX->textInstanceData);
+        uiSceneDX->textInstanceBuffer->CopyData(uiSceneDX->textInstanceData.data);
 
         D3D12_GPU_DESCRIPTOR_HANDLE srvInstanceDataText =
             descHeapManager->GetGPUDescriptorHandleForIndex(uiSceneDX->textInstanceBufferHeapIndex);
@@ -594,7 +594,7 @@ void ME::RendererDX::DrawUIScene(ME::SceneUIDX* uiSceneDX) {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, *uiSceneDX->textInstanceDataCount, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, uiSceneDX->textInstanceData.count, 0, 0, 0);
     }
     // End Text Drawing.
 }

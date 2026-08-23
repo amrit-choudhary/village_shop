@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+ME::TextRenderer::TextRenderer() {}
+
 ME::TextRenderer::TextRenderer(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId,
                                const ME::Color& color, uint16_t height, uint16_t width, int16_t letterSpacing,
                                int16_t lineGap, uint16_t charsPerLine, TextAlignment alignment)
@@ -17,6 +19,52 @@ ME::TextRenderer::TextRenderer(const char* text, uint8_t quadId, uint8_t texture
     this->lineGap = lineGap;
     this->charsPerLine = charsPerLine;
     this->alignment = alignment;
+}
+
+ME::TextRenderer::TextRenderer(const TextRenderer& other)
+    : bDirty(other.bDirty),
+      quadId(other.quadId),
+      textureId(other.textureId),
+      materialId(other.materialId),
+      color(other.color),
+      height(other.height),
+      width(other.width),
+      letterSpacing(other.letterSpacing),
+      lineGap(other.lineGap),
+      charsPerLine(other.charsPerLine),
+      alignment(other.alignment) {
+    if (other.text != nullptr) {
+        size_t length = strlen(other.text) + 1;
+        text = new char[length];
+        strcpy(text, other.text);
+    }
+}
+
+ME::TextRenderer& ME::TextRenderer::operator=(const TextRenderer& other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    delete[] text;
+    text = nullptr;
+    if (other.text != nullptr) {
+        size_t length = strlen(other.text) + 1;
+        text = new char[length];
+        strcpy(text, other.text);
+    }
+
+    bDirty = other.bDirty;
+    quadId = other.quadId;
+    textureId = other.textureId;
+    materialId = other.materialId;
+    color = other.color;
+    height = other.height;
+    width = other.width;
+    letterSpacing = other.letterSpacing;
+    lineGap = other.lineGap;
+    charsPerLine = other.charsPerLine;
+    alignment = other.alignment;
+    return *this;
 }
 
 ME::TextRenderer::~TextRenderer() {

@@ -68,8 +68,8 @@ class GameMain {
     // ME::GameRPG game;
     // ME::GameDiceSimple game;
     // ME::GameCharacterTest game;
-    // ME::GameUIDemo game;
-    ME::GameEvolution game;
+    ME::GameUIDemo game;
+    // ME::GameEvolution game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;

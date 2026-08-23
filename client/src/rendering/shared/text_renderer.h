@@ -40,19 +40,25 @@ class TextRendererInstanceData {
 
 class TextRenderer {
    public:
-    TextRenderer() = delete;
+    // Default-constructs an empty (untextured) renderer — needed so TextRenderer can live in a
+    // value array (e.g. Span<TextRenderer>). Slots beyond a Span's `count` are never read, so
+    // an unset `text` is never dereferenced.
+    TextRenderer();
     TextRenderer(const char* text, uint8_t quadId, uint8_t textureId, uint8_t materialId, const ME::Color& color,
                  uint16_t height, uint16_t width, int16_t letterSpacing, int16_t lineGap, uint16_t charsPerLine,
                  TextAlignment alignment = TextAlignment::Left);
+    // Deep-copies `text` so each instance owns its own buffer.
+    TextRenderer(const TextRenderer& other);
+    TextRenderer& operator=(const TextRenderer& other);
     ~TextRenderer();
 
     // Marks the text renderer as dirty, indicating that its data has changed and needs to be updated.
     bool bDirty = true;
 
     char* text = nullptr;                           // Text to render
-    const uint8_t quadId = 0;                       // ID of the quad to render
-    const uint8_t textureId = 0;                    // ID of the texture to use
-    const uint8_t materialId = 0;                   // ID of the material to use
+    uint8_t quadId = 0;                             // ID of the quad to render
+    uint8_t textureId = 0;                          // ID of the texture to use
+    uint8_t materialId = 0;                         // ID of the material to use
     ME::Color color = ME::Color::White();           // Color of the text
     uint16_t height = 12;                           // Height of the text in pixels
     uint16_t width = 12;                            // Width of the text in pixels

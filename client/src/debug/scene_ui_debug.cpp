@@ -32,7 +32,7 @@ void ME::SceneUIDebug::CreateResources() {
 
     spriteTexturePaths[0] = "textures/ui/ui_atlas.dds";
     spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.dds";
-    spriteTextureCount = 2;
+    spriteTexturePaths.count = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);

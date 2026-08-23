@@ -12,6 +12,7 @@
 #include "client/src/rendering/directx/texture_dx.h"
 #include "client/src/rendering/directx/upload_buffer_dx.h"
 #include "scene_ui.h"
+#include "shared/src/datastructure/span.h"
 
 namespace ME {
 
@@ -40,25 +41,19 @@ class SceneUIDX {
     ME::TextureDX** spriteTextures;
     ME::TextureAtlasProperties* textureAtlasProperties;
 
-    ME::Transform** uiSpriteTransforms;
-    ME::SpriteRenderer** uiSpriteRenderers;
-    ME::Transform** textTransforms;
-    ME::TextRenderer** textRenderers;
-
-    uint32_t uiSpriteRendererCount = 0;
-    uint32_t uiSpriteInstanceDataCount = 0;
-    uint32_t textTransformsCount = 0;
-    uint32_t textRendererCount = 0;
-    uint32_t* textInstanceDataCount = 0;
+    ME::Span<ME::Transform> uiSpriteTransforms;
+    ME::Span<ME::SpriteRenderer> uiSpriteRenderers;
+    ME::Span<ME::Transform> textTransforms;
+    ME::Span<ME::TextRenderer> textRenderers;
 
     uint32_t perPassCBCount = 0;
     uint32_t textureAtlasCBCount = 0;
 
-    ME::UISpriteRendererInstanceData* uiSpriteInstanceData;
+    ME::Span<ME::UISpriteRendererInstanceData> uiSpriteInstanceData;
     ME::UploadBufferDX* uiSpriteInstanceBuffer = nullptr;
     uint32_t uiSpriteInstanceBufferHeapIndex = 0;
 
-    ME::TextRendererInstanceData* textInstanceData;
+    ME::Span<ME::TextRendererInstanceData> textInstanceData;
     ME::UploadBufferDX* textInstanceBuffer = nullptr;
     uint32_t textInstanceBufferHeapIndex = 0;
 

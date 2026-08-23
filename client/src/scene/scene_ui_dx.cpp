@@ -23,16 +23,11 @@ ME::SceneUIDX::SceneUIDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
 
     uiSpriteTransforms = scene->uiSpriteTransforms;
     uiSpriteRenderers = scene->uiSpriteRenderers;
-    uiSpriteRendererCount = scene->uiSpriteRendererCount;
     uiSpriteInstanceData = scene->uiSpriteInstanceData;
-    uiSpriteInstanceDataCount = scene->uiSpriteInstanceDataCount;
 
     textTransforms = scene->textTransforms;
-    textTransformsCount = scene->textTransformsCount;
     textRenderers = scene->textRenderers;
-    textRendererCount = scene->textRendererCount;
     textInstanceData = scene->textInstanceData;
-    textInstanceDataCount = &scene->textInstanceDataCount;
 
     MakeSpriteTextures();
     MakeConstantBuffers();
@@ -42,7 +37,7 @@ ME::SceneUIDX::SceneUIDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdLis
 }
 
 ME::SceneUIDX::~SceneUIDX() {
-    for (uint8_t i = 0; i < scene->spriteTextureCount; ++i) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; ++i) {
         delete spriteTextures[i];
     }
     delete[] spriteTextures;
@@ -66,7 +61,7 @@ ME::SceneUIDX::~SceneUIDX() {
 void ME::SceneUIDX::Init() {}
 
 void ME::SceneUIDX::PostInitCleanup() {
-    for (uint8_t i = 0; i < scene->spriteTextureCount; ++i) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; ++i) {
         spriteTextures[i]->ReleaseUploadBuffers();
     }
 }
@@ -74,20 +69,22 @@ void ME::SceneUIDX::PostInitCleanup() {
 void ME::SceneUIDX::Update() {
     // The dynamic UIElement/UISystem path (unlike the static SceneUIHUD Build*() path) can add
     // elements after this object was constructed — re-sync the live counts every frame so the
-    // draw calls in renderer_dx.cpp see current data. The transform/renderer/instance-data
-    // array pointers themselves don't need re-syncing: they alias SceneUI's own arrays, which
-    // are allocated once at max capacity and never reallocated, so RebuildUISprites/
-    // RebuildUIText writes are already visible through these same pointers.
-    uiSpriteRendererCount = scene->uiSpriteRendererCount;
-    uiSpriteInstanceDataCount = scene->uiSpriteInstanceDataCount;
-    textTransformsCount = scene->textTransformsCount;
-    textRendererCount = scene->textRendererCount;
+    // draw calls in renderer_dx.cpp see current data. The array data pointers themselves don't
+    // need re-syncing: they alias SceneUI's own arrays, which are allocated once at max capacity
+    // and never reallocated, so RebuildUISprites/RebuildUIText writes are already visible through
+    // these same pointers.
+    uiSpriteTransforms.count = scene->uiSpriteTransforms.count;
+    uiSpriteRenderers.count = scene->uiSpriteRenderers.count;
+    uiSpriteInstanceData.count = scene->uiSpriteInstanceData.count;
+    textTransforms.count = scene->textTransforms.count;
+    textRenderers.count = scene->textRenderers.count;
+    textInstanceData.count = scene->textInstanceData.count;
 }
 
 void ME::SceneUIDX::End() {}
 
 void ME::SceneUIDX::MakeSpriteTextures() {
-    for (uint8_t i = 0; i < scene->spriteTextureCount; ++i) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; ++i) {
         spriteTextures[i] = new ME::TextureDX(scene->spriteTexturePaths[i], device, cmdList);
         spriteTextures[i]->CreateBuffers(device, cmdList);
         spriteTextures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(spriteTextures[i]->GetTextureBuffer());

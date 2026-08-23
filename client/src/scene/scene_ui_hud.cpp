@@ -19,7 +19,7 @@ void ME::SceneUIHUD::CreateResources() {
     // UI Sprite paths.
     spriteTexturePaths[0] = "textures/ui/ui_atlas.dds";
     spriteTexturePaths[1] = "textures/font/ascii_ibm_transparent.dds";
-    spriteTextureCount = 2;
+    spriteTexturePaths.count = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
@@ -40,7 +40,7 @@ void ME::SceneUIHUD::BuildUISprites() {
         float x = -290.0f + i * uiHeaderSize;
         float y = 405.0f;
 
-        ME::SpriteRenderer* sprRend = new ME::SpriteRenderer(0, 0, 1, 1, headSP[i]);
+        ME::SpriteRenderer sprRend(0, 0, 1, 1, headSP[i]);
         AddUISprite(ME::Vec3{x, y, 0.0f}, ME::Vec3{uiHeaderSize, uiHeaderSize, 1.0f}, sprRend);
     }
 
@@ -63,25 +63,25 @@ void ME::SceneUIHUD::BuildUISprites() {
         float x = -175.0f + col * uiSpriteSize;
         float y = -560.0f + row * uiSpriteSize;
 
-        ME::SpriteRenderer* sprRend = new ME::SpriteRenderer(0, 0, 1, 1, panel[i]);
+        ME::SpriteRenderer sprRend(0, 0, 1, 1, panel[i]);
         AddUISprite(ME::Vec3{x, y, 0.0f}, ME::Vec3{uiSpriteSize, uiSpriteSize, 1.0f}, sprRend);
     }
 
-    uiSpriteInstanceDataCount = uiSpriteRendererCount;
+    uiSpriteInstanceData.count = uiSpriteRenderers.count;
 }
 
 void ME::SceneUIHUD::BuildTextRenderers() {
     SceneUI::BuildTextRenderers();
 
-    ME::TextRenderer* textRend1 = new ME::TextRenderer{"Game Name", 0, 2, 0, ME::Color{"#060479"}, 40, 40, -10, 0, 0};
+    ME::TextRenderer textRend1{"Game Name", 0, 2, 0, ME::Color{"#060479"}, 40, 40, -10, 0, 0};
     float y1 = 408.0f;
-    AddUIText(ME::Vec3{0.0f, y1, 0.0f}, ME::Vec3{(float)textRend1->width, (float)textRend1->height, 1.0f}, textRend1);
+    AddUIText(ME::Vec3{0.0f, y1, 0.0f}, ME::Vec3{(float)textRend1.width, (float)textRend1.height, 1.0f}, textRend1);
 
-    ME::TextRenderer* textRend2 = new ME::TextRenderer{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 35, 35, -8, 0, 0};
+    ME::TextRenderer textRend2{"Score: 0000", 0, 2, 0, ME::Color{"#3a5975"}, 35, 35, -8, 0, 0};
     float y2 = -390.0f;
-    AddUIText(ME::Vec3{0.0f, y2, 0.0f}, ME::Vec3{(float)textRend2->width, (float)textRend2->height, 1.0f}, textRend2);
+    AddUIText(ME::Vec3{0.0f, y2, 0.0f}, ME::Vec3{(float)textRend2.width, (float)textRend2.height, 1.0f}, textRend2);
 
-    ME::TextRenderer* textRend3 = new ME::TextRenderer{"Health:000", 0, 2, 0, ME::Color{"#039427ff"}, 35, 35, -8, 0, 0};
+    ME::TextRenderer textRend3{"Health:000", 0, 2, 0, ME::Color{"#039427ff"}, 35, 35, -8, 0, 0};
     float y3 = -430.0f;
-    AddUIText(ME::Vec3{0.0f, y3, 0.0f}, ME::Vec3{(float)textRend3->width, (float)textRend3->height, 1.0f}, textRend3);
+    AddUIText(ME::Vec3{0.0f, y3, 0.0f}, ME::Vec3{(float)textRend3.width, (float)textRend3.height, 1.0f}, textRend3);
 }

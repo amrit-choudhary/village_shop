@@ -8,22 +8,22 @@
 ME::SceneUI::SceneUI() {}
 
 ME::SceneUI::~SceneUI() {
-    delete[] spriteTexturePaths;
+    delete[] spriteTexturePaths.data;
 
-    // Note: individual entries are no longer deleted here. Ownership of sprite/text
-    // renderers+transforms (and of UIElements themselves) belongs to whoever created them
-    // (e.g. Panel/Label/Image own their own renderer+Transform) — SceneUI only ever holds
-    // non-owning pointers into these arrays now, via RebuildUISprites/RebuildUIText/
-    // AddUIElement. Only the array containers themselves are freed.
-    delete[] uiSpriteTransforms;
-    delete[] uiSpriteRenderers;
-    delete[] uiSpriteInstanceData;
+    // uiSpriteTransforms/uiSpriteRenderers/textTransforms/textRenderers all hold values copied
+    // in via AddUISprite/AddUIText/RebuildUISprites/RebuildUIText (from the dynamic UIElement
+    // path, Panel/Label/Image own the source Transform/SpriteRenderer/TextRenderer) — SceneUI
+    // owns these copies, so just freeing the arrays is enough. UIElements themselves are owned
+    // by whoever created them — only the array container is freed for those.
+    delete[] uiSpriteTransforms.data;
+    delete[] uiSpriteRenderers.data;
+    delete[] uiSpriteInstanceData.data;
 
-    delete[] textTransforms;
-    delete[] textRenderers;
-    delete[] textInstanceData;
+    delete[] textTransforms.data;
+    delete[] textRenderers.data;
+    delete[] textInstanceData.data;
 
-    delete[] uiElements;
+    delete[] uiElements.data;
 }
 
 void ME::SceneUI::Update() {
@@ -39,19 +39,25 @@ void ME::SceneUI::Init() {
 }
 
 void ME::SceneUI::CreateResources() {
-    spriteTexturePaths = new const char*[Constants::MaxSpriteTextureCount];
+    spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
+    spriteTexturePaths.count = 0;
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
 
-    uiSpriteTransforms = new ME::Transform*[Constants::MaxUISpriteTransformCount];
-    uiSpriteRenderers = new ME::SpriteRenderer*[Constants::MaxUISpriteRendererCount];
-    uiSpriteInstanceData = new ME::UISpriteRendererInstanceData[Constants::MaxUISpriteInstanceDataCount];
-    textTransforms = new ME::Transform*[Constants::MaxTextTransformsCount];
-    textRenderers = new ME::TextRenderer*[Constants::MaxTextRendererCount];
-    textInstanceData = new ME::TextRendererInstanceData[Constants::MaxTextInstanceDataCount];
+    uiSpriteTransforms.data = new ME::Transform[Constants::MaxUISpriteTransformCount];
+    uiSpriteTransforms.count = 0;
+    uiSpriteRenderers.data = new ME::SpriteRenderer[Constants::MaxUISpriteRendererCount];
+    uiSpriteRenderers.count = 0;
+    uiSpriteInstanceData.data = new ME::UISpriteRendererInstanceData[Constants::MaxUISpriteInstanceDataCount];
+    uiSpriteInstanceData.count = 0;
+    textTransforms.data = new ME::Transform[Constants::MaxTextTransformsCount];
+    textTransforms.count = 0;
+    textRenderers.data = new ME::TextRenderer[Constants::MaxTextRendererCount];
+    textRenderers.count = 0;
+    textInstanceData.data = new ME::TextRendererInstanceData[Constants::MaxTextInstanceDataCount];
+    textInstanceData.count = 0;
 
-    uiElements = new ME::UIElement*[Constants::MaxUIElementCount];
-
-    spriteTextureCount = 0;
+    uiElements.data = new ME::UIElement*[Constants::MaxUIElementCount];
+    uiElements.count = 0;
 
     textureAtlasPropertiesCount = 0;
 }
@@ -62,98 +68,98 @@ void ME::SceneUI::BuildTextRenderers() {}
 
 void ME::SceneUI::BuildUIElements() {}
 
-void ME::SceneUI::AddUISprite(ME::Vec3 position, ME::Vec3 scale, ME::SpriteRenderer* spriteRenderer) {
-    ME::Transform* transform = new ME::Transform();
-    transform->SetPosition(position);
-    transform->SetScale(scale);
-    uiSpriteTransforms[uiSpriteRendererCount] = transform;
+void ME::SceneUI::AddUISprite(ME::Vec3 position, ME::Vec3 scale, const ME::SpriteRenderer& spriteRenderer) {
+    uiSpriteTransforms[uiSpriteTransforms.count].SetPosition(position);
+    uiSpriteTransforms[uiSpriteTransforms.count].SetScale(scale);
+    ++uiSpriteTransforms.count;
 
-    uiSpriteRenderers[uiSpriteRendererCount] = spriteRenderer;
-    ++uiSpriteRendererCount;
+    uiSpriteRenderers[uiSpriteRenderers.count] = spriteRenderer;
+    ++uiSpriteRenderers.count;
 }
 
-void ME::SceneUI::AddUIText(ME::Vec3 position, ME::Vec3 scale, ME::TextRenderer* textRenderer) {
-    ME::Transform* transform = new ME::Transform();
-    transform->SetPosition(position);
-    transform->SetScale(scale);
-    textTransforms[textRendererCount] = transform;
-    textRenderers[textRendererCount] = textRenderer;
-    ++textRendererCount;
-    textInstanceDataCount += textRenderer->GetCount();
+void ME::SceneUI::AddUIText(ME::Vec3 position, ME::Vec3 scale, const ME::TextRenderer& textRenderer) {
+    textTransforms[textTransforms.count].SetPosition(position);
+    textTransforms[textTransforms.count].SetScale(scale);
+    ++textTransforms.count;
+    textRenderers[textRenderers.count] = textRenderer;
+    ++textRenderers.count;
+    textInstanceData.count += textRenderer.GetCount();
 }
 
 bool ME::SceneUI::AddUIElement(ME::UIElement* element) {
-    if (uiElementCount >= Constants::MaxUIElementCount) {
+    if (uiElements.count >= Constants::MaxUIElementCount) {
         return false;
     }
-    uiElements[uiElementCount] = element;
-    ++uiElementCount;
+    uiElements[uiElements.count] = element;
+    ++uiElements.count;
     return true;
 }
 
 void ME::SceneUI::RemoveUIElement(ME::UIElement* element) {
-    for (uint32_t i = 0; i < uiElementCount; ++i) {
+    for (uint32_t i = 0; i < uiElements.count; ++i) {
         if (uiElements[i] == element) {
-            uiElements[i] = uiElements[uiElementCount - 1];
-            --uiElementCount;
+            uiElements[i] = uiElements[uiElements.count - 1];
+            --uiElements.count;
             return;
         }
     }
 }
 
 ME::UIElement** ME::SceneUI::GetUIElements() const {
-    return uiElements;
+    return uiElements.data;
 }
 
 uint32_t ME::SceneUI::GetUIElementCount() const {
-    return uiElementCount;
+    return static_cast<uint32_t>(uiElements.count);
 }
 
 void ME::SceneUI::RebuildUISprites(ME::Transform** transforms, ME::SpriteRenderer** renderers, uint32_t count) {
     uint32_t boundedCount = count < Constants::MaxUISpriteRendererCount ? count : Constants::MaxUISpriteRendererCount;
     for (uint32_t i = 0; i < boundedCount; ++i) {
-        uiSpriteTransforms[i] = transforms[i];
-        uiSpriteRenderers[i] = renderers[i];
+        uiSpriteTransforms[i] = *transforms[i];
+        uiSpriteRenderers[i] = *renderers[i];
     }
-    uiSpriteRendererCount = boundedCount;
+    uiSpriteTransforms.count = boundedCount;
+    uiSpriteRenderers.count = boundedCount;
     // One instance per sprite renderer (unlike text, which can have multiple glyph instances
     // per TextRenderer) — UpdateUISpriteRenderers() doesn't recompute this itself, unlike
-    // UpdateTextRenderers()'s textInstanceDataCount, so it must be set here.
-    uiSpriteInstanceDataCount = boundedCount;
+    // UpdateTextRenderers()'s textInstanceData.count, so it must be set here.
+    uiSpriteInstanceData.count = boundedCount;
 }
 
 void ME::SceneUI::RebuildUIText(ME::Transform** transforms, ME::TextRenderer** renderers, uint32_t count) {
     uint32_t boundedCount = count < Constants::MaxTextRendererCount ? count : Constants::MaxTextRendererCount;
     for (uint32_t i = 0; i < boundedCount; ++i) {
-        textTransforms[i] = transforms[i];
-        textRenderers[i] = renderers[i];
+        textTransforms[i] = *transforms[i];
+        textRenderers[i] = *renderers[i];
     }
-    textRendererCount = boundedCount;
+    textTransforms.count = boundedCount;
+    textRenderers.count = boundedCount;
 }
 
 void ME::SceneUI::UpdateUISpriteRenderers() {
     // Updating transforms and atlas indicesfor dirty instances.
     // In separate loops to avoid cache misses.
 
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (!uiSpriteRenderers[i]->bDirty) {
+    for (uint32_t i = 0; i < uiSpriteRenderers.count; ++i) {
+        if (!uiSpriteRenderers[i].bDirty) {
             continue;
         }
-        uiSpriteInstanceData[i].modelMatrixData = uiSpriteTransforms[i]->GetModelMatrix().GetDataForShader();
+        uiSpriteInstanceData[i].modelMatrixData = uiSpriteTransforms[i].GetModelMatrix().GetDataForShader();
     }
 
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (!uiSpriteRenderers[i]->bDirty) {
+    for (uint32_t i = 0; i < uiSpriteRenderers.count; ++i) {
+        if (!uiSpriteRenderers[i].bDirty) {
             continue;
         }
-        uiSpriteInstanceData[i].atlasIndex = uiSpriteRenderers[i]->atlasIndex;
-        uiSpriteInstanceData[i].color = uiSpriteRenderers[i]->color;
-        uiSpriteInstanceData[i].flags = uiSpriteRenderers[i]->flags;
+        uiSpriteInstanceData[i].atlasIndex = uiSpriteRenderers[i].atlasIndex;
+        uiSpriteInstanceData[i].color = uiSpriteRenderers[i].color;
+        uiSpriteInstanceData[i].flags = uiSpriteRenderers[i].flags;
     }
 
-    for (uint32_t i = 0; i < uiSpriteRendererCount; ++i) {
-        if (uiSpriteRenderers[i]->bDirty) {
-            uiSpriteRenderers[i]->bDirty = false;
+    for (uint32_t i = 0; i < uiSpriteRenderers.count; ++i) {
+        if (uiSpriteRenderers[i].bDirty) {
+            uiSpriteRenderers[i].bDirty = false;
         }
     }
 }
@@ -161,14 +167,14 @@ void ME::SceneUI::UpdateUISpriteRenderers() {
 void ME::SceneUI::UpdateTextRenderers() {
     // Update transform data.
     uint32_t count = 0;
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        if (!textRenderers[i]->bDirty) {
-            count += textRenderers[i]->GetCount();
+    for (uint32_t i = 0; i < textRenderers.count; ++i) {
+        if (!textRenderers[i].bDirty) {
+            count += textRenderers[i].GetCount();
             continue;
         }
 
-        float totalWidth = static_cast<float>(textRenderers[i]->GetRenderWidth());
-        float glyphStep = static_cast<float>(textRenderers[i]->width + textRenderers[i]->letterSpacing);
+        float totalWidth = static_cast<float>(textRenderers[i].GetRenderWidth());
+        float glyphStep = static_cast<float>(textRenderers[i].width + textRenderers[i].letterSpacing);
 
         // textTransforms[i]'s position is always the owning box's center (see UISystem/
         // UISystemDebug's SyncToScene), and its scale.x is the box's width (same call sets
@@ -176,9 +182,9 @@ void ME::SceneUI::UpdateTextRenderers() {
         // alignment. Left/Right are expressed in terms of boxWidth rather than totalWidth
         // specifically so they land exactly on the box edge regardless of any mismatch between
         // the box's declared size and the text's actual rendered width.
-        float boxWidth = textTransforms[i]->GetScale().x;
+        float boxWidth = textTransforms[i].GetScale().x;
         float startOffset;
-        switch (textRenderers[i]->alignment) {
+        switch (textRenderers[i].alignment) {
             case ME::TextAlignment::Left:
                 startOffset = -boxWidth / 2.0f;
                 break;
@@ -191,12 +197,12 @@ void ME::SceneUI::UpdateTextRenderers() {
                 break;
         }
 
-        for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
+        for (int j = 0; j < textRenderers[i].GetCount(); ++j) {
             ME::Transform tempTransform;
-            ME::Vec3 pos = textTransforms[i]->GetPosition();
-            pos.x += startOffset + j * glyphStep + textRenderers[i]->width / 2.0f;
+            ME::Vec3 pos = textTransforms[i].GetPosition();
+            pos.x += startOffset + j * glyphStep + textRenderers[i].width / 2.0f;
             tempTransform.SetPosition(pos);
-            tempTransform.SetScale(textRenderers[i]->width, textRenderers[i]->height);
+            tempTransform.SetScale(textRenderers[i].width, textRenderers[i].height);
             textInstanceData[count].modelMatrixData = tempTransform.GetModelMatrix().GetDataForShader();
             ++count;
         }
@@ -204,28 +210,28 @@ void ME::SceneUI::UpdateTextRenderers() {
 
     // Update atlas indices and colors.
     count = 0;
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        if (!textRenderers[i]->bDirty) {
-            count += textRenderers[i]->GetCount();
+    for (uint32_t i = 0; i < textRenderers.count; ++i) {
+        if (!textRenderers[i].bDirty) {
+            count += textRenderers[i].GetCount();
             continue;
         }
 
-        for (int j = 0; j < textRenderers[i]->GetCount(); ++j) {
-            textInstanceData[count].atlasIndex = textRenderers[i]->text[j];
-            textInstanceData[count].color = textRenderers[i]->color;
+        for (int j = 0; j < textRenderers[i].GetCount(); ++j) {
+            textInstanceData[count].atlasIndex = textRenderers[i].text[j];
+            textInstanceData[count].color = textRenderers[i].color;
             ++count;
         }
     }
 
     // TODO: change only if bDirty.
-    textInstanceDataCount = 0;
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        textInstanceDataCount += textRenderers[i]->GetCount();
+    textInstanceData.count = 0;
+    for (uint32_t i = 0; i < textRenderers.count; ++i) {
+        textInstanceData.count += textRenderers[i].GetCount();
     }
 
-    for (uint32_t i = 0; i < textRendererCount; ++i) {
-        if (textRenderers[i]->bDirty) {
-            textRenderers[i]->bDirty = false;
+    for (uint32_t i = 0; i < textRenderers.count; ++i) {
+        if (textRenderers[i].bDirty) {
+            textRenderers[i].bDirty = false;
         }
     }
 }
