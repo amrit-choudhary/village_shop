@@ -58,16 +58,16 @@ class Scene {
     ME::Span<ME::Transform> transforms;
     ME::Span<ME::MeshRenderer> meshRenderers;
     ME::Span<ME::Transform> spriteTransforms;
-    ME::SpriteRenderer** spriteRenderers = nullptr;
+    ME::Span<ME::SpriteRenderer> spriteRenderers;
 
     // First set of instanced sprite renderers.
     ME::Span<ME::Transform> instancedSpriteTransforms0;
-    ME::SpriteRenderer** instancedSpriteRenderers0 = nullptr;
+    ME::Span<ME::SpriteRenderer> instancedSpriteRenderers0;
     ME::SpriteRendererInstanceData* spriteInstanceData0 = nullptr;
 
     // Second set of instanced sprite renderers.
     ME::Span<ME::Transform> instancedSpriteTransforms1;
-    ME::SpriteRenderer** instancedSpriteRenderers1 = nullptr;
+    ME::Span<ME::SpriteRenderer> instancedSpriteRenderers1;
     ME::SpriteRendererInstanceData* spriteInstanceData1 = nullptr;
 
     ME::ColliderAABB* staticColliders = nullptr;
@@ -80,11 +80,6 @@ class Scene {
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t shaderCount = 0;
     uint8_t textureSamplerCount = 0;
-    uint16_t spriteRendererCount = 0;
-
-    uint32_t instancedSpriteRendererCount0 = 0;
-
-    uint32_t instancedSpriteRendererCount1 = 0;
 
     uint32_t staticColliderCount = 0;
     uint32_t dynamicColliderCount = 0;
@@ -107,35 +102,6 @@ class Scene {
 
     // Human-readable label for this scene, shown on the debug overlay. Override to customize.
     virtual const char* GetDisplayName() const;
-
-   protected:
-    // Helper functions to add elements to the scene.
-
-    /**
-     * Creates and adds a sprite transform with the given position and scale.
-     * Will also increment spriteTransforms.count.
-     */
-    void AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale);
-
-    /**
-     * Adds a sprite renderer to the spriteRenderers array.
-     * Will also increment the spriteRendererCount.
-     */
-    void AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer);
-
-    /**
-     * Creates and adds an instanced sprite transform with the given position and scale.
-     * Will also increment instancedSpriteTransforms0/1.count.
-     * buffer specifies which instance buffer to add to (0 or 1).
-     */
-    void AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer = 0);
-
-    /**
-     * Adds an instanced sprite renderer to the instancedSpriteRenderers array.
-     * Will also increment the instancedSpriteRendererCount.
-     * buffer specifies which instance buffer to add to (0 or 1).
-     */
-    void AddInstancedSpriteRenderer(ME::SpriteRenderer* spriteRenderer, uint8_t buffer = 0);
 
    private:
     /**

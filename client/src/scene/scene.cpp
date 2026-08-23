@@ -1,7 +1,5 @@
 #include "scene.h"
 
-#include "logging/src/logging.h"
-
 #include <cmath>
 #include <cstring>
 
@@ -52,26 +50,17 @@ ME::Scene::~Scene() {
 
     delete[] spriteTransforms.data;
 
-    for (uint16_t i = 0; i < spriteRendererCount; ++i) {
-        delete spriteRenderers[i];
-    }
-    delete[] spriteRenderers;
+    delete[] spriteRenderers.data;
 
     delete[] instancedSpriteTransforms0.data;
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        delete instancedSpriteRenderers0[i];
-    }
-    delete[] instancedSpriteRenderers0;
+    delete[] instancedSpriteRenderers0.data;
 
     delete[] spriteInstanceData0;
 
     delete[] instancedSpriteTransforms1.data;
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
-        delete instancedSpriteRenderers1[i];
-    }
-    delete[] instancedSpriteRenderers1;
+    delete[] instancedSpriteRenderers1.data;
 
     delete[] spriteInstanceData1;
 }
@@ -90,16 +79,19 @@ void ME::Scene::CreateResources() {
     meshRenderers.count = 0;
     spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
     spriteTransforms.count = 0;
-    spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+    spriteRenderers.data = new ME::SpriteRenderer[Constants::MaxSpriteRendererCount];
+    spriteRenderers.count = 0;
 
     instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteTransforms0.count = 0;
-    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.data = new ME::SpriteRenderer[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.count = 0;
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     instancedSpriteTransforms1.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteTransforms1.count = 0;
-    instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers1.data = new ME::SpriteRenderer[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers1.count = 0;
     spriteInstanceData1 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
@@ -170,76 +162,6 @@ const char* ME::Scene::GetDisplayName() const {
     return "Scene";
 }
 
-void ME::Scene::AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale) {
-    if (spriteTransforms.count >= Constants::MaxSpriteTransformCount) {
-        ME::LogError("Scene::AddSpriteTransform: Exceeded max sprite transform count.");
-        return;
-    }
-
-    ME::Transform& transform = spriteTransforms[spriteTransforms.count];
-    transform.SetPosition(position);
-    transform.SetScale(scale);
-    ++spriteTransforms.count;
-}
-
-void ME::Scene::AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer) {
-    if (spriteRendererCount >= Constants::MaxSpriteRendererCount) {
-        ME::LogError("Scene::AddSpriteRenderer: Exceeded max sprite renderer count.");
-        return;
-    }
-
-    spriteRenderers[spriteRendererCount] = spriteRenderer;
-    ++spriteRendererCount;
-}
-
-void ME::Scene::AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer) {
-    if (buffer == 0) {
-        if (instancedSpriteTransforms0.count >= Constants::MaxInstancedSpriteTransformCount) {
-            ME::LogError(
-                "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 0.");
-            return;
-        }
-
-        ME::Transform& transform = instancedSpriteTransforms0[instancedSpriteTransforms0.count];
-        transform.SetPosition(position);
-        transform.SetScale(scale);
-        ++instancedSpriteTransforms0.count;
-    } else {
-        if (instancedSpriteTransforms1.count >= Constants::MaxInstancedSpriteTransformCount) {
-            ME::LogError(
-                "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 1.");
-            return;
-        }
-
-        ME::Transform& transform = instancedSpriteTransforms1[instancedSpriteTransforms1.count];
-        transform.SetPosition(position);
-        transform.SetScale(scale);
-        ++instancedSpriteTransforms1.count;
-    }
-}
-
-void ME::Scene::AddInstancedSpriteRenderer(ME::SpriteRenderer* spriteRenderer, uint8_t buffer) {
-    if (buffer == 0) {
-        if (instancedSpriteRendererCount0 >= Constants::MaxInstancedSpriteRendererCount) {
-            ME::LogError(
-                "Scene::AddInstancedSpriteRenderer: Exceeded max instanced sprite renderer count for buffer 0.");
-            return;
-        }
-
-        instancedSpriteRenderers0[instancedSpriteRendererCount0] = spriteRenderer;
-        ++instancedSpriteRendererCount0;
-    } else {
-        if (instancedSpriteRendererCount1 >= Constants::MaxInstancedSpriteRendererCount) {
-            ME::LogError(
-                "Scene::AddInstancedSpriteRenderer: Exceeded max instanced sprite renderer count for buffer 1.");
-            return;
-        }
-
-        instancedSpriteRenderers1[instancedSpriteRendererCount1] = spriteRenderer;
-        ++instancedSpriteRendererCount1;
-    }
-}
-
 void ME::Scene::Update() {
     UpdateSpriteRenderers();
     UpdateInstancedSpriteRenderers();
@@ -248,16 +170,16 @@ void ME::Scene::Update() {
 void ME::Scene::UpdateSpriteRenderers() {
     // Updating transforms and atlas indices for dirty sprites.
     // In separate loops to avoid cache misses.
-    for (uint32_t i = 0; i < spriteRendererCount; ++i) {
-        if (!spriteRenderers[i]->bDirty) {
+    for (size_t i = 0; i < spriteRenderers.count; ++i) {
+        if (!spriteRenderers[i].bDirty) {
             continue;
         }
         // Updated any required data before rendering.
     }
 
-    for (uint32_t i = 0; i < spriteRendererCount; ++i) {
-        if (spriteRenderers[i]->bDirty) {
-            spriteRenderers[i]->bDirty = false;
+    for (size_t i = 0; i < spriteRenderers.count; ++i) {
+        if (spriteRenderers[i].bDirty) {
+            spriteRenderers[i].bDirty = false;
         }
     }
 }
@@ -266,47 +188,47 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
     // Updating transforms and atlas indicesfor dirty instances.
     // In separate loops to avoid cache misses.
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        if (!instancedSpriteRenderers0[i]->bDirty) {
+    for (size_t i = 0; i < instancedSpriteRenderers0.count; ++i) {
+        if (!instancedSpriteRenderers0[i].bDirty) {
             continue;
         }
         spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i].GetModelMatrix().GetDataForShader();
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        if (!instancedSpriteRenderers0[i]->bDirty) {
+    for (size_t i = 0; i < instancedSpriteRenderers0.count; ++i) {
+        if (!instancedSpriteRenderers0[i].bDirty) {
             continue;
         }
-        spriteInstanceData0[i].atlasIndex = instancedSpriteRenderers0[i]->atlasIndex;
-        spriteInstanceData0[i].color = instancedSpriteRenderers0[i]->color;
-        spriteInstanceData0[i].flags = instancedSpriteRenderers0[i]->flags;
+        spriteInstanceData0[i].atlasIndex = instancedSpriteRenderers0[i].atlasIndex;
+        spriteInstanceData0[i].color = instancedSpriteRenderers0[i].color;
+        spriteInstanceData0[i].flags = instancedSpriteRenderers0[i].flags;
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        if (instancedSpriteRenderers0[i]->bDirty) {
-            instancedSpriteRenderers0[i]->bDirty = false;
+    for (size_t i = 0; i < instancedSpriteRenderers0.count; ++i) {
+        if (instancedSpriteRenderers0[i].bDirty) {
+            instancedSpriteRenderers0[i].bDirty = false;
         }
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
-        if (!instancedSpriteRenderers1[i]->bDirty) {
+    for (size_t i = 0; i < instancedSpriteRenderers1.count; ++i) {
+        if (!instancedSpriteRenderers1[i].bDirty) {
             continue;
         }
         spriteInstanceData1[i].modelMatrixData = instancedSpriteTransforms1[i].GetModelMatrix().GetDataForShader();
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
-        if (!instancedSpriteRenderers1[i]->bDirty) {
+    for (size_t i = 0; i < instancedSpriteRenderers1.count; ++i) {
+        if (!instancedSpriteRenderers1[i].bDirty) {
             continue;
         }
-        spriteInstanceData1[i].atlasIndex = instancedSpriteRenderers1[i]->atlasIndex;
-        spriteInstanceData1[i].color = instancedSpriteRenderers1[i]->color;
-        spriteInstanceData1[i].flags = instancedSpriteRenderers1[i]->flags;
+        spriteInstanceData1[i].atlasIndex = instancedSpriteRenderers1[i].atlasIndex;
+        spriteInstanceData1[i].color = instancedSpriteRenderers1[i].color;
+        spriteInstanceData1[i].flags = instancedSpriteRenderers1[i].flags;
     }
 
-    for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
-        if (instancedSpriteRenderers1[i]->bDirty) {
-            instancedSpriteRenderers1[i]->bDirty = false;
+    for (size_t i = 0; i < instancedSpriteRenderers1.count; ++i) {
+        if (instancedSpriteRenderers1[i].bDirty) {
+            instancedSpriteRenderers1[i].bDirty = false;
         }
     }
 }

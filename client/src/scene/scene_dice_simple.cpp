@@ -37,10 +37,12 @@ void ME::SceneDiceSimple::CreateResources() {
     meshRenderers.count = 0;
     spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
     spriteTransforms.count = 0;
-    spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+    spriteRenderers.data = new ME::SpriteRenderer[Constants::MaxSpriteRendererCount];
+    spriteRenderers.count = 0;
     instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteTransforms0.count = 0;
-    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.data = new ME::SpriteRenderer[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.count = 0;
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
@@ -91,10 +93,10 @@ void ME::SceneDiceSimple::BuildInstancedSpriteTransforms() {
     instancedSpriteTransforms0.count = 2;
 }
 void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
-    instancedSpriteRenderers0[0] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::White());
+    instancedSpriteRenderers0[0] = ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::White());
 
-    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(instancedSpriteRenderers0[0], 8);
-    instancedSpriteRenderers0[0]->animator = animator0;
+    ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(&instancedSpriteRenderers0[0], 8);
+    instancedSpriteRenderers0[0].animator = animator0;
 
     ME::SpriteAnimClip* clip0 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
@@ -104,10 +106,10 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     spriteInstanceData0[0].atlasIndex = 0;
     spriteInstanceData0[0].color = ME::Color::White();
 
-    instancedSpriteRenderers0[1] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
+    instancedSpriteRenderers0[1] = ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
-    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(instancedSpriteRenderers0[1], 8);
-    instancedSpriteRenderers0[1]->animator = animator1;
+    ME::SpriteAnimator* animator1 = new ME::SpriteAnimator(&instancedSpriteRenderers0[1], 8);
+    instancedSpriteRenderers0[1].animator = animator1;
 
     ME::SpriteAnimClip* clip1 = nullptr;
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
@@ -117,5 +119,5 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     spriteInstanceData0[1].atlasIndex = 0;
     spriteInstanceData0[1].color = ME::Color::White();
 
-    instancedSpriteRendererCount0 = 2;
+    instancedSpriteRenderers0.count = 2;
 }

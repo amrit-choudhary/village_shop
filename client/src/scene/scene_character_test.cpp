@@ -65,7 +65,9 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
     Scene::BuildSpriteTransforms();
 
     // Character Sprite
-    AddSpriteTransform(ME::Vec3::Zero, ME::Vec3(charWidth, charHeight, 1.0f));
+    spriteTransforms[0].SetPosition(ME::Vec3::Zero);
+    spriteTransforms[0].SetScale(ME::Vec3(charWidth, charHeight, 1.0f));
+    spriteTransforms.count = 1;
 
     dynamicColliders[dynamicColliderCount] =
         ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Player, PhysicsLayer::Enemy,
@@ -76,7 +78,9 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
 void ME::SceneCharacterTest::BuildSpriteRenderers() {
     Scene::BuildSpriteRenderers();
 
-    ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 1, ME::Color::White());
+    spriteRenderers[0] = ME::SpriteRenderer(0, 0, 0, 0, 1, ME::Color::White());
+    ME::SpriteRenderer* spRend = &spriteRenderers[0];
+    spriteRenderers.count = 1;
 
     ME::SpriteAnimator* animator0 = new ME::SpriteAnimator(spRend, 8);
     spRend->animator = animator0;
@@ -91,8 +95,6 @@ void ME::SceneCharacterTest::BuildSpriteRenderers() {
     animator0->AddClip(clipRight);
     animator0->AddClip(clipDown);
     animator0->AddClip(clipLeft);
-
-    AddSpriteRenderer(spRend);
 }
 
 void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
@@ -100,12 +102,13 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 
     // NPC Sprites.
     ME::Random rnd{"npc_position", true};
+    instancedSpriteTransforms0.count = maxNPCCount;
     for (size_t i = 0; i < maxNPCCount; ++i) {
         float x = 9000.0f;
         float y = 9000.0f;
 
-        // Adding to instance buffer 0;
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(npcWidth, npcHeight, 1.0f), 0);
+        instancedSpriteTransforms0[i].SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms0[i].SetScale(ME::Vec3(npcWidth, npcHeight, 1.0f));
 
         dynamicColliders[dynamicColliderCount] = ME::ColliderAABB(
             dynamicColliderCount, true, false, PhysicsLayer::Enemy, (PhysicsLayer::Player | PhysicsLayer::Projectile),
@@ -115,11 +118,12 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 
     // Bullet Sprites.
     ME::Random rnd2{"bullet_position", true};
+    instancedSpriteTransforms1.count = maxBulletCount;
     for (size_t i = 0; i < maxBulletCount; ++i) {
         float x = -9000.0f;
         float y = -9000.0f;
-        // Adding to instance buffer 1;
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(bulletSize, bulletSize, 1.0f), 1);
+        instancedSpriteTransforms1[i].SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms1[i].SetScale(ME::Vec3(bulletSize, bulletSize, 1.0f));
 
         dynamicColliders[dynamicColliderCount] =
             ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
@@ -135,9 +139,11 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
     ME::SpriteAnimClip* clipBase = nullptr;  // Used as base to duplicate with offset. Deleted afterwards.
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/enemy_base_anim.json", &clipBase);
 
+    instancedSpriteRenderers0.count = maxNPCCount;
     for (size_t i = 0; i < maxNPCCount; ++i) {
         uint32_t type = rnd.NextRange(0, 11) * 4;
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, static_cast<uint16_t>(type));
+        instancedSpriteRenderers0[i] = ME::SpriteRenderer(0, 0, 1, 2, static_cast<uint16_t>(type));
+        ME::SpriteRenderer* spRend = &instancedSpriteRenderers0[i];
 
         // Flip if on left side.
         if (instancedSpriteTransforms0[i].GetPosition().x > 0) {
@@ -150,21 +156,19 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
 
         animator0->AddClip(clip);
         animator0->ChangeClip(0);
-
-        AddInstancedSpriteRenderer(spRend, 0);
     }
     delete clipBase;
 
     // Bullets.
 
+    instancedSpriteRenderers1.count = maxBulletCount;
     for (size_t i = 0; i < maxBulletCount; ++i) {
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, (i % 6));
+        instancedSpriteRenderers1[i] = ME::SpriteRenderer(0, 0, 1, 2, (i % 6));
+        ME::SpriteRenderer* spRend = &instancedSpriteRenderers1[i];
 
         // Flip if on left side.
         if (instancedSpriteTransforms1[i].GetPosition().x > 0) {
             spRend->ToggleFlipHorizontal(true);
         }
-
-        AddInstancedSpriteRenderer(spRend, 1);
     }
 }

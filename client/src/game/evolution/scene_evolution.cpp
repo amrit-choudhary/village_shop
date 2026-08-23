@@ -99,26 +99,30 @@ void ME::SceneEvolution::BuildInstancedSpriteTransforms() {
     Scene::BuildInstancedSpriteTransforms();
 
     // Add terrain.
+    instancedSpriteTransforms0.count = mapSize * mapSize;
     for (size_t i = 0; i < mapSize * mapSize; ++i) {
         float x = static_cast<float>(i % mapSize) * tileSize + originX;
         float y = static_cast<float>(i / mapSize) * tileSize + originY;
 
         // Adding to instance buffer 0; pushed behind buffer 1 (creatures) in depth so they draw on top.
-        AddInstancedSpriteTransform(ME::Vec3(x, y, 1.0f), ME::Vec3(tileSize, tileSize, 1.0f), 0);
+        instancedSpriteTransforms0[i].SetPosition(x, y, 1.0f);
+        instancedSpriteTransforms0[i].SetScale(ME::Vec3(tileSize, tileSize, 1.0f));
     }
 
     // Add creatures. Pre-create one instanced transform per pool slot (not just the currently
     // active ones), so the DX instance buffer is sized for the pool's full capacity up front.
     // Slots beyond the pool's active count aren't spawned yet, so they're parked off-screen
     // until Acquire()'d.
+    instancedSpriteTransforms1.count = creatureCount;
     for (size_t i = 0; i < creatureCount; ++i) {
+        instancedSpriteTransforms1[i].SetScale(ME::Vec3(tileSize, tileSize, 1.0f));
         if (i < creaturePool->GetActiveCount()) {
             ME::Creature* creature = &(*creaturePool)[i];
             float x = static_cast<float>(creature->position.x) * tileSize + originX;
             float y = static_cast<float>(creature->position.y) * tileSize + originY;
-            AddInstancedSpriteTransform(ME::Vec3(x, y, 0.0f), ME::Vec3(tileSize, tileSize, 1.0f), 1);
+            instancedSpriteTransforms1[i].SetPosition(x, y, 0.0f);
         } else {
-            AddInstancedSpriteTransform(creatureParkPos, ME::Vec3(tileSize, tileSize, 1.0f), 1);
+            instancedSpriteTransforms1[i].SetPosition(creatureParkPos);
         }
     }
 }
@@ -127,16 +131,16 @@ void ME::SceneEvolution::BuildInstancedSpriteRenderers() {
     Scene::BuildInstancedSpriteRenderers();
 
     // Add terrain.
+    instancedSpriteRenderers0.count = mapSize * mapSize;
     for (size_t i = 0; i < mapSize * mapSize; ++i) {
         uint8_t tileIndex = static_cast<uint8_t>(*(terrain->GetUnsafe(i)));
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, tileIndex, ME::Color::White(), 0);
-        AddInstancedSpriteRenderer(spRend, 0);
+        instancedSpriteRenderers0[i] = ME::SpriteRenderer(0, 0, 0, 0, tileIndex, ME::Color::White(), 0);
     }
 
     // Add creatures. Matches the full pool capacity used above, not just the active count.
+    instancedSpriteRenderers1.count = creatureCount;
     for (size_t i = 0; i < creatureCount; ++i) {
-        ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 0, 0, 10, ME::Color::White(), 0);
-        AddInstancedSpriteRenderer(spRend, 1);
+        instancedSpriteRenderers1[i] = ME::SpriteRenderer(0, 0, 0, 0, 10, ME::Color::White(), 0);
     }
 }
 
@@ -186,14 +190,14 @@ void ME::SceneEvolution::UpdateCreatures(float deltaTime) {
         float x = creature->position.x * tileSize + originX;
         float y = creature->position.y * tileSize + originY;
         instancedSpriteTransforms1[i].SetPosition(x, y, 0.0f);
-        instancedSpriteRenderers1[i]->bDirty = true;
+        instancedSpriteRenderers1[i].bDirty = true;
     }
 
     // Park any slots freed this frame so released creatures actually disappear.
     // Just for little optimization, we only need to park the slots that were released this frame, not all the
     for (size_t i = activeCount; i < activeCountBeforeRemoval; ++i) {
         instancedSpriteTransforms1[i].SetPosition(creatureParkPos.x, creatureParkPos.y, creatureParkPos.z);
-        instancedSpriteRenderers1[i]->bDirty = true;
+        instancedSpriteRenderers1[i].bDirty = true;
     }
 
     size_t deathsThisFrame = activeCountBeforeRemoval - activeCount;

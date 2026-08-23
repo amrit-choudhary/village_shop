@@ -35,10 +35,12 @@ void ME::SceneFallingSand::CreateResources() {
     meshRenderers.count = 0;
     spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
     spriteTransforms.count = 0;
-    spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
+    spriteRenderers.data = new ME::SpriteRenderer[Constants::MaxSpriteRendererCount];
+    spriteRenderers.count = 0;
     instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
     instancedSpriteTransforms0.count = 0;
-    instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.data = new ME::SpriteRenderer[Constants::MaxInstancedSpriteRendererCount];
+    instancedSpriteRenderers0.count = 0;
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
     staticColliders = new ME::ColliderAABB[Constants::MaxStaticColliderCount];
@@ -98,10 +100,10 @@ void ME::SceneFallingSand::BuildInstancedSpriteTransforms() {
 }
 
 void ME::SceneFallingSand::BuildInstancedSpriteRenderers() {
-    instancedSpriteRendererCount0 = static_cast<uint32_t>(gridCount);
+    instancedSpriteRenderers0.count = static_cast<uint32_t>(gridCount);
 
-    for (size_t i = 0; i < instancedSpriteRendererCount0; ++i) {
-        instancedSpriteRenderers0[i] = new ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
+    for (size_t i = 0; i < instancedSpriteRenderers0.count; ++i) {
+        instancedSpriteRenderers0[i] = ME::SpriteRenderer(0, 0, 2, 1, 1, ME::Color::White());
 
         spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i].GetModelMatrix().GetDataForShader();
         spriteInstanceData0[i].atlasIndex = 3;

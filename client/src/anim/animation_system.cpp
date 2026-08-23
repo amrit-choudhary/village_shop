@@ -10,18 +10,18 @@ void ME::AnimationSystem::Update(double deltaTime) {
     }
 
     // Update all sprite animators in the scene.
-    for (uint16_t i = 0; i < scene->spriteRendererCount; ++i) {
-        ME::SpriteRenderer* spriteRenderer = scene->spriteRenderers[i];
-        if (spriteRenderer != nullptr && spriteRenderer->animator != nullptr) {
-            spriteRenderer->animator->AnimationUpdate();
+    for (uint16_t i = 0; i < scene->spriteRenderers.count; ++i) {
+        ME::SpriteRenderer& spriteRenderer = scene->spriteRenderers[i];
+        if (spriteRenderer.animator != nullptr) {
+            spriteRenderer.animator->AnimationUpdate();
         }
     }
 
     // Update all instanced sprite animators in the scene.
-    for (uint16_t i = 0; i < scene->instancedSpriteRendererCount0; ++i) {
-        ME::SpriteRenderer* spriteRenderer = scene->instancedSpriteRenderers0[i];
-        if (spriteRenderer != nullptr && spriteRenderer->animator != nullptr) {
-            spriteRenderer->animator->AnimationUpdate();
+    for (uint16_t i = 0; i < scene->instancedSpriteRenderers0.count; ++i) {
+        ME::SpriteRenderer& spriteRenderer = scene->instancedSpriteRenderers0[i];
+        if (spriteRenderer.animator != nullptr) {
+            spriteRenderer.animator->AnimationUpdate();
         }
     }
 }

@@ -327,7 +327,7 @@ void ME::RendererDX::Draw() {
     ///////////////////////
     // Sprite Drawing.
 
-    if (sceneDX->spriteRendererCount != 0) {
+    if (sceneDX->spriteRenderers.count != 0) {
         // Set PSO and Root Signature for non instanced sprites.
         commandList->SetPipelineState(pso2DAtl);
         commandList->SetGraphicsRootSignature(rootSig2DAtl);
@@ -349,9 +349,9 @@ void ME::RendererDX::Draw() {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        for (uint32_t i = 0; i < sceneDX->spriteRendererCount; ++i) {
-            const uint32_t textureIndex = sceneDX->spriteRenderers[i]->textureId;
-            const uint32_t atlasPropsIndex = sceneDX->spriteRenderers[i]->textureAtlasPropsId;
+        for (uint32_t i = 0; i < sceneDX->spriteRenderers.count; ++i) {
+            const uint32_t textureIndex = sceneDX->spriteRenderers[i].textureId;
+            const uint32_t atlasPropsIndex = sceneDX->spriteRenderers[i].textureAtlasPropsId;
             const uint32_t atlasPropsHeapIndex = sceneDX->textureAtlasCBHeapIndices[atlasPropsIndex];
 
             ME::TextureAtlasProperties atlasProps = sceneDX->textureAtlasProperties[atlasPropsIndex];
@@ -366,9 +366,9 @@ void ME::RendererDX::Draw() {
 
             CBPerSprite perSpriteData{};
             perSpriteData.modelMatrix = sceneDX->spriteTransforms[i].GetModelMatrix().GetDataRowMajor();
-            perSpriteData.color = sceneDX->spriteRenderers[i]->color;
-            perSpriteData.atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
-            perSpriteData.flags = sceneDX->spriteRenderers[i]->flags;
+            perSpriteData.color = sceneDX->spriteRenderers[i].color;
+            perSpriteData.atlasIndex = sceneDX->spriteRenderers[i].atlasIndex;
+            perSpriteData.flags = sceneDX->spriteRenderers[i].flags;
             sceneDX->perSpriteCBs[i]->CopyData(&perSpriteData);
 
             D3D12_GPU_DESCRIPTOR_HANDLE cbvPerSprite =
@@ -382,7 +382,7 @@ void ME::RendererDX::Draw() {
     //////////////////////////////////
     // First Instanced Sprite Drawing.
 
-    if (sceneDX->instancedSpriteRendererCount0 != 0) {
+    if (sceneDX->instancedSpriteRenderers0.count != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DInsAtl);
         commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
@@ -425,13 +425,13 @@ void ME::RendererDX::Draw() {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount0, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRenderers0.count, 0, 0, 0);
     }
 
     //////////////////////////////////
     // Second Instanced Sprite Drawing.
 
-    if (sceneDX->instancedSpriteRendererCount1 != 0) {
+    if (sceneDX->instancedSpriteRenderers1.count != 0) {
         // Set PSO and Root Signature for instanced sprites.
         commandList->SetPipelineState(pso2DInsAtl);
         commandList->SetGraphicsRootSignature(rootSig2DInsAtl);
@@ -474,7 +474,7 @@ void ME::RendererDX::Draw() {
         commandList->IASetIndexBuffer(&ibView);
         commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRendererCount1, 0, 0, 0);
+        commandList->DrawIndexedInstanced(quad->indexCount, sceneDX->instancedSpriteRenderers1.count, 0, 0, 0);
     }
     // End Sprite Drawing.
 

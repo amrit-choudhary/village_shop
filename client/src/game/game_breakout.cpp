@@ -32,7 +32,7 @@ void ME::GameBreakout::TranslateBall(Vec2 delta) {
     Vec3 newBallPosition = ballTransform->GetPosition() + Vec3(delta.x, delta.y, 0.0f);
     ballTransform->SetPosition(newBallPosition);
     ballCollider->UpdateTransform(*ballTransform, brkScene->ballCollScaleMult);
-    brkScene->instancedSpriteRenderers0[brkScene->ballIndex]->bDirty = true;
+    brkScene->instancedSpriteRenderers0[brkScene->ballIndex].bDirty = true;
 }
 
 void ME::GameBreakout::Update(double deltaTime) {
@@ -61,9 +61,9 @@ void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, Colli
 
     if (IsDestructible(b->GetID())) {
         b->isEnabled = false;
-        brkScene->instancedSpriteRenderers0[b->GetID()]->atlasIndex = 0;  // Make it black (invisible).
-        brkScene->instancedSpriteRenderers0[b->GetID()]->color = ME::Color::Black();
-        brkScene->instancedSpriteRenderers0[b->GetID()]->bDirty = true;
+        brkScene->instancedSpriteRenderers0[b->GetID()].atlasIndex = 0;  // Make it black (invisible).
+        brkScene->instancedSpriteRenderers0[b->GetID()].color = ME::Color::Black();
+        brkScene->instancedSpriteRenderers0[b->GetID()].bDirty = true;
         ++score;
     }
 
@@ -77,7 +77,7 @@ void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, Colli
 
 bool ME::GameBreakout::IsDestructible(uint32_t index) const {
     if (index < brkScene->gridCount) {
-        return brkScene->instancedSpriteRenderers0[index]->atlasIndex != 0;
+        return brkScene->instancedSpriteRenderers0[index].atlasIndex != 0;
     }
 
     return false;

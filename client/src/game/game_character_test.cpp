@@ -69,7 +69,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
     const float zoomSpeed = 20.0f * deltaTime;
     ME::Vec3 movementVector = ME::Vec3{0.0f, 0.0f, 0.0f};
 
-    ME::SpriteAnimator* animator = charScene->spriteRenderers[0]->animator;
+    ME::SpriteAnimator* animator = charScene->spriteRenderers[0].animator;
     bool bAnyKeyDown = false;
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::W)) {
@@ -124,7 +124,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     ME::Vec3 currentPosition = playerTransform->GetPosition() + movementVector;
     playerTransform->SetPosition(currentPosition);
-    charScene->spriteRenderers[0]->bDirty = true;
+    charScene->spriteRenderers[0].bDirty = true;
     charScene->dynamicColliders[0].UpdateTransform(*playerTransform, charScene->charCollScaleMult);
 
     if (inputManager->GetKeyDown(ME::Input::KeyCode::UpArrow)) {
@@ -149,15 +149,15 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         ME::Vec3 moveDir = dirToPlayer.Normalised();
 
         if (moveDir.x > 0.0f) {
-            charScene->instancedSpriteRenderers0[i]->ToggleFlipHorizontal(false);
+            charScene->instancedSpriteRenderers0[i].ToggleFlipHorizontal(false);
         } else {
-            charScene->instancedSpriteRenderers0[i]->ToggleFlipHorizontal(true);
+            charScene->instancedSpriteRenderers0[i].ToggleFlipHorizontal(true);
         }
 
         float speedEnem = enemyBaseSpeed + (i / static_cast<float>(maxNPCCount)) * enemySpeedVariance;
         ME::Vec3 newPos = npcTransform->GetPosition() + moveDir * speedEnem * static_cast<float>(deltaTime);
         npcTransform->SetPosition(newPos);
-        charScene->instancedSpriteRenderers0[i]->bDirty = true;
+        charScene->instancedSpriteRenderers0[i].bDirty = true;
 
         charScene->dynamicColliders[(i + 1)].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     }
@@ -185,7 +185,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
                 float angle = inputAngle + (rndBullet.NextDouble() - 0.5f) * ME::QUARTER_PI * 0.5f;
                 bulletDirs[i] = ME::Vec2{cos(angle), sin(angle)};
                 charScene->instancedSpriteTransforms1[i].SetPosition(playerTransform->GetPosition());
-                charScene->instancedSpriteRenderers1[i]->atlasIndex = (cycleCounter % 4);
+                charScene->instancedSpriteRenderers1[i].atlasIndex = (cycleCounter % 4);
             }
         }
 
@@ -205,7 +205,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
         }
 
         bulletTransform->SetPosition(bulletPos);
-        charScene->instancedSpriteRenderers1[i]->bDirty = true;
+        charScene->instancedSpriteRenderers1[i].bDirty = true;
 
         charScene->dynamicColliders[((maxNPCCount + i + 1))].UpdateTransform(*bulletTransform,
                                                                              charScene->bulletCollScaleMult);
@@ -250,7 +250,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     ME::Vec3 throwDir = dirToPlayer.Normalised();
     ME::Vec3 newPos = npcTransform->GetPosition() - throwDir * outThrowDistance;
     npcTransform->SetPosition(newPos);
-    charScene->instancedSpriteRenderers0[enemyIndex]->bDirty = true;
+    charScene->instancedSpriteRenderers0[enemyIndex].bDirty = true;
     charScene->dynamicColliders[enemyIndex + 1].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     enemies[enemyIndex].bActive = false;
     ++score;
@@ -260,7 +260,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
 
     ME::Transform* bulletTransform = &charScene->instancedSpriteTransforms1[bulletIndex];
     bulletTransform->SetPosition(bulletPos);
-    charScene->instancedSpriteRenderers1[bulletIndex]->bDirty = true;
+    charScene->instancedSpriteRenderers1[bulletIndex].bDirty = true;
     charScene->dynamicColliders[(maxNPCCount + bulletIndex + 1)].UpdateTransform(*bulletTransform,
                                                                                  charScene->bulletCollScaleMult);
 
@@ -274,7 +274,7 @@ void ME::GameCharacterTest::SpawnNextEnemy() {
             enemies[i].bActive = true;
 
             ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[i];
-            ME::SpriteRenderer* npcRenderer = charScene->instancedSpriteRenderers0[i];
+            ME::SpriteRenderer* npcRenderer = &charScene->instancedSpriteRenderers0[i];
 
             if (npcRenderer->animator != nullptr) {
                 delete npcRenderer->animator;
@@ -310,7 +310,7 @@ void ME::GameCharacterTest::EnemyTouchedPlayer(uint32_t enemyIndex) {
     ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[enemyIdx];
     npcTransform->SetPosition(npcParkPos);
     charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
-    charScene->instancedSpriteRenderers0[enemyIdx]->bDirty = true;
+    charScene->instancedSpriteRenderers0[enemyIdx].bDirty = true;
     enemies[enemyIdx].bActive = false;
 
     --health;

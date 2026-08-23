@@ -65,7 +65,7 @@ class CBPerSprite {
 
 class SpriteRenderer {
    public:
-    SpriteRenderer() = delete;
+    SpriteRenderer() = default;
     SpriteRenderer(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t textureAtlasPropsId,
                    uint16_t atlasIndex, const Color& color = ME::Color::White(), uint32_t flags = 0);
     ~SpriteRenderer();
@@ -90,11 +90,11 @@ class SpriteRenderer {
     // Mark the sprite renderer as dirty to update rendering data before frame is drawn.
     bool bDirty = true;
 
-    const uint8_t quadId = 0;
-    const uint8_t textureId = 0;
-    const uint8_t textureAtlasPropsId = 0;
+    uint8_t quadId = 0;
+    uint8_t textureId = 0;
+    uint8_t textureAtlasPropsId = 0;
     uint16_t atlasIndex = 0;
-    const uint8_t materialId = 0;
+    uint8_t materialId = 0;
     ME::Color color = ME::Color::White();
     uint32_t flags = 0;
 
