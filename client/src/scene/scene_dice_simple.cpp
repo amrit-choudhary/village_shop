@@ -24,12 +24,12 @@ void ME::SceneDiceSimple::Init() {
 }
 
 void ME::SceneDiceSimple::CreateResources() {
-    meshPaths = new const char*[Constants::MaxMeshCount];
-    quadPaths = new const char*[Constants::MaxQuadCount];
-    texturePaths = new const char*[Constants::MaxTextureCount];
-    spriteTexturePaths = new const char*[Constants::MaxSpriteTextureCount];
+    meshPaths.data = new const char*[Constants::MaxMeshCount];
+    quadPaths.data = new const char*[Constants::MaxQuadCount];
+    texturePaths.data = new const char*[Constants::MaxTextureCount];
+    spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
-    shaderPaths = new const char*[Constants::MaxShaderCount];
+    shaderPaths.data = new const char*[Constants::MaxShaderCount];
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
@@ -50,20 +50,20 @@ void ME::SceneDiceSimple::CreateResources() {
     dynamicColliders.data = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
     dynamicColliders.count = 0;
 
-    meshCount = 0;
+    meshPaths.count = 0;
 
     quadPaths[0] = "meshes/quad.obj";
-    quadCount = 1;
+    quadPaths.count = 1;
 
-    textureCount = 0;
+    texturePaths.count = 0;
 
     spriteTexturePaths[0] = "textures/sprites/dice_white.png";
     spriteTexturePaths[1] = "textures/sprites/dice_pink.png";
-    spriteTextureCount = 2;
+    spriteTexturePaths.count = 2;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
-    shaderCount = 2;
+    shaderPaths.count = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[1]);

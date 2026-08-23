@@ -48,11 +48,11 @@ class Scene {
      * Array of scene resources like meshes, textures, shaders, etc.
      * Items index in the array are file names and are used to create the mesh renderer.
      */
-    const char** meshPaths = nullptr;
-    const char** quadPaths = nullptr;
-    const char** texturePaths = nullptr;
-    const char** spriteTexturePaths = nullptr;
-    const char** shaderPaths = nullptr;
+    ME::Span<const char*> meshPaths;
+    ME::Span<const char*> quadPaths;
+    ME::Span<const char*> texturePaths;
+    ME::Span<const char*> spriteTexturePaths;
+    ME::Span<const char*> shaderPaths;
     ME::TextureSampler* textureSamplers = nullptr;
     ME::TextureAtlasProperties* textureAtlasProperties = nullptr;
     ME::Span<ME::Transform> transforms;
@@ -73,18 +73,11 @@ class Scene {
     ME::Span<ME::ColliderAABB> staticColliders;
     ME::Span<ME::ColliderAABB> dynamicColliders;
 
-    uint8_t meshCount = 0;
-    uint8_t quadCount = 0;
-    uint8_t textureCount = 0;
-    uint8_t spriteTextureCount = 0;
     uint8_t textureAtlasPropertiesCount = 0;
-    uint8_t shaderCount = 0;
     uint8_t textureSamplerCount = 0;
 
-    const char** sfxPaths = nullptr;
-    uint8_t sfxCount = 0;
-    const char** musicPaths = nullptr;
-    uint8_t musicCount = 0;
+    ME::Span<const char*> sfxPaths;
+    ME::Span<const char*> musicPaths;
 
     virtual void Init();
     virtual void CreateResources();

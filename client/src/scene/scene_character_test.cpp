@@ -20,18 +20,16 @@ void ME::SceneCharacterTest::CreateResources() {
     Scene::CreateResources();
 
     quadPaths[0] = "meshes/quad.obj";
-    quadCount = 1;
-
-    textureCount = 0;
+    quadPaths.count = 1;
 
     spriteTexturePaths[0] = "textures/characters/princess.dds";
     spriteTexturePaths[1] = "textures/enemies/enemy_atlas.dds";
     spriteTexturePaths[2] = "textures/sprites/fireball.dds";
-    spriteTextureCount = 3;
+    spriteTexturePaths.count = 3;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
-    shaderCount = 2;
+    shaderPaths.count = 2;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_princess.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[1]);
@@ -39,9 +37,9 @@ void ME::SceneCharacterTest::CreateResources() {
     textureAtlasPropertiesCount = 3;
 
     sfxPaths[0] = "audio/sfx/laser.wav";
-    sfxCount = 1;
+    sfxPaths.count = 1;
     musicPaths[0] = "audio/music/ambience.wav";
-    musicCount = 1;
+    musicPaths.count = 1;
 }
 
 void ME::SceneCharacterTest::BuildLights() {

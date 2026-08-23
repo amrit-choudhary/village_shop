@@ -22,12 +22,12 @@ void ME::SceneGameOfLife::Init() {
 }
 
 void ME::SceneGameOfLife::CreateResources() {
-    meshPaths = new const char*[Constants::MaxMeshCount];
-    quadPaths = new const char*[Constants::MaxQuadCount];
-    texturePaths = new const char*[Constants::MaxTextureCount];
-    spriteTexturePaths = new const char*[Constants::MaxSpriteTextureCount];
+    meshPaths.data = new const char*[Constants::MaxMeshCount];
+    quadPaths.data = new const char*[Constants::MaxQuadCount];
+    texturePaths.data = new const char*[Constants::MaxTextureCount];
+    spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
-    shaderPaths = new const char*[Constants::MaxShaderCount];
+    shaderPaths.data = new const char*[Constants::MaxShaderCount];
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
@@ -48,19 +48,19 @@ void ME::SceneGameOfLife::CreateResources() {
     dynamicColliders.data = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
     dynamicColliders.count = 0;
 
-    meshCount = 0;
+    meshPaths.count = 0;
 
     quadPaths[0] = "meshes/quad.obj";
-    quadCount = 1;
+    quadPaths.count = 1;
 
-    textureCount = 0;
+    texturePaths.count = 0;
 
     spriteTexturePaths[0] = "textures/sprites/monochrome.png";
-    spriteTextureCount = 1;
+    spriteTexturePaths.count = 1;
 
     shaderPaths[0] = "shaders/metal/sprite.metal";
     shaderPaths[1] = "shaders/metal/sprite_instanced.metal";
-    shaderCount = 2;
+    shaderPaths.count = 2;
 
     textureAtlasProperties[0] = ME::TextureAtlasProperties{17, 17, 1, 1078, 49, 22, 832, 373};
     textureAtlasPropertiesCount = 1;

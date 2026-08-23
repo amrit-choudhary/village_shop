@@ -30,19 +30,19 @@ ME::Scene::~Scene() {
     delete camera;
     delete spriteCamera;
 
-    delete[] meshPaths;
-    delete[] quadPaths;
-    delete[] texturePaths;
-    delete[] spriteTexturePaths;
+    delete[] meshPaths.data;
+    delete[] quadPaths.data;
+    delete[] texturePaths.data;
+    delete[] spriteTexturePaths.data;
     delete[] textureAtlasProperties;
-    delete[] shaderPaths;
+    delete[] shaderPaths.data;
     delete[] textureSamplers;
 
     delete[] staticColliders.data;
     delete[] dynamicColliders.data;
 
-    delete[] sfxPaths;
-    delete[] musicPaths;
+    delete[] sfxPaths.data;
+    delete[] musicPaths.data;
 
     delete[] transforms.data;
 
@@ -66,12 +66,17 @@ ME::Scene::~Scene() {
 }
 
 void ME::Scene::CreateResources() {
-    meshPaths = new const char*[Constants::MaxMeshCount];
-    quadPaths = new const char*[Constants::MaxQuadCount];
-    texturePaths = new const char*[Constants::MaxTextureCount];
-    spriteTexturePaths = new const char*[Constants::MaxSpriteTextureCount];
+    meshPaths.data = new const char*[Constants::MaxMeshCount];
+    meshPaths.count = 0;
+    quadPaths.data = new const char*[Constants::MaxQuadCount];
+    quadPaths.count = 0;
+    texturePaths.data = new const char*[Constants::MaxTextureCount];
+    texturePaths.count = 0;
+    spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
+    spriteTexturePaths.count = 0;
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
-    shaderPaths = new const char*[Constants::MaxShaderCount];
+    shaderPaths.data = new const char*[Constants::MaxShaderCount];
+    shaderPaths.count = 0;
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
@@ -99,22 +104,10 @@ void ME::Scene::CreateResources() {
     dynamicColliders.data = new ME::ColliderAABB[Constants::MaxDynamicColliderCount];
     dynamicColliders.count = 0;
 
-    sfxPaths = new const char*[Constants::MaxLoadedSFXCount];
-    sfxCount = 0;
-    musicPaths = new const char*[Constants::MaxLoadedMusicCount];
-    musicCount = 0;
-
-    meshCount = 0;
-
-    quadCount = 0;
-
-    // For 3d objects.
-    textureCount = 0;
-
-    // Textures for 2D objects.
-    spriteTextureCount = 0;
-
-    shaderCount = 0;
+    sfxPaths.data = new const char*[Constants::MaxLoadedSFXCount];
+    sfxPaths.count = 0;
+    musicPaths.data = new const char*[Constants::MaxLoadedMusicCount];
+    musicPaths.count = 0;
 
     textureAtlasPropertiesCount = 0;
 

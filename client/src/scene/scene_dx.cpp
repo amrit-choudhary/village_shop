@@ -63,22 +63,22 @@ ME::SceneDX::~SceneDX() {
     delete camera;
     delete spriteCamera;
 
-    for (uint8_t i = 0; i < scene->meshCount; i++) {
+    for (uint8_t i = 0; i < scene->meshPaths.count; i++) {
         delete meshes[i];
     }
     delete[] meshes;
 
-    for (uint8_t i = 0; i < scene->quadCount; i++) {
+    for (uint8_t i = 0; i < scene->quadPaths.count; i++) {
         delete quads[i];
     }
     delete[] quads;
 
-    for (uint8_t i = 0; i < scene->textureCount; i++) {
+    for (uint8_t i = 0; i < scene->texturePaths.count; i++) {
         delete textures[i];
     }
     delete[] textures;
 
-    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; i++) {
         delete spriteTextures[i];
     }
     delete[] spriteTextures;
@@ -110,19 +110,19 @@ ME::SceneDX::~SceneDX() {
 void ME::SceneDX::Init() {}
 
 void ME::SceneDX::PostInitCleanup() {
-    for (uint8_t i = 0; i < scene->meshCount; i++) {
+    for (uint8_t i = 0; i < scene->meshPaths.count; i++) {
         meshes[i]->ReleaseUploadBuffers();
     }
 
-    for (uint8_t i = 0; i < scene->quadCount; i++) {
+    for (uint8_t i = 0; i < scene->quadPaths.count; i++) {
         quads[i]->ReleaseUploadBuffers();
     }
 
-    for (uint8_t i = 0; i < scene->textureCount; i++) {
+    for (uint8_t i = 0; i < scene->texturePaths.count; i++) {
         textures[i]->ReleaseUploadBuffers();
     }
 
-    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; i++) {
         spriteTextures[i]->ReleaseUploadBuffers();
     }
 }
@@ -132,21 +132,21 @@ void ME::SceneDX::Update() {}
 void ME::SceneDX::End() {}
 
 void ME::SceneDX::MakeMeshes() {
-    for (uint8_t i = 0; i < scene->meshCount; i++) {
+    for (uint8_t i = 0; i < scene->meshPaths.count; i++) {
         meshes[i] = new ME::MeshDX(scene->meshPaths[i], device, cmdList);
         meshes[i]->CreateBuffers(device, cmdList);
     }
 }
 
 void ME::SceneDX::MakeQuads() {
-    for (uint8_t i = 0; i < scene->quadCount; i++) {
+    for (uint8_t i = 0; i < scene->quadPaths.count; i++) {
         quads[i] = new ME::QuadDX(scene->quadPaths[i], device, cmdList);
         quads[i]->CreateBuffers(device, cmdList);
     }
 }
 
 void ME::SceneDX::MakeTextures() {
-    for (uint8_t i = 0; i < scene->textureCount; i++) {
+    for (uint8_t i = 0; i < scene->texturePaths.count; i++) {
         textures[i] = new ME::TextureDX(scene->texturePaths[i], device, cmdList);
         textures[i]->CreateBuffers(device, cmdList);
         textures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(textures[i]->GetTextureBuffer());
@@ -154,7 +154,7 @@ void ME::SceneDX::MakeTextures() {
 }
 
 void ME::SceneDX::MakeSpriteTextures() {
-    for (uint8_t i = 0; i < scene->spriteTextureCount; i++) {
+    for (uint8_t i = 0; i < scene->spriteTexturePaths.count; i++) {
         spriteTextures[i] = new ME::TextureDX(scene->spriteTexturePaths[i], device, cmdList);
         spriteTextures[i]->CreateBuffers(device, cmdList);
         spriteTextures[i]->descHeapIndex = descHeapManager->CreateSRVTexture(spriteTextures[i]->GetTextureBuffer());

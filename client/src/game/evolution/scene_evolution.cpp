@@ -62,7 +62,7 @@ void ME::SceneEvolution::CreateResources() {
     spriteTexturePaths[0] = "textures/world/tileset_evolution.dds";
     spriteTexturePaths[1] = "textures/world/tileset_evolution.dds";
     spriteTexturePaths[2] = "textures/world/tileset_evolution.dds";
-    spriteTextureCount = 3;
+    spriteTexturePaths.count = 3;
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[1]);
