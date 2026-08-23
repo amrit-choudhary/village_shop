@@ -39,7 +39,7 @@ class SceneUIDX {
     void End();
 
     ME::TextureDX** spriteTextures;
-    ME::TextureAtlasProperties* textureAtlasProperties;
+    ME::Span<ME::TextureAtlasProperties> textureAtlasProperties;
 
     ME::Span<ME::Transform> uiSpriteTransforms;
     ME::Span<ME::SpriteRenderer> uiSpriteRenderers;

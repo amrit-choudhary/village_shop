@@ -26,9 +26,9 @@ void ME::SceneFallingSand::CreateResources() {
     quadPaths.data = new const char*[Constants::MaxQuadCount];
     texturePaths.data = new const char*[Constants::MaxTextureCount];
     spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
-    textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.data = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
     shaderPaths.data = new const char*[Constants::MaxShaderCount];
-    textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
+    textureSamplers.data = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
     meshRenderers.data = new ME::MeshRenderer[Constants::MaxMeshRendererCount];
@@ -63,10 +63,10 @@ void ME::SceneFallingSand::CreateResources() {
     shaderPaths.count = 2;
 
     textureAtlasProperties[0] = ME::TextureAtlasProperties{17, 17, 1, 1078, 49, 22, 832, 373};
-    textureAtlasPropertiesCount = 1;
+    textureAtlasProperties.count = 1;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
-    textureSamplerCount = 1;
+    textureSamplers.count = 1;
 }
 
 void ME::SceneFallingSand::BuildLights() {

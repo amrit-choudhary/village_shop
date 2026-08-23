@@ -49,7 +49,7 @@ class SceneDX {
     ME::QuadDX** quads;
     ME::TextureDX** textures;
     ME::TextureDX** spriteTextures;
-    ME::TextureAtlasProperties* textureAtlasProperties;
+    ME::Span<ME::TextureAtlasProperties> textureAtlasProperties;
     ME::Span<ME::Transform> transforms;
     ME::Span<ME::MeshRenderer> meshRenderers;
     ME::Span<ME::Transform> spriteTransforms;

@@ -79,7 +79,7 @@ ME::SceneMetal::~SceneMetal() {
     }
     delete[] spriteTextures;
 
-    for (uint8_t i = 0; i < scene->textureSamplerCount; i++) {
+    for (uint8_t i = 0; i < scene->textureSamplers.count; i++) {
         textureSamplerStates[i]->release();
     }
     delete[] textureSamplerStates;
@@ -112,7 +112,7 @@ void ME::SceneMetal::MakeSpriteTextures() {
 void ME::SceneMetal::MakeShaders() {}
 
 void ME::SceneMetal::MakeTextureSamplers() {
-    for (uint8_t i = 0; i < scene->textureSamplerCount; i++) {
+    for (uint8_t i = 0; i < scene->textureSamplers.count; i++) {
         if (scene->textureSamplers[i].filter == ME::TextureFilter::Nearest) {
             textureSamplerStates[i] = ME::TextureMetal::GetSamplerStateNearest(device);
         } else {

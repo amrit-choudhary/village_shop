@@ -83,7 +83,7 @@ ME::SceneDX::~SceneDX() {
     }
     delete[] spriteTextures;
 
-    for (uint8_t i = 0; i < scene->textureSamplerCount; i++) {
+    for (uint8_t i = 0; i < scene->textureSamplers.count; i++) {
         // textureSamplerStates[i]->release();
     }
     // delete[] textureSamplerStates;
@@ -182,7 +182,7 @@ void ME::SceneDX::MakeConstantBuffers() {
     }
 
     // Creating texture atlas constant buffers.
-    textureAtlasCBCount = scene->textureAtlasPropertiesCount;
+    textureAtlasCBCount = scene->textureAtlasProperties.count;
     for (uint32_t i = 0; i < textureAtlasCBCount; ++i) {
         textureAtlasCBs[i] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::TextureAtlasProperties));
         textureAtlasCBHeapIndices[i] =

@@ -34,7 +34,7 @@ void ME::SceneCharacterTest::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_princess.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_enemy.json", textureAtlasProperties[1]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_fireball.json", textureAtlasProperties[2]);
-    textureAtlasPropertiesCount = 3;
+    textureAtlasProperties.count = 3;
 
     sfxPaths[0] = "audio/sfx/laser.wav";
     sfxPaths.count = 1;

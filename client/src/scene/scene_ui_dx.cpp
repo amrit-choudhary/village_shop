@@ -103,7 +103,7 @@ void ME::SceneUIDX::MakeConstantBuffers() {
     perPassCBHeapIndices[1] = descHeapManager->CreateCBV(perPassCBs[1]->GetResource(), perPassCBs[1]->GetElementSize());
 
     // Creating texture atlas constant buffers.
-    textureAtlasCBCount = scene->textureAtlasPropertiesCount;
+    textureAtlasCBCount = scene->textureAtlasProperties.count;
     for (uint32_t i = 0; i < textureAtlasCBCount; ++i) {
         textureAtlasCBs[i] = new ME::UploadBufferDX(device, true, 1, sizeof(ME::TextureAtlasProperties));
         textureAtlasCBHeapIndices[i] =

@@ -23,7 +23,7 @@ void ME::SceneUIHUD::CreateResources() {
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_ui.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/font_atlas_01.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    textureAtlasProperties.count = 2;
 }
 
 void ME::SceneUIHUD::BuildUISprites() {

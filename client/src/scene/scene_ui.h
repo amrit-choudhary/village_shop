@@ -33,7 +33,7 @@ class SceneUI {
    public:
     // Resources
     ME::Span<const char*> spriteTexturePaths;
-    ME::TextureAtlasProperties* textureAtlasProperties;
+    ME::Span<ME::TextureAtlasProperties> textureAtlasProperties;
 
     ME::Span<ME::Transform> uiSpriteTransforms;
     ME::Span<ME::SpriteRenderer> uiSpriteRenderers;
@@ -46,8 +46,6 @@ class SceneUI {
     // Dumb registry of all UIElements (roots and children alike), populated/queried by
     // UISystem. Purely bookkeeping — no layout math, no rendering here.
     ME::Span<ME::UIElement*> uiElements;
-
-    uint8_t textureAtlasPropertiesCount = 0;
 
     virtual void Init();
     virtual void CreateResources();

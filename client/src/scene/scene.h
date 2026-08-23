@@ -53,8 +53,8 @@ class Scene {
     ME::Span<const char*> texturePaths;
     ME::Span<const char*> spriteTexturePaths;
     ME::Span<const char*> shaderPaths;
-    ME::TextureSampler* textureSamplers = nullptr;
-    ME::TextureAtlasProperties* textureAtlasProperties = nullptr;
+    ME::Span<ME::TextureSampler> textureSamplers;
+    ME::Span<ME::TextureAtlasProperties> textureAtlasProperties;
     ME::Span<ME::Transform> transforms;
     ME::Span<ME::MeshRenderer> meshRenderers;
     ME::Span<ME::Transform> spriteTransforms;
@@ -72,9 +72,6 @@ class Scene {
 
     ME::Span<ME::ColliderAABB> staticColliders;
     ME::Span<ME::ColliderAABB> dynamicColliders;
-
-    uint8_t textureAtlasPropertiesCount = 0;
-    uint8_t textureSamplerCount = 0;
 
     ME::Span<const char*> sfxPaths;
     ME::Span<const char*> musicPaths;

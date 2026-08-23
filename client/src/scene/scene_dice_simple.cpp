@@ -28,9 +28,9 @@ void ME::SceneDiceSimple::CreateResources() {
     quadPaths.data = new const char*[Constants::MaxQuadCount];
     texturePaths.data = new const char*[Constants::MaxTextureCount];
     spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
-    textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.data = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
     shaderPaths.data = new const char*[Constants::MaxShaderCount];
-    textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
+    textureSamplers.data = new ME::TextureSampler[Constants::MaxSamplerCount];
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
     meshRenderers.data = new ME::MeshRenderer[Constants::MaxMeshRendererCount];
@@ -67,10 +67,10 @@ void ME::SceneDiceSimple::CreateResources() {
 
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_dice.json", textureAtlasProperties[1]);
-    textureAtlasPropertiesCount = 2;
+    textureAtlasProperties.count = 2;
 
     textureSamplers[0] = ME::TextureSampler(ME::TextureFilter::Nearest, ME::TextureWrap::Repeat);
-    textureSamplerCount = 1;
+    textureSamplers.count = 1;
 }
 void ME::SceneDiceSimple::BuildLights() {
     ME::Scene::BuildLights();

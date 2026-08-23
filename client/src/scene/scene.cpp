@@ -34,9 +34,9 @@ ME::Scene::~Scene() {
     delete[] quadPaths.data;
     delete[] texturePaths.data;
     delete[] spriteTexturePaths.data;
-    delete[] textureAtlasProperties;
+    delete[] textureAtlasProperties.data;
     delete[] shaderPaths.data;
-    delete[] textureSamplers;
+    delete[] textureSamplers.data;
 
     delete[] staticColliders.data;
     delete[] dynamicColliders.data;
@@ -74,10 +74,12 @@ void ME::Scene::CreateResources() {
     texturePaths.count = 0;
     spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
     spriteTexturePaths.count = 0;
-    textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.data = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.count = 0;
     shaderPaths.data = new const char*[Constants::MaxShaderCount];
     shaderPaths.count = 0;
-    textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
+    textureSamplers.data = new ME::TextureSampler[Constants::MaxSamplerCount];
+    textureSamplers.count = 0;
     transforms.data = new ME::Transform[Constants::MaxTransformCount];
     transforms.count = 0;
     meshRenderers.data = new ME::MeshRenderer[Constants::MaxMeshRendererCount];
@@ -108,10 +110,6 @@ void ME::Scene::CreateResources() {
     sfxPaths.count = 0;
     musicPaths.data = new const char*[Constants::MaxLoadedMusicCount];
     musicPaths.count = 0;
-
-    textureAtlasPropertiesCount = 0;
-
-    textureSamplerCount = 0;
 }
 
 void ME::Scene::BuildLights() {

@@ -67,7 +67,7 @@ void ME::SceneEvolution::CreateResources() {
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[0]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[1]);
     ME::JsonUtils::LoadTextureAtlasProps("texture_data/atlas_tileset_evolution.json", textureAtlasProperties[2]);
-    textureAtlasPropertiesCount = 3;
+    textureAtlasProperties.count = 3;
 }
 
 void ME::SceneEvolution::BuildLights() {

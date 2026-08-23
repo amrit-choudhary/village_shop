@@ -9,6 +9,7 @@ ME::SceneUI::SceneUI() {}
 
 ME::SceneUI::~SceneUI() {
     delete[] spriteTexturePaths.data;
+    delete[] textureAtlasProperties.data;
 
     // uiSpriteTransforms/uiSpriteRenderers/textTransforms/textRenderers all hold values copied
     // in via AddUISprite/AddUIText/RebuildUISprites/RebuildUIText (from the dynamic UIElement
@@ -41,7 +42,8 @@ void ME::SceneUI::Init() {
 void ME::SceneUI::CreateResources() {
     spriteTexturePaths.data = new const char*[Constants::MaxSpriteTextureCount];
     spriteTexturePaths.count = 0;
-    textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.data = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
+    textureAtlasProperties.count = 0;
 
     uiSpriteTransforms.data = new ME::Transform[Constants::MaxUISpriteTransformCount];
     uiSpriteTransforms.count = 0;
@@ -58,8 +60,6 @@ void ME::SceneUI::CreateResources() {
 
     uiElements.data = new ME::UIElement*[Constants::MaxUIElementCount];
     uiElements.count = 0;
-
-    textureAtlasPropertiesCount = 0;
 }
 
 void ME::SceneUI::BuildUISprites() {}
