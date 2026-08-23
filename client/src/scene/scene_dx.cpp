@@ -29,15 +29,11 @@ ME::SceneDX::SceneDX(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, M
     textureAtlasCBs = new ME::UploadBufferDX*[Constants::MaxConstantBuffersCount];
     textureAtlasCBHeapIndices = new uint32_t[Constants::MaxConstantBuffersCount];
     transforms = scene->transforms;
-    transformCount = scene->transformCount;
     spriteTransforms = scene->spriteTransforms;
-    spriteTransformCount = scene->spriteTransformCount;
 
     instancedSpriteTransforms0 = scene->instancedSpriteTransforms0;
-    instancedSpriteTransformCount0 = scene->instancedSpriteTransformCount0;
 
     instancedSpriteTransforms1 = scene->instancedSpriteTransforms1;
-    instancedSpriteTransformCount1 = scene->instancedSpriteTransformCount1;
 
     meshRenderers = scene->meshRenderers;
     meshRendererCount = scene->meshRendererCount;

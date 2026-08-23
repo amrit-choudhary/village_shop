@@ -185,14 +185,14 @@ void ME::SceneEvolution::UpdateCreatures(float deltaTime) {
         ME::Creature* creature = &(*creaturePool)[i];
         float x = creature->position.x * tileSize + originX;
         float y = creature->position.y * tileSize + originY;
-        instancedSpriteTransforms1[i]->SetPosition(x, y, 0.0f);
+        instancedSpriteTransforms1[i].SetPosition(x, y, 0.0f);
         instancedSpriteRenderers1[i]->bDirty = true;
     }
 
     // Park any slots freed this frame so released creatures actually disappear.
     // Just for little optimization, we only need to park the slots that were released this frame, not all the
     for (size_t i = activeCount; i < activeCountBeforeRemoval; ++i) {
-        instancedSpriteTransforms1[i]->SetPosition(creatureParkPos.x, creatureParkPos.y, creatureParkPos.z);
+        instancedSpriteTransforms1[i].SetPosition(creatureParkPos.x, creatureParkPos.y, creatureParkPos.z);
         instancedSpriteRenderers1[i]->bDirty = true;
     }
 

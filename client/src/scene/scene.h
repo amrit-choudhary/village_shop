@@ -18,6 +18,7 @@
 #include "client/src/rendering/shared/text_renderer.h"
 #include "client/src/rendering/shared/texture.h"
 #include "client/src/rendering/shared/texture_sampler.h"
+#include "shared/src/datastructure/span.h"
 #include "shared/src/physics/collider_aabb.h"
 
 namespace ME {
@@ -54,18 +55,18 @@ class Scene {
     const char** shaderPaths = nullptr;
     ME::TextureSampler* textureSamplers = nullptr;
     ME::TextureAtlasProperties* textureAtlasProperties = nullptr;
-    ME::Transform** transforms = nullptr;
+    ME::Span<ME::Transform> transforms;
     ME::MeshRenderer** meshRenderers = nullptr;
-    ME::Transform** spriteTransforms = nullptr;
+    ME::Span<ME::Transform> spriteTransforms;
     ME::SpriteRenderer** spriteRenderers = nullptr;
 
     // First set of instanced sprite renderers.
-    ME::Transform** instancedSpriteTransforms0 = nullptr;
+    ME::Span<ME::Transform> instancedSpriteTransforms0;
     ME::SpriteRenderer** instancedSpriteRenderers0 = nullptr;
     ME::SpriteRendererInstanceData* spriteInstanceData0 = nullptr;
 
     // Second set of instanced sprite renderers.
-    ME::Transform** instancedSpriteTransforms1 = nullptr;
+    ME::Span<ME::Transform> instancedSpriteTransforms1;
     ME::SpriteRenderer** instancedSpriteRenderers1 = nullptr;
     ME::SpriteRendererInstanceData* spriteInstanceData1 = nullptr;
 
@@ -79,15 +80,11 @@ class Scene {
     uint8_t textureAtlasPropertiesCount = 0;
     uint8_t shaderCount = 0;
     uint8_t textureSamplerCount = 0;
-    uint16_t transformCount = 0;
     uint16_t meshRendererCount = 0;
-    uint16_t spriteTransformCount = 0;
     uint16_t spriteRendererCount = 0;
 
-    uint32_t instancedSpriteTransformCount0 = 0;
     uint32_t instancedSpriteRendererCount0 = 0;
 
-    uint32_t instancedSpriteTransformCount1 = 0;
     uint32_t instancedSpriteRendererCount1 = 0;
 
     uint32_t staticColliderCount = 0;
@@ -117,7 +114,7 @@ class Scene {
 
     /**
      * Creates and adds a sprite transform with the given position and scale.
-     * Will also increment the spriteTransformCount.
+     * Will also increment spriteTransforms.count.
      */
     void AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale);
 
@@ -129,7 +126,7 @@ class Scene {
 
     /**
      * Creates and adds an instanced sprite transform with the given position and scale.
-     * Will also increment the instancedSpriteTransformCount.
+     * Will also increment instancedSpriteTransforms0/1.count.
      * buffer specifies which instance buffer to add to (0 or 1).
      */
     void AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer = 0);

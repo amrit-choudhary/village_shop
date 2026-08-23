@@ -31,11 +31,14 @@ void ME::SceneDiceSimple::CreateResources() {
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
     shaderPaths = new const char*[Constants::MaxShaderCount];
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
-    transforms = new ME::Transform*[Constants::MaxTransformCount];
+    transforms.data = new ME::Transform[Constants::MaxTransformCount];
+    transforms.count = 0;
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
-    spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
+    spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
+    spriteTransforms.count = 0;
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.count = 0;
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
@@ -77,16 +80,14 @@ void ME::SceneDiceSimple::BuildSpriteTransforms() {}
 void ME::SceneDiceSimple::BuildSpriteRenderers() {}
 void ME::SceneDiceSimple::BuildInstancedSpriteTransforms() {
     // Player Dice
-    instancedSpriteTransforms0[0] = new ME::Transform();
-    instancedSpriteTransforms0[0]->SetPosition(0.0f, -diceGap, 1.0f);
-    instancedSpriteTransforms0[0]->SetScale(cellSize, cellSize);
+    instancedSpriteTransforms0[0].SetPosition(0.0f, -diceGap, 1.0f);
+    instancedSpriteTransforms0[0].SetScale(cellSize, cellSize);
 
     // AI Dice
-    instancedSpriteTransforms0[1] = new ME::Transform();
-    instancedSpriteTransforms0[1]->SetPosition(0.0f, diceGap, 1.0f);
-    instancedSpriteTransforms0[1]->SetScale(cellSize, cellSize);
+    instancedSpriteTransforms0[1].SetPosition(0.0f, diceGap, 1.0f);
+    instancedSpriteTransforms0[1].SetScale(cellSize, cellSize);
 
-    instancedSpriteTransformCount0 = 2;
+    instancedSpriteTransforms0.count = 2;
 }
 void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     instancedSpriteRenderers0[0] = new ME::SpriteRenderer(0, 0, 1, 1, 1, ME::Color::White());
@@ -98,7 +99,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip0);
     animator0->AddClip(clip0);
 
-    spriteInstanceData0[0].modelMatrixData = instancedSpriteTransforms0[0]->GetModelMatrix().GetDataForShader();
+    spriteInstanceData0[0].modelMatrixData = instancedSpriteTransforms0[0].GetModelMatrix().GetDataForShader();
     spriteInstanceData0[0].atlasIndex = 0;
     spriteInstanceData0[0].color = ME::Color::White();
 
@@ -111,7 +112,7 @@ void ME::SceneDiceSimple::BuildInstancedSpriteRenderers() {
     ME::JsonUtils::LoadSpriteAnimClipFromJSON("anim/sprite_anim_01.json", &clip1);
     animator1->AddClip(clip1);
 
-    spriteInstanceData0[1].modelMatrixData = instancedSpriteTransforms0[1]->GetModelMatrix().GetDataForShader();
+    spriteInstanceData0[1].modelMatrixData = instancedSpriteTransforms0[1].GetModelMatrix().GetDataForShader();
     spriteInstanceData0[1].atlasIndex = 0;
     spriteInstanceData0[1].color = ME::Color::White();
 

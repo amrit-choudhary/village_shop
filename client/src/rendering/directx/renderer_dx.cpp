@@ -365,7 +365,7 @@ void ME::RendererDX::Draw() {
             commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
 
             CBPerSprite perSpriteData{};
-            perSpriteData.modelMatrix = sceneDX->spriteTransforms[i]->GetModelMatrix().GetDataRowMajor();
+            perSpriteData.modelMatrix = sceneDX->spriteTransforms[i].GetModelMatrix().GetDataRowMajor();
             perSpriteData.color = sceneDX->spriteRenderers[i]->color;
             perSpriteData.atlasIndex = sceneDX->spriteRenderers[i]->atlasIndex;
             perSpriteData.flags = sceneDX->spriteRenderers[i]->flags;

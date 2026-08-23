@@ -9,6 +9,8 @@
 
 namespace ME {
 
+// Copying a Span copies the view (pointer + count), not the underlying data or its ownership.
+// The array's owner is whoever allocated it; a copied Span is just another borrower of it.
 template <typename T>
 class Span {
    public:

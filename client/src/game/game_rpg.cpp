@@ -29,13 +29,13 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
         rpgScene->spriteInstanceData0[i].atlasIndex = tileRenderData.atlasIndex;
         if (tileRenderData.flipDiagonal) {
             if (tileRenderData.flipY) {
-                rpgScene->instancedSpriteTransforms0[i]->SetRotation(0.0f, 0.0f, -ME::PI / 2.0f);
+                rpgScene->instancedSpriteTransforms0[i].SetRotation(0.0f, 0.0f, -ME::PI / 2.0f);
                 tileRenderData.flipY = false;
             } else {
-                rpgScene->instancedSpriteTransforms0[i]->SetRotation(0.0f, 0.0f, ME::PI / 2.0f);
+                rpgScene->instancedSpriteTransforms0[i].SetRotation(0.0f, 0.0f, ME::PI / 2.0f);
             }
             rpgScene->spriteInstanceData0[i].modelMatrixData =
-                rpgScene->instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+                rpgScene->instancedSpriteTransforms0[i].GetModelMatrix().GetDataForShader();
         }
         // Set flags for flipping at bit 0 horizontal, bit 1 vertical and bit 2 is diagonal.
         rpgScene->spriteInstanceData0[i].flags = (tileRenderData.flipX ? 0x1 : 0x0) |

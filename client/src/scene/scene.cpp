@@ -46,30 +46,21 @@ ME::Scene::~Scene() {
     delete[] sfxPaths;
     delete[] musicPaths;
 
-    for (uint16_t i = 0; i < transformCount; ++i) {
-        delete transforms[i];
-    }
-    delete[] transforms;
+    delete[] transforms.data;
 
     for (uint16_t i = 0; i < meshRendererCount; ++i) {
         delete meshRenderers[i];
     }
     delete[] meshRenderers;
 
-    for (uint16_t i = 0; i < spriteTransformCount; ++i) {
-        delete spriteTransforms[i];
-    }
-    delete[] spriteTransforms;
+    delete[] spriteTransforms.data;
 
     for (uint16_t i = 0; i < spriteRendererCount; ++i) {
         delete spriteRenderers[i];
     }
     delete[] spriteRenderers;
 
-    for (uint32_t i = 0; i < instancedSpriteTransformCount0; ++i) {
-        delete instancedSpriteTransforms0[i];
-    }
-    delete[] instancedSpriteTransforms0;
+    delete[] instancedSpriteTransforms0.data;
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
         delete instancedSpriteRenderers0[i];
@@ -78,10 +69,7 @@ ME::Scene::~Scene() {
 
     delete[] spriteInstanceData0;
 
-    for (uint32_t i = 0; i < instancedSpriteTransformCount1; ++i) {
-        delete instancedSpriteTransforms1[i];
-    }
-    delete[] instancedSpriteTransforms1;
+    delete[] instancedSpriteTransforms1.data;
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {
         delete instancedSpriteRenderers1[i];
@@ -99,16 +87,20 @@ void ME::Scene::CreateResources() {
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
     shaderPaths = new const char*[Constants::MaxShaderCount];
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
-    transforms = new ME::Transform*[Constants::MaxTransformCount];
+    transforms.data = new ME::Transform[Constants::MaxTransformCount];
+    transforms.count = 0;
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
-    spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
+    spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
+    spriteTransforms.count = 0;
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
 
-    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.count = 0;
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
-    instancedSpriteTransforms1 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms1.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms1.count = 0;
     instancedSpriteRenderers1 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData1 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
@@ -181,16 +173,15 @@ const char* ME::Scene::GetDisplayName() const {
 }
 
 void ME::Scene::AddSpriteTransform(ME::Vec3 position, ME::Vec3 scale) {
-    if (spriteTransformCount >= Constants::MaxSpriteTransformCount) {
+    if (spriteTransforms.count >= Constants::MaxSpriteTransformCount) {
         ME::LogError("Scene::AddSpriteTransform: Exceeded max sprite transform count.");
         return;
     }
 
-    ME::Transform* transform = new ME::Transform();
-    transform->SetPosition(position);
-    transform->SetScale(scale);
-    spriteTransforms[spriteTransformCount] = transform;
-    ++spriteTransformCount;
+    ME::Transform& transform = spriteTransforms[spriteTransforms.count];
+    transform.SetPosition(position);
+    transform.SetScale(scale);
+    ++spriteTransforms.count;
 }
 
 void ME::Scene::AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer) {
@@ -205,29 +196,27 @@ void ME::Scene::AddSpriteRenderer(ME::SpriteRenderer* spriteRenderer) {
 
 void ME::Scene::AddInstancedSpriteTransform(ME::Vec3 position, ME::Vec3 scale, uint8_t buffer) {
     if (buffer == 0) {
-        if (instancedSpriteTransformCount0 >= Constants::MaxInstancedSpriteTransformCount) {
+        if (instancedSpriteTransforms0.count >= Constants::MaxInstancedSpriteTransformCount) {
             ME::LogError(
                 "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 0.");
             return;
         }
 
-        ME::Transform* transform = new ME::Transform();
-        transform->SetPosition(position);
-        transform->SetScale(scale);
-        instancedSpriteTransforms0[instancedSpriteTransformCount0] = transform;
-        ++instancedSpriteTransformCount0;
+        ME::Transform& transform = instancedSpriteTransforms0[instancedSpriteTransforms0.count];
+        transform.SetPosition(position);
+        transform.SetScale(scale);
+        ++instancedSpriteTransforms0.count;
     } else {
-        if (instancedSpriteTransformCount1 >= Constants::MaxInstancedSpriteTransformCount) {
+        if (instancedSpriteTransforms1.count >= Constants::MaxInstancedSpriteTransformCount) {
             ME::LogError(
                 "Scene::AddInstancedSpriteTransform: Exceeded max instanced sprite transform count for buffer 1.");
             return;
         }
 
-        ME::Transform* transform = new ME::Transform();
-        transform->SetPosition(position);
-        transform->SetScale(scale);
-        instancedSpriteTransforms1[instancedSpriteTransformCount1] = transform;
-        ++instancedSpriteTransformCount1;
+        ME::Transform& transform = instancedSpriteTransforms1[instancedSpriteTransforms1.count];
+        transform.SetPosition(position);
+        transform.SetScale(scale);
+        ++instancedSpriteTransforms1.count;
     }
 }
 
@@ -283,7 +272,7 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
         if (!instancedSpriteRenderers0[i]->bDirty) {
             continue;
         }
-        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData0[i].modelMatrixData = instancedSpriteTransforms0[i].GetModelMatrix().GetDataForShader();
     }
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount0; ++i) {
@@ -305,7 +294,7 @@ void ME::Scene::UpdateInstancedSpriteRenderers() {
         if (!instancedSpriteRenderers1[i]->bDirty) {
             continue;
         }
-        spriteInstanceData1[i].modelMatrixData = instancedSpriteTransforms1[i]->GetModelMatrix().GetDataForShader();
+        spriteInstanceData1[i].modelMatrixData = instancedSpriteTransforms1[i].GetModelMatrix().GetDataForShader();
     }
 
     for (uint32_t i = 0; i < instancedSpriteRendererCount1; ++i) {

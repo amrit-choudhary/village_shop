@@ -11,7 +11,7 @@ void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
     scene = brkScene;
     scene->Init();
 
-    ballTransform = brkScene->instancedSpriteTransforms0[brkScene->ballIndex];
+    ballTransform = &brkScene->instancedSpriteTransforms0[brkScene->ballIndex];
     ballInstanceData = &(brkScene->spriteInstanceData0[brkScene->ballIndex]);
     ballVelocity = brkScene->ballVelocity;
 

@@ -28,7 +28,7 @@ void ME::GameCharacterTest::Init(ME::Time::TimeManager* currentTimeManager) {
     animationSystem->SetScene(scene);
     animationSystem->Init();
 
-    playerTransform = charScene->spriteTransforms[0];
+    playerTransform = &charScene->spriteTransforms[0];
     uiScene->textRenderers[0]->SetText("Survivors");
     uiScene->textRenderers[1]->SetText("Score:00000");
     uiScene->textRenderers[2]->SetText("Health:100");
@@ -142,7 +142,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
             continue;
         }
 
-        ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
+        ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[i];
         ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
 
         // Move towards player.
@@ -184,7 +184,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
                 ++burstCounter;
                 float angle = inputAngle + (rndBullet.NextDouble() - 0.5f) * ME::QUARTER_PI * 0.5f;
                 bulletDirs[i] = ME::Vec2{cos(angle), sin(angle)};
-                charScene->instancedSpriteTransforms1[i]->SetPosition(playerTransform->GetPosition());
+                charScene->instancedSpriteTransforms1[i].SetPosition(playerTransform->GetPosition());
                 charScene->instancedSpriteRenderers1[i]->atlasIndex = (cycleCounter % 4);
             }
         }
@@ -194,7 +194,7 @@ void ME::GameCharacterTest::Update(double deltaTime) {
 
     // Move bullets.
     for (size_t i = 0; i < maxBulletCount; ++i) {
-        ME::Transform* bulletTransform = charScene->instancedSpriteTransforms1[i];
+        ME::Transform* bulletTransform = &charScene->instancedSpriteTransforms1[i];
         ME::Vec3 bulletPos = bulletTransform->GetPosition();
         bulletPos.x += bulletDirs[i].x * bulletSpeed * static_cast<float>(deltaTime);
         bulletPos.y += bulletDirs[i].y * bulletSpeed * static_cast<float>(deltaTime);
@@ -244,7 +244,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     uint32_t enemyIndex = a->GetID() - 1;
     uint32_t bulletIndex = b->GetID() - maxNPCCount - 1;
 
-    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemyIndex];
+    ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[enemyIndex];
     ME::Vec3 dirToPlayer = playerTransform->GetPosition() - npcTransform->GetPosition();
 
     ME::Vec3 throwDir = dirToPlayer.Normalised();
@@ -258,7 +258,7 @@ void ME::GameCharacterTest::CollisionCallback(ColliderAABB* a, ColliderAABB* b, 
     ME::Vec3 bulletPos = bulletParkPos;
     bulletDirs[bulletIndex] = ME::Vec2{0.0f, 0.0f};
 
-    ME::Transform* bulletTransform = charScene->instancedSpriteTransforms1[bulletIndex];
+    ME::Transform* bulletTransform = &charScene->instancedSpriteTransforms1[bulletIndex];
     bulletTransform->SetPosition(bulletPos);
     charScene->instancedSpriteRenderers1[bulletIndex]->bDirty = true;
     charScene->dynamicColliders[(maxNPCCount + bulletIndex + 1)].UpdateTransform(*bulletTransform,
@@ -273,7 +273,7 @@ void ME::GameCharacterTest::SpawnNextEnemy() {
         if (!enemies[i].bActive) {
             enemies[i].bActive = true;
 
-            ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[i];
+            ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[i];
             ME::SpriteRenderer* npcRenderer = charScene->instancedSpriteRenderers0[i];
 
             if (npcRenderer->animator != nullptr) {
@@ -307,7 +307,7 @@ void ME::GameCharacterTest::SpawnNextEnemy() {
 
 void ME::GameCharacterTest::EnemyTouchedPlayer(uint32_t enemyIndex) {
     uint32_t enemyIdx = enemyIndex - 1;
-    ME::Transform* npcTransform = charScene->instancedSpriteTransforms0[enemyIdx];
+    ME::Transform* npcTransform = &charScene->instancedSpriteTransforms0[enemyIdx];
     npcTransform->SetPosition(npcParkPos);
     charScene->dynamicColliders[enemyIndex].UpdateTransform(*npcTransform, charScene->enemyCollScaleMult);
     charScene->instancedSpriteRenderers0[enemyIdx]->bDirty = true;

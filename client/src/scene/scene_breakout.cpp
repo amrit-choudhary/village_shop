@@ -35,11 +35,14 @@ void ME::SceneBreakout::CreateResources() {
     textureAtlasProperties = new ME::TextureAtlasProperties[Constants::MaxTextureAtlasPropertiesCount];
     shaderPaths = new const char*[Constants::MaxShaderCount];
     textureSamplers = new ME::TextureSampler[Constants::MaxSamplerCount];
-    transforms = new ME::Transform*[Constants::MaxTransformCount];
+    transforms.data = new ME::Transform[Constants::MaxTransformCount];
+    transforms.count = 0;
     meshRenderers = new ME::MeshRenderer*[Constants::MaxMeshRendererCount];
-    spriteTransforms = new ME::Transform*[Constants::MaxSpriteTransformCount];
+    spriteTransforms.data = new ME::Transform[Constants::MaxSpriteTransformCount];
+    spriteTransforms.count = 0;
     spriteRenderers = new ME::SpriteRenderer*[Constants::MaxSpriteRendererCount];
-    instancedSpriteTransforms0 = new ME::Transform*[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.data = new ME::Transform[Constants::MaxInstancedSpriteTransformCount];
+    instancedSpriteTransforms0.count = 0;
     instancedSpriteRenderers0 = new ME::SpriteRenderer*[Constants::MaxInstancedSpriteRendererCount];
     spriteInstanceData0 = new ME::SpriteRendererInstanceData[Constants::MaxInstancedSpriteRendererCount];
 
@@ -85,7 +88,7 @@ void ME::SceneBreakout::BuildSpriteRenderers() {}
 
 void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
     // Create Bricks Transforms.
-    instancedSpriteTransformCount0 = gridCount;
+    instancedSpriteTransforms0.count = gridCount;
 
     for (size_t iy = 0; iy < gridY; ++iy) {
         for (size_t ix = 0; ix < gridX; ++ix) {
@@ -94,9 +97,8 @@ void ME::SceneBreakout::BuildInstancedSpriteTransforms() {
             float px = originX + brickWidthby2 + (static_cast<float>(ix) * (brickWidth + brickPadding));
             float py = originY + brickHeightby2 + (static_cast<float>(iy) * (brickHeight + brickPadding));
 
-            instancedSpriteTransforms0[i] = new ME::Transform();
-            instancedSpriteTransforms0[i]->SetPosition(px, py, 1.0f);
-            instancedSpriteTransforms0[i]->SetScale(brickWidth, brickHeight);
+            instancedSpriteTransforms0[i].SetPosition(px, py, 1.0f);
+            instancedSpriteTransforms0[i].SetScale(brickWidth, brickHeight);
         }
     }
 }
@@ -124,7 +126,7 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
             instancedSpriteRenderers0[i]->atlasIndex = 587;
 
             staticColliders[staticColliderCount] = ME::ColliderAABB(i, true, true, PhysicsLayer::Default,
-                                                                    PhysicsLayer::All, *instancedSpriteTransforms0[i]);
+                                                                    PhysicsLayer::All, instancedSpriteTransforms0[i]);
             ++staticColliderCount;
         } else {
             instancedSpriteRenderers0[i]->atlasIndex = 0;
@@ -152,10 +154,9 @@ void ME::SceneBreakout::CreateWalls() {
     uint16_t sizeYValues[4] = {wallHeight, wallSizeY, wallHeight, wallSizeY};
 
     for (int i = 0; i < 4; ++i) {
-        ++instancedSpriteTransformCount0;
-        instancedSpriteTransforms0[indices[i]] = new ME::Transform();
-        instancedSpriteTransforms0[indices[i]]->SetPosition(xValues[i], yValues[i], 0.0f);
-        instancedSpriteTransforms0[indices[i]]->SetScale(sizeXValues[i], sizeYValues[i]);
+        ++instancedSpriteTransforms0.count;
+        instancedSpriteTransforms0[indices[i]].SetPosition(xValues[i], yValues[i], 0.0f);
+        instancedSpriteTransforms0[indices[i]].SetScale(sizeXValues[i], sizeYValues[i]);
 
         ++instancedSpriteRendererCount0;
         instancedSpriteRenderers0[indices[i]] = new ME::SpriteRenderer(0, 0, 2, 1, 0, ME::Color::White());
@@ -163,16 +164,15 @@ void ME::SceneBreakout::CreateWalls() {
         instancedSpriteRenderers0[indices[i]]->color = colorPalette[7];
 
         staticColliders[staticColliderCount] = ColliderAABB(indices[i], true, true, PhysicsLayer::Default,
-                                                            PhysicsLayer::All, *instancedSpriteTransforms0[indices[i]]);
+                                                            PhysicsLayer::All, instancedSpriteTransforms0[indices[i]]);
         ++staticColliderCount;
     }
 }
 
 void ME::SceneBreakout::CreatePaddle() {
-    ++instancedSpriteTransformCount0;
-    instancedSpriteTransforms0[paddleIndex] = new ME::Transform();
-    instancedSpriteTransforms0[paddleIndex]->SetPosition(paddleInitX, paddleInitY, 0.0f);
-    instancedSpriteTransforms0[paddleIndex]->SetScale(paddleSizeX, paddleSizeY);
+    ++instancedSpriteTransforms0.count;
+    instancedSpriteTransforms0[paddleIndex].SetPosition(paddleInitX, paddleInitY, 0.0f);
+    instancedSpriteTransforms0[paddleIndex].SetScale(paddleSizeX, paddleSizeY);
 
     ++instancedSpriteRendererCount0;
     instancedSpriteRenderers0[paddleIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 253, ME::Color::White());
@@ -180,15 +180,14 @@ void ME::SceneBreakout::CreatePaddle() {
     instancedSpriteRenderers0[paddleIndex]->color = colorPalette[0];
 
     staticColliders[staticColliderCount] = ME::ColliderAABB(
-        paddleIndex, true, true, PhysicsLayer::Default, PhysicsLayer::All, *instancedSpriteTransforms0[paddleIndex]);
+        paddleIndex, true, true, PhysicsLayer::Default, PhysicsLayer::All, instancedSpriteTransforms0[paddleIndex]);
     ++staticColliderCount;
 }
 
 void ME::SceneBreakout::CreateBall() {
-    ++instancedSpriteTransformCount0;
-    instancedSpriteTransforms0[ballIndex] = new ME::Transform();
-    instancedSpriteTransforms0[ballIndex]->SetPosition(ballInitX, ballInitY, 0.0f);
-    instancedSpriteTransforms0[ballIndex]->SetScale(ballSize, ballSize);
+    ++instancedSpriteTransforms0.count;
+    instancedSpriteTransforms0[ballIndex].SetPosition(ballInitX, ballInitY, 0.0f);
+    instancedSpriteTransforms0[ballIndex].SetScale(ballSize, ballSize);
 
     ++instancedSpriteRendererCount0;
     instancedSpriteRenderers0[ballIndex] = new ME::SpriteRenderer(0, 0, 2, 1, 631, ME::Color::White());
@@ -197,6 +196,6 @@ void ME::SceneBreakout::CreateBall() {
 
     dynamicColliders[dynamicColliderCount] =
         ME::ColliderAABB(ballIndex, true, false, PhysicsLayer::Default, PhysicsLayer::All,
-                         *instancedSpriteTransforms0[ballIndex], ballCollScaleMult);
+                         instancedSpriteTransforms0[ballIndex], ballCollScaleMult);
     ++dynamicColliderCount;
 }

@@ -69,7 +69,7 @@ void ME::SceneCharacterTest::BuildSpriteTransforms() {
 
     dynamicColliders[dynamicColliderCount] =
         ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Player, PhysicsLayer::Enemy,
-                         *spriteTransforms[0], charCollScaleMult);
+                         spriteTransforms[0], charCollScaleMult);
     ++dynamicColliderCount;
 }
 
@@ -109,7 +109,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 
         dynamicColliders[dynamicColliderCount] = ME::ColliderAABB(
             dynamicColliderCount, true, false, PhysicsLayer::Enemy, (PhysicsLayer::Player | PhysicsLayer::Projectile),
-            *instancedSpriteTransforms0[i], enemyCollScaleMult);
+            instancedSpriteTransforms0[i], enemyCollScaleMult);
         ++dynamicColliderCount;
     }
 
@@ -123,7 +123,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteTransforms() {
 
         dynamicColliders[dynamicColliderCount] =
             ME::ColliderAABB(dynamicColliderCount, true, false, PhysicsLayer::Projectile, PhysicsLayer::Enemy,
-                             *instancedSpriteTransforms1[i], bulletCollScaleMult);
+                             instancedSpriteTransforms1[i], bulletCollScaleMult);
         ++dynamicColliderCount;
     }
 }
@@ -140,7 +140,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
         ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, static_cast<uint16_t>(type));
 
         // Flip if on left side.
-        if (instancedSpriteTransforms0[i]->GetPosition().x > 0) {
+        if (instancedSpriteTransforms0[i].GetPosition().x > 0) {
             spRend->ToggleFlipHorizontal(true);
         }
 
@@ -161,7 +161,7 @@ void ME::SceneCharacterTest::BuildInstancedSpriteRenderers() {
         ME::SpriteRenderer* spRend = new ME::SpriteRenderer(0, 0, 1, 2, (i % 6));
 
         // Flip if on left side.
-        if (instancedSpriteTransforms1[i]->GetPosition().x > 0) {
+        if (instancedSpriteTransforms1[i].GetPosition().x > 0) {
             spRend->ToggleFlipHorizontal(true);
         }
 
