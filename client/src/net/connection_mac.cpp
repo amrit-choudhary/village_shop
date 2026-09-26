@@ -14,10 +14,11 @@
 #include "shared/src/net/net_protocol.h"
 #include "shared/src/net/net_utils.h"
 
-static const char* SERVER_IP = "127.0.0.1";
-static const unsigned short PORT = 9310;
+void ME::ConnectionMac::Init(const char* serverIP, uint16_t serverPort) {
+    strncpy(this->serverIP, serverIP, sizeof(this->serverIP) - 1);
+    this->serverIP[sizeof(this->serverIP) - 1] = '\0';
+    this->serverPort = serverPort;
 
-void ME::ConnectionMac::Init() {
     // Creating a UDP socket to connect to the erver.
     std::cout << "Client Connection Starting\n";
     clientSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -66,8 +67,8 @@ void ME::ConnectionMac::SendPacket(Packet* packet) {
     // Define server address structure
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    server_addr.sin_port = htons(serverPort);
+    server_addr.sin_addr.s_addr = inet_addr(serverIP);
 
     int sent_bytes =
         sendto(clientSocketFD, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr, sizeof(sockaddr_in));

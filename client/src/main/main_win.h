@@ -19,6 +19,7 @@
 #include "client/src/game/game_dice_simple.h"
 #include "client/src/game/game_falling_sand.h"
 #include "client/src/game/game_game_of_life.h"
+#include "client/src/game/game_net_test.h"
 #include "client/src/game/game_rpg.h"
 #include "client/src/game/game_ui_demo.h"
 #include "client/src/game/village_game.h"
@@ -69,7 +70,8 @@ class GameMain {
     // ME::GameDiceSimple game;
     // ME::GameCharacterTest game;
     // ME::GameUIDemo game;
-    ME::GameEvolution game;
+    // ME::GameEvolution game;
+    ME::GameNetTest game;
     ME::PhysicsSystem physicsSystem;
     ME::AnimationSystem animationSystem;
     ME::AudioSystem audioSystem;

@@ -58,6 +58,18 @@ ME::FP_24_8 ME::Packet::ReadFP() {
     return ME::FP_24_8(*ptr, true);
 }
 
+void ME::Packet::WriteUInt32(uint32_t value) {
+    uint32_t* ptr = reinterpret_cast<uint32_t*>(dataPtr + index);
+    *ptr = value;
+    index += 4;
+}
+
+uint32_t ME::Packet::ReadUInt32() {
+    uint32_t* ptr = reinterpret_cast<uint32_t*>(dataPtr + index);
+    index += 4;
+    return *ptr;
+}
+
 ME::PacketSmall::PacketSmall() {
     index = 0;
     size = ME::PACKET_SIZE_SMALL;

@@ -16,7 +16,7 @@ class SocketServer;  // Forward declaration.
 
 class PlatformSocketServer {
    public:
-    virtual void Init();
+    virtual void Init(uint16_t port);
     virtual void Update(double deltaTime);
     virtual void End();
 
@@ -31,7 +31,7 @@ class PlatformSocketServer {
 
 class SocketServer {
    public:
-    void Init();
+    void Init(uint16_t port);
     void Update(double deltaTime);
     void End();
 
@@ -40,6 +40,7 @@ class SocketServer {
     void SendPong(uint8_t clientID);
     void HandleChat(Packet& packet, uint8_t clientID);
     void HandleData(Packet& packet, uint8_t clientID);
+    void HandleScore(Packet& packet, uint8_t clientID);
     void SendConnected(uint8_t clientID);
     ME::Net::ConnectedClient GetClient(uint8_t clientID);
     std::vector<ME::Net::ConnectedClient> GetAllClients();

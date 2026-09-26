@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "client/src/misc/delegate.h"
 #include "shared/src/net/net_packet.h"
 #include "shared/src/net/net_protocol.h"
 
@@ -16,7 +17,7 @@ class Connection;  // Forward declaration.
 
 class PlatformConnection {
    public:
-    virtual void Init();
+    virtual void Init(const char* serverIP, uint16_t serverPort);
     virtual void Update(double deltaTime);
     virtual void End();
     virtual void SendPacket(Packet* packet);
@@ -30,7 +31,7 @@ class PlatformConnection {
 
 class Connection {
    public:
-    void Init();
+    void Init(const char* serverIP = "127.0.0.1", uint16_t serverPort = 9310);
     void Update(double deltaTime);
     void End();
     void SendConnectRequest();
@@ -39,13 +40,25 @@ class Connection {
     void RecvChat(Packet& packet, uint8_t clientID);
     void SendGameData(const ME::FP_24_8& value1, const ME::FP_24_8& value2, const ME::FP_24_8& value3);
     void RecvGameData(Packet& packet, uint8_t clientID);
+    void SendScore(uint32_t score);
+    void RecvScore(Packet& packet, uint8_t clientID);
     void SendPacket(Packet* packet);
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
     uint8_t GetClientID();
+    bool IsConnected() const;
+    uint8_t GetLastScoreSenderID() const;
+    uint32_t GetLastScore() const;
+
+    Delegate onConnected;
+    Delegate onPong;
+    Delegate onScoreReceived;
 
    private:
     PlatformConnection* platformConnection;
     Net::ConnectedServer connectedServer;
+
+    uint8_t lastScoreSenderID = 0;
+    uint32_t lastScore = 0;
 };
 
 }  // namespace ME

@@ -13,9 +13,7 @@
 
 #include "shared/src/net/net_packet.h"
 
-constexpr unsigned short PORT = 9310;
-
-void ME::SocketServerMac::Init() {
+void ME::SocketServerMac::Init(uint16_t port) {
     std::cout << "Server Starting\n";
     serverSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (serverSocketFD == -1) {
@@ -41,7 +39,7 @@ void ME::SocketServerMac::Init() {
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port = htons(port);
 
     // Bind server to socket.
     if (bind(serverSocketFD, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {

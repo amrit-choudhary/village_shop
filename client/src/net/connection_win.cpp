@@ -4,15 +4,17 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#include <cstring>
 #include <iostream>
 
 #include "shared/src/net/net_protocol.h"
 #include "shared/src/net/net_utils.h"
 
-static const char* SERVER_IP = "127.0.0.1";
-static const unsigned short PORT = 9310;
+void ME::ConnectionWin::Init(const char* serverIP, uint16_t serverPort) {
+    strncpy(this->serverIP, serverIP, sizeof(this->serverIP) - 1);
+    this->serverIP[sizeof(this->serverIP) - 1] = '\0';
+    this->serverPort = serverPort;
 
-void ME::ConnectionWin::Init() {
     // Initialize Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -73,8 +75,8 @@ void ME::ConnectionWin::SendPacket(Packet* packet) {
     // Define server address structure
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+    server_addr.sin_port = htons(serverPort);
+    server_addr.sin_addr.s_addr = inet_addr(serverIP);
 
     int sent_bytes = sendto(clientSocketFD, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&server_addr,
                             sizeof(sockaddr_in));

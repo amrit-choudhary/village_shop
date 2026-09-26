@@ -11,6 +11,7 @@
 
 #include "client/src/game/game.h"
 #include "client/src/game/game_breakout.h"
+#include "client/src/game/game_net_test.h"
 #include "client/src/game/game_ui_demo.h"
 #include "client/src/game/village_game.h"
 #include "client/src/input/input_manager.h"
@@ -50,7 +51,8 @@ class GameMain {
     ME::Input::InputManagerMac* macInputManager = nullptr;
     ME::Connection connection;
     // ME::GameBreakout game;
-    ME::GameUIDemo game;
+    // ME::GameUIDemo game;
+    ME::GameNetTest game;
     ME::RendererMetal renderer;
     ME::PhysicsSystem physicsSystem;
     ME::UISystem uiSystem;

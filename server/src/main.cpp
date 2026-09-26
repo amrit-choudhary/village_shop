@@ -1,19 +1,41 @@
 #include <chrono>
+#include <cstdlib>
 #include <iostream>
+#include <string>
 #include <thread>
+
+#ifdef VG_WIN
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
 
 #include "misc/global_vars.h"
 #include "net/socket_server.h"
+#include "shared/src/file_io/ini/ini_parser.h"
+#include "shared/src/misc/utils.h"
 #include "shared/src/time/time_manager.h"
 
 int main(int argc, char** argv) {
+#ifdef VG_WIN
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    ME::Utils::SetPaths(exePath, nullptr);
+#else
+    ME::Utils::SetPaths(argv[0], nullptr);
+#endif
+
     ME::Time::TimeManager timeManager;
     ME::Time::TimeConfig timeConfig;
     timeConfig.fixedStepFPS = ME::Time::FPS_60;
     timeManager.Init(timeConfig);
 
+    INIMap iniMap = Load();
+    std::string portStr = iniMap["settings"]["port"];
+    uint16_t port = portStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(portStr.c_str()));
+
     ME::SocketServer socketServer;
-    socketServer.Init();
+    socketServer.Init(port);
 
     // Game Loop.
     while (ServerRunning) {

@@ -30,9 +30,14 @@ void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     INIMap iniMap = Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
 
+    std::string serverIP = iniMap["settings"]["serverIP"];
+    if (serverIP.empty()) serverIP = "127.0.0.1";
+    std::string serverPortStr = iniMap["settings"]["serverPort"];
+    uint16_t serverPort = serverPortStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(serverPortStr.c_str()));
+
     inputManager.Init();
     macInputManager = static_cast<ME::Input::InputManagerMac*>(inputManager.GetPlatformInputManager());
-    connection.Init();
+    connection.Init(serverIP.c_str(), serverPort);
     physicsSystem.Init();
 
     game.SetInputManagerRef(&inputManager);

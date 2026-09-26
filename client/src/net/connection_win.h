@@ -11,13 +11,15 @@ namespace ME {
 
 class ConnectionWin : public PlatformConnection {
    public:
-    void Init() override;
+    void Init(const char* serverIP, uint16_t serverPort) override;
     void Update(double deltaTime) override;
     void End() override;
     void SendPacket(Packet* packet) override;
 
    private:
     int clientSocketFD;
+    char serverIP[64];
+    uint16_t serverPort;
 };
 }  // namespace ME
 

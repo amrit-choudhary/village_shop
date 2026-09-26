@@ -12,7 +12,7 @@ namespace ME {
 
 class SocketServerMac : public PlatformSocketServer {
    public:
-    void Init() override;
+    void Init(uint16_t port) override;
     void Update(double deltaTime) override;
     void End() override;
 

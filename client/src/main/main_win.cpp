@@ -30,12 +30,17 @@ void ME::GameMain::Init(HWND hWnd) {
     fixedFrameRate = std::atoi(iniMap["settings"]["fixedFrameRate"].c_str());
     vsync = std::atoi(iniMap["settings"]["vsync"].c_str()) != 0;
 
+    std::string serverIP = iniMap["settings"]["serverIP"];
+    if (serverIP.empty()) serverIP = "127.0.0.1";
+    std::string serverPortStr = iniMap["settings"]["serverPort"];
+    uint16_t serverPort = serverPortStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(serverPortStr.c_str()));
+
     debugSystem.Init();
     ME::DebugSystem::SetInstance(&debugSystem);
 
     inputManager.Init();
     winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
-    connection.Init();
+    connection.Init(serverIP.c_str(), serverPort);
     physicsSystem.Init();
     animationSystem.Init();
     audioSystem.Init();

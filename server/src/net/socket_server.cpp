@@ -16,7 +16,7 @@
 #pragma clang diagnostic ignored "-Wswitch"
 #endif
 
-void ME::SocketServer::Init() {
+void ME::SocketServer::Init(uint16_t port) {
 #ifdef VG_MAC
     platformSocketServer = new ME::SocketServerMac();
 #endif
@@ -25,7 +25,7 @@ void ME::SocketServer::Init() {
 #endif
 
     platformSocketServer->socketServer = this;
-    platformSocketServer->Init();
+    platformSocketServer->Init(port);
 }
 void ME::SocketServer::Update(double deltaTime) {
     platformSocketServer->Update(deltaTime);
@@ -61,6 +61,9 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
             break;
         case ME::Net::Verb::DATA_SEND:
             HandleData(packet, clientID);
+            break;
+        case ME::Net::Verb::SCORE_SEND:
+            HandleScore(packet, clientID);
             break;
     }
 }
@@ -116,6 +119,22 @@ void ME::SocketServer::HandleData(Packet& packet, uint8_t clientID) {
     }
 }
 
+void ME::SocketServer::HandleScore(Packet& packet, uint8_t clientID) {
+    uint32_t score = packet.ReadUInt32();
+
+    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    for (int i = 0; i < clients.size(); ++i) {
+        if (clientID != clients[i].clientID) {
+            PacketSmall packet;
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::SCORE_RECV));
+            packet.WriteByte(static_cast<uint8_t>(clientID));
+            packet.WriteUInt32(score);
+            SendPacket(&packet, clients[i].clientID);
+        }
+    }
+}
+
 void ME::SocketServer::SendPacket(Packet* packet, uint8_t clientID) {
     platformSocketServer->SendPacket(packet, clientID);
 }
@@ -128,7 +147,7 @@ std::vector<ME::Net::ConnectedClient> ME::SocketServer::GetAllClients() {
     return connectedClients;
 }
 
-void ME::PlatformSocketServer::Init() {}
+void ME::PlatformSocketServer::Init(uint16_t port) {}
 
 void ME::PlatformSocketServer::Update(double deltaTime) {}
 

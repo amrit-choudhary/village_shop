@@ -11,9 +11,7 @@
 
 #include "shared/src/net/net_packet.h"
 
-constexpr unsigned short PORT = 9310;
-
-void ME::SocketServerWin::Init() {
+void ME::SocketServerWin::Init(uint16_t port) {
     // Initialize Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -48,7 +46,7 @@ void ME::SocketServerWin::Init() {
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
+    server_addr.sin_port = htons(port);
 
     // Bind server to socket.
     if (bind(serverSocketFD, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {

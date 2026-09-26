@@ -30,10 +30,12 @@ class Packet {
     void WriteByte(uint8_t value);
     void WriteString(const char* value);
     void WriteFP(const ME::FP_24_8& value);
+    void WriteUInt32(uint32_t value);
     // Read data from the packet.
     uint8_t ReadByte();
     void ReadString(char* ptrString);
     ME::FP_24_8 ReadFP();
+    uint32_t ReadUInt32();
 
    protected:
     uint16_t index;
