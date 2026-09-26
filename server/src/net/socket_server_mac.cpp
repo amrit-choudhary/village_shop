@@ -2,6 +2,7 @@
 
 #include "socket_server_mac.h"
 
+#include <arpa/inet.h>
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -14,7 +15,6 @@
 #include "shared/src/net/net_packet.h"
 
 void ME::SocketServerMac::Init(uint16_t port) {
-    std::cout << "Server Starting\n";
     serverSocketFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (serverSocketFD == -1) {
         std::cerr << "Socket creation failed\n";
@@ -22,28 +22,31 @@ void ME::SocketServerMac::Init(uint16_t port) {
     }
 
     // Allow port reuse.
-    int opt = 1;
+    const char opt = 1;
     if (setsockopt(serverSocketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         std::cerr << "Allow port reuse failed\n";
+        End();
         return;
     }
 
-    // Set socket to non-blocking mode.
-    int nonBlocking = 1;
-    if (fcntl(serverSocketFD, F_SETFL, O_NONBLOCK, nonBlocking) == -1) {
-        std::cout << "Failed to set non blocking.";
+    // Set socket to non-blocking mode
+    int flags = fcntl(serverSocketFD, F_GETFL, 0);
+    if (flags == -1 || fcntl(serverSocketFD, F_SETFL, flags | O_NONBLOCK) == -1) {
+        std::cout << "Failed to set non-blocking\n";
+        End();
         return;
     }
 
-    // Server address.
+    // Define server address structure
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(port);
 
     // Bind server to socket.
-    if (bind(serverSocketFD, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    if (bind(serverSocketFD, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) {
         std::cerr << "Bind failed\n";
+        End();
         return;
     }
 
@@ -57,7 +60,8 @@ void ME::SocketServerMac::Update(double deltaTime) {
         sockaddr_in from;
         socklen_t fromLength = sizeof(from);
 
-        int bytes = recvfrom(serverSocketFD, packet.GetData(), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
+        int bytes =
+            recvfrom(serverSocketFD, (char*)(packet.GetData()), packet.GetSize(), 0, (sockaddr*)&from, &fromLength);
         if (bytes <= 0) break;
 
         uint32_t from_address = ntohl(from.sin_addr.s_addr);
@@ -75,8 +79,8 @@ void ME::SocketServerMac::SendPacket(Packet* packet, uint8_t clientID) {
     client_addr.sin_port = htons(client.port);
     client_addr.sin_addr.s_addr = htonl(client.address);
 
-    int sent_bytes =
-        sendto(serverSocketFD, packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr, sizeof(sockaddr_in));
+    int sent_bytes = sendto(serverSocketFD, (char*)packet->GetData(), packet->GetSize(), 0, (sockaddr*)&client_addr,
+                            sizeof(sockaddr_in));
 
     if (sent_bytes != packet->GetSize()) {
         std::cout << "Failed to send packet.";
@@ -85,7 +89,10 @@ void ME::SocketServerMac::SendPacket(Packet* packet, uint8_t clientID) {
 }
 
 void ME::SocketServerMac::End() {
-    close(serverSocketFD);
+    if (serverSocketFD != -1) {
+        close(serverSocketFD);
+        serverSocketFD = -1;
+    }
 }
 
 #endif  // VG_MAC
