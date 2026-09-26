@@ -1,7 +1,7 @@
-#ifdef VG_MAC
+#if defined(VG_MAC) || defined(VG_LINUX)
 
 /**
- * Mac implentation of UDP socket server.
+ * Mac/Linux (POSIX) implentation of UDP socket server.
  */
 
 #pragma once
@@ -23,4 +23,4 @@ class SocketServerMac : public PlatformSocketServer {
 };
 }  // namespace ME
 
-#endif  // VG_MAC
+#endif  // VG_MAC || VG_LINUX

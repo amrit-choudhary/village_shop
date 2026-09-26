@@ -1,5 +1,5 @@
 #include "socket_server.h"
-#ifdef VG_MAC
+#if defined(VG_MAC) || defined(VG_LINUX)
 #include "socket_server_mac.h"
 #endif
 #ifdef VG_WIN
@@ -17,7 +17,7 @@
 #endif
 
 void ME::SocketServer::Init(uint16_t port) {
-#ifdef VG_MAC
+#if defined(VG_MAC) || defined(VG_LINUX)
     platformSocketServer = new ME::SocketServerMac();
 #endif
 #ifdef VG_WIN

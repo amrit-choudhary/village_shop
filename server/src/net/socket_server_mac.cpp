@@ -1,4 +1,4 @@
-#ifdef VG_MAC
+#if defined(VG_MAC) || defined(VG_LINUX)
 
 #include "socket_server_mac.h"
 
@@ -95,4 +95,4 @@ void ME::SocketServerMac::End() {
     }
 }
 
-#endif  // VG_MAC
+#endif  // VG_MAC || VG_LINUX
