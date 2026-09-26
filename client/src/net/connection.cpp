@@ -71,6 +71,9 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
         case ME::Net::Verb::SCORE_RECV:
             RecvScore(packet, clientID);
             break;
+        case ME::Net::Verb::HIGHSCORE_RECV:
+            RecvHighScore(packet);
+            break;
     }
 }
 
@@ -146,6 +149,11 @@ void ME::Connection::RecvScore(Packet& packet, uint8_t clientID) {
     onScoreReceived.Execute();
 }
 
+void ME::Connection::RecvHighScore(Packet& packet) {
+    highScore = packet.ReadUInt32();
+    onHighScoreReceived.Execute();
+}
+
 void ME::Connection::SendPacket(Packet* packet) {
     platformConnection->SendPacket(packet);
 }
@@ -164,4 +172,8 @@ uint8_t ME::Connection::GetLastScoreSenderID() const {
 
 uint32_t ME::Connection::GetLastScore() const {
     return lastScore;
+}
+
+uint32_t ME::Connection::GetHighScore() const {
+    return highScore;
 }

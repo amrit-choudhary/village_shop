@@ -25,6 +25,7 @@ class GameNetTest : public Game {
     void OnConnected();
     void OnPong();
     void OnScoreReceived();
+    void OnHighScoreReceived();
     void OnScoreButtonClicked();
 
    private:

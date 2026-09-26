@@ -64,6 +64,7 @@ enum class Verb : uint8_t {
     DATA_RECV = 0x63,
     SCORE_SEND = 0x64,
     SCORE_RECV = 0x65,
+    HIGHSCORE_RECV = 0x66,
 };
 
 /**

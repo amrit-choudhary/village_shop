@@ -26,6 +26,7 @@ void ME::GameNetTest::Init(ME::Time::TimeManager* currentTimeManager) {
     ME::Delegate::Bind<GameNetTest, &GameNetTest::OnConnected>(connection->onConnected, this);
     ME::Delegate::Bind<GameNetTest, &GameNetTest::OnPong>(connection->onPong, this);
     ME::Delegate::Bind<GameNetTest, &GameNetTest::OnScoreReceived>(connection->onScoreReceived, this);
+    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnHighScoreReceived>(connection->onHighScoreReceived, this);
 
     connection->SendConnectRequest();
 
@@ -63,6 +64,12 @@ void ME::GameNetTest::OnScoreReceived() {
     char buf[32];
     snprintf(buf, sizeof(buf), "Opponent Score: %u", connection->GetLastScore());
     sceneUINetTest->GetOpponentScoreLabel()->SetText(buf);
+}
+
+void ME::GameNetTest::OnHighScoreReceived() {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "Global High: %u", connection->GetHighScore());
+    sceneUINetTest->GetHighScoreLabel()->SetText(buf);
 }
 
 void ME::GameNetTest::OnScoreButtonClicked() {

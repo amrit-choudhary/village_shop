@@ -22,7 +22,8 @@ static const std::map<Verb, std::string> verbStringMap = {{Verb::NONE, "None"},
                                                           {Verb::DATA_SEND, "DataSend"},
                                                           {Verb::DATA_RECV, "DataRecv"},
                                                           {Verb::SCORE_SEND, "ScoreSend"},
-                                                          {Verb::SCORE_RECV, "ScoreRecv"}};
+                                                          {Verb::SCORE_RECV, "ScoreRecv"},
+                                                          {Verb::HIGHSCORE_RECV, "HighScoreRecv"}};
 }
 
 std::string ME::Net::GetVerbName(Verb verb) {

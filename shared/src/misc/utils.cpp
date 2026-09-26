@@ -46,3 +46,7 @@ void ME::Utils::SetPaths(char* arg1, char* arg2) {
 std::string ME::Utils::GetResourcesPath() {
     return resourceDirPath;
 }
+
+std::string ME::Utils::GetExecutableDirPath() {
+    return executableDirPath;
+}

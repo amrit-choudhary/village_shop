@@ -25,6 +25,7 @@ class SceneUINetTest : public ME::SceneUI {
     ME::Label* GetPingLabel() const;
     ME::Label* GetYourScoreLabel() const;
     ME::Label* GetOpponentScoreLabel() const;
+    ME::Label* GetHighScoreLabel() const;
     ME::Button* GetScoreButton() const;
 
    private:
@@ -34,6 +35,7 @@ class SceneUINetTest : public ME::SceneUI {
     ME::Label* pingLabel = nullptr;
     ME::Label* yourScoreLabel = nullptr;
     ME::Label* opponentScoreLabel = nullptr;
+    ME::Label* highScoreLabel = nullptr;
 
     ME::Button* scoreButton = nullptr;
     ME::Panel* scoreButtonPanel = nullptr;

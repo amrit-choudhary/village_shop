@@ -8,6 +8,7 @@ ME::SceneUINetTest::~SceneUINetTest() {
     delete scoreButtonLabel;
     delete scoreButtonPanel;
     delete scoreButton;
+    delete highScoreLabel;
     delete opponentScoreLabel;
     delete yourScoreLabel;
     delete pingLabel;
@@ -66,6 +67,15 @@ void ME::SceneUINetTest::BuildUIElements() {
     pingLabel->SetSize(ME::Vec2{400.0f, 40.0f});
     pingLabel->Init();
     AddUIElement(pingLabel);
+
+    highScoreLabel =
+        new ME::Label("Global High: -", 0, 1, 0, ME::Color::Green(), 24, 24, 0, 2, 80, ME::TextAlignment::Center);
+    highScoreLabel->SetAnchor(ME::UIAnchor::Center);
+    highScoreLabel->SetPivot(ME::UIPivot::Center);
+    highScoreLabel->SetOffset(ME::Vec2{0.0f, 40.0f});
+    highScoreLabel->SetSize(ME::Vec2{400.0f, 40.0f});
+    highScoreLabel->Init();
+    AddUIElement(highScoreLabel);
 
     yourScoreLabel =
         new ME::Label("Your Score: 0", 0, 1, 0, ME::Color::Green(), 24, 24, 0, 2, 80, ME::TextAlignment::Left);
@@ -127,6 +137,10 @@ ME::Label* ME::SceneUINetTest::GetYourScoreLabel() const {
 
 ME::Label* ME::SceneUINetTest::GetOpponentScoreLabel() const {
     return opponentScoreLabel;
+}
+
+ME::Label* ME::SceneUINetTest::GetHighScoreLabel() const {
+    return highScoreLabel;
 }
 
 ME::Button* ME::SceneUINetTest::GetScoreButton() const {

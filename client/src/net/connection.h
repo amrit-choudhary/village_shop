@@ -42,16 +42,19 @@ class Connection {
     void RecvGameData(Packet& packet, uint8_t clientID);
     void SendScore(uint32_t score);
     void RecvScore(Packet& packet, uint8_t clientID);
+    void RecvHighScore(Packet& packet);
     void SendPacket(Packet* packet);
     void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
     uint8_t GetClientID();
     bool IsConnected() const;
     uint8_t GetLastScoreSenderID() const;
     uint32_t GetLastScore() const;
+    uint32_t GetHighScore() const;
 
     Delegate onConnected;
     Delegate onPong;
     Delegate onScoreReceived;
+    Delegate onHighScoreReceived;
 
    private:
     PlatformConnection* platformConnection;
@@ -59,6 +62,7 @@ class Connection {
 
     uint8_t lastScoreSenderID = 0;
     uint32_t lastScore = 0;
+    uint32_t highScore = 0;
 };
 
 }  // namespace ME

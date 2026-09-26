@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "server/src/db/score_db.h"
 #include "shared/src/net/net_packet.h"
 #include "shared/src/net/net_protocol.h"
 
@@ -42,12 +43,14 @@ class SocketServer {
     void HandleData(Packet& packet, uint8_t clientID);
     void HandleScore(Packet& packet, uint8_t clientID);
     void SendConnected(uint8_t clientID);
+    void SendHighScore(uint8_t clientID);
     ME::Net::ConnectedClient GetClient(uint8_t clientID);
     std::vector<ME::Net::ConnectedClient> GetAllClients();
 
    private:
     PlatformSocketServer* platformSocketServer;
     std::vector<ME::Net::ConnectedClient> connectedClients;
+    ME::ScoreDB scoreDB;
 };
 
 }  // namespace ME

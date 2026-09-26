@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "shared/src/misc/utils.h"
 #include "shared/src/net/net_packet.h"
 #include "shared/src/net/net_protocol.h"
 #include "shared/src/net/net_utils.h"
@@ -17,6 +18,8 @@
 #endif
 
 void ME::SocketServer::Init(uint16_t port) {
+    scoreDB.Open((ME::Utils::GetExecutableDirPath() + "/village_shop.db").c_str());
+
 #if defined(VG_MAC) || defined(VG_LINUX)
     platformSocketServer = new ME::SocketServerMac();
 #endif
@@ -33,6 +36,7 @@ void ME::SocketServer::Update(double deltaTime) {
 
 void ME::SocketServer::End() {
     platformSocketServer->End();
+    scoreDB.Close();
 }
 
 void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort) {
@@ -52,6 +56,7 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
 
             connectedClients.push_back(newClient);
             SendConnected(connectedClients.size() - 1);
+            SendHighScore(connectedClients.size() - 1);
             break;
         case ME::Net::Verb::PING:
             SendPong(clientID);
@@ -73,6 +78,15 @@ void ME::SocketServer::SendConnected(uint8_t clientID) {
     packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
     packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CONNECTED));
     packet.WriteByte(static_cast<uint8_t>(clientID));
+    SendPacket(&packet, clientID);
+}
+
+void ME::SocketServer::SendHighScore(uint8_t clientID) {
+    PacketSmall packet;
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::HIGHSCORE_RECV));
+    packet.WriteByte(static_cast<uint8_t>(clientID));
+    packet.WriteUInt32(scoreDB.GetHighScore());
     SendPacket(&packet, clientID);
 }
 
@@ -131,6 +145,13 @@ void ME::SocketServer::HandleScore(Packet& packet, uint8_t clientID) {
             packet.WriteByte(static_cast<uint8_t>(clientID));
             packet.WriteUInt32(score);
             SendPacket(&packet, clients[i].clientID);
+        }
+    }
+
+    // A new global high score goes to every client, including the sender.
+    if (scoreDB.SubmitScore(score)) {
+        for (int i = 0; i < clients.size(); ++i) {
+            SendHighScore(clients[i].clientID);
         }
     }
 }

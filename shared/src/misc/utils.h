@@ -20,6 +20,11 @@ void SetPaths(char* arg1, char* arg2);
 
 std::string GetResourcesPath();
 
+/**
+ * Directory containing the executable, without a trailing slash.
+ */
+std::string GetExecutableDirPath();
+
 inline uint32_t Pack16To32(uint16_t high, uint16_t low) {
     return (static_cast<uint32_t>(high) << 16) | static_cast<uint32_t>(low);
 }

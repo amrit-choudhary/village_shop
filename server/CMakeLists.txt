@@ -2,6 +2,8 @@
 
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+add_subdirectory(third_party/sqlite3)
+
 add_executable(VillageShop_Server ${SOURCES})
 
 target_include_directories(VillageShop_Server PRIVATE ${CMAKE_SOURCE_DIR})
@@ -20,6 +22,7 @@ target_link_libraries(
     VillageShop_Server
     PRIVATE
     VillageShop_Shared
+    sqlite3
     )
 
 if(WIN32)
