@@ -44,6 +44,8 @@ population/growth, bank loans/interest, and per-shop cash/stock/preference/disco
 - Platform matrix maintained in parallel: Windows (DX12 renderer, Winsock2 networking,
   `VG_WIN` define) and Mac (Metal renderer, Cocoa, `VG_MAC` define), plus an ASCII/CLI
   renderer + headless input backend for a console-only build.
+- The **server** also builds and runs on Linux (`VG_LINUX`, reuses the POSIX socket code); the
+  client targets Windows and Mac only.
 
 ## Dependencies
 README says "no external dependencies," but this isn't strictly true — vendored code exists:
