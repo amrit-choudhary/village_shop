@@ -29,7 +29,7 @@ void ME::Utils::SetPaths(char* arg1, char* arg2) {
 
     executableDirPath = std::string{executablePath};
 
-#ifdef VG_MAC
+#if defined(VG_MAC) || defined(VG_LINUX)
     // Remove the executable file name from path to create dir path.
     executableDirPath.resize(executableDirPath.length() - 19);
 #endif
