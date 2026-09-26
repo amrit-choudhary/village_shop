@@ -53,6 +53,8 @@ README says "no external dependencies," but this isn't strictly true — vendore
   clips, wave data).
 - `client/third_party/miniaudio-0.11.23` — audio playback backend.
 - `client/third_party/metal` — Metal helper headers for the Mac renderer.
+- `server/third_party/sqlite3` — SQLite amalgamation, server-only; persists the global high score
+  (see [server/CLAUDE.md](server/CLAUDE.md)).
 
 These are vendor code; treat them as opaque dependencies, not project code to modify.
 
