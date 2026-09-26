@@ -3,6 +3,8 @@
 
 #include "shared/src/misc/utils.h"
 
+#include <algorithm>
+#include <charconv>
 #include <sstream>
 #include <vector>
 
@@ -43,13 +45,14 @@ void ME::CSVParser::Parse(CSVData* csvData, const char* filePath, const bool fli
                 rowValues.push_back(0);
                 continue;
             }
-            try {
-                uint32_t value = static_cast<uint32_t>(std::stoul(t));
-                rowValues.push_back(value);
-            } catch (...) {
+            // Exceptions are disabled, so parse with from_chars instead of stoul.
+            uint32_t value = 0;
+            auto [ptr, ec] = std::from_chars(t.data(), t.data() + t.size(), value);
+            if (ec != std::errc() || ptr != t.data() + t.size()) {
                 // non-numeric token -> treat as 0
-                rowValues.push_back(0);
+                value = 0;
             }
+            rowValues.push_back(value);
         }
 
         if (!rowValues.empty()) {

@@ -22,7 +22,7 @@ void ME::SocketServerMac::Init(uint16_t port) {
     }
 
     // Allow port reuse.
-    const char opt = 1;
+    int opt = 1;
     if (setsockopt(serverSocketFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
         std::cerr << "Allow port reuse failed\n";
         End();

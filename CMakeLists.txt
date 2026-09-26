@@ -11,7 +11,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Disable RTTI and Exceptions globally
 if (MSVC)
     add_compile_options(/GR-)
-    add_compile_options(/EHsc)
+    # CMake's default MSVC flags include /EHsc (exceptions ON); strip it so /EHs-c- takes effect
+    # without a D9025 override warning. With exceptions off MSVC only warns (C4530) on try/catch,
+    # so /we4530 promotes it to an error, matching clang's -fno-exceptions.
+    string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    add_compile_options(/EHs-c-)
+    add_compile_options(/we4530)
     add_compile_options(/Wall)
     add_compile_options(/Qspectre-)
     add_compile_options(/wd5045)
