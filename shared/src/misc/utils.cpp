@@ -11,6 +11,9 @@ static std::string executableDirPath;
 
 // Path of resource folder.
 static std::string resourceDirPath;
+
+// Path of dlc folder (downloadable content fetched from a content server).
+static std::string dlcDirPath;
 }  // namespace
 
 using namespace ME;
@@ -29,22 +32,28 @@ void ME::Utils::SetPaths(char* arg1, char* arg2) {
 
     executableDirPath = std::string{executablePath};
 
-#if defined(VG_MAC) || defined(VG_LINUX)
-    // Remove the executable file name from path to create dir path.
-    executableDirPath.resize(executableDirPath.length() - 19);
-#endif
-#ifdef VG_WIN
-    // Remove the executable file name from path to create dir path.
-    // Different for windows because need to remove ".exe".
-    executableDirPath.resize(executableDirPath.length() - 23);
-#endif
+    // Cut at the last separator to drop the executable name, whatever its length.
+    // Windows paths use '\', Mac/Linux use '/'. No separator means the current directory.
+    const size_t lastSeparator = executableDirPath.find_last_of("/\\");
+    if (lastSeparator == std::string::npos) {
+        executableDirPath = ".";
+    } else {
+        executableDirPath.resize(lastSeparator);
+    }
 
     resourceDirPath = std::string{executableDirPath};
     resourceDirPath += "/resources/";
+
+    dlcDirPath = std::string{executableDirPath};
+    dlcDirPath += "/dlc/";
 }
 
 std::string ME::Utils::GetResourcesPath() {
     return resourceDirPath;
+}
+
+std::string ME::Utils::GetDlcPath() {
+    return dlcDirPath;
 }
 
 std::string ME::Utils::GetExecutableDirPath() {

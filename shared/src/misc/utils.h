@@ -21,6 +21,11 @@ void SetPaths(char* arg1, char* arg2);
 std::string GetResourcesPath();
 
 /**
+ * Folder for downloadable content fetched from a content server, next to resources/. Has a trailing slash.
+ */
+std::string GetDlcPath();
+
+/**
  * Directory containing the executable, without a trailing slash.
  */
 std::string GetExecutableDirPath();
