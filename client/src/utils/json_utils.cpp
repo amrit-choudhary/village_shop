@@ -1,11 +1,9 @@
 #include "json_utils.h"
 
-#include "shared/src/misc/utils.h"
+#include "shared/src/file_io/vfs.h"
 
-#include <fstream>
 #include <iostream>
 #include <map>
-#include <sstream>
 #include <string>
 
 #include "client/src/anim/sprite_anim_clip.h"
@@ -90,24 +88,16 @@ bool ME::JsonUtils::LoadWaveDataFromJSON(const char* filePath, WaveData** outWav
 }
 
 cJSON* ME::JsonUtils::LoadJSONFromFile(const char* filePath) {
-    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
-
-    std::ifstream file(fileName);
-    std::stringstream buffer;
-
-    if (file.is_open()) {
-        buffer << file.rdbuf();
-        const std::string fileContent = buffer.str();
-
-        cJSON* json = cJSON_Parse(fileContent.c_str());
-        if (!json) {
-            std::cout << "Failed to parse JSON: " + std::string(cJSON_GetErrorPtr()) << std::endl;
-            return nullptr;
-        }
-        return json;
-    } else {
-        std::cout << "Unable to open file" << std::endl;
+    std::string text;
+    if (!Vfs::ReadText(FileRoot::Resources, filePath, text)) {
+        std::cout << "Unable to open file: " << Vfs::GetRootPath(FileRoot::Resources) << filePath << std::endl;
         return nullptr;
     }
-    return nullptr;
+
+    cJSON* json = cJSON_Parse(text.c_str());
+    if (!json) {
+        std::cout << "Failed to parse JSON: " + std::string(cJSON_GetErrorPtr()) << std::endl;
+        return nullptr;
+    }
+    return json;
 }

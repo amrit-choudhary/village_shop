@@ -1,7 +1,4 @@
-// ...existing code...
 #include "csv_parser.h"
-
-#include "shared/src/misc/utils.h"
 
 #include <algorithm>
 #include <charconv>
@@ -19,20 +16,26 @@ static inline std::string Trim(const std::string& s) {
     return s.substr(a, b - a + 1);
 }
 
-void ME::CSVParser::Parse(CSVData* csvData, const char* filePath, const bool flipVertical) {
-    csvData->ClearData();
-    std::string fileName = ME::Utils::GetResourcesPath() + filePath;
-    std::ifstream file(fileName);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << fileName << std::endl;
+void ME::CSVParser::Load(CSVData* csvData, const char* relPath, const bool flipVertical, FileRoot root) {
+    std::string text;
+    if (!Vfs::ReadText(root, relPath, text)) {
+        csvData->ClearData();
+        std::cerr << "Failed to open file: " << Vfs::GetRootPath(root) << relPath << std::endl;
         return;
     }
+
+    Parse(csvData, text, flipVertical);
+}
+
+void ME::CSVParser::Parse(CSVData* csvData, const std::string& text, const bool flipVertical) {
+    csvData->ClearData();
+    std::istringstream stream(text);
 
     std::vector<std::vector<uint32_t>> rows;
     std::string line;
     size_t maxCols = 0;
 
-    while (std::getline(file, line)) {
+    while (std::getline(stream, line)) {
         // skip empty lines
         if (line.empty()) continue;
 
@@ -60,8 +63,6 @@ void ME::CSVParser::Parse(CSVData* csvData, const char* filePath, const bool fli
             rows.push_back(std::move(rowValues));
         }
     }
-
-    file.close();
 
     // populate csvData in row-major order
     size_t rowCount = rows.size();

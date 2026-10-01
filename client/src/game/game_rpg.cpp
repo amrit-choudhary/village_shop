@@ -20,7 +20,7 @@ void ME::GameRPG::Init(ME::Time::TimeManager* currentTimeManager) {
     physicsSystem->SetScene(physicsScene);
 
     CSVData levelData;
-    CSVParser::Parse(&levelData, "levels/tilemap_04.csv", true);
+    CSVParser::Load(&levelData, "levels/tilemap_04.csv", true);
 
     for (size_t i = 0; i < levelData.GetTotalCellCount(); ++i) {
         uint32_t tileIndex = levelData.GetValue(i);
