@@ -19,7 +19,7 @@ int main2(int argc, char **argv) {
     ME::SetPaths(argv[0], argv[1]);
 
     // Read game params from file.
-    INIMap iniMap = Load();
+    ME::INIMap iniMap = ME::INIParser::Load();
     int fps = std::atoi(iniMap["settings"]["fps"].c_str());
 
     // Init global variables.

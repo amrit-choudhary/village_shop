@@ -6,7 +6,7 @@
 
 bool TEST::Test_INIParse() {
     std::cout << "TEST: Starting: INI Parser" << '\n';
-    INIMap iniMap = Load();
+    ME::INIMap iniMap = ME::INIParser::Load();
     if (iniMap["logging"]["level"] == "info") {
         std::cout << "TEST: Successful" << '\n';
         return true;

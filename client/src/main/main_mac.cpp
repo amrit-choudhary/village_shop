@@ -27,7 +27,7 @@ ME::GameMain::~GameMain() {
 
 void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     // Read game params from file.
-    INIMap iniMap = Load();
+    ME::INIMap iniMap = ME::INIParser::Load();
     fps = std::atoi(iniMap["settings"]["fps"].c_str());
 
     std::string serverIP = iniMap["settings"]["serverIP"];

@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
     timeConfig.fixedStepFPS = ME::Time::FPS_60;
     timeManager.Init(timeConfig);
 
-    INIMap iniMap = Load();
+    ME::INIMap iniMap = ME::INIParser::Load();
     std::string portStr = iniMap["settings"]["port"];
     uint16_t port = portStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(portStr.c_str()));
 

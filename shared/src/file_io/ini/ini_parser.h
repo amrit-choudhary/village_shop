@@ -6,14 +6,28 @@
 #include <sstream>
 #include <string>
 
-#include "shared/src/misc/utils.h"
+#include "shared/src/file_io/vfs.h"
+
+namespace ME {
 
 typedef std::map<std::string, std::map<std::string, std::string>> INIMap;
 
-/**
- * Loads baseDir + relPath. Defaults to the shipped settings file in resources/.
- */
-INIMap Load(const std::string &relPath = "config/settings.ini",
-            const std::string &baseDir = ME::Utils::GetResourcesPath());
-void RemoveSpacesAndBrackets(char *input, char *output);
-void PrintINI(const INIMap &iniMap);
+class INIParser {
+   public:
+    /**
+     * Reads relPath from the given root and parses it. Defaults to the shipped settings file in resources/.
+     */
+    static INIMap Load(const char *relPath = "config/settings.ini", FileRoot root = FileRoot::Resources);
+
+    /**
+     * Parses ini text already in memory.
+     */
+    static INIMap Parse(const std::string &text);
+
+    static void Print(const INIMap &iniMap);
+
+   private:
+    static void RemoveSpacesAndBrackets(char *input, char *output);
+};
+
+}  // namespace ME

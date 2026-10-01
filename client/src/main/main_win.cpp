@@ -26,7 +26,7 @@ void ME::GameMain::Init(HWND hWnd) {
     this->hWnd = hWnd;
 
     // Read game params from file.
-    INIMap iniMap = Load();
+    ME::INIMap iniMap = ME::INIParser::Load();
     fixedFrameRate = std::atoi(iniMap["settings"]["fixedFrameRate"].c_str());
     vsync = std::atoi(iniMap["settings"]["vsync"].c_str()) != 0;
 
