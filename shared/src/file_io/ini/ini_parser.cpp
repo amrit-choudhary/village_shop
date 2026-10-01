@@ -1,12 +1,8 @@
 #include "ini_parser.h"
 
-#include "shared/src/misc/utils.h"
-
-std::string fileName = "config/settings.ini";
-
-INIMap Load() {
+INIMap Load(const std::string &relPath, const std::string &baseDir) {
     INIMap iniMap;
-    fileName = ME::Utils::GetResourcesPath() + fileName;
+    const std::string fileName = baseDir + relPath;
 
     std::ifstream file(fileName);
     std::stringstream buffer;
@@ -88,7 +84,7 @@ INIMap Load() {
 
         file.close();
     } else {
-        std::cout << "Unable to open file" << std::endl;
+        std::cout << "Unable to open file: " << fileName << std::endl;
     }
 
     return iniMap;
