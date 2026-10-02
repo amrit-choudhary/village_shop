@@ -19,6 +19,9 @@ This is a C++ game about establishing a profitable shop in a functioning village
 - You will have AI competitiors that will open shops with same or different items.
 - Multiplayer mode will also be available where players can compete with each other in the same village simulation.
 - The village will itself grow or shrink depending on how much of it's needs are satisfied.
+- Backend services are separate programs that also run on Linux (tested on a Raspberry Pi 4):
+  a UDP **game server** for live multiplayer, and a TCP **content server** that delivers
+  config/tuning files to clients, so game data can change without shipping a new client.
 
 ## Project
 ### Folders
@@ -34,10 +37,17 @@ client/                Folder for client application.
   /resources           Game assets.
   /third_party         Vendored third-party libraries (miniaudio, Metal helper headers).
 
-server/                Folder for server application.
+server/                Game server (UDP, live multiplayer).
   /doc                 Technical design documents.
   /src                 Source for server application.
-  /resources           Game assets.
+  /resources           Server settings.
+  /third_party         Vendored SQLite (persists the high score).
+
+content_server/        Content server (TCP): serves the files listed in dlc/manifest.json;
+                        clients download new or changed files at startup.
+  /src                 Source for content server application.
+  /resources           Server settings.
+  /dlc                 Content to serve (manifest.json + files).
 
 client_package/        Separate CLI tool that cooks/packages client/resources for
                         distribution (HLSL->CSO via dxc.exe, textures->DDS via texconv.exe).
@@ -56,4 +66,12 @@ design/                Game design documents.
 ### Development
 - This is developed in C++20 with CMake for builds.
 - To run this project, download it from github and build via the root `CMakeLists.txt`,
-  which builds `logging` -> `shared` -> `client` -> `server` -> `client_package` in order.
+  which builds `logging` -> `shared` -> `client` -> `server` -> `content_server` ->
+  `client_package` in order.
+- After adding or removing source files, re-run CMake configure (`cmake -B build`), since
+  source lists are collected at configure time.
+- The servers look for their `resources/` (and the content server for `dlc/`) next to the
+  executable; copy those folders next to the built binaries before running. Default ports:
+  game server UDP 9310, content server TCP 9311 (set in each `resources/config/settings.ini`).
+- Building only the servers on Linux:
+  `cmake -B build && cmake --build build --target VillageShop_Server VillageShop_ContentServer`.

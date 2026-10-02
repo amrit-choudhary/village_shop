@@ -11,7 +11,9 @@ Game client. See root [CLAUDE.md](../CLAUDE.md) for project-level context.
   the real, variable per-frame dt → `renderer.Update/Draw` → connection/audio `.Update`. Vsync
   is on by default (`RendererDX::SetVsyncEnabled`), which paces presentation to the display's
   refresh rate; `TimeConfig::frameRateCapFPS` (sleep-based) only takes over when vsync is off.
-- `src/main/main_mac.cpp` (`ME::GameMain`, Metal) — same shape as Windows: `Init(MTL::Device*, MTK::View*)`
+- `src/main/main_mac.cpp` (`ME::GameMain`, Metal) — **currently does not compile**: still uses the
+  pre-revamp `TimeManager` API (`Init(fps, false)`, `Update()`, `GetDeltaTime()`), lacks the fixed-step loop,
+  animation/audio/debug systems and `ContentClient`; to be fixed in one pass later. Otherwise same shape as Windows: `Init(MTL::Device*, MTK::View*)`
   receives the Metal handles once (mirrors `Init(HWND)`), wires `RendererMetal::InitMTL` +
   `SetScene`, and `Update()` ends with `renderer.Update(); renderer.Draw();`. Input arrives via
   `HandleKeyEvent`/`HandleMouseMove`/`HandleMouseButton`, forwarded synchronously from
@@ -60,6 +62,17 @@ Data-oriented "Scene as struct-of-arrays," not an entity-component system:
 - `ui/ui_layout_engine.h/.cpp` (`UILayoutEngine`) — small retained-mode layout system that
   feeds positions into `SceneUI`'s sprite/text transform arrays. `ui/ui_rect.*` has the
   `UIRect`/`UIAnchor` rect/bounds math it uses.
+
+## Content sync (`src/net/content_client.*`)
+`ContentClient` (owned by `GameMain`, Windows only for now) syncs `dlc/` (next to the exe) with the content
+server at startup, in the background, one state-machine step per frame: connect (5 s timeout) →
+`GET_MANIFEST` → `GET_FILE` for each new/changed/missing file → delete files the server dropped → done.
+Files are written straight into `dlc/`; `dlc/manifest.json` always describes what is on disk (a file's version
+is recorded only after it is fully written, so an interrupted sync resumes). On failure the game carries on
+with existing files. Server address: `contentServerIP` / `contentServerPort` in `resources/config/settings.ini`
+(defaults `127.0.0.1:9311`). No game code reads from `FileRoot::Dlc` yet; a loading-screen gate that waits for
+the sync before gameplay is planned. 1 MB receive buffer is heap-allocated (`GameMain` lives on the stack).
+`resources/` is copied to the build folder only by the manual `copy_resources` target.
 
 ## Data-driven resources
 `utils/json_utils.h/.cpp` parses JSON (via vendored cJSON) into `TextureAtlasProperties`,

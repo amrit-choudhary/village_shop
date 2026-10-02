@@ -9,9 +9,18 @@ one real exception (cJSON, noted below).
 - **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). Exception: the
   deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `SocketServer`, `client/`
   `Connection`) stay in `ME`.
-- TCP stack: `socket_platform.h` + `socket_platform_win.cpp`/`_posix.cpp` (`Net::SocketPlatform`, per-OS calls),
-  `tcp_socket.h` (`Net::TcpSocket`), `message_framing.h` (`Net::FrameReceiver`, length-prefix framing),
-  `content_protocol.h` (`Net::ContentProtocol`, content server verbs).
+- TCP stack (used by `content_server/` and the client's `ContentClient`):
+  - `socket_platform.h` + `socket_platform_win.cpp` / `_posix.cpp` (`Net::SocketPlatform`): the only per-OS
+    socket code (Winsock vs POSIX incl. SIGPIPE, `SO_EXCLUSIVEADDRUSE`/`SO_REUSEADDR`, non-blocking connect via
+    zero-timeout `select` + `SO_ERROR`). Each .cpp is wrapped in its platform `#ifdef`; both are always compiled.
+  - `tcp_socket.h` (`Net::TcpSocket`): non-blocking `Listen`/`Accept` (server), `Connect`/`PollConnect`
+    (client), `Send`/`Recv`/`Close`; results are `TcpResult` (`WouldBlock` = nothing to do yet, try again).
+  - `message_framing.h` (`Net::BeginFrame`/`FinishFrame`, `Net::FrameReceiver`): length-prefix framing over the
+    byte stream, caller-owned buffers, rejects impossible lengths.
+  - `content_protocol.h` (`Net::ContentProtocol`) and `content_manifest.h` (`Net::ContentManifest`: parse /
+    serialize `manifest.json` from memory, safe-path validation, max 256 entries).
+- Avoid names that are `windows.h` macros in new APIs (e.g. `GetFreeSpace`, `PeekMessage`, `SendMessage`,
+  `DeleteFile`, `MoveFile`, `CreateDirectory`): they get rewritten and break the Windows build.
 - `net_protocol.h` — wire format: 1 byte version, 1 byte verb (`Verb` is `uint8_t`), 1 byte
   clientID, then payload. `Verb` enum reserves ranges: System `0x00-0x1F`, Http `0x20-0x3F`,
   Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `ConnectedClient`/`ConnectedServer` hold raw
@@ -57,9 +66,18 @@ weighted-random outcomes via a 10-slot lookup table. `stb_perlin.h/.cpp` — ven
 `std::chrono`. Used identically by both the client and server main loops.
 
 ## File I/O (`src/file_io/`)
-Hand-rolled parsers: `csv_parser`/`csv_data`, `ini_parser.h` (simple
-`map<string, map<string,string>>` representation), `dds_parser` (DirectDraw Surface texture
-reading, client-side use).
+- `vfs.h` (`ME::Vfs`, `ME::FileRoot { Resources, Dlc }`): file access by root instead of raw paths; the only
+  place mapping a root to a folder (`Utils::GetResourcesPath()` / `GetDlcPath()`, both next to the exe).
+  `ReadText` (text mode), `GetFileSize` / `ReadBytes` (binary, caller-owned buffer), `WriteBytes` (creates
+  folders), `RemoveFile`, `RemoveEmptyFolders`. `std::filesystem` calls must use the `std::error_code`
+  overloads (exceptions are disabled; the throwing overloads would terminate).
+- Parsers read through `Vfs` and parse from memory: `INIParser::Load/Parse` (`ini_parser.h`,
+  `map<string, map<string,string>>`), `CSVParser::Load/Parse`, `dds_parser` (DDS textures, client-side,
+  still builds its own path).
+
+## Serialization (`src/serialization/`)
+`ByteWriter` / `ByteReader`: bounds-checked binary write/read over caller-owned memory, native byte order,
+`memcpy` (no unaligned casts). General purpose: network messages, binary files.
 
 ## Third-party (out of scope for deep documentation)
 `third_party/json` vendors **cJSON** — the one real external dependency in this codebase,

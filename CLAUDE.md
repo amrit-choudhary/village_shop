@@ -22,6 +22,8 @@ population/growth, bank loans/interest, and per-shop cash/stock/preference/disco
 - `client/` — game client (rendering, scene, game logic, UI, audio, input, world).
   See [client/CLAUDE.md](client/CLAUDE.md).
 - `server/` — game server (UDP networking, main loop). See [server/CLAUDE.md](server/CLAUDE.md).
+- `content_server/` — separate TCP service that delivers config files (`dlc/`) to clients; the client
+  downloads changed files at startup in the background. See [content_server/CLAUDE.md](content_server/CLAUDE.md).
 - `client_package/` — separate CLI tool that cooks/packages `client/resources` for
   distribution (HLSL→CSO via dxc.exe, textures→DDS via texconv.exe). Not another client.
 - `client_tests/` — unit tests using a hand-rolled `TEST`/`EXPECT_EQ` macro framework (no
@@ -37,15 +39,17 @@ population/growth, bank loans/interest, and per-shop cash/stock/preference/disco
 
 ## Build system
 - Root `CMakeLists.txt`: C++20, builds `logging` → `shared` → `client` → `server` →
-  `client_package` in order (`client_tests` disabled).
+  `content_server` → `client_package` in order (`client_tests` disabled).
 - **RTTI and exceptions are disabled globally** (MSVC: `/GR- /EHsc` + `_HAS_EXCEPTIONS=0`;
   else: `-fno-rtti -fno-exceptions`). Do not write or suggest code using `try/catch`,
   `dynamic_cast`, or `typeid`.
 - Platform matrix maintained in parallel: Windows (DX12 renderer, Winsock2 networking,
   `VG_WIN` define) and Mac (Metal renderer, Cocoa, `VG_MAC` define), plus an ASCII/CLI
   renderer + headless input backend for a console-only build.
-- The **server** also builds and runs on Linux (`VG_LINUX`, reuses the POSIX socket code); the
-  client targets Windows and Mac only.
+- The **server** and **content server** also build and run on Linux (`VG_LINUX`, POSIX sockets); the
+  client targets Windows and Mac only. Test host: a Raspberry Pi 4B (Linux ARM64).
+- Source files are collected with `file(GLOB ...)`, which runs only at configure time: after adding or
+  removing a `.cpp`, re-run `cmake -B build` before building (otherwise: undefined-reference link errors).
 
 ## Dependencies
 README says "no external dependencies," but this isn't strictly true — vendored code exists:
