@@ -1,0 +1,6 @@
+{
+  "files": [
+    { "name": "config/economy.json", "version": 1 },
+    { "name": "config/village/population.json", "version": 1 }
+  ]
+}

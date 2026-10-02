@@ -60,7 +60,7 @@ bool ReadEntries(const cJSON* root, ME::Net::ManifestEntry* entries, uint32_t ma
 }  // namespace
 
 bool ME::Net::ContentManifest::Parse(const char* text, size_t size) {
-    count = 0;
+    Clear();
 
     cJSON* root = cJSON_ParseWithLength(text, size);
     if (root == nullptr) {
@@ -72,9 +72,16 @@ bool ME::Net::ContentManifest::Parse(const char* text, size_t size) {
     cJSON_Delete(root);
 
     if (!ok) {
-        count = 0;
+        Clear();
     }
     return ok;
+}
+
+void ME::Net::ContentManifest::Clear() {
+    for (uint32_t i = 0; i < count; ++i) {
+        entries[i].name.clear();
+    }
+    count = 0;
 }
 
 const ME::Net::ManifestEntry* ME::Net::ContentManifest::Find(const char* name) const {

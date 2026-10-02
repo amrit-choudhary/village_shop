@@ -1,0 +1,5 @@
+{
+  "startingPopulation": 20,
+  "growthRatePerDay": 0.02,
+  "maxPopulation": 200
+}

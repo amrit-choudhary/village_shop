@@ -19,6 +19,8 @@
 #include "shared/src/net/tcp_socket.h"
 #include "shared/src/serialization/byte_reader.h"
 
+#include "content_store.h"
+
 namespace {
 // Main loop flag. Nothing clears it yet; stop the process with Ctrl+C, like the game server.
 std::atomic<bool> running(true);
@@ -84,6 +86,12 @@ int main(int argc, char** argv) {
 
     ME::LogInfo("Content server starting on port ", port);
     ME::LogInfo("Serving from ", ME::Utils::GetDlcPath());
+
+    // Load all content before accepting clients; it stays unchanged until the server restarts.
+    ME::ContentStore store;
+    if (!store.Load()) {
+        return 1;
+    }
 
     if (!ME::Net::TcpSocket::InitNetworking()) {
         return 1;

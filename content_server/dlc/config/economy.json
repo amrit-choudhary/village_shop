@@ -1,0 +1,6 @@
+{
+  "startingCash": 500,
+  "loanInterestRate": 0.05,
+  "maxLoan": 2000,
+  "priceMarkup": 1.25
+}

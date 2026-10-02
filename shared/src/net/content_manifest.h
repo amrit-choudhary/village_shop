@@ -27,6 +27,8 @@ class ContentManifest {
      */
     bool Parse(const char* text, size_t size);
 
+    void Clear();
+
     /**
      * Entry with exactly this name, or nullptr.
      */
