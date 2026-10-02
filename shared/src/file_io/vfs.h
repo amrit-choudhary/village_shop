@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -25,6 +26,17 @@ std::string GetRootPath(FileRoot root);
  * Reads root + relPath as text into out. Returns false if the file can't be opened.
  */
 bool ReadText(FileRoot root, const char* relPath, std::string& out);
+
+/**
+ * Size in bytes of root + relPath. Returns false if the file can't be opened.
+ */
+bool GetFileSize(FileRoot root, const char* relPath, size_t& outSize);
+
+/**
+ * Reads root + relPath byte-for-byte (binary mode: line endings untouched) into caller-owned buffer.
+ * Returns false if the file can't be opened, can't be fully read, or is larger than capacity.
+ */
+bool ReadBytes(FileRoot root, const char* relPath, uint8_t* buffer, size_t capacity, size_t& outSize);
 
 }  // namespace Vfs
 }  // namespace ME
