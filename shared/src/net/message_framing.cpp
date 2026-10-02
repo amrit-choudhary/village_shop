@@ -15,8 +15,8 @@ bool ME::Net::BeginFrame(ByteWriter& writer, uint8_t version, uint8_t verb, size
     return writer.WriteU32(0) && writer.WriteU8(version) && writer.WriteU8(verb);
 }
 
-bool ME::Net::FinishFrame(ByteWriter& writer, size_t frameStart) {
-    const size_t frameSize = writer.GetSize() - frameStart;
+bool ME::Net::FinishFrame(ByteWriter& writer, size_t frameStart, size_t externalPayloadSize) {
+    const size_t frameSize = writer.GetSize() - frameStart + externalPayloadSize;
     return writer.PatchU32(frameStart, static_cast<uint32_t>(frameSize - FRAME_LENGTH_SIZE));
 }
 

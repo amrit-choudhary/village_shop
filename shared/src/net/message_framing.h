@@ -21,7 +21,12 @@ constexpr uint32_t FRAME_HEADER_SIZE = FRAME_LENGTH_SIZE + 1 + 1;
  * Write the payload next, then call FinishFrame to fill in the real length.
  */
 bool BeginFrame(ByteWriter& writer, uint8_t version, uint8_t verb, size_t& outFrameStart);
-bool FinishFrame(ByteWriter& writer, size_t frameStart);
+
+/**
+ * externalPayloadSize: payload bytes that are not in the writer but sent right after it (e.g. file data
+ * sent straight from memory, avoiding a copy). They are counted in the length field.
+ */
+bool FinishFrame(ByteWriter& writer, size_t frameStart, size_t externalPayloadSize = 0);
 
 /**
  * One received frame. payload points into the receiver's storage and is valid until PopFrame.
