@@ -1,18 +1,14 @@
 /**
  * Wire protocol between the content server and its clients (over TCP).
- * Every message: u32 length | u8 version | u8 verb | payload. length counts the bytes after itself.
- * Integers are in native byte order (all supported targets are little-endian).
+ * Messages use the frame layout in message_framing.h. Integers are in native byte order.
  */
 #pragma once
 
 #include <cstdint>
 
-namespace ME::ContentProtocol {
+namespace ME::Net::ContentProtocol {
 
 constexpr uint8_t VERSION = 1;
-
-// Bytes before the payload: u32 length + u8 version + u8 verb.
-constexpr uint32_t HEADER_SIZE = 4 + 1 + 1;
 
 // Largest allowed message (header included). Bigger messages are rejected.
 constexpr uint32_t MAX_MESSAGE_SIZE = 1024 * 1024;
@@ -28,4 +24,9 @@ enum class Verb : uint8_t {
     FILE_NOT_FOUND = 0x83,  // u16 pathLen, path.
 };
 
-}  // namespace ME::ContentProtocol
+/**
+ * Readable name for logs; "UNKNOWN" for values outside the enum.
+ */
+const char* GetVerbName(uint8_t verb);
+
+}  // namespace ME::Net::ContentProtocol

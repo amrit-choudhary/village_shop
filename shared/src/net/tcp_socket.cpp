@@ -3,19 +3,19 @@
 #include "logging/src/logging.h"
 #include "shared/src/net/socket_platform.h"
 
-ME::TcpSocket::~TcpSocket() {
+ME::Net::TcpSocket::~TcpSocket() {
     Close();
 }
 
-bool ME::TcpSocket::InitNetworking() {
+bool ME::Net::TcpSocket::InitNetworking() {
     return SocketPlatform::Init();
 }
 
-void ME::TcpSocket::ShutdownNetworking() {
+void ME::Net::TcpSocket::ShutdownNetworking() {
     SocketPlatform::Shutdown();
 }
 
-bool ME::TcpSocket::Listen(uint16_t port) {
+bool ME::Net::TcpSocket::Listen(uint16_t port) {
     Close();
 
     const intptr_t s = SocketPlatform::CreateTcp();
@@ -48,7 +48,7 @@ bool ME::TcpSocket::Listen(uint16_t port) {
     return true;
 }
 
-ME::TcpResult ME::TcpSocket::Accept(TcpSocket& outClient) {
+ME::Net::TcpResult ME::Net::TcpSocket::Accept(TcpSocket& outClient) {
     const intptr_t client = SocketPlatform::Accept(handle);
     if (client == SocketPlatform::INVALID_HANDLE) {
         return SocketPlatform::LastErrorIsWouldBlock() ? TcpResult::WouldBlock : TcpResult::Error;
@@ -68,7 +68,7 @@ ME::TcpResult ME::TcpSocket::Accept(TcpSocket& outClient) {
     return TcpResult::Ok;
 }
 
-ME::TcpResult ME::TcpSocket::Send(const uint8_t* data, int size, int& outSent) {
+ME::Net::TcpResult ME::Net::TcpSocket::Send(const uint8_t* data, int size, int& outSent) {
     outSent = 0;
     const int sent = SocketPlatform::Send(handle, data, size);
     if (sent >= 0) {
@@ -78,7 +78,7 @@ ME::TcpResult ME::TcpSocket::Send(const uint8_t* data, int size, int& outSent) {
     return SocketPlatform::LastErrorIsWouldBlock() ? TcpResult::WouldBlock : TcpResult::Error;
 }
 
-ME::TcpResult ME::TcpSocket::Recv(uint8_t* buffer, int capacity, int& outReceived) {
+ME::Net::TcpResult ME::Net::TcpSocket::Recv(uint8_t* buffer, int capacity, int& outReceived) {
     outReceived = 0;
     const int received = SocketPlatform::Recv(handle, buffer, capacity);
     if (received > 0) {
@@ -91,13 +91,13 @@ ME::TcpResult ME::TcpSocket::Recv(uint8_t* buffer, int capacity, int& outReceive
     return SocketPlatform::LastErrorIsWouldBlock() ? TcpResult::WouldBlock : TcpResult::Error;
 }
 
-void ME::TcpSocket::Close() {
+void ME::Net::TcpSocket::Close() {
     if (handle != SocketPlatform::INVALID_HANDLE) {
         SocketPlatform::Close(handle);
         handle = SocketPlatform::INVALID_HANDLE;
     }
 }
 
-bool ME::TcpSocket::IsOpen() const {
+bool ME::Net::TcpSocket::IsOpen() const {
     return handle != SocketPlatform::INVALID_HANDLE;
 }

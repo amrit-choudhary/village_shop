@@ -6,6 +6,12 @@ except where noted — this matches the project's "no external dependencies" int
 one real exception (cJSON, noted below).
 
 ## Networking / wire protocol (`src/net/`)
+- **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). Exception: the
+  deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `SocketServer`, `client/`
+  `Connection`) stay in `ME`.
+- TCP stack: `socket_platform.h` + `socket_platform_win.cpp`/`_posix.cpp` (`Net::SocketPlatform`, per-OS calls),
+  `tcp_socket.h` (`Net::TcpSocket`), `message_framing.h` (`Net::FrameReceiver`, length-prefix framing),
+  `content_protocol.h` (`Net::ContentProtocol`, content server verbs).
 - `net_protocol.h` — wire format: 1 byte version, 1 byte verb (`Verb` is `uint8_t`), 1 byte
   clientID, then payload. `Verb` enum reserves ranges: System `0x00-0x1F`, Http `0x20-0x3F`,
   Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `ConnectedClient`/`ConnectedServer` hold raw

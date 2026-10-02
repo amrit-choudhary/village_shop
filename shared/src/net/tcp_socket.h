@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace ME {
+namespace ME::Net {
 
 enum class TcpResult : uint8_t {
     Ok,          // Call did its work (Send may still have sent only part of the data).
@@ -58,4 +58,4 @@ class TcpSocket {
     intptr_t handle = -1;
 };
 
-}  // namespace ME
+}  // namespace ME::Net

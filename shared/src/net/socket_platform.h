@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace ME::SocketPlatform {
+namespace ME::Net::SocketPlatform {
 
 constexpr intptr_t INVALID_HANDLE = -1;
 
@@ -55,4 +55,4 @@ int Recv(intptr_t s, uint8_t* buffer, int capacity);
 int LastError();
 bool LastErrorIsWouldBlock();
 
-}  // namespace ME::SocketPlatform
+}  // namespace ME::Net::SocketPlatform
