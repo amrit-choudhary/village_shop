@@ -12,25 +12,28 @@ using ME::Net::ContentProtocol::Verb;
 ME::ClientConnection::ClientConnection()
     : receiver(recvStorage, sizeof(recvStorage), Net::ContentProtocol::MAX_MESSAGE_SIZE) {}
 
-bool ME::ClientConnection::AcceptFrom(Net::TcpSocket& listener) {
+bool ME::ClientConnection::AcceptFrom(Net::TcpSocket& listener, uint32_t clientId, double now) {
     if (listener.Accept(socket) != Net::TcpResult::Ok) {
         return false;
     }
 
+    id = clientId;
+    lastActivity = now;
     receiver.Reset();
     headerSize = headerSent = 0;
     body = nullptr;
     bodySize = bodySent = 0;
     closeAfterSend = false;
+    LogInfo("Client ", id, ": connected");
     return true;
 }
 
-bool ME::ClientConnection::Update(const ContentStore& store) {
+bool ME::ClientConnection::Update(const ContentStore& store, double now) {
     bool didWork = false;
 
     // 1. Continue sending the current reply.
     if (!FlushSend(didWork)) {
-        LogError("Send failed, dropping client");
+        LogError("Client ", id, ": send failed, dropping");
         Close();
         return true;
     }
@@ -49,7 +52,7 @@ bool ME::ClientConnection::Update(const ContentStore& store) {
             closeAfterSend = true;
             didWork = true;
         } else if (result == Net::TcpResult::Error) {
-            LogError("Recv failed, dropping client");
+            LogError("Client ", id, ": recv failed, dropping");
             Close();
             return true;
         }
@@ -63,7 +66,7 @@ bool ME::ClientConnection::Update(const ContentStore& store) {
             break;
         }
         if (result == Net::FrameResult::Invalid) {
-            LogError("Invalid frame length, dropping client");
+            LogError("Client ", id, ": invalid frame length, dropping");
             Close();
             return true;
         }
@@ -80,15 +83,25 @@ bool ME::ClientConnection::Update(const ContentStore& store) {
 
     // 4. Start sending the new reply right away.
     if (!FlushSend(didWork)) {
-        LogError("Send failed, dropping client");
+        LogError("Client ", id, ": send failed, dropping");
         Close();
         return true;
     }
 
     if (closeAfterSend && !HasPendingSend()) {
-        LogInfo("Client disconnected");
+        LogInfo("Client ", id, ": disconnected");
         Close();
-        didWork = true;
+        return true;
+    }
+
+    // Any progress (bytes in or out, a request handled) counts as activity. A client that neither sends
+    // nor reads its reply is holding a slot for nothing.
+    if (didWork) {
+        lastActivity = now;
+    } else if (now - lastActivity > IDLE_TIMEOUT_SECONDS) {
+        LogWarning("Client ", id, ": idle for ", IDLE_TIMEOUT_SECONDS, " s, disconnecting");
+        Close();
+        return true;
     }
     return didWork;
 }
@@ -103,7 +116,7 @@ void ME::ClientConnection::Close() {
 
 bool ME::ClientConnection::HandleRequest(const Net::FrameView& request, const ContentStore& store) {
     if (request.version != Net::ContentProtocol::VERSION) {
-        LogError("Unsupported protocol version ", static_cast<int>(request.version));
+        LogError("Client ", id, ": unsupported protocol version ", static_cast<int>(request.version));
         return false;
     }
 
@@ -120,14 +133,14 @@ bool ME::ClientConnection::HandleRequest(const Net::FrameView& request, const Co
             uint32_t rangeLength = 0;
             if (!reader.ReadU16(pathLength) || pathLength > Net::ContentManifest::MAX_PATH_LENGTH ||
                 !reader.ReadBytes(pathLength, path) || !reader.ReadU32(rangeOffset) || !reader.ReadU32(rangeLength)) {
-                LogError("Malformed GET_FILE request");
+                LogError("Client ", id, ": malformed GET_FILE request");
                 return false;
             }
             return QueueFile(std::string(reinterpret_cast<const char*>(path), pathLength), store);
         }
 
         default:
-            LogError("Unexpected request ", Net::ContentProtocol::GetVerbName(request.verb));
+            LogError("Client ", id, ": unexpected request ", Net::ContentProtocol::GetVerbName(request.verb));
             return false;
     }
 }
@@ -148,7 +161,7 @@ bool ME::ClientConnection::QueueManifest(const ContentStore& store) {
     bodySize = text.size();
     bodySent = 0;
 
-    LogInfo("GET_MANIFEST -> MANIFEST (", bodySize, " bytes)");
+    LogInfo("Client ", id, ": GET_MANIFEST -> MANIFEST (", bodySize, " bytes)");
     return true;
 }
 
@@ -174,9 +187,9 @@ bool ME::ClientConnection::QueueFile(const std::string& path, const ContentStore
     bodySent = 0;
 
     if (file != nullptr) {
-        LogInfo("GET_FILE ", path, " -> FILE (", bodySize, " bytes)");
+        LogInfo("Client ", id, ": GET_FILE ", path, " -> FILE (", bodySize, " bytes)");
     } else {
-        LogWarning("GET_FILE ", path, " -> FILE_NOT_FOUND");
+        LogWarning("Client ", id, ": GET_FILE ", path, " -> FILE_NOT_FOUND");
     }
     return true;
 }

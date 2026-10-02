@@ -15,6 +15,7 @@
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
 #include "shared/src/net/tcp_socket.h"
+#include "shared/src/time/time_manager.h"
 
 #include "client_connection.h"
 #include "content_store.h"
@@ -24,6 +25,42 @@ namespace {
 std::atomic<bool> running(true);
 
 constexpr uint16_t DEFAULT_PORT = 9311;
+
+constexpr uint32_t MAX_CLIENTS = 32;
+
+// Static storage: 32 connections with their buffers are ~150 KB, too much to put on the stack comfortably.
+ME::ClientConnection clients[MAX_CLIENTS];
+
+/**
+ * Accepts every waiting connection into a free slot. When all slots are taken, extra connections are
+ * accepted and closed immediately so they fail fast instead of waiting in the OS queue.
+ */
+bool AcceptNewClients(ME::Net::TcpSocket& listener, double now) {
+    bool didWork = false;
+    while (true) {
+        uint32_t freeSlot = MAX_CLIENTS;
+        for (uint32_t i = 0; i < MAX_CLIENTS; ++i) {
+            if (!clients[i].IsOpen()) {
+                freeSlot = i;
+                break;
+            }
+        }
+
+        if (freeSlot < MAX_CLIENTS) {
+            if (!clients[freeSlot].AcceptFrom(listener, freeSlot, now)) {
+                return didWork;
+            }
+        } else {
+            ME::Net::TcpSocket rejected;
+            if (listener.Accept(rejected) != ME::Net::TcpResult::Ok) {
+                return didWork;
+            }
+            ME::LogWarning("Server full (", MAX_CLIENTS, " clients), rejecting connection");
+            rejected.Close();
+        }
+        didWork = true;
+    }
+}
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -59,19 +96,19 @@ int main(int argc, char** argv) {
     }
     ME::LogSuccess("Listening on port ", port);
 
-    // One client at a time for now; extra connections wait in the OS queue until this one leaves.
-    ME::ClientConnection client;
+    // Only used as a clock (GetTimeSinceStartup); the server has no fixed-step simulation.
+    ME::Time::TimeManager timeManager;
+    timeManager.Init(ME::Time::TimeConfig{});
 
     while (running) {
-        bool didWork = false;
+        timeManager.BeginFrame();
+        const double now = timeManager.GetTimeSinceStartup();
+        bool didWork = AcceptNewClients(listener, now);
 
-        if (!client.IsOpen() && client.AcceptFrom(listener)) {
-            ME::LogInfo("Client connected");
-            didWork = true;
-        }
-
-        if (client.IsOpen() && client.Update(store)) {
-            didWork = true;
+        for (ME::ClientConnection& client : clients) {
+            if (client.IsOpen() && client.Update(store, now)) {
+                didWork = true;
+            }
         }
 
         // Sleep only when nothing happened, so the loop doesn't spin a full CPU core while idle.
@@ -80,7 +117,9 @@ int main(int argc, char** argv) {
         }
     }
 
-    client.Close();
+    for (ME::ClientConnection& client : clients) {
+        client.Close();
+    }
     listener.Close();
     ME::Net::TcpSocket::ShutdownNetworking();
     return 0;

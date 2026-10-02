@@ -17,6 +17,9 @@ class ContentStore;
 
 class ClientConnection {
    public:
+    // A client that sends nothing and accepts no reply bytes for this long is disconnected.
+    static constexpr double IDLE_TIMEOUT_SECONDS = 30.0;
+
     ClientConnection();
 
     // The receiver points into this object's own storage, so it must never be copied or moved.
@@ -25,13 +28,15 @@ class ClientConnection {
 
     /**
      * Takes one pending connection from listener. Returns false if nobody is waiting.
+     * clientId is only used to tell clients apart in logs. now is the server's time in seconds.
      */
-    bool AcceptFrom(Net::TcpSocket& listener);
+    bool AcceptFrom(Net::TcpSocket& listener, uint32_t clientId, double now);
 
     /**
-     * Sends pending reply bytes, receives, and answers complete requests. Returns true if anything happened.
+     * Sends pending reply bytes, receives, and answers complete requests; closes the connection when idle
+     * for longer than IDLE_TIMEOUT_SECONDS. Returns true if anything happened.
      */
-    bool Update(const ContentStore& store);
+    bool Update(const ContentStore& store, double now);
 
     bool IsOpen() const;
     void Close();
@@ -53,6 +58,8 @@ class ClientConnection {
     static constexpr size_t HEADER_CAPACITY = 512;
 
     Net::TcpSocket socket;
+    uint32_t id = 0;
+    double lastActivity = 0.0;
 
     uint8_t recvStorage[RECV_CAPACITY];
     Net::FrameReceiver receiver;
