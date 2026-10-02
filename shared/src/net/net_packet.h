@@ -1,5 +1,6 @@
 /**
  * Packet for trasfer between client and server.
+ * DEPRECATED: use ByteWriter/ByteReader (shared/src/serialization/) in new code; replaced when UDP migrates.
  */
 
 #pragma once

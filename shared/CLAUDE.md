@@ -15,6 +15,9 @@ one real exception (cJSON, noted below).
   `strcpy`/`reinterpret_cast`, **no bounds checking, no endianness handling**). Fixed-size
   pool subclasses: `PacketSmall`(64) / `PacketMedium`(256) / `PacketBig`(1024) /
   `PacketHuge`(2048) bytes, each `new uint8_t[size]`.
+- **`Packet` is deprecated.** `ByteWriter`/`ByteReader` (`src/serialization/byte_writer.h`, `byte_reader.h`:
+  bounds-checked, caller-owned memory) is the single binary read/write API for all new code (TCP, UDP, binary files).
+  `Packet` stays only until the UDP game client/server migrate to it; don't add new `Packet` uses.
 - `net_utils.h/.cpp` — `GetVerbName(Verb)` debug helper only.
 - Server-side consumer: [server/CLAUDE.md](../server/CLAUDE.md).
 
