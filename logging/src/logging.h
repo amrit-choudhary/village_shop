@@ -64,7 +64,7 @@ template <typename... Args>
 void LogImpl(LogLevel level, const Args &...args) {
     std::ostringstream oss;
     oss << LogLevelToColor(level);
-    oss << LogLevelToString(level);
+    oss << LogLevelToString(level) << ' ';
     (oss << ... << args);
     oss << DefaultLogColor();
     oss << '\n';

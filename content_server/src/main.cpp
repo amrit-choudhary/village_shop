@@ -14,6 +14,7 @@
 #include "logging/src/logging.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
+#include "shared/src/net/tcp_socket.h"
 
 namespace {
 // Main loop flag. Nothing clears it yet; stop the process with Ctrl+C, like the game server.
@@ -38,10 +39,54 @@ int main(int argc, char** argv) {
     ME::LogInfo("Content server starting on port ", port);
     ME::LogInfo("Serving from ", ME::Utils::GetDlcPath());
 
-    while (running) {
-        // Sockets come in a later step. Sleep so the empty loop doesn't spin a full CPU core.
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    if (!ME::TcpSocket::InitNetworking()) {
+        return 1;
     }
 
+    ME::TcpSocket listener;
+    if (!listener.Listen(port)) {
+        ME::TcpSocket::ShutdownNetworking();
+        return 1;
+    }
+    ME::LogSuccess("Listening on port ", port);
+
+    // One client at a time for now; extra connections wait in the OS queue until this one leaves.
+    ME::TcpSocket client;
+    uint8_t buffer[1024];
+
+    while (running) {
+        bool didWork = false;
+
+        if (!client.IsOpen() && listener.Accept(client) == ME::TcpResult::Ok) {
+            ME::LogInfo("Client connected");
+            didWork = true;
+        }
+
+        if (client.IsOpen()) {
+            int received = 0;
+            const ME::TcpResult result = client.Recv(buffer, sizeof(buffer), received);
+            if (result == ME::TcpResult::Ok) {
+                ME::LogInfo("Received ", received, " bytes: ", std::string(reinterpret_cast<char*>(buffer), received));
+                didWork = true;
+            } else if (result == ME::TcpResult::Closed) {
+                ME::LogInfo("Client disconnected");
+                client.Close();
+                didWork = true;
+            } else if (result == ME::TcpResult::Error) {
+                ME::LogError("Recv failed, dropping client");
+                client.Close();
+                didWork = true;
+            }
+        }
+
+        // Sleep only when nothing happened, so the loop doesn't spin a full CPU core while idle.
+        if (!didWork) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+    }
+
+    client.Close();
+    listener.Close();
+    ME::TcpSocket::ShutdownNetworking();
     return 0;
 }

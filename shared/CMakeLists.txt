@@ -26,3 +26,8 @@ target_link_libraries(
     PRIVATE
     VillageShop_Logging
     )
+
+if(WIN32)
+    # Winsock, used by TcpSocket. PUBLIC so every program linking shared gets it too.
+    target_link_libraries(VillageShop_Shared PUBLIC Ws2_32)
+endif()
