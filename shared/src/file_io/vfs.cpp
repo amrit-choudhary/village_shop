@@ -83,3 +83,29 @@ bool ME::Vfs::WriteBytes(FileRoot root, const char* relPath, const uint8_t* data
     file.close();
     return !file.fail();
 }
+
+bool ME::Vfs::RemoveFile(FileRoot root, const char* relPath) {
+    std::error_code error;
+    // remove() returns false without an error when the file doesn't exist; that still counts as success.
+    std::filesystem::remove(std::filesystem::path(GetRootPath(root) + relPath), error);
+    return !error;
+}
+
+void ME::Vfs::RemoveEmptyFolders(FileRoot root, const char* relPath) {
+    // Walk the relative path's folders from deepest to shallowest, e.g. "a/b/c.json" -> "a/b", then "a".
+    std::filesystem::path folder = std::filesystem::path(relPath).parent_path();
+    const std::string rootPath = GetRootPath(root);
+
+    std::error_code error;
+    while (!folder.empty()) {
+        const std::filesystem::path fullPath = std::filesystem::path(rootPath) / folder;
+        if (!std::filesystem::is_empty(fullPath, error) || error) {
+            return;
+        }
+        std::filesystem::remove(fullPath, error);
+        if (error) {
+            return;
+        }
+        folder = folder.parent_path();
+    }
+}

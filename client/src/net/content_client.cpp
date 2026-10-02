@@ -331,8 +331,10 @@ void ME::ContentClient::BuildDownloadList() {
 void ME::ContentClient::StartNextDownload(double now) {
     if (downloadCursor >= downloadCount) {
         socket.Close();
+        const uint32_t removedCount = RemoveDroppedFiles();
         SetState(ContentSyncState::Done, now);
-        LogSuccess("Content: sync done (", downloadCount, " files, ", downloadedBytes, " bytes downloaded)");
+        LogSuccess("Content: sync done (", downloadCount, " downloaded, ", downloadedBytes, " bytes, ", removedCount,
+                   " removed)");
         return;
     }
 
@@ -350,4 +352,34 @@ bool ME::ContentClient::SaveLocalManifest() {
         return false;
     }
     return Vfs::WriteBytes(FileRoot::Dlc, MANIFEST_FILE, reinterpret_cast<const uint8_t*>(text.data()), text.size());
+}
+
+uint32_t ME::ContentClient::RemoveDroppedFiles() {
+    uint32_t removedCount = 0;
+
+    // Backwards, because Remove shifts the later entries down. Only names the client recorded itself are ever
+    // deleted, and they passed the manifest's safe-path check, so nothing outside dlc/ can be touched.
+    for (uint32_t i = localManifest.GetCount(); i-- > 0;) {
+        const std::string name = localManifest.GetEntry(i).name;
+        if (serverManifest.Find(name.c_str()) != nullptr) {
+            continue;
+        }
+
+        if (!Vfs::RemoveFile(FileRoot::Dlc, name.c_str())) {
+            // Keep the entry so the next sync tries again (e.g. the file was locked by another program).
+            LogWarning("Content: could not remove ", name);
+            continue;
+        }
+        Vfs::RemoveEmptyFolders(FileRoot::Dlc, name.c_str());
+        localManifest.Remove(name.c_str());
+        ++removedCount;
+        LogInfo("Content: removed ", name);
+    }
+
+    // Saved once at the end: if the game stops before this, the next sync finds the same entries and
+    // RemoveFile succeeds again for files already gone.
+    if (removedCount > 0 && !SaveLocalManifest()) {
+        LogWarning("Content: could not save dlc/manifest.json after removing files");
+    }
+    return removedCount;
 }

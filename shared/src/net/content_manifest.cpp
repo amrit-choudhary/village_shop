@@ -127,6 +127,21 @@ bool ME::Net::ContentManifest::Set(const char* name, uint32_t version) {
     return true;
 }
 
+bool ME::Net::ContentManifest::Remove(const char* name) {
+    for (uint32_t i = 0; i < count; ++i) {
+        if (entries[i].name == name) {
+            // Shift the following entries down one slot to close the gap.
+            for (uint32_t j = i; j + 1 < count; ++j) {
+                entries[j] = entries[j + 1];
+            }
+            --count;
+            entries[count].name.clear();
+            return true;
+        }
+    }
+    return false;
+}
+
 const ME::Net::ManifestEntry* ME::Net::ContentManifest::Find(const char* name) const {
     for (uint32_t i = 0; i < count; ++i) {
         if (entries[i].name == name) {

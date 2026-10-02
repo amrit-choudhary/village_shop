@@ -41,6 +41,11 @@ class ContentManifest {
     bool Set(const char* name, uint32_t version);
 
     /**
+     * Removes the entry with this name, keeping the order of the others. Returns false if it isn't listed.
+     */
+    bool Remove(const char* name);
+
+    /**
      * Entry with exactly this name, or nullptr.
      */
     const ManifestEntry* Find(const char* name) const;

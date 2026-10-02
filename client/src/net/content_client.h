@@ -80,6 +80,12 @@ class ContentClient {
 
     bool SaveLocalManifest();
 
+    /**
+     * Deletes files the local manifest lists but the server no longer does, and their empty folders.
+     * Returns how many were removed.
+     */
+    uint32_t RemoveDroppedFiles();
+
     // How long one step may take before giving up. The OS alone can take 20+ s to fail a connect.
     static constexpr double CONNECT_TIMEOUT_SECONDS = 5.0;
     static constexpr double REPLY_TIMEOUT_SECONDS = 10.0;

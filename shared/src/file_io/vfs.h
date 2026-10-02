@@ -43,5 +43,16 @@ bool ReadBytes(FileRoot root, const char* relPath, uint8_t* buffer, size_t capac
  */
 bool WriteBytes(FileRoot root, const char* relPath, const uint8_t* data, size_t size);
 
+/**
+ * Deletes root + relPath. Returns true if the file is gone afterwards (including when it never existed).
+ */
+bool RemoveFile(FileRoot root, const char* relPath);
+
+/**
+ * Removes the folders of relPath that are now empty, deepest first, stopping at the first non-empty one.
+ * Never removes the root folder itself.
+ */
+void RemoveEmptyFolders(FileRoot root, const char* relPath);
+
 }  // namespace Vfs
 }  // namespace ME
