@@ -1,11 +1,17 @@
 #include "content_client.h"
 
 #include "logging/src/logging.h"
+#include "shared/src/file_io/vfs.h"
 #include "shared/src/net/content_protocol.h"
+#include "shared/src/serialization/byte_reader.h"
 #include "shared/src/serialization/byte_writer.h"
 
 using ME::Net::ContentProtocol::Verb;
 using ME::Net::TcpResult;
+
+namespace {
+constexpr const char* MANIFEST_FILE = "manifest.json";
+}  // namespace
 
 ME::ContentClient::ContentClient()
     : recvStorage(new uint8_t[Net::ContentProtocol::MAX_MESSAGE_SIZE]),
@@ -50,6 +56,9 @@ void ME::ContentClient::Update(double now) {
             break;
         case ContentSyncState::RequestingManifest:
             UpdateRequestingManifest(now);
+            break;
+        case ContentSyncState::DownloadingFiles:
+            UpdateDownloadingFiles(now);
             break;
         case ContentSyncState::Idle:
         case ContentSyncState::Done:
@@ -116,9 +125,40 @@ void ME::ContentClient::UpdateRequestingManifest(double now) {
         return;
     }
 
-    socket.Close();
-    SetState(ContentSyncState::Done, now);
-    LogSuccess("Content: sync step done (manifest received)");
+    BuildDownloadList();
+    downloadCursor = 0;
+    downloadedBytes = 0;
+    SetState(ContentSyncState::DownloadingFiles, now);
+    StartNextDownload(now);
+}
+
+void ME::ContentClient::UpdateDownloadingFiles(double now) {
+    if (!FlushSend() || !ReceiveAvailable()) {
+        return;
+    }
+
+    Net::FrameView message;
+    const Net::FrameResult frame = receiver.PeekFrame(message);
+    if (frame == Net::FrameResult::Invalid) {
+        Fail("server sent an invalid frame");
+        return;
+    }
+    if (frame == Net::FrameResult::Incomplete) {
+        if (now - stateStartTime > REPLY_TIMEOUT_SECONDS) {
+            Fail("timed out waiting for a file");
+        }
+        return;
+    }
+
+    // message.payload points into the receiver, so use it before PopFrame.
+    const bool ok = HandleFile(message);
+    receiver.PopFrame();
+    if (!ok) {
+        return;
+    }
+
+    ++downloadCursor;
+    StartNextDownload(now);
 }
 
 void ME::ContentClient::SetState(ContentSyncState newState, double now) {
@@ -137,6 +177,22 @@ bool ME::ContentClient::QueueGetManifest() {
     size_t frameStart = 0;
     if (!Net::BeginFrame(writer, Net::ContentProtocol::VERSION, static_cast<uint8_t>(Verb::GET_MANIFEST),
                          frameStart) ||
+        !Net::FinishFrame(writer, frameStart)) {
+        return false;
+    }
+    sendSize = writer.GetSize();
+    sendSent = 0;
+    return true;
+}
+
+bool ME::ContentClient::QueueGetFile(const std::string& path) {
+    ByteWriter writer(sendStorage, sizeof(sendStorage));
+    size_t frameStart = 0;
+    if (!Net::BeginFrame(writer, Net::ContentProtocol::VERSION, static_cast<uint8_t>(Verb::GET_FILE), frameStart) ||
+        !writer.WriteU16(static_cast<uint16_t>(path.size())) ||
+        !writer.WriteBytes(reinterpret_cast<const uint8_t*>(path.data()), path.size()) ||
+        !writer.WriteU32(0) ||  // rangeOffset (reserved)
+        !writer.WriteU32(0) ||  // rangeLength (reserved)
         !Net::FinishFrame(writer, frameStart)) {
         return false;
     }
@@ -196,4 +252,102 @@ bool ME::ContentClient::HandleManifest(const Net::FrameView& message) {
         LogInfo("Content:   ", entry.name, " v", entry.version);
     }
     return true;
+}
+
+bool ME::ContentClient::HandleFile(const Net::FrameView& message) {
+    const Net::ManifestEntry& expected = serverManifest.GetEntry(downloadList[downloadCursor]);
+
+    ByteReader reader(message.payload, message.payloadSize);
+    uint16_t pathLength = 0;
+    const uint8_t* path = nullptr;
+    if (message.version != Net::ContentProtocol::VERSION || !reader.ReadU16(pathLength) ||
+        !reader.ReadBytes(pathLength, path)) {
+        Fail("malformed reply to GET_FILE");
+        return false;
+    }
+
+    // The reply must be for the file we asked for; its name was already checked as a safe path by the manifest.
+    if (std::string(reinterpret_cast<const char*>(path), pathLength) != expected.name) {
+        Fail("reply is for a different file");
+        return false;
+    }
+
+    if (message.verb == static_cast<uint8_t>(Verb::FILE_NOT_FOUND)) {
+        LogWarning("Content: server is missing ", expected.name);
+        Fail("file listed in the manifest is not on the server");
+        return false;
+    }
+    if (message.verb != static_cast<uint8_t>(Verb::FILE)) {
+        Fail("expected a FILE reply");
+        return false;
+    }
+
+    // Everything after the path is the file.
+    const size_t fileSize = reader.GetRemaining();
+    const uint8_t* fileData = nullptr;
+    reader.ReadBytes(fileSize, fileData);
+
+    if (!Vfs::WriteBytes(FileRoot::Dlc, expected.name.c_str(), fileData, fileSize)) {
+        Fail("could not write a downloaded file");
+        return false;
+    }
+
+    // Record the new version only now that the file is fully written.
+    if (!localManifest.Set(expected.name.c_str(), expected.version) || !SaveLocalManifest()) {
+        Fail("could not save dlc/manifest.json");
+        return false;
+    }
+
+    downloadedBytes += fileSize;
+    LogInfo("Content: downloaded ", expected.name, " v", expected.version, " (", fileSize, " bytes)");
+    return true;
+}
+
+void ME::ContentClient::BuildDownloadList() {
+    std::string text;
+    if (!Vfs::ReadText(FileRoot::Dlc, MANIFEST_FILE, text) || !localManifest.Parse(text.data(), text.size())) {
+        // First sync, or an unreadable file: treat as nothing downloaded yet.
+        localManifest.Clear();
+    }
+
+    downloadCount = 0;
+    for (uint32_t i = 0; i < serverManifest.GetCount(); ++i) {
+        const Net::ManifestEntry& entry = serverManifest.GetEntry(i);
+        const Net::ManifestEntry* local = localManifest.Find(entry.name.c_str());
+
+        // Different, not just newer, so rolling a file back on the server also reaches clients.
+        size_t size = 0;
+        const bool needed = local == nullptr || local->version != entry.version ||
+                            !Vfs::GetFileSize(FileRoot::Dlc, entry.name.c_str(), size);
+        if (needed) {
+            downloadList[downloadCount] = i;
+            ++downloadCount;
+        }
+    }
+
+    LogInfo("Content: ", downloadCount, " of ", serverManifest.GetCount(), " files need downloading");
+}
+
+void ME::ContentClient::StartNextDownload(double now) {
+    if (downloadCursor >= downloadCount) {
+        socket.Close();
+        SetState(ContentSyncState::Done, now);
+        LogSuccess("Content: sync done (", downloadCount, " files, ", downloadedBytes, " bytes downloaded)");
+        return;
+    }
+
+    if (!QueueGetFile(serverManifest.GetEntry(downloadList[downloadCursor]).name)) {
+        Fail("could not build GET_FILE");
+        return;
+    }
+    // Each file gets a fresh reply timeout.
+    stateStartTime = now;
+}
+
+bool ME::ContentClient::SaveLocalManifest() {
+    std::string text;
+    if (!localManifest.Serialize(text)) {
+        return false;
+    }
+    return Vfs::WriteBytes(FileRoot::Dlc, MANIFEST_FILE, reinterpret_cast<const uint8_t*>(text.data()), text.size());
 }

@@ -38,5 +38,10 @@ bool GetFileSize(FileRoot root, const char* relPath, size_t& outSize);
  */
 bool ReadBytes(FileRoot root, const char* relPath, uint8_t* buffer, size_t capacity, size_t& outSize);
 
+/**
+ * Writes size bytes to root + relPath (binary, replacing any existing file), creating missing folders.
+ */
+bool WriteBytes(FileRoot root, const char* relPath, const uint8_t* data, size_t size);
+
 }  // namespace Vfs
 }  // namespace ME

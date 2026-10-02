@@ -84,6 +84,49 @@ void ME::Net::ContentManifest::Clear() {
     count = 0;
 }
 
+bool ME::Net::ContentManifest::Serialize(std::string& out) const {
+    cJSON* root = cJSON_CreateObject();
+    cJSON* files = cJSON_AddArrayToObject(root, "files");
+    if (root == nullptr || files == nullptr) {
+        cJSON_Delete(root);
+        return false;
+    }
+
+    for (uint32_t i = 0; i < count; ++i) {
+        cJSON* file = cJSON_CreateObject();
+        cJSON_AddStringToObject(file, "name", entries[i].name.c_str());
+        cJSON_AddNumberToObject(file, "version", static_cast<double>(entries[i].version));
+        cJSON_AddItemToArray(files, file);
+    }
+
+    // cJSON_Print allocates the text; it must be released with cJSON_free.
+    char* text = cJSON_Print(root);
+    cJSON_Delete(root);
+    if (text == nullptr) {
+        return false;
+    }
+    out = text;
+    cJSON_free(text);
+    return true;
+}
+
+bool ME::Net::ContentManifest::Set(const char* name, uint32_t version) {
+    for (uint32_t i = 0; i < count; ++i) {
+        if (entries[i].name == name) {
+            entries[i].version = version;
+            return true;
+        }
+    }
+
+    if (count >= MAX_ENTRIES) {
+        return false;
+    }
+    entries[count].name = name;
+    entries[count].version = version;
+    ++count;
+    return true;
+}
+
 const ME::Net::ManifestEntry* ME::Net::ContentManifest::Find(const char* name) const {
     for (uint32_t i = 0; i < count; ++i) {
         if (entries[i].name == name) {

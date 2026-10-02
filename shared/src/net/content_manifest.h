@@ -30,6 +30,17 @@ class ContentManifest {
     void Clear();
 
     /**
+     * Writes the entries as JSON in the same format Parse reads. Returns false if JSON creation failed.
+     */
+    bool Serialize(std::string& out) const;
+
+    /**
+     * Adds name with this version, or updates its version if already listed. name must be a safe path.
+     * Returns false if the manifest is full.
+     */
+    bool Set(const char* name, uint32_t version);
+
+    /**
      * Entry with exactly this name, or nullptr.
      */
     const ManifestEntry* Find(const char* name) const;

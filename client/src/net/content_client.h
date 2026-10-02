@@ -1,11 +1,13 @@
 /**
  * Talks to the content server in the background, one step per frame, never blocking the game.
- * Current steps: connect, request the manifest, log it. Downloading files comes next.
+ * Downloads new or changed files straight into dlc/ and keeps dlc/manifest.json describing exactly what is
+ * on disk: a file's version is recorded only after the file is fully written, so an interrupted sync resumes.
  */
 #pragma once
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "shared/src/net/content_manifest.h"
 #include "shared/src/net/message_framing.h"
@@ -17,6 +19,7 @@ enum class ContentSyncState : uint8_t {
     Idle,                // Init not called yet.
     Connecting,          // TCP handshake in progress.
     RequestingManifest,  // GET_MANIFEST sent, waiting for MANIFEST.
+    DownloadingFiles,    // One GET_FILE at a time for every new or changed file.
     Done,                // Finished; connection closed.
     Failed,              // Gave up (server down, timeout, bad reply); the game carries on without new content.
 };
@@ -47,11 +50,13 @@ class ContentClient {
    private:
     void UpdateConnecting(double now);
     void UpdateRequestingManifest(double now);
+    void UpdateDownloadingFiles(double now);
 
     void SetState(ContentSyncState newState, double now);
     void Fail(const char* reason);
 
     bool QueueGetManifest();
+    bool QueueGetFile(const std::string& path);
     bool FlushSend();
 
     /**
@@ -60,6 +65,20 @@ class ContentClient {
     bool ReceiveAvailable();
 
     bool HandleManifest(const Net::FrameView& message);
+    bool HandleFile(const Net::FrameView& message);
+
+    /**
+     * Reads dlc/manifest.json and lists every server file that is new, has a different version, or is
+     * missing on disk.
+     */
+    void BuildDownloadList();
+
+    /**
+     * Requests the next file in the download list, or finishes the sync when none are left.
+     */
+    void StartNextDownload(double now);
+
+    bool SaveLocalManifest();
 
     // How long one step may take before giving up. The OS alone can take 20+ s to fail a connect.
     static constexpr double CONNECT_TIMEOUT_SECONDS = 5.0;
@@ -82,6 +101,15 @@ class ContentClient {
     size_t sendSent = 0;
 
     Net::ContentManifest serverManifest;
+
+    // What is on disk in dlc/, saved to dlc/manifest.json after every downloaded file.
+    Net::ContentManifest localManifest;
+
+    // Indices into serverManifest of the files to download, worked through one at a time.
+    uint32_t downloadList[Net::ContentManifest::MAX_ENTRIES];
+    uint32_t downloadCount = 0;
+    uint32_t downloadCursor = 0;
+    size_t downloadedBytes = 0;
 };
 
 }  // namespace ME

@@ -1,7 +1,9 @@
 #include "vfs.h"
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <system_error>
 
 #include "shared/src/misc/utils.h"
 
@@ -62,4 +64,22 @@ bool ME::Vfs::ReadBytes(FileRoot root, const char* relPath, uint8_t* buffer, siz
 
     outSize = static_cast<size_t>(size);
     return true;
+}
+
+bool ME::Vfs::WriteBytes(FileRoot root, const char* relPath, const uint8_t* data, size_t size) {
+    const std::filesystem::path path(GetRootPath(root) + relPath);
+
+    // Exceptions are disabled, so std::filesystem calls must use the std::error_code overload;
+    // the throwing overload would terminate the program on failure.
+    std::error_code error;
+    std::filesystem::create_directories(path.parent_path(), error);
+    if (error) {
+        return false;
+    }
+
+    std::ofstream file(path, std::ios::binary | std::ios::trunc);
+    file.write(reinterpret_cast<const char*>(data), static_cast<std::streamsize>(size));
+    // close() writes out bytes still buffered in memory; a failure there (e.g. disk full) shows up in fail().
+    file.close();
+    return !file.fail();
 }
