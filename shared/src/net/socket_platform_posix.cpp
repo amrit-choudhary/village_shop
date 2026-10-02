@@ -2,10 +2,13 @@
 
 #include "socket_platform.h"
 
+#include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <sys/select.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 namespace {
@@ -82,6 +85,61 @@ int ME::Net::SocketPlatform::Send(intptr_t s, const uint8_t* data, int size) {
 
 int ME::Net::SocketPlatform::Recv(intptr_t s, uint8_t* buffer, int capacity) {
     return static_cast<int>(recv(ToNative(s), buffer, static_cast<size_t>(capacity), 0));
+}
+
+ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip,
+                                                                            uint16_t port) {
+    sockaddr_in address{};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    // inet_pton turns the text address into 4 bytes; returns 1 only for a valid IPv4 address.
+    if (inet_pton(AF_INET, ip, &address.sin_addr) != 1) {
+        errno = EINVAL;
+        return ConnectState::Failed;
+    }
+
+    if (connect(ToNative(s), reinterpret_cast<sockaddr*>(&address), sizeof(address)) == 0) {
+        return ConnectState::Connected;
+    }
+    // A non-blocking connect reports "still working" as EINPROGRESS on POSIX.
+    return errno == EINPROGRESS ? ConnectState::InProgress : ConnectState::Failed;
+}
+
+ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::PollConnect(intptr_t s, int& outError) {
+    const int native = ToNative(s);
+    // select's fd_set has a fixed size; a descriptor past it would overflow the set.
+    if (native >= FD_SETSIZE) {
+        outError = EINVAL;
+        return ConnectState::Failed;
+    }
+
+    // select() with a zero timeout asks "is it ready?" without waiting. POSIX reports a finished
+    // connect as writable whether it succeeded or failed; SO_ERROR tells which.
+    fd_set writeSet;
+    FD_ZERO(&writeSet);
+    FD_SET(native, &writeSet);
+    timeval noWait{0, 0};
+
+    const int ready = select(native + 1, nullptr, &writeSet, nullptr, &noWait);
+    if (ready < 0) {
+        outError = errno;
+        return ConnectState::Failed;
+    }
+    if (ready == 0) {
+        return ConnectState::InProgress;
+    }
+
+    int error = 0;
+    socklen_t length = sizeof(error);
+    if (getsockopt(native, SOL_SOCKET, SO_ERROR, &error, &length) != 0) {
+        outError = errno;
+        return ConnectState::Failed;
+    }
+    if (error != 0) {
+        outError = error;
+        return ConnectState::Failed;
+    }
+    return ConnectState::Connected;
 }
 
 int ME::Net::SocketPlatform::LastError() {

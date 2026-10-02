@@ -41,6 +41,18 @@ class TcpSocket {
     TcpResult Accept(TcpSocket& outClient);
 
     /**
+     * Client: start connecting to an IPv4 address and port. Returns at once:
+     * Ok = connected already, WouldBlock = still connecting (call PollConnect), Error = failed.
+     */
+    TcpResult Connect(const char* ip, uint16_t port);
+
+    /**
+     * Client: after Connect returned WouldBlock, call each frame until it returns Ok (connected) or Error.
+     * Timeouts are up to the caller; the OS can take many seconds to give up on an unreachable host.
+     */
+    TcpResult PollConnect();
+
+    /**
      * Sends up to size bytes; outSent says how many were actually sent (can be fewer).
      */
     TcpResult Send(const uint8_t* data, int size, int& outSent);

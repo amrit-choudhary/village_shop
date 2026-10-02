@@ -10,6 +10,7 @@ ME::GameMain::GameMain() {}
 ME::GameMain::~GameMain() {
     game.End();
     connection.End();
+    contentClient.End();
     inputManager.End();
     timeManager.End();
     physicsSystem.End();
@@ -34,6 +35,12 @@ void ME::GameMain::Init(HWND hWnd) {
     if (serverIP.empty()) serverIP = "127.0.0.1";
     std::string serverPortStr = iniMap["settings"]["serverPort"];
     uint16_t serverPort = serverPortStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(serverPortStr.c_str()));
+
+    std::string contentServerIP = iniMap["settings"]["contentServerIP"];
+    if (contentServerIP.empty()) contentServerIP = "127.0.0.1";
+    std::string contentServerPortStr = iniMap["settings"]["contentServerPort"];
+    uint16_t contentServerPort =
+        contentServerPortStr.empty() ? 9311 : static_cast<uint16_t>(std::atoi(contentServerPortStr.c_str()));
 
     debugSystem.Init();
     ME::DebugSystem::SetInstance(&debugSystem);
@@ -67,6 +74,9 @@ void ME::GameMain::Init(HWND hWnd) {
     ME::Time::TimeConfig timeConfig;
     timeConfig.fixedStepFPS = static_cast<double>(fixedFrameRate);
     timeManager.Init(timeConfig);
+
+    // Content sync runs in the background from here on; the game never waits for it.
+    contentClient.Init(contentServerIP.c_str(), contentServerPort, timeManager.GetTimeSinceStartup());
 
     // Start the game.
     game.Start();
@@ -107,6 +117,7 @@ void ME::GameMain::Update() {
     renderer.Draw();
 
     connection.Update(deltaTime);
+    contentClient.Update(timeManager.GetTimeSinceStartup());
     audioSystem.Update(deltaTime);
 }
 
@@ -118,6 +129,7 @@ void ME::GameMain::Exit() {
 void ME::GameMain::ShutDownGameSystems() {
     game.End();
     connection.End();
+    contentClient.End();
     inputManager.End();
     timeManager.End();
     physicsSystem.End();

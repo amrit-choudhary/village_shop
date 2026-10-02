@@ -49,6 +49,24 @@ intptr_t Accept(intptr_t s);
 int Send(intptr_t s, const uint8_t* data, int size);
 int Recv(intptr_t s, uint8_t* buffer, int capacity);
 
+enum class ConnectState : uint8_t {
+    Connected,   // Handshake finished; the socket can send and receive.
+    InProgress,  // Handshake still running in the background; poll again later.
+    Failed,      // Refused, unreachable or invalid address.
+};
+
+/**
+ * Starts connecting a non-blocking socket to an IPv4 address such as "192.168.1.50".
+ * On Failed, LastError says why.
+ */
+ConnectState StartConnect(intptr_t s, const char* ip, uint16_t port);
+
+/**
+ * Checks, without waiting, whether a connect begun by StartConnect has finished.
+ * On Failed, outError holds the OS error code.
+ */
+ConnectState PollConnect(intptr_t s, int& outError);
+
 /**
  * Error of the last failed socket call. Read it right after the failure, before other socket calls.
  */

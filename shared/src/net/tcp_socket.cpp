@@ -68,6 +68,48 @@ ME::Net::TcpResult ME::Net::TcpSocket::Accept(TcpSocket& outClient) {
     return TcpResult::Ok;
 }
 
+ME::Net::TcpResult ME::Net::TcpSocket::Connect(const char* ip, uint16_t port) {
+    Close();
+
+    const intptr_t s = SocketPlatform::CreateTcp();
+    if (s == SocketPlatform::INVALID_HANDLE) {
+        LogError("Creating socket failed: ", SocketPlatform::LastError());
+        return TcpResult::Error;
+    }
+
+    // Non-blocking before connecting, so connect() returns at once instead of waiting for the handshake.
+    if (!SocketPlatform::SetNonBlocking(s)) {
+        LogError("Setting socket non-blocking failed: ", SocketPlatform::LastError());
+        SocketPlatform::Close(s);
+        return TcpResult::Error;
+    }
+    SocketPlatform::SetConnectionOptions(s);
+
+    const SocketPlatform::ConnectState state = SocketPlatform::StartConnect(s, ip, port);
+    if (state == SocketPlatform::ConnectState::Failed) {
+        LogError("Connecting to ", ip, ":", port, " failed: ", SocketPlatform::LastError());
+        SocketPlatform::Close(s);
+        return TcpResult::Error;
+    }
+
+    handle = s;
+    return state == SocketPlatform::ConnectState::Connected ? TcpResult::Ok : TcpResult::WouldBlock;
+}
+
+ME::Net::TcpResult ME::Net::TcpSocket::PollConnect() {
+    int error = 0;
+    const SocketPlatform::ConnectState state = SocketPlatform::PollConnect(handle, error);
+    if (state == SocketPlatform::ConnectState::InProgress) {
+        return TcpResult::WouldBlock;
+    }
+    if (state == SocketPlatform::ConnectState::Failed) {
+        LogError("Connect failed: ", error);
+        Close();
+        return TcpResult::Error;
+    }
+    return TcpResult::Ok;
+}
+
 ME::Net::TcpResult ME::Net::TcpSocket::Send(const uint8_t* data, int size, int& outSent) {
     outSent = 0;
     const int sent = SocketPlatform::Send(handle, data, size);

@@ -79,6 +79,53 @@ int ME::Net::SocketPlatform::Recv(intptr_t s, uint8_t* buffer, int capacity) {
     return recv(ToNative(s), reinterpret_cast<char*>(buffer), capacity, 0);
 }
 
+ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip,
+                                                                            uint16_t port) {
+    sockaddr_in address{};
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+    // inet_pton turns the text address into 4 bytes; returns 1 only for a valid IPv4 address.
+    if (inet_pton(AF_INET, ip, &address.sin_addr) != 1) {
+        WSASetLastError(WSAEINVAL);
+        return ConnectState::Failed;
+    }
+
+    if (connect(ToNative(s), reinterpret_cast<sockaddr*>(&address), sizeof(address)) == 0) {
+        return ConnectState::Connected;
+    }
+    // A non-blocking connect reports "still working" as WSAEWOULDBLOCK on Windows.
+    return WSAGetLastError() == WSAEWOULDBLOCK ? ConnectState::InProgress : ConnectState::Failed;
+}
+
+ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::PollConnect(intptr_t s, int& outError) {
+    const SOCKET native = ToNative(s);
+
+    // select() with a zero timeout asks "is it ready?" without waiting. Windows reports a finished
+    // connect as writable, and a failed one in the error set (not as writable, unlike POSIX).
+    fd_set writeSet;
+    fd_set errorSet;
+    FD_ZERO(&writeSet);
+    FD_ZERO(&errorSet);
+    FD_SET(native, &writeSet);
+    FD_SET(native, &errorSet);
+    timeval noWait{0, 0};
+
+    if (select(0, nullptr, &writeSet, &errorSet, &noWait) == SOCKET_ERROR) {
+        outError = WSAGetLastError();
+        return ConnectState::Failed;
+    }
+
+    if (FD_ISSET(native, &errorSet)) {
+        // SO_ERROR holds why the connect failed, e.g. WSAECONNREFUSED.
+        int error = 0;
+        int length = sizeof(error);
+        getsockopt(native, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&error), &length);
+        outError = error;
+        return ConnectState::Failed;
+    }
+    return FD_ISSET(native, &writeSet) ? ConnectState::Connected : ConnectState::InProgress;
+}
+
 int ME::Net::SocketPlatform::LastError() {
     return WSAGetLastError();
 }
