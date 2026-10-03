@@ -20,14 +20,12 @@ class INIParser {
     static INIMap Load(const char *relPath = "config/settings.ini", FileRoot root = FileRoot::Resources);
 
     /**
-     * Parses ini text already in memory.
+     * Parses ini text already in memory. Section names, keys and values are trimmed of surrounding
+     * whitespace; lines starting with ';' or '#' are comments. Keys before any [section] go under "".
      */
     static INIMap Parse(const std::string &text);
 
     static void Print(const INIMap &iniMap);
-
-   private:
-    static void RemoveSpacesAndBrackets(char *input, char *output);
 };
 
 }  // namespace ME

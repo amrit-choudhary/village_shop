@@ -70,7 +70,8 @@ weighted-random outcomes via a 10-slot lookup table. `stb_perlin.h/.cpp` — ven
   folders), `RemoveFile`, `RemoveEmptyFolders`. `std::filesystem` calls must use the `std::error_code`
   overloads (exceptions are disabled; the throwing overloads would terminate).
 - Parsers read through `Vfs` and parse from memory: `INIParser::Load/Parse` (`ini_parser.h`,
-  `map<string, map<string,string>>`), `CSVParser::Load/Parse`, `dds_parser` (DDS textures, client-side,
+  `map<string, map<string,string>>`; trims whitespace and `\r`, `;`/`#` comments, splits at the first
+  `=`, skips malformed lines with a console warning), `CSVParser::Load/Parse`, `dds_parser` (DDS textures, client-side,
   still builds its own path).
 
 ## Serialization (`src/serialization/`)
