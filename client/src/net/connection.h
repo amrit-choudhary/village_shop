@@ -8,10 +8,20 @@
 #include <cstdint>
 
 #include "client/src/misc/delegate.h"
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_packet.h"
-#include "shared/src/net/net_protocol.h"
 
 namespace ME {
+
+/**
+ * The game server this client talks to. clientID is assigned by the server on CONNECT; 0xFF = not connected.
+ */
+class ConnectedServer {
+   public:
+    uint32_t address;
+    uint16_t port;
+    uint8_t clientID = 0xFF;
+};
 
 class Connection;  // Forward declaration.
 
@@ -58,7 +68,7 @@ class Connection {
 
    private:
     PlatformConnection* platformConnection;
-    Net::ConnectedServer connectedServer;
+    ConnectedServer connectedServer;
 
     uint8_t lastScoreSenderID = 0;
     uint32_t lastScore = 0;

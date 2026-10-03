@@ -9,9 +9,8 @@
 #include <iostream>
 
 #include "shared/src/misc/utils.h"
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_packet.h"
-#include "shared/src/net/net_protocol.h"
-#include "shared/src/net/net_utils.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wswitch"
@@ -43,13 +42,13 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
     uint8_t versionInt = packet.ReadByte();
     uint8_t verbInt = packet.ReadByte();
     uint8_t clientID = packet.ReadByte();
-    ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
+    ME::Net::GameProtocol::Verb verb = static_cast<ME::Net::GameProtocol::Verb>(verbInt);
 
-    std::cout << "Packet: Verb: " << ME::Net::GetVerbName(verb) << ", " << ('A' + clientID) << '\n';
+    std::cout << "Packet: Verb: " << ME::Net::GameProtocol::GetVerbName(verbInt) << ", " << ('A' + clientID) << '\n';
 
     switch (verb) {
-        case ME::Net::Verb::CONNECT:
-            ME::Net::ConnectedClient newClient;
+        case ME::Net::GameProtocol::Verb::CONNECT:
+            ME::ConnectedClient newClient;
             newClient.clientID = connectedClients.size();
             newClient.address = fromAddr;
             newClient.port = fromPort;
@@ -58,16 +57,16 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
             SendConnected(connectedClients.size() - 1);
             SendHighScore(connectedClients.size() - 1);
             break;
-        case ME::Net::Verb::PING:
+        case ME::Net::GameProtocol::Verb::PING:
             SendPong(clientID);
             break;
-        case ME::Net::Verb::CHAT_SEND:
+        case ME::Net::GameProtocol::Verb::CHAT_SEND:
             HandleChat(packet, clientID);
             break;
-        case ME::Net::Verb::DATA_SEND:
+        case ME::Net::GameProtocol::Verb::DATA_SEND:
             HandleData(packet, clientID);
             break;
-        case ME::Net::Verb::SCORE_SEND:
+        case ME::Net::GameProtocol::Verb::SCORE_SEND:
             HandleScore(packet, clientID);
             break;
     }
@@ -75,16 +74,16 @@ void ME::SocketServer::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t
 
 void ME::SocketServer::SendConnected(uint8_t clientID) {
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CONNECTED));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::CONNECTED));
     packet.WriteByte(static_cast<uint8_t>(clientID));
     SendPacket(&packet, clientID);
 }
 
 void ME::SocketServer::SendHighScore(uint8_t clientID) {
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::HIGHSCORE_RECV));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::HIGHSCORE_RECV));
     packet.WriteByte(static_cast<uint8_t>(clientID));
     packet.WriteUInt32(scoreDB.GetHighScore());
     SendPacket(&packet, clientID);
@@ -92,20 +91,20 @@ void ME::SocketServer::SendHighScore(uint8_t clientID) {
 
 void ME::SocketServer::SendPong(uint8_t clientID) {
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::PONG));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::PONG));
     SendPacket(&packet, clientID);
 }
 
 void ME::SocketServer::HandleChat(Packet& packet, uint8_t clientID) {
     char messageBuffer[64];
     packet.ReadString(messageBuffer);
-    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    std::vector<ME::ConnectedClient> clients = GetAllClients();
     for (int i = 0; i < clients.size(); ++i) {
         if (clientID != clients[i].clientID) {
             PacketSmall packet;
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CHAT_RECV));
+            packet.WriteByte(ME::Net::GameProtocol::VERSION);
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::CHAT_RECV));
             packet.WriteByte(static_cast<uint8_t>(clientID));
             packet.WriteString(messageBuffer);
             SendPacket(&packet, clients[i].clientID);
@@ -118,12 +117,12 @@ void ME::SocketServer::HandleData(Packet& packet, uint8_t clientID) {
     ME::FP_24_8 value2 = packet.ReadFP();
     ME::FP_24_8 value3 = packet.ReadFP();
 
-    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    std::vector<ME::ConnectedClient> clients = GetAllClients();
     for (int i = 0; i < clients.size(); ++i) {
         if (clientID != clients[i].clientID) {
             PacketSmall packet;
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::DATA_RECV));
+            packet.WriteByte(ME::Net::GameProtocol::VERSION);
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::DATA_RECV));
             packet.WriteByte(static_cast<uint8_t>(clientID));
             packet.WriteFP(value1);
             packet.WriteFP(value2);
@@ -136,12 +135,12 @@ void ME::SocketServer::HandleData(Packet& packet, uint8_t clientID) {
 void ME::SocketServer::HandleScore(Packet& packet, uint8_t clientID) {
     uint32_t score = packet.ReadUInt32();
 
-    std::vector<ME::Net::ConnectedClient> clients = GetAllClients();
+    std::vector<ME::ConnectedClient> clients = GetAllClients();
     for (int i = 0; i < clients.size(); ++i) {
         if (clientID != clients[i].clientID) {
             PacketSmall packet;
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-            packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::SCORE_RECV));
+            packet.WriteByte(ME::Net::GameProtocol::VERSION);
+            packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::SCORE_RECV));
             packet.WriteByte(static_cast<uint8_t>(clientID));
             packet.WriteUInt32(score);
             SendPacket(&packet, clients[i].clientID);
@@ -160,11 +159,11 @@ void ME::SocketServer::SendPacket(Packet* packet, uint8_t clientID) {
     platformSocketServer->SendPacket(packet, clientID);
 }
 
-ME::Net::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) {
+ME::ConnectedClient ME::SocketServer::GetClient(uint8_t clientID) {
     return connectedClients[clientID];
 }
 
-std::vector<ME::Net::ConnectedClient> ME::SocketServer::GetAllClients() {
+std::vector<ME::ConnectedClient> ME::SocketServer::GetAllClients() {
     return connectedClients;
 }
 

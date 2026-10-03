@@ -8,9 +8,8 @@
 
 #include <iostream>
 
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_packet.h"
-#include "shared/src/net/net_protocol.h"
-#include "shared/src/net/net_utils.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wswitch"
@@ -50,28 +49,28 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
     uint8_t versionInt = packet.ReadByte();
     uint8_t verbInt = packet.ReadByte();
     uint8_t clientID = packet.ReadByte();
-    ME::Net::Verb verb = static_cast<ME::Net::Verb>(verbInt);
+    ME::Net::GameProtocol::Verb verb = static_cast<ME::Net::GameProtocol::Verb>(verbInt);
 
-    // std::cout << "Packet: Process: Verb: " << ME::Net::GetVerbName(verb) << '\n';
+    // std::cout << "Packet: Process: Verb: " << ME::Net::GameProtocol::GetVerbName(verbInt) << '\n';
 
     switch (verb) {
-        case ME::Net::Verb::CONNECTED:
+        case ME::Net::GameProtocol::Verb::CONNECTED:
             connectedServer.clientID = clientID;
             onConnected.Execute();
             break;
-        case ME::Net::Verb::PONG:
+        case ME::Net::GameProtocol::Verb::PONG:
             onPong.Execute();
             break;
-        case ME::Net::Verb::CHAT_RECV:
+        case ME::Net::GameProtocol::Verb::CHAT_RECV:
             RecvChat(packet, clientID);
             break;
-        case ME::Net::Verb::DATA_RECV:
+        case ME::Net::GameProtocol::Verb::DATA_RECV:
             RecvGameData(packet, clientID);
             break;
-        case ME::Net::Verb::SCORE_RECV:
+        case ME::Net::GameProtocol::Verb::SCORE_RECV:
             RecvScore(packet, clientID);
             break;
-        case ME::Net::Verb::HIGHSCORE_RECV:
+        case ME::Net::GameProtocol::Verb::HIGHSCORE_RECV:
             RecvHighScore(packet);
             break;
     }
@@ -79,8 +78,8 @@ void ME::Connection::ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t f
 
 void ME::Connection::SendConnectRequest() {
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CONNECT));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::CONNECT));
     SendPacket(&packet);
 }
 
@@ -88,8 +87,8 @@ void ME::Connection::SendPing() {
     if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
 
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::PING));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::PING));
     packet.WriteByte(connectedServer.clientID);
     SendPacket(&packet);
 }
@@ -98,8 +97,8 @@ void ME::Connection::SendChat(const char* message) {
     if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
 
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::CHAT_SEND));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::CHAT_SEND));
     packet.WriteByte(connectedServer.clientID);
     packet.WriteString(message);
     SendPacket(&packet);
@@ -115,8 +114,8 @@ void ME::Connection::SendGameData(const ME::FP_24_8& value1, const ME::FP_24_8& 
     if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
 
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::DATA_SEND));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::DATA_SEND));
     packet.WriteByte(connectedServer.clientID);
     packet.WriteFP(value1);
     packet.WriteFP(value2);
@@ -136,8 +135,8 @@ void ME::Connection::SendScore(uint32_t score) {
     if (GetClientID() == 0xFF) return;  // Not a valid clientID. Not connected.
 
     PacketSmall packet;
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Version::VER_0));
-    packet.WriteByte(static_cast<uint8_t>(ME::Net::Verb::SCORE_SEND));
+    packet.WriteByte(ME::Net::GameProtocol::VERSION);
+    packet.WriteByte(static_cast<uint8_t>(ME::Net::GameProtocol::Verb::SCORE_SEND));
     packet.WriteByte(connectedServer.clientID);
     packet.WriteUInt32(score);
     SendPacket(&packet);

@@ -9,10 +9,15 @@ one real exception (cJSON, noted below).
 - **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). Exception: the
   deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `SocketServer`, `client/`
   `Connection`) stay in `ME`.
+- `networking.h` (`Net::InitNetworking`/`ShutdownNetworking`): once per program in each `main`, before any
+  socket / after all are closed (WSAStartup/WSACleanup on Windows, no-op on POSIX). Socket users never call it.
+- `socket_platform.h` + `socket_platform_win.cpp` / `_posix.cpp` (`Net::SocketPlatform`): the only per-OS
+  socket code, TCP and UDP (Winsock vs POSIX incl. SIGPIPE, `SO_EXCLUSIVEADDRUSE`/`SO_REUSEADDR`, non-blocking
+  connect via zero-timeout `select` + `SO_ERROR`, UDP `SIO_UDP_CONNRESET` off on Windows, oversized datagrams cut
+  to the buffer on every OS). Each .cpp is wrapped in its platform `#ifdef`; both are always compiled.
+- UDP stack (game server / client): `net_address.h` (`Net::Address`: IPv4 + port, host byte order) and
+  `udp_socket.h` (`Net::UdpSocket`: non-blocking `Open(port)` (0 = OS picks), `SendTo`/`RecvFrom`; `UdpResult`).
 - TCP stack (used by `content_server/` and the client's `ContentClient`):
-  - `socket_platform.h` + `socket_platform_win.cpp` / `_posix.cpp` (`Net::SocketPlatform`): the only per-OS
-    socket code (Winsock vs POSIX incl. SIGPIPE, `SO_EXCLUSIVEADDRUSE`/`SO_REUSEADDR`, non-blocking connect via
-    zero-timeout `select` + `SO_ERROR`). Each .cpp is wrapped in its platform `#ifdef`; both are always compiled.
   - `tcp_socket.h` (`Net::TcpSocket`): non-blocking `Listen`/`Accept` (server), `Connect`/`PollConnect`
     (client), `Send`/`Recv`/`Close`; results are `TcpResult` (`WouldBlock` = nothing to do yet, try again).
   - `message_framing.h` (`Net::BeginFrame`/`FinishFrame`, `Net::FrameReceiver`): length-prefix framing over the
@@ -21,10 +26,10 @@ one real exception (cJSON, noted below).
     serialize `manifest.json` from memory, safe-path validation, max 256 entries).
 - Avoid names that are `windows.h` macros in new APIs (e.g. `GetFreeSpace`, `PeekMessage`, `SendMessage`,
   `DeleteFile`, `MoveFile`, `CreateDirectory`): they get rewritten and break the Windows build.
-- `net_protocol.h` — wire format: 1 byte version, 1 byte verb (`Verb` is `uint8_t`), 1 byte
-  clientID, then payload. `Verb` enum reserves ranges: System `0x00-0x1F`, Http `0x20-0x3F`,
-  Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `ConnectedClient`/`ConnectedServer` hold raw
-  address/port/clientID.
+- `game_protocol.h` (`Net::GameProtocol`) — UDP game wire format: one datagram = u8 version (`VERSION` 0) |
+  u8 verb | u8 clientID | payload, `MAX_DATAGRAM_SIZE` 1200. `Verb` ranges: System `0x00-0x1F`, Http
+  `0x20-0x3F`, Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `WriteHeader`/`ReadHeader`, `WriteFP`/`ReadFP`
+  (raw 32-bit) over `ByteWriter`/`ByteReader`; `GetVerbName` ("UNKNOWN" for unknown bytes).
 - `net_packet.h/.cpp` — `Packet` base wraps a raw `uint8_t*` with a manual read/write cursor
   (`WriteByte/ReadByte/WriteString/ReadString/WriteFP/ReadFP`, direct pointer arithmetic and
   `strcpy`/`reinterpret_cast`, **no bounds checking, no endianness handling**). Fixed-size
@@ -33,7 +38,6 @@ one real exception (cJSON, noted below).
 - **`Packet` is deprecated.** `ByteWriter`/`ByteReader` (`src/serialization/byte_writer.h`, `byte_reader.h`:
   bounds-checked, caller-owned memory) is the single binary read/write API for all new code (TCP, UDP, binary files).
   `Packet` stays only until the UDP game client/server migrate to it; don't add new `Packet` uses.
-- `net_utils.h/.cpp` — `GetVerbName(Verb)` debug helper only.
 - Server-side consumer: [server/CLAUDE.md](../server/CLAUDE.md).
 
 ## Math (`src/math/`)

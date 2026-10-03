@@ -11,8 +11,7 @@
 
 #include <iostream>
 
-#include "shared/src/net/net_protocol.h"
-#include "shared/src/net/net_utils.h"
+#include "shared/src/net/game_protocol.h"
 
 void ME::ConnectionMac::Init(const char* serverIP, uint16_t serverPort) {
     strncpy(this->serverIP, serverIP, sizeof(this->serverIP) - 1);

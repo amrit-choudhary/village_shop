@@ -73,7 +73,7 @@ void ME::SocketServerMac::Update(double deltaTime) {
 
 void ME::SocketServerMac::SendPacket(Packet* packet, uint8_t clientID) {
     // Define client address structure
-    ME::Net::ConnectedClient client = socketServer->GetClient(clientID);
+    ME::ConnectedClient client = socketServer->GetClient(clientID);
     sockaddr_in client_addr;
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(client.port);

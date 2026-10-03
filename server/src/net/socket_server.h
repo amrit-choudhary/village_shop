@@ -8,10 +8,20 @@
 #include <vector>
 
 #include "server/src/db/score_db.h"
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_packet.h"
-#include "shared/src/net/net_protocol.h"
 
 namespace ME {
+
+/**
+ * One client the server has accepted. clientID is assigned on CONNECT and sent back in every datagram.
+ */
+class ConnectedClient {
+   public:
+    uint8_t clientID;
+    uint32_t address;
+    uint16_t port;
+};
 
 class SocketServer;  // Forward declaration.
 
@@ -44,12 +54,12 @@ class SocketServer {
     void HandleScore(Packet& packet, uint8_t clientID);
     void SendConnected(uint8_t clientID);
     void SendHighScore(uint8_t clientID);
-    ME::Net::ConnectedClient GetClient(uint8_t clientID);
-    std::vector<ME::Net::ConnectedClient> GetAllClients();
+    ME::ConnectedClient GetClient(uint8_t clientID);
+    std::vector<ME::ConnectedClient> GetAllClients();
 
    private:
     PlatformSocketServer* platformSocketServer;
-    std::vector<ME::Net::ConnectedClient> connectedClients;
+    std::vector<ME::ConnectedClient> connectedClients;
     ME::ScoreDB scoreDB;
 };
 
