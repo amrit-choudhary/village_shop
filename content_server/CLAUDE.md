@@ -33,6 +33,10 @@ Not copied by CMake: put `resources/` and `dlc/` next to the binary. Pi:
 `cmake -B build && cmake --build build --target VillageShop_ContentServer -j2`, then
 `cp -r content_server/resources content_server/dlc build/content_server/`. Stop with Ctrl+C (Ctrl+Z only
 pauses it and keeps the port bound).
+- Verified working on a GCP VM. Cloud hosting needs its own firewall rule, separate from the game server's
+  UDP 9310 one: on GCP a VPC rule, direction Ingress, action Allow, protocol **TCP** 9311, source `0.0.0.0/0`,
+  targets matching the VM. Applies to running VMs, no restart needed. Check reachability from Windows:
+  `Test-NetConnection <ip> -Port 9311` (`TcpTestSucceeded : True`).
 
 ## Client side
 `client/src/net/content_client.*` (see [client/CLAUDE.md](../client/CLAUDE.md)).

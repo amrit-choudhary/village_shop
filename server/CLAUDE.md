@@ -24,7 +24,9 @@ that `timeManager.Update()` says should fire (fixed-frame-rate gating).
   - `ACK`, `AUTH`, `DISCONNECT` exist in the enum but are **unhandled stubs** — no authentication and no
     reliability/ack layer exists yet. The version byte is not checked.
 - Verified working (before the shared-socket rewrite): Windows, Mac, and Linux (Debian 13, g++ 14) servers
-  with Windows clients over LAN/internet. Cloud hosting needs UDP 9310 opened in the provider firewall.
+  with Windows clients over LAN/internet. Cloud hosting needs UDP 9310 opened in the provider firewall. On GCP
+  (verified working): VPC firewall rule, direction Ingress, action Allow, protocol **UDP** 9310, source `0.0.0.0/0`,
+  targets matching the VM (all instances or its network tag). Applies to running VMs, no restart needed.
 - Known issues (hardening deferred): `connectedClients` is a `std::vector` indexed by the client-supplied
   clientID with no range or sender-address check (unknown ID reads out of bounds); every `CONNECT` adds a new
   entry, even from a known address. Don't expose the server publicly for long.
@@ -59,8 +61,7 @@ links `VillageShop_Shared` and `sqlite3` (from `third_party/sqlite3`), defines `
 `Ws2_32` on Windows.
 
 The resources folder (`resources/config/settings.ini`) is not copied by CMake; it is looked up
-next to the executable (`Utils::SetPaths` strips the exe name, a hardcoded 19 chars on
-Mac/Linux, so run it as `./VillageShop_Server` or by full path, never the bare name). If the
+next to the executable (`Utils::SetPaths` cuts `argv[0]` at its last path separator). If the
 ini is missing the server falls back to port 9310.
 
 Linux/Mac build of just the server: `cmake -B build && cmake --build build --target
