@@ -20,7 +20,11 @@ constexpr uint8_t VERSION = 0;
 // Largest datagram sent or accepted. Small enough to cross any network without being split into fragments.
 constexpr int MAX_DATAGRAM_SIZE = 1200;
 
-// Longest chat message, including its terminating 0. Longer ones are not sent and are dropped on receive.
+// Longest string WriteString can send: its length goes in one byte.
+constexpr size_t MAX_STRING_LENGTH = 255;
+
+// Buffer size for a chat message, including the terminating 0 (so 63 characters). Longer ones are not sent
+// and are dropped on receive.
 constexpr size_t CHAT_CAPACITY = 64;
 
 /**
@@ -78,8 +82,8 @@ bool WriteFP(ByteWriter& writer, const FP_24_8& value);
 bool ReadFP(ByteReader& reader, FP_24_8& out);
 
 /**
- * Text travels as its bytes plus a terminating 0. ReadString fails if the text and its 0 don't fit in
- * capacity or the 0 is missing; out is then unspecified.
+ * Text travels as u8 length + bytes (no terminating 0), so at most MAX_STRING_LENGTH bytes. ReadString adds
+ * the 0 and fails, leaving out unchanged, if the text and its 0 don't fit in capacity or the datagram is short.
  */
 bool WriteString(ByteWriter& writer, const char* text);
 bool ReadString(ByteReader& reader, char* out, size_t capacity);

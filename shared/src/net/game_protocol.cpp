@@ -33,31 +33,30 @@ bool ME::Net::GameProtocol::ReadFP(ByteReader& reader, FP_24_8& out) {
 }
 
 bool ME::Net::GameProtocol::WriteString(ByteWriter& writer, const char* text) {
-    // + 1 sends the terminating 0 too.
-    return writer.WriteBytes(reinterpret_cast<const uint8_t*>(text), std::strlen(text) + 1);
+    const size_t length = std::strlen(text);
+    // Check room for length byte + text up front, so a failed write leaves nothing half-written.
+    if (length > MAX_STRING_LENGTH || writer.GetRemaining() < 1 + length) {
+        return false;
+    }
+    return writer.WriteU8(static_cast<uint8_t>(length)) &&
+           writer.WriteBytes(reinterpret_cast<const uint8_t*>(text), length);
 }
 
 bool ME::Net::GameProtocol::ReadString(ByteReader& reader, char* out, size_t capacity) {
-    if (capacity == 0) {
+    uint8_t length = 0;
+    if (!reader.ReadU8(length)) {
+        return false;
+    }
+    // + 1: out also needs room for the terminating 0, which is added here and not sent.
+    if (static_cast<size_t>(length) + 1 > capacity) {
         return false;
     }
 
-    // Copy one byte at a time until the 0, never past the datagram's end or out's capacity.
-    size_t length = 0;
-    while (true) {
-        uint8_t c = 0;
-        if (!reader.ReadU8(c)) {
-            return false;
-        }
-        if (c == 0) {
-            break;
-        }
-        if (length + 1 >= capacity) {
-            return false;
-        }
-        out[length] = static_cast<char>(c);
-        ++length;
+    const uint8_t* text = nullptr;
+    if (!reader.ReadBytes(length, text)) {
+        return false;
     }
+    std::memcpy(out, text, length);
     out[length] = '\0';
     return true;
 }

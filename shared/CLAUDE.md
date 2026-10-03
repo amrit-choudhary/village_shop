@@ -6,9 +6,8 @@ except where noted — this matches the project's "no external dependencies" int
 one real exception (cJSON, noted below).
 
 ## Networking / wire protocol (`src/net/`)
-- **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). Exception: the
-  deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `GameServer`, `client/`
-  `GameClient`) stay in `ME`.
+- **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). App-level users
+  (`server/` `GameServer`, `client/` `GameClient`, `ContentClient`) stay in `ME`.
 - `networking.h` (`Net::InitNetworking`/`ShutdownNetworking`): once per program in each `main`, before any
   socket / after all are closed (WSAStartup/WSACleanup on Windows, no-op on POSIX). Socket users never call it.
 - `socket_platform.h` + `socket_platform_win.cpp` / `_posix.cpp` (`Net::SocketPlatform`): the only per-OS
@@ -29,21 +28,16 @@ one real exception (cJSON, noted below).
 - `game_protocol.h` (`Net::GameProtocol`) — UDP game wire format: one datagram = u8 version (`VERSION` 0) |
   u8 verb | u8 clientID | payload, `MAX_DATAGRAM_SIZE` 1200. `Verb` ranges: System `0x00-0x1F`, Http
   `0x20-0x3F`, Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `WriteHeader`/`ReadHeader`, `WriteFP`/`ReadFP`
-  (raw 32-bit) over `ByteWriter`/`ByteReader`; `GetVerbName` ("UNKNOWN" for unknown bytes).
-- `net_packet.h/.cpp` — `Packet` base wraps a raw `uint8_t*` with a manual read/write cursor
-  (`WriteByte/ReadByte/WriteString/ReadString/WriteFP/ReadFP`, direct pointer arithmetic and
-  `strcpy`/`reinterpret_cast`, **no bounds checking, no endianness handling**). Fixed-size
-  pool subclasses: `PacketSmall`(64) / `PacketMedium`(256) / `PacketBig`(1024) /
-  `PacketHuge`(2048) bytes, each `new uint8_t[size]`.
-- **`Packet` is deprecated.** `ByteWriter`/`ByteReader` (`src/serialization/byte_writer.h`, `byte_reader.h`:
-  bounds-checked, caller-owned memory) is the single binary read/write API for all new code (TCP, UDP, binary files).
-  `Packet` stays only until the UDP game client/server migrate to it; don't add new `Packet` uses.
+  (raw 32-bit), `WriteString`/`ReadString` (u8 length + bytes, no terminating 0, max 255) over
+  `ByteWriter`/`ByteReader`; `CHAT_CAPACITY` 64 (63 chars); `GetVerbName` ("UNKNOWN" for unknown bytes).
+- All network messages (TCP and UDP) are read / written with `ByteWriter`/`ByteReader`
+  (`src/serialization/`): the single binary read/write API, also for binary files.
 - Server-side consumer: [server/CLAUDE.md](../server/CLAUDE.md).
 
 ## Math (`src/math/`)
 Custom `Vec2/Vec2i/Vec3/Vec3i/Vec4`, `Matrix4`, `Transform`, `Vec16` (packed/quantized).
 `fp_24_8.h` is a hand-rolled 24.8 fixed-point type (int32-backed, ported from the
-MikeLankamp/fpm design) used directly in packet I/O (`Packet::WriteFP/ReadFP`) — this signals
+MikeLankamp/fpm design) sent on the wire as its raw 32-bit value (`GameProtocol::WriteFP/ReadFP`) — this signals
 **deterministic-simulation intent for multiplayer sync**: anything that must stay in sync
 across client/server over the network should go through `FP_24_8`, not raw floats.
 
