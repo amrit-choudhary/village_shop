@@ -41,7 +41,10 @@ int main(int argc, char** argv) {
     }
 
     ME::SocketServer socketServer;
-    socketServer.Init(port);
+    if (!socketServer.Init(port)) {
+        ME::Net::ShutdownNetworking();
+        return 1;
+    }
 
     // Game Loop.
     while (ServerRunning) {

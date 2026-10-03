@@ -10,29 +10,24 @@ Game server. See root [CLAUDE.md](../CLAUDE.md) for project-level context, and
 that `timeManager.Update()` says should fire (fixed-frame-rate gating).
 
 ## Networking (`src/net/`)
-- `ME::SocketServer` (`socket_server.h/.cpp`) — platform-independent logic: packet dispatch,
-  client list, chat/data relay.
-- `ME::PlatformSocketServer` — virtual base with empty default Init/Update/End/SendPacket.
-- `SocketServerWin` (`socket_server_win.*`, `VG_WIN`) / `SocketServerMac`
-  (`socket_server_mac.*`, `VG_MAC` **and** `VG_LINUX`) — platform implementations. Windows uses
-  raw Winsock2: non-blocking UDP (`socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)`, `ioctlsocket`),
-  bound to **port 9310** (from `resources/config/settings.ini`, default 9310), `recvfrom`/`sendto`.
-  `SocketServerMac` is plain POSIX sockets (`fcntl` O_NONBLOCK), so it serves Linux unchanged;
-  the name is historical. It mirrors the Windows file's structure line for line.
-- Verified working: Windows server, Mac server, and Linux (Debian 13, g++ 14) server on a cloud
-  VM with Windows clients connecting over LAN/internet. Cloud hosting needs UDP 9310 opened in
-  the provider firewall.
-- `SocketServer::ProcessPacket` reads version/verb/clientID then dispatches by `Verb`:
-  - `CONNECT` → assigns a clientID, `SendConnected`
-  - `PING` → `SendPong`
-  - `CHAT_SEND` → `HandleChat`, broadcasts to all other clients
-  - `DATA_SEND` → `HandleData`, relays 3 `FP_24_8` values to other clients
-  - `ACK`, `AUTH`, `DISCONNECT` verbs exist in the enum but are **unhandled stubs** — no
-    authentication and no reliability/ack layer exists yet.
-- Known issues: `PING`/chat/data/score handlers index `connectedClients[clientID]` with the
-  client-supplied ID and no range check (unknown ID reads out of bounds); replies send the whole
-  fixed-size `PacketSmall` buffer (trailing zeros), not just the bytes written; packet reads
-  have no bounds checking. Don't expose the server publicly for long.
+- `ME::SocketServer` (`socket_server.h/.cpp`) owns one `Net::UdpSocket` (shared, no per-OS code here) bound to
+  **port 9310** (`resources/config/settings.ini`, default 9310). `Init` returns false if the port can't be
+  opened (main exits 1). `Update` drains up to 256 datagrams per tick (`MAX_DATAGRAMS_PER_UPDATE`).
+- Every datagram is read with `ByteReader` + `GameProtocol::ReadHeader`; replies are built with `ByteWriter`
+  into a `MAX_DATAGRAM_SIZE` stack buffer and only the written bytes are sent. Short / malformed payloads are
+  logged and dropped. Dispatch by `Verb`:
+  - `CONNECT` → new clientID (connection order), `CONNECTED`, then `HIGHSCORE_RECV`
+  - `PING` → `PONG`
+  - `CHAT_SEND` → `CHAT_RECV` to all other clients (max 63 chars)
+  - `DATA_SEND` → `DATA_RECV` (3 `FP_24_8`) to all other clients
+  - `SCORE_SEND` → `SCORE_RECV` to others, plus high-score handling (see Database)
+  - `ACK`, `AUTH`, `DISCONNECT` exist in the enum but are **unhandled stubs** — no authentication and no
+    reliability/ack layer exists yet. The version byte is not checked.
+- Verified working (before the shared-socket rewrite): Windows, Mac, and Linux (Debian 13, g++ 14) servers
+  with Windows clients over LAN/internet. Cloud hosting needs UDP 9310 opened in the provider firewall.
+- Known issues (hardening deferred): `connectedClients` is a `std::vector` indexed by the client-supplied
+  clientID with no range or sender-address check (unknown ID reads out of bounds); every `CONNECT` adds a new
+  entry, even from a known address. Don't expose the server publicly for long.
 
 ## Database (`src/db/`)
 POC persistence: `ME::ScoreDB` (`score_db.h/.cpp`) keeps one global high score in an embedded

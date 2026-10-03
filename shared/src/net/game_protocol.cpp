@@ -1,5 +1,7 @@
 #include "game_protocol.h"
 
+#include <cstring>
+
 #include "shared/src/math/fp_24_8.h"
 #include "shared/src/serialization/byte_reader.h"
 #include "shared/src/serialization/byte_writer.h"
@@ -27,6 +29,36 @@ bool ME::Net::GameProtocol::ReadFP(ByteReader& reader, FP_24_8& out) {
         return false;
     }
     out = FP_24_8(static_cast<int32_t>(raw), true);
+    return true;
+}
+
+bool ME::Net::GameProtocol::WriteString(ByteWriter& writer, const char* text) {
+    // + 1 sends the terminating 0 too.
+    return writer.WriteBytes(reinterpret_cast<const uint8_t*>(text), std::strlen(text) + 1);
+}
+
+bool ME::Net::GameProtocol::ReadString(ByteReader& reader, char* out, size_t capacity) {
+    if (capacity == 0) {
+        return false;
+    }
+
+    // Copy one byte at a time until the 0, never past the datagram's end or out's capacity.
+    size_t length = 0;
+    while (true) {
+        uint8_t c = 0;
+        if (!reader.ReadU8(c)) {
+            return false;
+        }
+        if (c == 0) {
+            break;
+        }
+        if (length + 1 >= capacity) {
+            return false;
+        }
+        out[length] = static_cast<char>(c);
+        ++length;
+    }
+    out[length] = '\0';
     return true;
 }
 

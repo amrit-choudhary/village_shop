@@ -1,66 +1,69 @@
 /**
- * Base class for making a socket server that can accept client connections.
- * Also has base class for platform dependent server implementation.
+ * UDP game server: receives datagrams from clients, keeps the client list, relays chat / data / scores.
+ * Wire format in shared/src/net/game_protocol.h; socket in shared/src/net/udp_socket.h.
  */
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "server/src/db/score_db.h"
-#include "shared/src/net/game_protocol.h"
-#include "shared/src/net/net_packet.h"
+#include "shared/src/net/net_address.h"
+#include "shared/src/net/udp_socket.h"
 
 namespace ME {
+
+class ByteReader;
 
 /**
  * One client the server has accepted. clientID is assigned on CONNECT and sent back in every datagram.
  */
 class ConnectedClient {
    public:
-    uint8_t clientID;
-    uint32_t address;
-    uint16_t port;
-};
-
-class SocketServer;  // Forward declaration.
-
-class PlatformSocketServer {
-   public:
-    virtual void Init(uint16_t port);
-    virtual void Update(double deltaTime);
-    virtual void End();
-
-    virtual void SendPacket(Packet* packet, uint8_t clientID);
-
-    // Pointer to the server, which is the interface with other code.
-    SocketServer* socketServer;
-
-   protected:
-   private:
+    uint8_t clientID = 0;
+    Net::Address address;
 };
 
 class SocketServer {
    public:
-    void Init(uint16_t port);
+    /**
+     * Opens the UDP port and the score database. False if the port could not be opened.
+     */
+    bool Init(uint16_t port);
+
+    /**
+     * Handles every datagram that has arrived since the last call.
+     */
     void Update(double deltaTime);
     void End();
 
-    void ProcessPacket(Packet& packet, uint32_t fromAddr, uint16_t fromPort);
-    void SendPacket(Packet* packet, uint8_t clientID);
-    void SendPong(uint8_t clientID);
-    void HandleChat(Packet& packet, uint8_t clientID);
-    void HandleData(Packet& packet, uint8_t clientID);
-    void HandleScore(Packet& packet, uint8_t clientID);
-    void SendConnected(uint8_t clientID);
-    void SendHighScore(uint8_t clientID);
-    ME::ConnectedClient GetClient(uint8_t clientID);
-    std::vector<ME::ConnectedClient> GetAllClients();
-
    private:
-    PlatformSocketServer* platformSocketServer;
-    std::vector<ME::ConnectedClient> connectedClients;
-    ME::ScoreDB scoreDB;
+    void ProcessDatagram(const uint8_t* data, int size, const Net::Address& from);
+
+    void HandleConnect(const Net::Address& from);
+    void HandleChat(ByteReader& reader, uint8_t clientID);
+    void HandleData(ByteReader& reader, uint8_t clientID);
+    void HandleScore(ByteReader& reader, uint8_t clientID);
+
+    void SendConnected(uint8_t clientID);
+    void SendPong(uint8_t clientID);
+    void SendHighScore(uint8_t clientID);
+
+    void SendDatagram(const uint8_t* data, size_t size, uint8_t clientID);
+
+    /**
+     * Sends to every connected client except exceptClientID.
+     */
+    void SendToOthers(const uint8_t* data, size_t size, uint8_t exceptClientID);
+
+    // Upper bound per Update, so a flood of datagrams can't hold up the server's tick.
+    static constexpr int MAX_DATAGRAMS_PER_UPDATE = 256;
+
+    Net::UdpSocket socket;
+    std::vector<ConnectedClient> connectedClients;
+    ScoreDB scoreDB;
 };
 
 }  // namespace ME

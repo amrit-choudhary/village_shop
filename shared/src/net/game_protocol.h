@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 namespace ME {
@@ -72,6 +73,13 @@ bool ReadHeader(ByteReader& reader, Header& out);
  */
 bool WriteFP(ByteWriter& writer, const FP_24_8& value);
 bool ReadFP(ByteReader& reader, FP_24_8& out);
+
+/**
+ * Text travels as its bytes plus a terminating 0. ReadString fails if the text and its 0 don't fit in
+ * capacity or the 0 is missing; out is then unspecified.
+ */
+bool WriteString(ByteWriter& writer, const char* text);
+bool ReadString(ByteReader& reader, char* out, size_t capacity);
 
 /**
  * Readable name for logs; "UNKNOWN" for values outside the enum.
