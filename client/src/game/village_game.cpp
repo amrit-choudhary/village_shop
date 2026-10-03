@@ -37,7 +37,7 @@ void ME::VillageGame::Init(ME::Time::TimeManager* currentTimeManager) {
     shop.loan = FP{0.0f};
     shop.interest = FP{0.0f};
 
-    connection->SendConnectRequest();
+    gameClient->SendConnectRequest();
 }
 
 void ME::VillageGame::Update(double deltaTime) {
@@ -89,8 +89,8 @@ void ME::VillageGame::DayChange() {
 
     RefreshDisplay();
 
-    connection->SendPing();
-    connection->SendGameData(buyPrice, sellPrice, shop.cash);
+    gameClient->SendPing();
+    gameClient->SendGameData(buyPrice, sellPrice, shop.cash);
 
     std::string input;
     bool hasInput = inputManager->GetCLIInputString(input);
@@ -98,7 +98,7 @@ void ME::VillageGame::DayChange() {
         if (input == "b" || input == "B" || input == "buy" || input == "BUY" || input == "Buy") {
             BuyStock();
         } else {
-            connection->SendChat(input.c_str());
+            gameClient->SendChat(input.c_str());
         }
     }
 }

@@ -1,4 +1,4 @@
-#include "socket_server.h"
+#include "game_server.h"
 
 #include "logging/src/logging.h"
 #include "shared/src/math/fp_24_8.h"
@@ -10,12 +10,7 @@
 namespace GameProtocol = ME::Net::GameProtocol;
 using ME::Net::GameProtocol::Verb;
 
-namespace {
-// Longest chat message accepted, including its terminating 0.
-constexpr size_t CHAT_CAPACITY = 64;
-}  // namespace
-
-bool ME::SocketServer::Init(uint16_t port) {
+bool ME::GameServer::Init(uint16_t port) {
     scoreDB.Open((ME::Utils::GetExecutableDirPath() + "/village_shop.db").c_str());
 
     if (!socket.Open(port)) {
@@ -25,7 +20,7 @@ bool ME::SocketServer::Init(uint16_t port) {
     return true;
 }
 
-void ME::SocketServer::Update(double deltaTime) {
+void ME::GameServer::Update(double deltaTime) {
     uint8_t buffer[GameProtocol::MAX_DATAGRAM_SIZE];
 
     for (int i = 0; i < MAX_DATAGRAMS_PER_UPDATE; ++i) {
@@ -44,12 +39,12 @@ void ME::SocketServer::Update(double deltaTime) {
     }
 }
 
-void ME::SocketServer::End() {
+void ME::GameServer::End() {
     socket.Close();
     scoreDB.Close();
 }
 
-void ME::SocketServer::ProcessDatagram(const uint8_t* data, int size, const Net::Address& from) {
+void ME::GameServer::ProcessDatagram(const uint8_t* data, int size, const Net::Address& from) {
     ByteReader reader(data, static_cast<size_t>(size));
     GameProtocol::Header header;
     if (!GameProtocol::ReadHeader(reader, header)) {
@@ -81,7 +76,7 @@ void ME::SocketServer::ProcessDatagram(const uint8_t* data, int size, const Net:
     }
 }
 
-void ME::SocketServer::HandleConnect(const Net::Address& from) {
+void ME::GameServer::HandleConnect(const Net::Address& from) {
     ConnectedClient newClient;
     newClient.clientID = static_cast<uint8_t>(connectedClients.size());
     newClient.address = from;
@@ -91,8 +86,8 @@ void ME::SocketServer::HandleConnect(const Net::Address& from) {
     SendHighScore(newClient.clientID);
 }
 
-void ME::SocketServer::HandleChat(ByteReader& reader, uint8_t clientID) {
-    char message[CHAT_CAPACITY];
+void ME::GameServer::HandleChat(ByteReader& reader, uint8_t clientID) {
+    char message[GameProtocol::CHAT_CAPACITY];
     if (!GameProtocol::ReadString(reader, message, sizeof(message))) {
         LogWarning("Dropped invalid chat from client ", static_cast<unsigned>(clientID));
         return;
@@ -105,7 +100,7 @@ void ME::SocketServer::HandleChat(ByteReader& reader, uint8_t clientID) {
     SendToOthers(buffer, writer.GetSize(), clientID);
 }
 
-void ME::SocketServer::HandleData(ByteReader& reader, uint8_t clientID) {
+void ME::GameServer::HandleData(ByteReader& reader, uint8_t clientID) {
     FP_24_8 value1;
     FP_24_8 value2;
     FP_24_8 value3;
@@ -124,7 +119,7 @@ void ME::SocketServer::HandleData(ByteReader& reader, uint8_t clientID) {
     SendToOthers(buffer, writer.GetSize(), clientID);
 }
 
-void ME::SocketServer::HandleScore(ByteReader& reader, uint8_t clientID) {
+void ME::GameServer::HandleScore(ByteReader& reader, uint8_t clientID) {
     uint32_t score = 0;
     if (!reader.ReadU32(score)) {
         LogWarning("Dropped short score from client ", static_cast<unsigned>(clientID));
@@ -145,21 +140,21 @@ void ME::SocketServer::HandleScore(ByteReader& reader, uint8_t clientID) {
     }
 }
 
-void ME::SocketServer::SendConnected(uint8_t clientID) {
+void ME::GameServer::SendConnected(uint8_t clientID) {
     uint8_t buffer[GameProtocol::MAX_DATAGRAM_SIZE];
     ByteWriter writer(buffer, sizeof(buffer));
     GameProtocol::WriteHeader(writer, Verb::CONNECTED, clientID);
     SendDatagram(buffer, writer.GetSize(), clientID);
 }
 
-void ME::SocketServer::SendPong(uint8_t clientID) {
+void ME::GameServer::SendPong(uint8_t clientID) {
     uint8_t buffer[GameProtocol::MAX_DATAGRAM_SIZE];
     ByteWriter writer(buffer, sizeof(buffer));
     GameProtocol::WriteHeader(writer, Verb::PONG, clientID);
     SendDatagram(buffer, writer.GetSize(), clientID);
 }
 
-void ME::SocketServer::SendHighScore(uint8_t clientID) {
+void ME::GameServer::SendHighScore(uint8_t clientID) {
     uint8_t buffer[GameProtocol::MAX_DATAGRAM_SIZE];
     ByteWriter writer(buffer, sizeof(buffer));
     GameProtocol::WriteHeader(writer, Verb::HIGHSCORE_RECV, clientID);
@@ -167,14 +162,14 @@ void ME::SocketServer::SendHighScore(uint8_t clientID) {
     SendDatagram(buffer, writer.GetSize(), clientID);
 }
 
-void ME::SocketServer::SendDatagram(const uint8_t* data, size_t size, uint8_t clientID) {
+void ME::GameServer::SendDatagram(const uint8_t* data, size_t size, uint8_t clientID) {
     const Net::Address& to = connectedClients[clientID].address;
     if (socket.SendTo(data, static_cast<int>(size), to) != Net::UdpResult::Ok) {
         LogWarning("Sending to client ", static_cast<unsigned>(clientID), " failed");
     }
 }
 
-void ME::SocketServer::SendToOthers(const uint8_t* data, size_t size, uint8_t exceptClientID) {
+void ME::GameServer::SendToOthers(const uint8_t* data, size_t size, uint8_t exceptClientID) {
     for (const ConnectedClient& client : connectedClients) {
         if (client.clientID != exceptClientID) {
             SendDatagram(data, size, client.clientID);

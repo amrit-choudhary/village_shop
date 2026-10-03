@@ -17,7 +17,7 @@
 #include "client/src/input/input_manager.h"
 #include "client/src/input/input_manager_mac.h"
 #include "client/src/misc/global_vars.h"
-#include "client/src/net/connection.h"
+#include "client/src/net/game_client.h"
 #include "client/src/rendering/metal/renderer_metal.h"
 #include "client/src/ui/ui_system.h"
 #include "shared/src/file_io/ini/ini_parser.h"
@@ -50,7 +50,7 @@ class GameMain {
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;
     ME::Input::InputManagerMac* macInputManager = nullptr;
-    ME::Connection connection;
+    ME::GameClient gameClient;
     // ME::GameBreakout game;
     // ME::GameUIDemo game;
     ME::GameNetTest game;

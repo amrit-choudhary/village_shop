@@ -41,8 +41,8 @@ void ME::Game::SetInputManagerRef(ME::Input::InputManager* ptrInput) {
     inputManager = ptrInput;
 }
 
-void ME::Game::SetConnectionRef(ME::Connection* ptrConnection) {
-    connection = ptrConnection;
+void ME::Game::SetGameClientRef(ME::GameClient* ptrGameClient) {
+    gameClient = ptrGameClient;
 }
 
 void ME::Game::SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem) {

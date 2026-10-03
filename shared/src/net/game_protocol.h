@@ -20,6 +20,9 @@ constexpr uint8_t VERSION = 0;
 // Largest datagram sent or accepted. Small enough to cross any network without being split into fragments.
 constexpr int MAX_DATAGRAM_SIZE = 1200;
 
+// Longest chat message, including its terminating 0. Longer ones are not sent and are dropped on receive.
+constexpr size_t CHAT_CAPACITY = 64;
+
 /**
  * Ranges: 0x00-0x1F system, 0x20-0x3F http, 0x40-0x5F matchmaking, 0x60-0x7F gameplay, 0x80-0xFF free.
  */

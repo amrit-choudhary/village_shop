@@ -9,7 +9,7 @@ ME::GameMain::GameMain() {}
 
 ME::GameMain::~GameMain() {
     game.End();
-    connection.End();
+    gameClient.End();
     contentClient.End();
     if (networkingStarted) {
         ME::Net::ShutdownNetworking();
@@ -53,13 +53,13 @@ void ME::GameMain::Init(HWND hWnd) {
     winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
     // Once per process, before any socket (game connection, content sync) is created.
     networkingStarted = ME::Net::InitNetworking();
-    connection.Init(serverIP.c_str(), serverPort);
+    gameClient.Init(serverIP.c_str(), serverPort);
     physicsSystem.Init();
     animationSystem.Init();
     audioSystem.Init();
 
     game.SetInputManagerRef(&inputManager);
-    game.SetConnectionRef(&connection);
+    game.SetGameClientRef(&gameClient);
     game.SetPhysicsSystemRef(&physicsSystem);
     game.SetAnimationSystemRef(&animationSystem);
     game.SetAudioSystemRef(&audioSystem);
@@ -122,7 +122,7 @@ void ME::GameMain::Update() {
     renderer.Update();
     renderer.Draw();
 
-    connection.Update(deltaTime);
+    gameClient.Update(deltaTime);
     contentClient.Update(timeManager.GetTimeSinceStartup());
     audioSystem.Update(deltaTime);
 }
@@ -134,7 +134,7 @@ void ME::GameMain::Exit() {
 
 void ME::GameMain::ShutDownGameSystems() {
     game.End();
-    connection.End();
+    gameClient.End();
     contentClient.End();
     if (networkingStarted) {
         ME::Net::ShutdownNetworking();

@@ -10,7 +10,7 @@
 #include "client/src/anim/animation_system.h"
 #include "client/src/audio/audio_system.h"
 #include "client/src/input/input_manager.h"
-#include "client/src/net/connection.h"
+#include "client/src/net/game_client.h"
 #include "client/src/scene/scene.h"
 #include "client/src/scene/scene_ui.h"
 #include "client/src/ui/ui_system.h"
@@ -55,7 +55,7 @@ class Game : public ICollisionListener {
     virtual void End();
 
     void SetInputManagerRef(ME::Input::InputManager* ptrInput);
-    void SetConnectionRef(ME::Connection* ptrConnection);
+    void SetGameClientRef(ME::GameClient* ptrGameClient);
     void SetPhysicsSystemRef(ME::PhysicsSystem* ptrPhysicsSystem);
     void SetAnimationSystemRef(ME::AnimationSystem* ptrAnimationSystem);
     void SetAudioSystemRef(ME::AudioSystem* ptrAudioSystem);
@@ -73,7 +73,7 @@ class Game : public ICollisionListener {
 
    protected:
     ME::Time::TimeManager* timeManager = nullptr;
-    ME::Connection* connection = nullptr;
+    ME::GameClient* gameClient = nullptr;
     ME::Input::InputManager* inputManager = nullptr;
     ME::Scene* scene = nullptr;
     ME::SceneUI* uiScene = nullptr;

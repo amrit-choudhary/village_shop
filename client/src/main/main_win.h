@@ -26,8 +26,8 @@
 #include "client/src/input/input_manager.h"
 #include "client/src/input/input_manager_win.h"
 #include "client/src/misc/global_vars.h"
-#include "client/src/net/connection.h"
 #include "client/src/net/content_client.h"
+#include "client/src/net/game_client.h"
 #include "client/src/rendering/directx/renderer_dx.h"
 #include "client/src/ui/ui_system.h"
 #include "logging/src/logging.h"
@@ -64,7 +64,7 @@ class GameMain {
     ME::Time::TimeManager timeManager;
     ME::Input::InputManager inputManager;
     ME::Input::InputManagerWin* winInputManager = nullptr;
-    ME::Connection connection;
+    ME::GameClient gameClient;
     ME::ContentClient contentClient;
     // ME::GameBreakout game;
     // ME::GameOfLife game;

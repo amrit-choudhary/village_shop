@@ -8,7 +8,7 @@
 #include "client/src/game/village_game.h"
 #include "client/src/input/input_manager.h"
 #include "client/src/misc/global_vars.h"
-#include "client/src/net/connection.h"
+#include "client/src/net/game_client.h"
 #include "rendering/renderer.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "logging/src/logging.h"
@@ -30,12 +30,12 @@ int main2(int argc, char **argv) {
 
     ME::Input::InputManager inputManager;
     inputManager.Init();
-    ME::Connection connection;
-    connection.Init();
+    ME::GameClient gameClient;
+    gameClient.Init();
 
     ME::VillageGame game;
     game.SetInputManagerRef(&inputManager);
-    game.SetConnectionRef(&connection);
+    game.SetGameClientRef(&gameClient);
     game.Init(&timeManager);
 
     ME::Renderer renderer;
@@ -52,7 +52,7 @@ int main2(int argc, char **argv) {
             inputManager.Update(deltaTime);
             game.Update(deltaTime);
             renderer.Update();
-            connection.Update(deltaTime);
+            gameClient.Update(deltaTime);
         }
     }
 
@@ -61,7 +61,7 @@ int main2(int argc, char **argv) {
     // inputManager.End();
     game.End();
     renderer.End();
-    connection.End();
+    gameClient.End();
 }
 
 #endif

@@ -4,11 +4,11 @@ Game client. See root [CLAUDE.md](../CLAUDE.md) for project-level context.
 
 ## Entry points / boot flow
 - `src/main/main_win.cpp` (`ME::GameMain`, DX12) — reads `fps`/`vsync` from an INI, then
-  initializes systems in order: InputManager → Connection → PhysicsSystem → AudioSystem →
+  initializes systems in order: InputManager → GameClient → PhysicsSystem → AudioSystem →
   AnimationSystem → `Game::Init/Start` → `Renderer::InitDX` + `SetScenes`. Loop via shared
   `TimeManager::BeginFrame()`: Input pre/update → 0..N `game.FixedUpdate`/physics/animation
   steps at a constant simulation dt (`TimeConfig::fixedStepFPS`) → `game.Update`/UI/debug at
-  the real, variable per-frame dt → `renderer.Update/Draw` → connection/audio `.Update`. Vsync
+  the real, variable per-frame dt → `renderer.Update/Draw` → gameClient/contentClient/audio `.Update`. Vsync
   is on by default (`RendererDX::SetVsyncEnabled`), which paces presentation to the display's
   refresh rate; `TimeConfig::frameRateCapFPS` (sleep-based) only takes over when vsync is off.
 - `src/main/main_mac.cpp` (`ME::GameMain`, Metal) — **currently does not compile**: still uses the
@@ -45,7 +45,8 @@ Data-oriented "Scene as struct-of-arrays," not an entity-component system:
   to build/update GPU resources. Clean separation: simulation-facing data vs backend draw code.
 - Same platform-strategy pattern repeats elsewhere: `audio/audio_system.h` wraps `IAudioImpl`
   (miniaudio vs `audio_impl_dummy.h` no-op); `input/input_manager.h` wraps
-  `PlatformInputManager` (win/mac/cli); `net/connection.h` wraps `PlatformConnection` (win/mac).
+  `PlatformInputManager` (win/mac/cli). Exception: networking has no per-platform classes; per-OS socket
+  code lives only in `shared/src/net/socket_platform_*`.
 
 ## The actual game vs tech demos
 - `game/village_game.h/.cpp` (`VillageGame : Game`) is the real product: a `Shop` struct
@@ -62,6 +63,14 @@ Data-oriented "Scene as struct-of-arrays," not an entity-component system:
 - `ui/ui_layout_engine.h/.cpp` (`UILayoutEngine`) — small retained-mode layout system that
   feeds positions into `SceneUI`'s sprite/text transform arrays. `ui/ui_rect.*` has the
   `UIRect`/`UIAnchor` rect/bounds math it uses.
+
+## Game server client (`src/net/game_client.*`)
+`GameClient` (owned by `GameMain`, passed to games via `Game::SetGameClientRef`) is the UDP client for the game server: one `Net::UdpSocket` on an
+OS-chosen port, server address from `serverIP` / `serverPort` in `settings.ini` (defaults `127.0.0.1:9310`).
+`Update` drains received datagrams each frame and turns them into delegates (`onConnected`, `onPong`,
+`onScoreReceived`, `onHighScoreReceived`); chat and game data are only logged. Send functions do nothing until
+`CONNECTED` assigned a clientID (except `SendConnectRequest`). Wire format: `shared/src/net/game_protocol.h`.
+Networking itself is started once in `GameMain::Init` (`Net::InitNetworking`), not by `GameClient`.
 
 ## Content sync (`src/net/content_client.*`)
 `ContentClient` (owned by `GameMain`, Windows only for now) syncs `dlc/` (next to the exe) with the content

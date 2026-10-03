@@ -17,7 +17,7 @@ ME::GameMain::GameMain() {}
 
 ME::GameMain::~GameMain() {
     game.End();
-    connection.End();
+    gameClient.End();
     if (networkingStarted) {
         ME::Net::ShutdownNetworking();
         networkingStarted = false;
@@ -43,11 +43,11 @@ void ME::GameMain::Init(MTL::Device* device, MTK::View* view) {
     macInputManager = static_cast<ME::Input::InputManagerMac*>(inputManager.GetPlatformInputManager());
     // Once per process, before any socket is created.
     networkingStarted = ME::Net::InitNetworking();
-    connection.Init(serverIP.c_str(), serverPort);
+    gameClient.Init(serverIP.c_str(), serverPort);
     physicsSystem.Init();
 
     game.SetInputManagerRef(&inputManager);
-    game.SetConnectionRef(&connection);
+    game.SetGameClientRef(&gameClient);
     game.SetPhysicsSystemRef(&physicsSystem);
     game.Init(&timeManager);
 
@@ -102,7 +102,7 @@ void ME::GameMain::Update() {
         renderer.Update();
         renderer.Draw();
 
-        connection.Update(deltaTime);
+        gameClient.Update(deltaTime);
 
         physicsSystem.Update(deltaTime);
     }
@@ -115,7 +115,7 @@ void ME::GameMain::Exit() {
 
 void ME::GameMain::ShutDownGameSystems() {
     game.End();
-    connection.End();
+    gameClient.End();
     if (networkingStarted) {
         ME::Net::ShutdownNetworking();
         networkingStarted = false;

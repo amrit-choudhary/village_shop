@@ -7,8 +7,8 @@ one real exception (cJSON, noted below).
 
 ## Networking / wire protocol (`src/net/`)
 - **Namespace rule:** everything in `src/net/` lives in `ME::Net` (sockets, framing, protocols). Exception: the
-  deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `SocketServer`, `client/`
-  `Connection`) stay in `ME`.
+  deprecated `Packet` stays in `ME` until it is deleted. App-level users (`server/` `GameServer`, `client/`
+  `GameClient`) stay in `ME`.
 - `networking.h` (`Net::InitNetworking`/`ShutdownNetworking`): once per program in each `main`, before any
   socket / after all are closed (WSAStartup/WSACleanup on Windows, no-op on POSIX). Socket users never call it.
 - `socket_platform.h` + `socket_platform_win.cpp` / `_posix.cpp` (`Net::SocketPlatform`): the only per-OS

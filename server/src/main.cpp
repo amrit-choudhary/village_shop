@@ -11,7 +11,7 @@
 #endif
 
 #include "misc/global_vars.h"
-#include "net/socket_server.h"
+#include "net/game_server.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
 #include "shared/src/net/networking.h"
@@ -40,8 +40,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    ME::SocketServer socketServer;
-    if (!socketServer.Init(port)) {
+    ME::GameServer gameServer;
+    if (!gameServer.Init(port)) {
         ME::Net::ShutdownNetworking();
         return 1;
     }
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
         int steps = timeManager.GetPendingFixedSteps();
         for (int i = 0; i < steps; ++i) {
-            socketServer.Update(timeManager.GetFixedDeltaTime());
+            gameServer.Update(timeManager.GetFixedDeltaTime());
         }
 
         // TODO: temporary fix to stop this loop busy-spinning a full core - TimeManager itself

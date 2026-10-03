@@ -23,12 +23,12 @@ void ME::GameNetTest::Init(ME::Time::TimeManager* currentTimeManager) {
 
     ME::Delegate::Bind<GameNetTest, &GameNetTest::OnScoreButtonClicked>(sceneUINetTest->GetScoreButton()->onClick,
                                                                         this);
-    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnConnected>(connection->onConnected, this);
-    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnPong>(connection->onPong, this);
-    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnScoreReceived>(connection->onScoreReceived, this);
-    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnHighScoreReceived>(connection->onHighScoreReceived, this);
+    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnConnected>(gameClient->onConnected, this);
+    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnPong>(gameClient->onPong, this);
+    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnScoreReceived>(gameClient->onScoreReceived, this);
+    ME::Delegate::Bind<GameNetTest, &GameNetTest::OnHighScoreReceived>(gameClient->onHighScoreReceived, this);
 
-    connection->SendConnectRequest();
+    gameClient->SendConnectRequest();
 
     ME::Log("Net Test Game Start!");
 }
@@ -43,7 +43,7 @@ void ME::GameNetTest::Update(double deltaTime) {
     pingTimer += deltaTime;
     if (pingTimer >= kPingIntervalSeconds) {
         pingTimer -= kPingIntervalSeconds;
-        connection->SendPing();
+        gameClient->SendPing();
         ++pingsSent;
         RefreshPingLabel();
     }
@@ -51,7 +51,7 @@ void ME::GameNetTest::Update(double deltaTime) {
 
 void ME::GameNetTest::OnConnected() {
     char buf[32];
-    snprintf(buf, sizeof(buf), "Connected as Client %d", connection->GetClientID());
+    snprintf(buf, sizeof(buf), "Connected as Client %d", gameClient->GetClientID());
     sceneUINetTest->GetStatusLabel()->SetText(buf);
 }
 
@@ -62,13 +62,13 @@ void ME::GameNetTest::OnPong() {
 
 void ME::GameNetTest::OnScoreReceived() {
     char buf[32];
-    snprintf(buf, sizeof(buf), "Opponent Score: %u", connection->GetLastScore());
+    snprintf(buf, sizeof(buf), "Opponent Score: %u", gameClient->GetLastScore());
     sceneUINetTest->GetOpponentScoreLabel()->SetText(buf);
 }
 
 void ME::GameNetTest::OnHighScoreReceived() {
     char buf[32];
-    snprintf(buf, sizeof(buf), "Global High: %u", connection->GetHighScore());
+    snprintf(buf, sizeof(buf), "Global High: %u", gameClient->GetHighScore());
     sceneUINetTest->GetHighScoreLabel()->SetText(buf);
 }
 
@@ -79,7 +79,7 @@ void ME::GameNetTest::OnScoreButtonClicked() {
     snprintf(buf, sizeof(buf), "Your Score: %u", score);
     sceneUINetTest->GetYourScoreLabel()->SetText(buf);
 
-    connection->SendScore(score);
+    gameClient->SendScore(score);
 }
 
 void ME::GameNetTest::RefreshPingLabel() {

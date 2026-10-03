@@ -26,7 +26,7 @@ class ConnectedClient {
     Net::Address address;
 };
 
-class SocketServer {
+class GameServer {
    public:
     /**
      * Opens the UDP port and the score database. False if the port could not be opened.

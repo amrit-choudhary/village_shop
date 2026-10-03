@@ -5,12 +5,12 @@ Game server. See root [CLAUDE.md](../CLAUDE.md) for project-level context, and
 
 ## Main loop
 `src/main.cpp` — minimal loop: constructs `ME::Time::TimeManager` fixed at `FPS_60` and a
-`ME::SocketServer`; loops on a global atomic `ServerRunning`
-(`src/misc/global_vars.h`/`.cpp`), calling `socketServer.Update(deltaTime)` only on ticks
+`ME::GameServer`; loops on a global atomic `ServerRunning`
+(`src/misc/global_vars.h`/`.cpp`), calling `gameServer.Update(deltaTime)` only on ticks
 that `timeManager.Update()` says should fire (fixed-frame-rate gating).
 
 ## Networking (`src/net/`)
-- `ME::SocketServer` (`socket_server.h/.cpp`) owns one `Net::UdpSocket` (shared, no per-OS code here) bound to
+- `ME::GameServer` (`game_server.h/.cpp`) owns one `Net::UdpSocket` (shared, no per-OS code here) bound to
   **port 9310** (`resources/config/settings.ini`, default 9310). `Init` returns false if the port can't be
   opened (main exits 1). `Update` drains up to 256 datagrams per tick (`MAX_DATAGRAMS_PER_UPDATE`).
 - Every datagram is read with `ByteReader` + `GameProtocol::ReadHeader`; replies are built with `ByteWriter`
@@ -34,7 +34,7 @@ POC persistence: `ME::ScoreDB` (`score_db.h/.cpp`) keeps one global high score i
 SQLite file, `village_shop.db`, created next to the server executable
 (`ME::Utils::GetExecutableDirPath()`). Table `highscore` is a single row (`id` pinned to 1).
 `Open` loads the value into memory; `SubmitScore` writes only when the score beats it.
-- `SocketServer` owns the `ScoreDB`: opened in `Init`, closed in `End` (`main.cpp` never calls
+- `GameServer` owns the `ScoreDB`: opened in `Init`, closed in `End` (`main.cpp` never calls
   `End()`, harmless since each write is committed). `HandleScore` calls `SubmitScore`; a new high
   score is broadcast to all clients as `HIGHSCORE_RECV` (0x66, one `uint32`), and a new client
   gets the current value right after `CONNECTED`.
