@@ -26,14 +26,18 @@ else()
   add_compile_options(-fno-rtti -fno-exceptions)
 endif()
 
-file(GLOB_RECURSE CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/*.cpp")
-list(REMOVE_ITEM CLIENT_SHARED_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/client/src/main.cpp")
-set(CLIENT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/client/src CACHE INTERNAL "Client include directory")
+# Unit tests. Turn off with -DVG_BUILD_TESTS=OFF (e.g. on low-RAM build hosts).
+option(VG_BUILD_TESTS "Build unit test executables" ON)
 
 add_subdirectory(logging)
 add_subdirectory(shared)
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(content_server)
-#add_subdirectory(client_tests)
 add_subdirectory(client_package)
+
+if(VG_BUILD_TESTS)
+    add_subdirectory(test_framework)
+    add_subdirectory(client_tests)
+    add_subdirectory(server_tests)
+endif()

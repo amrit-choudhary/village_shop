@@ -1,17 +1,24 @@
-#include "ini_parser_tests.h"
+/**
+ * Tests for the INI parser. Parses in-memory text, so no files or resource paths are needed.
+ */
 
-#include <iostream>
+#include "shared/src/file_io/ini/ini_parser.h"
+#include "test_framework/src/test_framework.h"
 
-#include "src/file_io/ini/ini_parser.h"
+TEST(INIParser, SectionsAndKeys) {
+    ME::INIMap iniMap = ME::INIParser::Parse(
+        "[logging]\n"
+        "level=info\n"
+        "[network]\n"
+        "port=9310\n");
 
-bool TEST::Test_INIParse() {
-    std::cout << "TEST: Starting: INI Parser" << '\n';
-    ME::INIMap iniMap = ME::INIParser::Load();
-    if (iniMap["logging"]["level"] == "info") {
-        std::cout << "TEST: Successful" << '\n';
-        return true;
-    } else {
-        std::cout << "TEST: Failed" << '\n';
-        return false;
-    }
+    EXPECT(iniMap["logging"]["level"] == "info");
+    EXPECT(iniMap["network"]["port"] == "9310");
+}
+
+TEST(INIParser, MissingKeyIsEmpty) {
+    ME::INIMap iniMap = ME::INIParser::Parse("[logging]\nlevel=info\n");
+
+    EXPECT(iniMap["logging"]["missing"].empty());
+    EXPECT(iniMap["missing"]["level"].empty());
 }
