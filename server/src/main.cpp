@@ -14,6 +14,7 @@
 #include "net/socket_server.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
+#include "shared/src/net/networking.h"
 #include "shared/src/time/time_manager.h"
 
 int main(int argc, char** argv) {
@@ -33,6 +34,11 @@ int main(int argc, char** argv) {
     ME::INIMap iniMap = ME::INIParser::Load();
     std::string portStr = iniMap["settings"]["port"];
     uint16_t port = portStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(portStr.c_str()));
+
+    // Once per process, before any socket is created.
+    if (!ME::Net::InitNetworking()) {
+        return 1;
+    }
 
     ME::SocketServer socketServer;
     socketServer.Init(port);
@@ -57,5 +63,6 @@ int main(int argc, char** argv) {
         }
     }
 
+    ME::Net::ShutdownNetworking();
     return 0;
 }

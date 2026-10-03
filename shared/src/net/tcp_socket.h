@@ -25,12 +25,6 @@ class TcpSocket {
     TcpSocket& operator=(const TcpSocket&) = delete;
 
     /**
-     * Call once at program start / end before using any socket. Needed by Winsock; no-op on POSIX.
-     */
-    static bool InitNetworking();
-    static void ShutdownNetworking();
-
-    /**
      * Server: start listening for connections on port (all network interfaces).
      */
     bool Listen(uint16_t port);

@@ -23,12 +23,6 @@ ME::ContentClient::~ContentClient() {
 }
 
 void ME::ContentClient::Init(const char* serverIP, uint16_t serverPort, double now) {
-    if (!Net::TcpSocket::InitNetworking()) {
-        Fail("networking unavailable");
-        return;
-    }
-    networkingStarted = true;
-
     LogInfo("Content: connecting to ", serverIP, ":", serverPort);
     const TcpResult result = socket.Connect(serverIP, serverPort);
     if (result == TcpResult::Error) {
@@ -69,10 +63,6 @@ void ME::ContentClient::Update(double now) {
 
 void ME::ContentClient::End() {
     socket.Close();
-    if (networkingStarted) {
-        Net::TcpSocket::ShutdownNetworking();
-        networkingStarted = false;
-    }
 }
 
 ME::ContentSyncState ME::ContentClient::GetState() const {

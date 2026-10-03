@@ -7,6 +7,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+// SIO_UDP_CONNRESET. Needs winsock2.h first; kept in its own block so include sorting can't move it above.
+#include <mswsock.h>
+
 #include "logging/src/logging.h"
 
 namespace {
@@ -34,6 +37,11 @@ intptr_t ME::Net::SocketPlatform::CreateTcp() {
     return s == INVALID_SOCKET ? INVALID_HANDLE : static_cast<intptr_t>(s);
 }
 
+intptr_t ME::Net::SocketPlatform::CreateUdp() {
+    const SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    return s == INVALID_SOCKET ? INVALID_HANDLE : static_cast<intptr_t>(s);
+}
+
 void ME::Net::SocketPlatform::Close(intptr_t s) {
     closesocket(ToNative(s));
 }
@@ -52,6 +60,20 @@ void ME::Net::SocketPlatform::SetListenOptions(intptr_t s) {
 
 void ME::Net::SocketPlatform::SetConnectionOptions(intptr_t) {
     // Windows never raises SIGPIPE, so nothing to set.
+}
+
+void ME::Net::SocketPlatform::SetDatagramOptions(intptr_t s) {
+    // Stop another program from binding the same port and receiving our datagrams.
+    BOOL exclusive = TRUE;
+    setsockopt(ToNative(s), SOL_SOCKET, SO_EXCLUSIVEADDRUSE, reinterpret_cast<const char*>(&exclusive),
+               sizeof(exclusive));
+
+    // Sending to a port nobody listens on makes Windows fail the next recvfrom with WSAECONNRESET, even
+    // though the socket is fine. Turn that report off; POSIX never reports it on unconnected UDP sockets.
+    BOOL reportReset = FALSE;
+    DWORD bytesReturned = 0;
+    WSAIoctl(ToNative(s), SIO_UDP_CONNRESET, &reportReset, sizeof(reportReset), nullptr, 0, &bytesReturned,
+             nullptr, nullptr);
 }
 
 bool ME::Net::SocketPlatform::BindAny(intptr_t s, uint16_t port) {
@@ -77,6 +99,45 @@ int ME::Net::SocketPlatform::Send(intptr_t s, const uint8_t* data, int size) {
 
 int ME::Net::SocketPlatform::Recv(intptr_t s, uint8_t* buffer, int capacity) {
     return recv(ToNative(s), reinterpret_cast<char*>(buffer), capacity, 0);
+}
+
+bool ME::Net::SocketPlatform::ParseIPv4(const char* text, uint32_t& outIp) {
+    in_addr address{};
+    // inet_pton turns the text address into 4 bytes in network byte order; returns 1 only for valid IPv4.
+    if (inet_pton(AF_INET, text, &address) != 1) {
+        return false;
+    }
+    outIp = ntohl(address.s_addr);
+    return true;
+}
+
+int ME::Net::SocketPlatform::SendTo(intptr_t s, const uint8_t* data, int size, uint32_t ip, uint16_t port) {
+    sockaddr_in to{};
+    to.sin_family = AF_INET;
+    to.sin_port = htons(port);
+    to.sin_addr.s_addr = htonl(ip);
+    return sendto(ToNative(s), reinterpret_cast<const char*>(data), size, 0, reinterpret_cast<sockaddr*>(&to),
+                  sizeof(to));
+}
+
+int ME::Net::SocketPlatform::RecvFrom(intptr_t s, uint8_t* buffer, int capacity, uint32_t& outIp,
+                                      uint16_t& outPort) {
+    sockaddr_in from{};
+    int fromLength = sizeof(from);
+    int received = recvfrom(ToNative(s), reinterpret_cast<char*>(buffer), capacity, 0,
+                            reinterpret_cast<sockaddr*>(&from), &fromLength);
+
+    // A datagram bigger than the buffer fails with WSAEMSGSIZE, but the buffer is still filled with its
+    // first bytes. POSIX returns those bytes as a normal receive; do the same here.
+    if (received == SOCKET_ERROR && WSAGetLastError() == WSAEMSGSIZE) {
+        received = capacity;
+    }
+
+    if (received >= 0) {
+        outIp = ntohl(from.sin_addr.s_addr);
+        outPort = ntohs(from.sin_port);
+    }
+    return received;
 }
 
 ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip,

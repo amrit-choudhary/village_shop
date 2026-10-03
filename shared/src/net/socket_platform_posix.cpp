@@ -29,6 +29,11 @@ intptr_t ME::Net::SocketPlatform::CreateTcp() {
     return s == -1 ? INVALID_HANDLE : static_cast<intptr_t>(s);
 }
 
+intptr_t ME::Net::SocketPlatform::CreateUdp() {
+    const int s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    return s == -1 ? INVALID_HANDLE : static_cast<intptr_t>(s);
+}
+
 void ME::Net::SocketPlatform::Close(intptr_t s) {
     close(ToNative(s));
 }
@@ -54,6 +59,10 @@ void ME::Net::SocketPlatform::SetConnectionOptions(intptr_t s) {
     // Linux has no SO_NOSIGPIPE; Send uses MSG_NOSIGNAL instead.
     (void)s;
 #endif
+}
+
+void ME::Net::SocketPlatform::SetDatagramOptions(intptr_t) {
+    // A UDP port is exclusive by default on POSIX (no SO_REUSEADDR), and no ICMP reset errors are reported.
 }
 
 bool ME::Net::SocketPlatform::BindAny(intptr_t s, uint16_t port) {
@@ -85,6 +94,39 @@ int ME::Net::SocketPlatform::Send(intptr_t s, const uint8_t* data, int size) {
 
 int ME::Net::SocketPlatform::Recv(intptr_t s, uint8_t* buffer, int capacity) {
     return static_cast<int>(recv(ToNative(s), buffer, static_cast<size_t>(capacity), 0));
+}
+
+bool ME::Net::SocketPlatform::ParseIPv4(const char* text, uint32_t& outIp) {
+    in_addr address{};
+    // inet_pton turns the text address into 4 bytes in network byte order; returns 1 only for valid IPv4.
+    if (inet_pton(AF_INET, text, &address) != 1) {
+        return false;
+    }
+    outIp = ntohl(address.s_addr);
+    return true;
+}
+
+int ME::Net::SocketPlatform::SendTo(intptr_t s, const uint8_t* data, int size, uint32_t ip, uint16_t port) {
+    sockaddr_in to{};
+    to.sin_family = AF_INET;
+    to.sin_port = htons(port);
+    to.sin_addr.s_addr = htonl(ip);
+    return static_cast<int>(
+        sendto(ToNative(s), data, static_cast<size_t>(size), 0, reinterpret_cast<sockaddr*>(&to), sizeof(to)));
+}
+
+int ME::Net::SocketPlatform::RecvFrom(intptr_t s, uint8_t* buffer, int capacity, uint32_t& outIp,
+                                      uint16_t& outPort) {
+    sockaddr_in from{};
+    socklen_t fromLength = sizeof(from);
+    // A datagram bigger than capacity is cut: recvfrom returns its first capacity bytes and drops the rest.
+    const int received = static_cast<int>(recvfrom(ToNative(s), buffer, static_cast<size_t>(capacity), 0,
+                                                   reinterpret_cast<sockaddr*>(&from), &fromLength));
+    if (received >= 0) {
+        outIp = ntohl(from.sin_addr.s_addr);
+        outPort = ntohs(from.sin_port);
+    }
+    return received;
 }
 
 ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip,

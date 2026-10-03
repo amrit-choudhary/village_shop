@@ -11,6 +11,10 @@ ME::GameMain::~GameMain() {
     game.End();
     connection.End();
     contentClient.End();
+    if (networkingStarted) {
+        ME::Net::ShutdownNetworking();
+        networkingStarted = false;
+    }
     inputManager.End();
     timeManager.End();
     physicsSystem.End();
@@ -47,6 +51,8 @@ void ME::GameMain::Init(HWND hWnd) {
 
     inputManager.Init();
     winInputManager = static_cast<ME::Input::InputManagerWin*>(inputManager.GetPlatformInputManager());
+    // Once per process, before any socket (game connection, content sync) is created.
+    networkingStarted = ME::Net::InitNetworking();
     connection.Init(serverIP.c_str(), serverPort);
     physicsSystem.Init();
     animationSystem.Init();
@@ -130,6 +136,10 @@ void ME::GameMain::ShutDownGameSystems() {
     game.End();
     connection.End();
     contentClient.End();
+    if (networkingStarted) {
+        ME::Net::ShutdownNetworking();
+        networkingStarted = false;
+    }
     inputManager.End();
     timeManager.End();
     physicsSystem.End();

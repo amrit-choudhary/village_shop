@@ -14,6 +14,7 @@
 #include "logging/src/logging.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
+#include "shared/src/net/networking.h"
 #include "shared/src/net/tcp_socket.h"
 #include "shared/src/time/time_manager.h"
 
@@ -85,13 +86,13 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    if (!ME::Net::TcpSocket::InitNetworking()) {
+    if (!ME::Net::InitNetworking()) {
         return 1;
     }
 
     ME::Net::TcpSocket listener;
     if (!listener.Listen(port)) {
-        ME::Net::TcpSocket::ShutdownNetworking();
+        ME::Net::ShutdownNetworking();
         return 1;
     }
     ME::LogSuccess("Listening on port ", port);
@@ -121,6 +122,6 @@ int main(int argc, char** argv) {
         client.Close();
     }
     listener.Close();
-    ME::Net::TcpSocket::ShutdownNetworking();
+    ME::Net::ShutdownNetworking();
     return 0;
 }

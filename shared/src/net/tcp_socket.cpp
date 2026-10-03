@@ -7,14 +7,6 @@ ME::Net::TcpSocket::~TcpSocket() {
     Close();
 }
 
-bool ME::Net::TcpSocket::InitNetworking() {
-    return SocketPlatform::Init();
-}
-
-void ME::Net::TcpSocket::ShutdownNetworking() {
-    SocketPlatform::Shutdown();
-}
-
 bool ME::Net::TcpSocket::Listen(uint16_t port) {
     Close();
 

@@ -23,6 +23,7 @@
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "logging/src/logging.h"
 #include "shared/src/misc/utils.h"
+#include "shared/src/net/networking.h"
 #include "shared/src/physics/physics_system.h"
 #include "shared/src/time/time_manager.h"
 
@@ -58,6 +59,8 @@ class GameMain {
     ME::UISystem uiSystem;
 
     int fps = 0;
+    // ShutDownGameSystems and the destructor both run; shut networking down only once.
+    bool networkingStarted = false;
 };
 
 }  // namespace ME

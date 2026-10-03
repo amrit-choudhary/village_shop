@@ -18,6 +18,7 @@ bool Init();
 void Shutdown();
 
 intptr_t CreateTcp();
+intptr_t CreateUdp();
 void Close(intptr_t s);
 bool SetNonBlocking(intptr_t s);
 
@@ -30,6 +31,11 @@ void SetListenOptions(intptr_t s);
  * Connected socket options: SIGPIPE protection on Mac; no-op elsewhere.
  */
 void SetConnectionOptions(intptr_t s);
+
+/**
+ * UDP socket options, set before binding: exclusive port use and no ICMP reset errors on Windows; no-op on POSIX.
+ */
+void SetDatagramOptions(intptr_t s);
 
 /**
  * Binds to port on all network interfaces.
@@ -48,6 +54,18 @@ intptr_t Accept(intptr_t s);
  */
 int Send(intptr_t s, const uint8_t* data, int size);
 int Recv(intptr_t s, uint8_t* buffer, int capacity);
+
+/**
+ * Converts text such as "192.168.1.50" to an IPv4 address in host byte order. False if it is not one.
+ */
+bool ParseIPv4(const char* text, uint32_t& outIp);
+
+/**
+ * Send / receive one whole datagram; ip and port are in host byte order. Return bytes or -1 (then check
+ * LastErrorIsWouldBlock). A datagram bigger than capacity is cut to capacity on every platform.
+ */
+int SendTo(intptr_t s, const uint8_t* data, int size, uint32_t ip, uint16_t port);
+int RecvFrom(intptr_t s, uint8_t* buffer, int capacity, uint32_t& outIp, uint16_t& outPort);
 
 enum class ConnectState : uint8_t {
     Connected,   // Handshake finished; the socket can send and receive.

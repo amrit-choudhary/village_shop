@@ -93,7 +93,6 @@ class ContentClient {
 
     ContentSyncState state = ContentSyncState::Idle;
     double stateStartTime = 0.0;
-    bool networkingStarted = false;
 
     Net::TcpSocket socket;
 
