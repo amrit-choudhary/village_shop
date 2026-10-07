@@ -36,6 +36,7 @@
 #include "shared/src/net/networking.h"
 #include "shared/src/physics/physics_system.h"
 #include "shared/src/time/time_manager.h"
+#include "shared/src/time/timer_manager.h"
 
 namespace ME {
 
@@ -62,6 +63,7 @@ class GameMain {
     HWND hWnd;
 
     ME::Time::TimeManager timeManager;
+    ME::Time::TimerManager timerManager;
     ME::Input::InputManager inputManager;
     ME::Input::InputManagerWin* winInputManager = nullptr;
     ME::GameClient gameClient;

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 namespace ME {
@@ -62,6 +63,9 @@ constexpr size_t MaxAudioSources = 64;
 constexpr size_t MaxAudioListeners = 4;
 constexpr size_t MaxLoadedSFXCount = 64;
 constexpr size_t MaxLoadedMusicCount = 16;
+
+// Timer constants
+constexpr size_t MaxTimerCount = 256;  // simultaneously scheduled timers per TimerManager
 
 }  // namespace Constants
 }  // namespace ME

@@ -44,6 +44,10 @@ void ME::GameServer::End() {
     scoreDB.Close();
 }
 
+void ME::GameServer::SetTimerManagerRef(Time::TimerManager* ptrTimerManager) {
+    timerManager = ptrTimerManager;
+}
+
 void ME::GameServer::ProcessDatagram(const uint8_t* data, int size, const Net::Address& from) {
     ByteReader reader(data, static_cast<size_t>(size));
     GameProtocol::Header header;

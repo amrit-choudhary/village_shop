@@ -61,6 +61,10 @@ void ME::Game::SetUISystemRef(ME::UISystem* ptrUISystem) {
     uiSystem = ptrUISystem;
 }
 
+void ME::Game::SetTimerManagerRef(ME::Time::TimerManager* ptrTimerManager) {
+    timerManager = ptrTimerManager;
+}
+
 void ME::Game::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
     delete result;
 }

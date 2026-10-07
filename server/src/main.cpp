@@ -16,6 +16,7 @@
 #include "shared/src/misc/utils.h"
 #include "shared/src/net/networking.h"
 #include "shared/src/time/time_manager.h"
+#include "shared/src/time/timer_manager.h"
 
 int main(int argc, char** argv) {
 #ifdef VG_WIN
@@ -31,6 +32,9 @@ int main(int argc, char** argv) {
     timeConfig.fixedStepFPS = ME::Time::FPS_60;
     timeManager.Init(timeConfig);
 
+    ME::Time::TimerManager timerManager;
+    timerManager.Init(timeConfig.fixedStepFPS);
+
     ME::INIMap iniMap = ME::INIParser::Load();
     std::string portStr = iniMap["settings"]["port"];
     uint16_t port = portStr.empty() ? 9310 : static_cast<uint16_t>(std::atoi(portStr.c_str()));
@@ -41,7 +45,10 @@ int main(int argc, char** argv) {
     }
 
     ME::GameServer gameServer;
+    gameServer.SetTimerManagerRef(&timerManager);
     if (!gameServer.Init(port)) {
+        // Init can fail after opening the score database, so close whatever it did open.
+        gameServer.End();
         ME::Net::ShutdownNetworking();
         return 1;
     }
@@ -52,7 +59,11 @@ int main(int argc, char** argv) {
 
         int steps = timeManager.GetPendingFixedSteps();
         for (int i = 0; i < steps; ++i) {
-            gameServer.Update(timeManager.GetFixedDeltaTime());
+            double fixedDeltaTime = timeManager.GetFixedDeltaTime();
+
+            // First in the step, so timers scheduled during step N fire at the start of step N+1.
+            timerManager.Tick(fixedDeltaTime);
+            gameServer.Update(fixedDeltaTime);
         }
 
         // TODO: temporary fix to stop this loop busy-spinning a full core - TimeManager itself
@@ -66,6 +77,9 @@ int main(int argc, char** argv) {
         }
     }
 
+    gameServer.End();
+    // After the server ends, so its own cleanup can still clear handles; drops any it left behind.
+    timerManager.End();
     ME::Net::ShutdownNetworking();
     return 0;
 }

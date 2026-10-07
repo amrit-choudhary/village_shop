@@ -9,6 +9,8 @@ ME::GameMain::GameMain() {}
 
 ME::GameMain::~GameMain() {
     game.End();
+    // After the game ends, so its own cleanup can still clear handles; drops any it left behind.
+    timerManager.End();
     gameClient.End();
     contentClient.End();
     if (networkingStarted) {
@@ -57,12 +59,15 @@ void ME::GameMain::Init(HWND hWnd) {
     physicsSystem.Init();
     animationSystem.Init();
     audioSystem.Init();
+    // Before game.Init, so the game can schedule timers from Init/Start.
+    timerManager.Init(static_cast<double>(fixedFrameRate));
 
     game.SetInputManagerRef(&inputManager);
     game.SetGameClientRef(&gameClient);
     game.SetPhysicsSystemRef(&physicsSystem);
     game.SetAnimationSystemRef(&animationSystem);
     game.SetAudioSystemRef(&audioSystem);
+    game.SetTimerManagerRef(&timerManager);
     game.Init(&timeManager);
 
     uiSystem.Init();
@@ -108,6 +113,8 @@ void ME::GameMain::Update() {
     for (int i = 0; i < timeManager.GetPendingFixedSteps(); ++i) {
         double fixedDeltaTime = timeManager.GetFixedDeltaTime();
 
+        // First in the step, so timers scheduled during step N fire at the start of step N+1.
+        timerManager.Tick(fixedDeltaTime);
         game.FixedUpdate(fixedDeltaTime);
         physicsSystem.Update(fixedDeltaTime);
         animationSystem.Update(fixedDeltaTime);
@@ -134,6 +141,8 @@ void ME::GameMain::Exit() {
 
 void ME::GameMain::ShutDownGameSystems() {
     game.End();
+    // After the game ends, so its own cleanup can still clear handles; drops any it left behind.
+    timerManager.End();
     gameClient.End();
     contentClient.End();
     if (networkingStarted) {

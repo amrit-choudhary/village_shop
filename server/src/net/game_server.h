@@ -12,6 +12,7 @@
 #include "server/src/db/score_db.h"
 #include "shared/src/net/net_address.h"
 #include "shared/src/net/udp_socket.h"
+#include "shared/src/time/timer_manager.h"
 
 namespace ME {
 
@@ -39,6 +40,9 @@ class GameServer {
     void Update(double deltaTime);
     void End();
 
+    // Timers the server schedules on; owned and ticked by the server main loop.
+    void SetTimerManagerRef(Time::TimerManager* ptrTimerManager);
+
    private:
     void ProcessDatagram(const uint8_t* data, int size, const Net::Address& from);
 
@@ -64,6 +68,7 @@ class GameServer {
     Net::UdpSocket socket;
     std::vector<ConnectedClient> connectedClients;
     ScoreDB scoreDB;
+    Time::TimerManager* timerManager = nullptr;
 };
 
 }  // namespace ME

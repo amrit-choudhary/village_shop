@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "client/src/misc/delegate.h"
+#include "shared/src/misc/delegate.h"
 #include "shared/src/math/fp_24_8.h"
 #include "shared/src/net/net_address.h"
 #include "shared/src/net/udp_socket.h"

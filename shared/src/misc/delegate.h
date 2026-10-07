@@ -26,6 +26,15 @@ class Delegate {
         delegate.invoke = &MethodThunk<T, Method>;
     }
 
+    // Returns a Delegate bound to a member function, for one-line use at call sites.
+    // Usage: Delegate::Make<T, &T::Method>(this).
+    template <typename T, void (T::*Method)()>
+    static Delegate Make(T* instance) {
+        Delegate delegate;
+        Bind<T, Method>(delegate, instance);
+        return delegate;
+    }
+
    private:
     template <typename T, void (T::*Method)()>
     static void MethodThunk(void* obj) {

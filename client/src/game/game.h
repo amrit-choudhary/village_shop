@@ -20,6 +20,7 @@
 #include "shared/src/physics/physics_system.h"
 #include "shared/src/random/random_engine.h"
 #include "shared/src/time/time_manager.h"
+#include "shared/src/time/timer_manager.h"
 #include "villager.h"
 
 namespace ME {
@@ -60,6 +61,7 @@ class Game : public ICollisionListener {
     void SetAnimationSystemRef(ME::AnimationSystem* ptrAnimationSystem);
     void SetAudioSystemRef(ME::AudioSystem* ptrAudioSystem);
     void SetUISystemRef(ME::UISystem* ptrUISystem);
+    void SetTimerManagerRef(ME::Time::TimerManager* ptrTimerManager);
 
     // This will be called from the PhysicsSystem when a collision is detected.
     // Remember to delete the result after use.
@@ -73,6 +75,7 @@ class Game : public ICollisionListener {
 
    protected:
     ME::Time::TimeManager* timeManager = nullptr;
+    ME::Time::TimerManager* timerManager = nullptr;
     ME::GameClient* gameClient = nullptr;
     ME::Input::InputManager* inputManager = nullptr;
     ME::Scene* scene = nullptr;
