@@ -1,8 +1,8 @@
 #include "camera.h"
 
-#include "shared/src/math/math.h"
-
 #include <cmath>
+
+#include "shared/src/math/math.h"
 
 ME::Camera::Camera() {
     projectionType = ProjectionType::Perspective;

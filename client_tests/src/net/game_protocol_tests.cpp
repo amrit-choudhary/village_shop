@@ -85,3 +85,51 @@ TEST(GameProtocol, VerbNames) {
     EXPECT(std::strcmp(GP::GetVerbName(static_cast<uint8_t>(GP::Verb::PING)), "PING") == 0);
     EXPECT(std::strcmp(GP::GetVerbName(0xFF), "UNKNOWN") == 0);
 }
+
+TEST(GameProtocol, QuizQuestionRoundTrip) {
+    GP::QuizQuestion question;
+    question.id = 42;
+    question.lhs = 9;
+    question.rhs = 4;
+    question.op = '-';
+    question.options[0] = 6;
+    question.options[1] = 5;
+
+    uint8_t buffer[64] = {};
+    ME::ByteWriter writer(buffer, sizeof(buffer));
+    ASSERT(GP::WriteQuizQuestion(writer, question));
+    EXPECT(writer.GetSize() == 9);
+
+    ME::ByteReader reader(buffer, writer.GetSize());
+    GP::QuizQuestion out;
+    ASSERT(GP::ReadQuizQuestion(reader, out));
+    EXPECT(out.id == 42);
+    EXPECT(out.lhs == 9);
+    EXPECT(out.rhs == 4);
+    EXPECT(out.op == '-');
+    EXPECT(out.options[0] == 6);
+    EXPECT(out.options[1] == 5);
+}
+
+TEST(GameProtocol, QuizQuestionWithUnknownOpIsRejected) {
+    GP::QuizQuestion question;
+    question.id = 7;
+    question.op = '*';
+
+    uint8_t buffer[64] = {};
+    ME::ByteWriter writer(buffer, sizeof(buffer));
+    ASSERT(GP::WriteQuizQuestion(writer, question));
+
+    ME::ByteReader reader(buffer, writer.GetSize());
+    GP::QuizQuestion out;
+    EXPECT(!GP::ReadQuizQuestion(reader, out));
+    EXPECT(out.id == 0);
+}
+
+TEST(GameProtocol, TruncatedQuizQuestionIsRejected) {
+    const uint8_t data[5] = {1, 0, 0, 0, 2};
+    ME::ByteReader reader(data, sizeof(data));
+    GP::QuizQuestion out;
+
+    EXPECT(!GP::ReadQuizQuestion(reader, out));
+}

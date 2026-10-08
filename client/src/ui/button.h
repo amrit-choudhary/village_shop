@@ -5,8 +5,8 @@
  * children they want via AddChild(). Generic across any game built on this engine.
  */
 
-#include "shared/src/misc/delegate.h"
 #include "client/src/rendering/shared/color.h"
+#include "shared/src/misc/delegate.h"
 #include "ui_element.h"
 
 namespace ME {
@@ -23,6 +23,9 @@ class Button : public UIElement {
     // Called each frame by UISystem with the mouse position (in UI space, same as GetRect()) and
     // current left-mouse-button down state, to drive the hover/press/click state machine.
     void UpdateInteraction(const Vec2& mousePosUISpace, bool mouseDown);
+
+    // Drops hover/press state, e.g. while hidden. Fires onHoverExit/onRelease if they were active, never onClick.
+    void ResetInteraction();
 
     bool IsHovered() const;
     bool IsPressed() const;

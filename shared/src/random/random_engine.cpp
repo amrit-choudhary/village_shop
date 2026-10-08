@@ -32,7 +32,7 @@ ME::Random::Random(uint32_t seed) {
     }
 }
 
-ME::Random::Random(const char *seedString, bool useTime) {
+ME::Random::Random(const char* seedString, bool useTime) {
     uint32_t seed = ME::Utils::HashString2uint32(seedString);
     if (useTime) {
         seed += std::chrono::system_clock::now().time_since_epoch().count();
@@ -81,7 +81,7 @@ uint64_t ME::Random::Next64() {
 
 // RandomWt
 
-ME::RandomWt::RandomWt(uint32_t seed, uint8_t *lutValues) : random(seed) {
+ME::RandomWt::RandomWt(uint32_t seed, uint8_t* lutValues) : random(seed) {
     for (int i = 0; i < 10; ++i) {
         lut[i] = lutValues[i];
     }

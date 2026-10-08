@@ -10,9 +10,9 @@
  * top of (not instead of) the existing health/score behavior.
  */
 
+#include "client/src/scene/scene_ui_demo.h"
 #include "game.h"
 #include "shared/src/math/vec2.h"
-#include "client/src/scene/scene_ui_demo.h"
 
 namespace ME {
 

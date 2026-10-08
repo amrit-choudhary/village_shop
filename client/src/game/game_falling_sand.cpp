@@ -4,7 +4,7 @@ ME::GameFallingSand::GameFallingSand() : Game() {}
 
 ME::GameFallingSand::~GameFallingSand() {}
 
-void ME::GameFallingSand::Init(ME::Time::TimeManager *currentTimeManager) {
+void ME::GameFallingSand::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
 
     sandScene = new ME::SceneFallingSand();
@@ -90,15 +90,15 @@ void ME::GameFallingSand::UpdateFallingSandLogic() {
         }
     }
 
-    uint8_t *currentGenPtr = currentGen->GetData();
-    uint8_t *nextGenPtr = nextGen->GetData();
+    uint8_t* currentGenPtr = currentGen->GetData();
+    uint8_t* nextGenPtr = nextGen->GetData();
 
     for (size_t y = 0; y < gridHeight; ++y) {
         for (size_t x = 0; x < gridWidth; ++x) {
             const uint8_t me = *(currentGen->GetUnsafe(x, y));
-            const uint8_t *down = currentGen->GetNeighbor(x, y, ME::GridDirection::S);
-            const uint8_t *downLeft = currentGen->GetNeighbor(x, y, ME::GridDirection::SW);
-            const uint8_t *downRight = currentGen->GetNeighbor(x, y, ME::GridDirection::SE);
+            const uint8_t* down = currentGen->GetNeighbor(x, y, ME::GridDirection::S);
+            const uint8_t* downLeft = currentGen->GetNeighbor(x, y, ME::GridDirection::SW);
+            const uint8_t* downRight = currentGen->GetNeighbor(x, y, ME::GridDirection::SE);
             if (me == 1 && down != nullptr) {
                 if (*down == 0) {
                     *(nextGen->GetUnsafe(x, y)) = 0;
@@ -128,7 +128,7 @@ void ME::GameFallingSand::UpdateFallingSandLogic() {
     nextGen = tempGrid;
 
     // Update drawing.
-    uint8_t *cellPtr = currentGen->GetData();
+    uint8_t* cellPtr = currentGen->GetData();
     for (size_t i = 0; i < gridCount; ++i) {
         if (*(cellPtr + i) == 1) {
             sandScene->spriteInstanceData0[i].color = ME::Color("#CBBD93");

@@ -53,6 +53,20 @@ enum class Verb : uint8_t {
     SCORE_SEND = 0x64,
     SCORE_RECV = 0x65,
     HIGHSCORE_RECV = 0x66,  // u32 high score.
+    QUIZ_QUESTION = 0x67,   // QuizQuestion, see WriteQuizQuestion.
+};
+
+/**
+ * An arithmetic question "lhs op rhs" with two answer options, exactly one of them correct.
+ * Which option is correct is not sent; the receiver can compute it from lhs, op and rhs.
+ */
+class QuizQuestion {
+   public:
+    uint32_t id = 0;  // increases with each question, so answers can be matched to their question
+    uint8_t lhs = 0;
+    uint8_t rhs = 0;
+    char op = '+';  // '+' or '-'
+    uint8_t options[2] = {0, 0};
 };
 
 /**
@@ -87,6 +101,13 @@ bool ReadFP(ByteReader& reader, FP_24_8& out);
  */
 bool WriteString(ByteWriter& writer, const char* text);
 bool ReadString(ByteReader& reader, char* out, size_t capacity);
+
+/**
+ * Wire layout: u32 id | u8 lhs | u8 op | u8 rhs | u8 option0 | u8 option1.
+ * ReadQuizQuestion fails, leaving out unchanged, if the datagram is short or op is not '+' or '-'.
+ */
+bool WriteQuizQuestion(ByteWriter& writer, const QuizQuestion& question);
+bool ReadQuizQuestion(ByteReader& reader, QuizQuestion& out);
 
 /**
  * Readable name for logs; "UNKNOWN" for values outside the enum.

@@ -37,6 +37,21 @@ void ME::Button::UpdateInteraction(const Vec2& mousePosUISpace, bool mouseDown) 
     }
 }
 
+void ME::Button::ResetInteraction() {
+    if (!isHovered && !isPressed) {
+        return;
+    }
+    if (isPressed) {
+        isPressed = false;
+        onRelease.Execute();
+    }
+    if (isHovered) {
+        isHovered = false;
+        onHoverExit.Execute();
+    }
+    ApplyPanelColorForCurrentState();
+}
+
 bool ME::Button::IsHovered() const {
     return isHovered;
 }

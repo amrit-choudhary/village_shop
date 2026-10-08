@@ -1,9 +1,8 @@
 #include "audio_system.h"
 
-#include "shared/src/misc/utils.h"
-
-#include "client/src/scene/scene.h"
 #include "audio_impl_miniaudio.h"
+#include "client/src/scene/scene.h"
+#include "shared/src/misc/utils.h"
 
 void ME::AudioSystem::Init() {
     isInitialized = false;

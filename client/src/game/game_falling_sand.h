@@ -4,10 +4,9 @@
  * Falling Sand.
  */
 
-#include "shared/src/datastructure/grid.h"
-
 #include "client/src/scene/scene_falling_sand.h"
 #include "game.h"
+#include "shared/src/datastructure/grid.h"
 
 namespace ME {
 class GameFallingSand : public Game {
@@ -18,7 +17,7 @@ class GameFallingSand : public Game {
     // Game control functions.
 
     // Init game
-    virtual void Init(ME::Time::TimeManager *currentTimeManager) override;
+    virtual void Init(ME::Time::TimeManager* currentTimeManager) override;
 
     // Update game.
     virtual void Update(double deltaTime) override;
@@ -27,16 +26,16 @@ class GameFallingSand : public Game {
     virtual void End() override;
 
    private:
-    SceneFallingSand *sandScene = nullptr;  // Scene for the game.
-    PhysicsScene *physicsScene = nullptr;   // Physics scene for the game.
+    SceneFallingSand* sandScene = nullptr;  // Scene for the game.
+    PhysicsScene* physicsScene = nullptr;   // Physics scene for the game.
     const size_t gridWidth = 100;
     const size_t gridHeight = 100;
     const size_t gridCount = gridWidth * gridHeight;
 
     // Grids for the Game of Life.
-    ME::Grid<uint8_t> *currentGen;
-    ME::Grid<uint8_t> *nextGen;
-    ME::Grid<uint8_t> *tempGrid;
+    ME::Grid<uint8_t>* currentGen;
+    ME::Grid<uint8_t>* nextGen;
+    ME::Grid<uint8_t>* tempGrid;
 
     uint32_t frameCounter = 0;
     uint32_t updateIntervalFrames = 1;

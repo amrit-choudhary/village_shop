@@ -6,9 +6,9 @@
 
 #include <cmath>
 
-#include "shared/src/math/vec2.h"
 #include "random_engine.h"
 #include "shared/src/math/math.h"
+#include "shared/src/math/vec2.h"
 
 namespace ME {
 

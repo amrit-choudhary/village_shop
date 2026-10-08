@@ -25,7 +25,7 @@ class VillageGame : public Game {
     VillageGame();
     ~VillageGame();
 
-    void Init(ME::Time::TimeManager *currentTimeManager) override;
+    void Init(ME::Time::TimeManager* currentTimeManager) override;
 
     void Update(double deltaTime) override;
 

@@ -8,6 +8,7 @@ void ME::PhysicsSceneBreakout::Init() {
     ME::PhysicsScene::Init();
 }
 
-void ME::PhysicsSceneBreakout::Init(ME::Span<ColliderAABB> inStaticColliders, ME::Span<ColliderAABB> inDynamicColliders) {
+void ME::PhysicsSceneBreakout::Init(ME::Span<ColliderAABB> inStaticColliders,
+                                    ME::Span<ColliderAABB> inDynamicColliders) {
     ME::PhysicsScene::Init(inStaticColliders, inDynamicColliders);
 }

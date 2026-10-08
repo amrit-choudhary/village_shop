@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "shared/src/file_io/dds/dds_parser.h"
 #include "logging/src/logging.h"
+#include "shared/src/file_io/dds/dds_parser.h"
 
 ME::Texture::Texture() {}
 

@@ -41,25 +41,25 @@ int RunAll();
 
 }  // namespace ME::Test
 
-#define TEST(category, name)                                                                     \
-    static void Test_##category##_##name();                                                      \
-    [[maybe_unused]] static const bool registered_##category##_##name =                          \
-        ME::Test::Register(#category, #name, Test_##category##_##name);                          \
+#define TEST(category, name)                                            \
+    static void Test_##category##_##name();                             \
+    [[maybe_unused]] static const bool registered_##category##_##name = \
+        ME::Test::Register(#category, #name, Test_##category##_##name); \
     static void Test_##category##_##name()
 
-#define EXPECT(condition)                                                \
-    do {                                                                 \
-        if (!(condition)) {                                              \
-            ME::Test::ReportFailure(__FILE__, __LINE__, #condition);     \
-        }                                                                \
+#define EXPECT(condition)                                            \
+    do {                                                             \
+        if (!(condition)) {                                          \
+            ME::Test::ReportFailure(__FILE__, __LINE__, #condition); \
+        }                                                            \
     } while (0)
 
-#define ASSERT(condition)                                                \
-    do {                                                                 \
-        if (!(condition)) {                                              \
-            ME::Test::ReportFailure(__FILE__, __LINE__, #condition);     \
-            return;                                                      \
-        }                                                                \
+#define ASSERT(condition)                                            \
+    do {                                                             \
+        if (!(condition)) {                                          \
+            ME::Test::ReportFailure(__FILE__, __LINE__, #condition); \
+            return;                                                  \
+        }                                                            \
     } while (0)
 
 // For floats: passes when |a - b| <= epsilon.

@@ -11,15 +11,14 @@
 #include <windows.h>
 #endif
 
+#include "client_connection.h"
+#include "content_store.h"
 #include "logging/src/logging.h"
 #include "shared/src/file_io/ini/ini_parser.h"
 #include "shared/src/misc/utils.h"
 #include "shared/src/net/networking.h"
 #include "shared/src/net/tcp_socket.h"
 #include "shared/src/time/time_manager.h"
-
-#include "client_connection.h"
-#include "content_store.h"
 
 namespace {
 // Main loop flag. Nothing clears it yet; stop the process with Ctrl+C, like the game server.

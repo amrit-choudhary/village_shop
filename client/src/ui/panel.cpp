@@ -1,10 +1,10 @@
 #include "panel.h"
 
-#include "shared/src/math/transform.h"
 #include "client/src/rendering/shared/sprite_renderer.h"
+#include "shared/src/math/transform.h"
 
 ME::Panel::Panel(uint8_t quadId, uint8_t materialId, uint8_t textureId, uint8_t textureAtlasPropsId,
-                  uint16_t atlasIndex, const Color& color)
+                 uint16_t atlasIndex, const Color& color)
     : quadId(quadId),
       materialId(materialId),
       textureId(textureId),

@@ -9,11 +9,11 @@
  * static content in BuildUISprites/BuildTextRenderers rather than in a Game subclass.
  */
 
-#include "scene_ui.h"
 #include "client/src/ui/button.h"
 #include "client/src/ui/image.h"
 #include "client/src/ui/label.h"
 #include "client/src/ui/panel.h"
+#include "scene_ui.h"
 
 namespace ME {
 

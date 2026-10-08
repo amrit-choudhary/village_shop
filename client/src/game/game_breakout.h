@@ -19,7 +19,7 @@ class GameBreakout : public Game {
     // Game control functions.
 
     // Init game
-    virtual void Init(ME::Time::TimeManager *currentTimeManager) override;
+    virtual void Init(ME::Time::TimeManager* currentTimeManager) override;
 
     // Update game.
     virtual void Update(double deltaTime) override;
@@ -28,15 +28,15 @@ class GameBreakout : public Game {
     virtual void End() override;
 
     // This will be called from the PhysicsSystem when a collision is detected.
-    void CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) override;
+    void CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) override;
 
    private:
-    SceneBreakout *brkScene = nullptr;                       // Scene for the game.
-    PhysicsScene *physicsScene = nullptr;                    // Physics scene for the game.
-    Transform *ballTransform = nullptr;                      // Transform for the ball.
-    SpriteRendererInstanceData *ballInstanceData = nullptr;  // Instance data for the ball.
+    SceneBreakout* brkScene = nullptr;                       // Scene for the game.
+    PhysicsScene* physicsScene = nullptr;                    // Physics scene for the game.
+    Transform* ballTransform = nullptr;                      // Transform for the ball.
+    SpriteRendererInstanceData* ballInstanceData = nullptr;  // Instance data for the ball.
     Vec2 ballVelocity{1.0f, 1.0f};                           // Initial velocity of the ball.
-    ColliderAABB *ballCollider = nullptr;                    // Collider for the ball.
+    ColliderAABB* ballCollider = nullptr;                    // Collider for the ball.
     uint32_t ballIndex = 0;
     uint32_t score = 0;
 

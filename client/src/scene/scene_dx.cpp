@@ -196,8 +196,8 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
         return;
     }
 
-    spriteInstanceBuffer0 = new ME::UploadBufferDX(device, false, instancedSpriteRenderers0.count,
-                                                   sizeof(ME::SpriteRendererInstanceData));
+    spriteInstanceBuffer0 =
+        new ME::UploadBufferDX(device, false, instancedSpriteRenderers0.count, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex0 = descHeapManager->CreateSRVInstanceData(
         spriteInstanceBuffer0->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRenderers0.count);
 
@@ -206,8 +206,8 @@ void ME::SceneDX::MakeSpriteInstanceBuffer() {
         return;
     }
 
-    spriteInstanceBuffer1 = new ME::UploadBufferDX(device, false, instancedSpriteRenderers1.count,
-                                                   sizeof(ME::SpriteRendererInstanceData));
+    spriteInstanceBuffer1 =
+        new ME::UploadBufferDX(device, false, instancedSpriteRenderers1.count, sizeof(ME::SpriteRendererInstanceData));
     spriteInstanceBufferHeapIndex1 = descHeapManager->CreateSRVInstanceData(
         spriteInstanceBuffer1->GetResource(), sizeof(ME::SpriteRendererInstanceData), instancedSpriteRenderers1.count);
 }

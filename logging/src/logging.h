@@ -61,7 +61,7 @@ inline std::string_view DefaultLogColor() {
 }
 
 template <typename... Args>
-void LogImpl(LogLevel level, const Args &...args) {
+void LogImpl(LogLevel level, const Args&... args) {
     std::ostringstream oss;
     oss << LogLevelToColor(level);
     oss << LogLevelToString(level) << ' ';
@@ -72,32 +72,32 @@ void LogImpl(LogLevel level, const Args &...args) {
 }
 
 template <typename... Args>
-void LogInfo(const Args &...args) {
+void LogInfo(const Args&... args) {
     LogImpl(LogLevel::Info, args...);
 }
 
 template <typename... Args>
-void LogWarning(const Args &...args) {
+void LogWarning(const Args&... args) {
     LogImpl(LogLevel::Warning, args...);
 }
 
 template <typename... Args>
-void LogError(const Args &...args) {
+void LogError(const Args&... args) {
     LogImpl(LogLevel::Error, args...);
 }
 
 template <typename... Args>
-void LogDebug(const Args &...args) {
+void LogDebug(const Args&... args) {
     LogImpl(LogLevel::Debug, args...);
 }
 
 template <typename... Args>
-void LogSuccess(const Args &...args) {
+void LogSuccess(const Args&... args) {
     LogImpl(LogLevel::Success, args...);
 }
 
 template <typename... Args>
-void Log(const Args &...args) {
+void Log(const Args&... args) {
     LogImpl(LogLevel::Info, args...);
 }
 

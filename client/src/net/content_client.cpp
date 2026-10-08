@@ -6,8 +6,8 @@
 #include "shared/src/serialization/byte_reader.h"
 #include "shared/src/serialization/byte_writer.h"
 
-using ME::Net::ContentProtocol::Verb;
 using ME::Net::TcpResult;
+using ME::Net::ContentProtocol::Verb;
 
 namespace {
 constexpr const char* MANIFEST_FILE = "manifest.json";
@@ -165,8 +165,7 @@ void ME::ContentClient::Fail(const char* reason) {
 bool ME::ContentClient::QueueGetManifest() {
     ByteWriter writer(sendStorage, sizeof(sendStorage));
     size_t frameStart = 0;
-    if (!Net::BeginFrame(writer, Net::ContentProtocol::VERSION, static_cast<uint8_t>(Verb::GET_MANIFEST),
-                         frameStart) ||
+    if (!Net::BeginFrame(writer, Net::ContentProtocol::VERSION, static_cast<uint8_t>(Verb::GET_MANIFEST), frameStart) ||
         !Net::FinishFrame(writer, frameStart)) {
         return false;
     }

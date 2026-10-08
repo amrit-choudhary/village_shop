@@ -16,7 +16,8 @@ static bool ParseText(ContentManifest& manifest, const char* text) {
 
 TEST(ContentManifest, ParseValid) {
     ContentManifest manifest;
-    ASSERT(ParseText(manifest, R"({"files":[{"name":"config/economy.json","version":3},{"name":"a.txt","version":0}]})"));
+    ASSERT(
+        ParseText(manifest, R"({"files":[{"name":"config/economy.json","version":3},{"name":"a.txt","version":0}]})"));
 
     EXPECT(manifest.GetCount() == 2);
     const ME::Net::ManifestEntry* entry = manifest.Find("config/economy.json");

@@ -5,9 +5,10 @@
 #include <D3Dcompiler.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include "shared/src/misc/utils.h"
 
 #include <string>
+
+#include "shared/src/misc/utils.h"
 
 ME::Shader::Shader(const char* shaderName) {
     CompileShader(shaderName);

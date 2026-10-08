@@ -2,9 +2,8 @@
 
 #include "input_manager_win.h"
 
-#include "logging/src/logging.h"
-
 #include "client/src/misc/global_vars.h"
+#include "logging/src/logging.h"
 
 using namespace ME::Input;
 

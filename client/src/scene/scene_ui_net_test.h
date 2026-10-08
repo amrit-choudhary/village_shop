@@ -6,10 +6,10 @@
  * BuildUIElements() below.
  */
 
-#include "scene_ui.h"
 #include "client/src/ui/button.h"
 #include "client/src/ui/label.h"
 #include "client/src/ui/panel.h"
+#include "scene_ui.h"
 
 namespace ME {
 
@@ -27,6 +27,13 @@ class SceneUINetTest : public ME::SceneUI {
     ME::Label* GetOpponentScoreLabel() const;
     ME::Label* GetHighScoreLabel() const;
     ME::Button* GetScoreButton() const;
+    ME::Label* GetQuizQuestionLabel() const;
+
+    // index is 0 or 1, matching QuizQuestion::options. Returns nullptr for any other index.
+    ME::Button* GetAnswerButton(int index) const;
+    ME::Label* GetAnswerLabel(int index) const;
+
+    static constexpr int ANSWER_COUNT = 2;
 
    private:
     ME::Panel* topBarPanel = nullptr;
@@ -40,6 +47,11 @@ class SceneUINetTest : public ME::SceneUI {
     ME::Button* scoreButton = nullptr;
     ME::Panel* scoreButtonPanel = nullptr;
     ME::Label* scoreButtonLabel = nullptr;
+
+    ME::Label* quizQuestionLabel = nullptr;
+    ME::Button* answerButtons[ANSWER_COUNT] = {nullptr, nullptr};
+    ME::Panel* answerButtonPanels[ANSWER_COUNT] = {nullptr, nullptr};
+    ME::Label* answerButtonLabels[ANSWER_COUNT] = {nullptr, nullptr};
 };
 
 }  // namespace ME

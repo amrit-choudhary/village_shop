@@ -11,8 +11,8 @@
 
 #include <cstdint>
 
-#include "scene_ui_debug.h"
 #include "client/src/rendering/shared/color.h"
+#include "scene_ui_debug.h"
 #include "ui_system_debug.h"
 
 namespace ME {

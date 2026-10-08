@@ -30,6 +30,8 @@ one real exception (cJSON, noted below).
   `0x20-0x3F`, Matchmaking `0x40-0x5F`, Gameplay `0x60-0x7F`. `WriteHeader`/`ReadHeader`, `WriteFP`/`ReadFP`
   (raw 32-bit), `WriteString`/`ReadString` (u8 length + bytes, no terminating 0, max 255) over
   `ByteWriter`/`ByteReader`; `CHAT_CAPACITY` 64 (63 chars); `GetVerbName` ("UNKNOWN" for unknown bytes).
+  `QUIZ_QUESTION` (net-test demo) carries a `QuizQuestion` (`WriteQuizQuestion`/`ReadQuizQuestion`, 9 bytes,
+  rejects ops other than `+`/`-`); the server broadcasts one on a 5 s `TimerManager` interval.
 - All network messages (TCP and UDP) are read / written with `ByteWriter`/`ByteReader`
   (`src/serialization/`): the single binary read/write API, also for binary files.
 - Server-side consumer: [server/CLAUDE.md](../server/CLAUDE.md).

@@ -8,18 +8,18 @@
 #pragma once
 
 #import <Cocoa/Cocoa.h>
-#import <MetalKit/MetalKit.h>
 #import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
 #include "client/src/main/main_mac.h"
 
 @interface MEViewDelegate : NSObject <MTKViewDelegate>
 
-@property (nonatomic, nonnull, assign) MTKView *view;
-@property (nonatomic, nonnull, assign) id<MTLDevice> device;
-@property (nonatomic, nonnull, assign) ME::GameMain *gameMain;
+@property(nonatomic, nonnull, assign) MTKView *view;
+@property(nonatomic, nonnull, assign) id<MTLDevice> device;
+@property(nonatomic, nonnull, assign) ME::GameMain *gameMain;
 
--(nonnull instancetype)initWithView:(nonnull MTKView *)view device:(nonnull id<MTLDevice>)device;
+- (nonnull instancetype)initWithView:(nonnull MTKView *)view device:(nonnull id<MTLDevice>)device;
 
 @end
 

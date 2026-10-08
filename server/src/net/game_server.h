@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "server/src/db/score_db.h"
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_address.h"
 #include "shared/src/net/udp_socket.h"
+#include "shared/src/random/random_engine.h"
 #include "shared/src/time/timer_manager.h"
 
 namespace ME {
@@ -40,7 +42,7 @@ class GameServer {
     void Update(double deltaTime);
     void End();
 
-    // Timers the server schedules on; owned and ticked by the server main loop.
+    // Timers the server schedules on; owned and ticked by the server main loop. Set before Init.
     void SetTimerManagerRef(Time::TimerManager* ptrTimerManager);
 
    private:
@@ -54,6 +56,10 @@ class GameServer {
     void SendConnected(uint8_t clientID);
     void SendPong(uint8_t clientID);
     void SendHighScore(uint8_t clientID);
+    void SendQuizQuestion(uint8_t clientID);
+
+    // Interval timer callback: makes a new question and sends it to every connected client.
+    void OnQuizTimer();
 
     void SendDatagram(const uint8_t* data, size_t size, uint8_t clientID);
 
@@ -65,10 +71,16 @@ class GameServer {
     // Upper bound per Update, so a flood of datagrams can't hold up the server's tick.
     static constexpr int MAX_DATAGRAMS_PER_UPDATE = 256;
 
+    static constexpr double QUIZ_INTERVAL_SECONDS = 5.0;
+
     Net::UdpSocket socket;
     std::vector<ConnectedClient> connectedClients;
     ScoreDB scoreDB;
     Time::TimerManager* timerManager = nullptr;
+
+    Time::TimerHandle quizTimer;
+    Random quizRandom{"quiz", true};
+    Net::GameProtocol::QuizQuestion currentQuestion;
 };
 
 }  // namespace ME

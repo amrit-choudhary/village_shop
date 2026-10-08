@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "shared/src/math/vec2.h"
 #include "random_engine.h"
+#include "shared/src/math/vec2.h"
 
 namespace ME {
 

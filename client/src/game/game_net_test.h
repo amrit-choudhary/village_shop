@@ -2,13 +2,14 @@
 
 /**
  * Multiplayer networking test/demo game: exercises CONNECT/CONNECTED, PING/PONG, and a
- * SCORE_SEND/SCORE_RECV synced score between exactly two clients, with all state visible in
- * the UI (see SceneUINetTest). Not shipped gameplay - a manual test harness for the network
- * layer, same role as GameUIDemo for the UI subsystem.
+ * SCORE_SEND/SCORE_RECV synced score between exactly two clients, and a timed QUIZ_QUESTION round
+ * (answer buttons close after kAnswerWindowSeconds), with all state visible in the UI (see
+ * SceneUINetTest). Not shipped gameplay - a manual test harness for the network layer, same role
+ * as GameUIDemo for the UI subsystem.
  */
 
-#include "game.h"
 #include "client/src/scene/scene_ui_net_test.h"
+#include "game.h"
 
 namespace ME {
 
@@ -27,9 +28,15 @@ class GameNetTest : public Game {
     void OnScoreReceived();
     void OnHighScoreReceived();
     void OnScoreButtonClicked();
+    void OnQuizQuestion();
+    void OnAnswerTimeout();
+    void OnAnswer0Clicked();
+    void OnAnswer1Clicked();
 
    private:
     void RefreshPingLabel();
+    void PickAnswer(int index);
+    void SetAnswerButtonsVisible(bool visible);
 
     // Same object as the base Game::uiScene, kept here with its concrete type so handlers can
     // reach SceneUINetTest's labels without a cast.
@@ -41,6 +48,12 @@ class GameNetTest : public Game {
     double pingTimer = 0.0;
 
     static constexpr double kPingIntervalSeconds = 2.0;
+
+    // Open while the answer buttons are shown; cleared early when an answer is picked.
+    ME::Time::TimerHandle answerTimer;
+    char questionText[48] = {};
+
+    static constexpr double kAnswerWindowSeconds = 3.0;
 };
 
 }  // namespace ME

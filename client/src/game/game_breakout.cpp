@@ -4,7 +4,7 @@ ME::GameBreakout::GameBreakout() : Game() {}
 
 ME::GameBreakout::~GameBreakout() {}
 
-void ME::GameBreakout::Init(ME::Time::TimeManager *currentTimeManager) {
+void ME::GameBreakout::Init(ME::Time::TimeManager* currentTimeManager) {
     Game::Init(currentTimeManager);
 
     brkScene = new ME::SceneBreakout();
@@ -47,7 +47,7 @@ void ME::GameBreakout::End() {
     Game::End();
 }
 
-void ME::GameBreakout::CollisionCallback(ColliderAABB *a, ColliderAABB *b, CollisionResultAABB *result) {
+void ME::GameBreakout::CollisionCallback(ColliderAABB* a, ColliderAABB* b, CollisionResultAABB* result) {
     // By convention, the ball is always the first collider.
     TranslateBall(result->seperation);
 

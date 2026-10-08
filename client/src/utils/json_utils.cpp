@@ -1,7 +1,5 @@
 #include "json_utils.h"
 
-#include "shared/src/file_io/vfs.h"
-
 #include <iostream>
 #include <map>
 #include <string>
@@ -9,6 +7,7 @@
 #include "client/src/anim/sprite_anim_clip.h"
 #include "client/src/game/wave_data.h"
 #include "client/src/rendering/shared/texture.h"
+#include "shared/src/file_io/vfs.h"
 #include "shared/third_party/json/cJSON.h"
 
 bool ME::JsonUtils::LoadTextureAtlasProps(const char* filePath, ME::TextureAtlasProperties& outAtlasProps) {

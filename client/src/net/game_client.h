@@ -8,8 +8,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "shared/src/misc/delegate.h"
 #include "shared/src/math/fp_24_8.h"
+#include "shared/src/misc/delegate.h"
+#include "shared/src/net/game_protocol.h"
 #include "shared/src/net/net_address.h"
 #include "shared/src/net/udp_socket.h"
 
@@ -50,11 +51,13 @@ class GameClient {
     uint8_t GetLastScoreSenderID() const;
     uint32_t GetLastScore() const;
     uint32_t GetHighScore() const;
+    const Net::GameProtocol::QuizQuestion& GetLastQuizQuestion() const;
 
     Delegate onConnected;
     Delegate onPong;
     Delegate onScoreReceived;
     Delegate onHighScoreReceived;
+    Delegate onQuizQuestion;  // GetLastQuizQuestion() holds the new question
 
    private:
     void ProcessDatagram(const uint8_t* data, int size);
@@ -63,6 +66,7 @@ class GameClient {
     void RecvGameData(ByteReader& reader);
     void RecvScore(ByteReader& reader, uint8_t clientID);
     void RecvHighScore(ByteReader& reader);
+    void RecvQuizQuestion(ByteReader& reader);
 
     void SendDatagram(const uint8_t* data, size_t size);
 
@@ -75,6 +79,7 @@ class GameClient {
     uint8_t lastScoreSenderID = 0;
     uint32_t lastScore = 0;
     uint32_t highScore = 0;
+    Net::GameProtocol::QuizQuestion lastQuizQuestion;
 };
 
 }  // namespace ME

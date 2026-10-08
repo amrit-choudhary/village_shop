@@ -1,12 +1,12 @@
 #include "ui_system_debug.h"
 
-#include "shared/src/math/transform.h"
-#include "shared/src/misc/game_constants.h"
 #include "client/src/misc/global_vars.h"
 #include "client/src/rendering/shared/sprite_renderer.h"
 #include "client/src/rendering/shared/text_renderer.h"
 #include "client/src/scene/scene_ui.h"
 #include "client/src/ui/ui_element.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/misc/game_constants.h"
 
 ME::UISystemDebug::UISystemDebug() {}
 

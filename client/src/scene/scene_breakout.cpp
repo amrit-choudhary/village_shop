@@ -131,7 +131,7 @@ void ME::SceneBreakout::BuildInstancedSpriteRenderers() {
             instancedSpriteRenderers0[i].atlasIndex = 587;
 
             staticColliders[staticColliders.count] = ME::ColliderAABB(i, true, true, PhysicsLayer::Default,
-                                                                       PhysicsLayer::All, instancedSpriteTransforms0[i]);
+                                                                      PhysicsLayer::All, instancedSpriteTransforms0[i]);
             ++staticColliders.count;
         } else {
             instancedSpriteRenderers0[i].atlasIndex = 0;
@@ -168,8 +168,8 @@ void ME::SceneBreakout::CreateWalls() {
         instancedSpriteRenderers0[indices[i]].atlasIndex = 253;
         instancedSpriteRenderers0[indices[i]].color = colorPalette[7];
 
-        staticColliders[staticColliders.count] = ColliderAABB(indices[i], true, true, PhysicsLayer::Default,
-                                                               PhysicsLayer::All, instancedSpriteTransforms0[indices[i]]);
+        staticColliders[staticColliders.count] = ColliderAABB(
+            indices[i], true, true, PhysicsLayer::Default, PhysicsLayer::All, instancedSpriteTransforms0[indices[i]]);
         ++staticColliders.count;
     }
 }

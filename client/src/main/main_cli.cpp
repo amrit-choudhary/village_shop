@@ -9,13 +9,13 @@
 #include "client/src/input/input_manager.h"
 #include "client/src/misc/global_vars.h"
 #include "client/src/net/game_client.h"
+#include "logging/src/logging.h"
 #include "rendering/renderer.h"
 #include "shared/src/file_io/ini/ini_parser.h"
-#include "logging/src/logging.h"
 #include "shared/src/misc/utils.h"
 #include "shared/src/time/time_manager.h"
 
-int main2(int argc, char **argv) {
+int main2(int argc, char** argv) {
     ME::SetPaths(argv[0], argv[1]);
 
     // Read game params from file.

@@ -23,7 +23,8 @@ void ME::DebugSystem::Update(double deltaTime) {
         if (sceneUIDebug.logLineRemaining[readIndex] > 0.0f) {
             if (writeIndex != readIndex) {
                 ME::StringUtils::CopyBounded(sceneUIDebug.logLineText[writeIndex],
-                                              ME::SceneUIDebug::kLogLineTextCapacity, sceneUIDebug.logLineText[readIndex]);
+                                             ME::SceneUIDebug::kLogLineTextCapacity,
+                                             sceneUIDebug.logLineText[readIndex]);
                 sceneUIDebug.logLineColor[writeIndex] = sceneUIDebug.logLineColor[readIndex];
                 sceneUIDebug.logLineRemaining[writeIndex] = sceneUIDebug.logLineRemaining[readIndex];
             }
@@ -115,7 +116,7 @@ void ME::DebugSystem::ScreenPrintImpl(const char* message, float lifetime, const
         // the end. Deterministic FIFO eviction, never drops the newest print.
         for (size_t i = 1; i < ME::Constants::MaxDebugLogLineCount; ++i) {
             ME::StringUtils::CopyBounded(sceneUIDebug.logLineText[i - 1], ME::SceneUIDebug::kLogLineTextCapacity,
-                                          sceneUIDebug.logLineText[i]);
+                                         sceneUIDebug.logLineText[i]);
             sceneUIDebug.logLineColor[i - 1] = sceneUIDebug.logLineColor[i];
             sceneUIDebug.logLineRemaining[i - 1] = sceneUIDebug.logLineRemaining[i];
         }

@@ -2,12 +2,12 @@
 
 #include "button.h"
 #include "client/src/input/input_manager.h"
-#include "shared/src/math/transform.h"
-#include "shared/src/misc/game_constants.h"
 #include "client/src/misc/global_vars.h"
 #include "client/src/rendering/shared/sprite_renderer.h"
 #include "client/src/rendering/shared/text_renderer.h"
 #include "client/src/scene/scene_ui.h"
+#include "shared/src/math/transform.h"
+#include "shared/src/misc/game_constants.h"
 #include "ui_element.h"
 
 ME::UISystem::UISystem() {}
@@ -61,21 +61,6 @@ void ME::UISystem::RemoveElement(UIElement* element) {
     uiScene->RemoveUIElement(element);
 }
 
-void ME::UISystem::UpdateButtonInteractions() {
-    ME::Vec2i rawMousePos = ME::Input::InputManager::GetMousePos();
-    Vec2 mousePos{static_cast<float>(rawMousePos.x), static_cast<float>(rawMousePos.y)};
-    bool mouseDown = ME::Input::InputManager::GetMouseButtonPressed(ME::Input::MouseButton::Left);
-
-    UIElement** elements = uiScene->GetUIElements();
-    uint32_t elementCount = uiScene->GetUIElementCount();
-    for (uint32_t i = 0; i < elementCount; ++i) {
-        UIElement* element = elements[i];
-        if (element->GetType() == UIElementType::Button) {
-            static_cast<Button*>(element)->UpdateInteraction(mousePos, mouseDown);
-        }
-    }
-}
-
 namespace {
 
 bool IsEffectivelyVisible(ME::UIElement* element) {
@@ -89,6 +74,28 @@ bool IsEffectivelyVisible(ME::UIElement* element) {
 }
 
 }  // namespace
+
+void ME::UISystem::UpdateButtonInteractions() {
+    ME::Vec2i rawMousePos = ME::Input::InputManager::GetMousePos();
+    Vec2 mousePos{static_cast<float>(rawMousePos.x), static_cast<float>(rawMousePos.y)};
+    bool mouseDown = ME::Input::InputManager::GetMouseButtonPressed(ME::Input::MouseButton::Left);
+
+    UIElement** elements = uiScene->GetUIElements();
+    uint32_t elementCount = uiScene->GetUIElementCount();
+    for (uint32_t i = 0; i < elementCount; ++i) {
+        UIElement* element = elements[i];
+        if (element->GetType() != UIElementType::Button) {
+            continue;
+        }
+        Button* button = static_cast<Button*>(element);
+        // Hidden buttons (or ones under a hidden parent) take no input.
+        if (IsEffectivelyVisible(button)) {
+            button->UpdateInteraction(mousePos, mouseDown);
+        } else {
+            button->ResetInteraction();
+        }
+    }
+}
 
 void ME::UISystem::SyncToScene() {
     uint32_t spriteCount = 0;

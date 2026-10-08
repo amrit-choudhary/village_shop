@@ -80,6 +80,9 @@ void ME::GameClient::ProcessDatagram(const uint8_t* data, int size) {
         case Verb::HIGHSCORE_RECV:
             RecvHighScore(reader);
             break;
+        case Verb::QUIZ_QUESTION:
+            RecvQuizQuestion(reader);
+            break;
         default:
             break;
     }
@@ -187,6 +190,16 @@ void ME::GameClient::RecvHighScore(ByteReader& reader) {
     onHighScoreReceived.Execute();
 }
 
+void ME::GameClient::RecvQuizQuestion(ByteReader& reader) {
+    GameProtocol::QuizQuestion question;
+    if (!GameProtocol::ReadQuizQuestion(reader, question)) {
+        LogWarning("Dropped invalid quiz question");
+        return;
+    }
+    lastQuizQuestion = question;
+    onQuizQuestion.Execute();
+}
+
 void ME::GameClient::SendDatagram(const uint8_t* data, size_t size) {
     if (!socket.IsOpen()) {
         return;
@@ -214,4 +227,8 @@ uint32_t ME::GameClient::GetLastScore() const {
 
 uint32_t ME::GameClient::GetHighScore() const {
     return highScore;
+}
+
+const ME::Net::GameProtocol::QuizQuestion& ME::GameClient::GetLastQuizQuestion() const {
+    return lastQuizQuestion;
 }

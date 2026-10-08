@@ -1,9 +1,8 @@
 #include "sprite_animator.h"
 
+#include "client/src/rendering/shared/sprite_renderer.h"
 #include "logging/src/logging.h"
 #include "shared/src/misc/game_constants.h"
-
-#include "client/src/rendering/shared/sprite_renderer.h"
 
 ME::SpriteAnimator::SpriteAnimator(ME::SpriteRenderer* spriteRenderer, uint8_t frameRate)
     : spriteRenderer(spriteRenderer) {

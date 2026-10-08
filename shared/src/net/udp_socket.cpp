@@ -44,8 +44,7 @@ ME::Net::UdpResult ME::Net::UdpSocket::SendTo(const uint8_t* data, int size, con
     return SocketPlatform::LastErrorIsWouldBlock() ? UdpResult::WouldBlock : UdpResult::Error;
 }
 
-ME::Net::UdpResult ME::Net::UdpSocket::RecvFrom(uint8_t* buffer, int capacity, int& outReceived,
-                                                Address& outFrom) {
+ME::Net::UdpResult ME::Net::UdpSocket::RecvFrom(uint8_t* buffer, int capacity, int& outReceived, Address& outFrom) {
     outReceived = 0;
     uint32_t fromIp = 0;
     uint16_t fromPort = 0;

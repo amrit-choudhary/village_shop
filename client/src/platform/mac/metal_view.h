@@ -13,6 +13,5 @@
 @interface MEView : MTKView
 @end
 
-
-#endif // __OBJC__
+#endif  // __OBJC__
 #endif  // VG_MAC

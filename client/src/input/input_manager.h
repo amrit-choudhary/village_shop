@@ -4,15 +4,14 @@
 
 #pragma once
 
-#include "shared/src/math/vec2.h"
-#include "shared/src/math/vec2i.h"
-
 #include <cstdint>
 #include <string>
 #include <thread>
 #include <unordered_map>
 
 #include "client/src/misc/global_vars.h"
+#include "shared/src/math/vec2.h"
+#include "shared/src/math/vec2i.h"
 
 namespace ME::Input {
 

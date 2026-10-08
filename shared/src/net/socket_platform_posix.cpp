@@ -1,7 +1,5 @@
 #if defined(VG_LINUX) || defined(VG_MAC)
 
-#include "socket_platform.h"
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -10,6 +8,8 @@
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
+
+#include "socket_platform.h"
 
 namespace {
 int ToNative(intptr_t s) {
@@ -115,8 +115,7 @@ int ME::Net::SocketPlatform::SendTo(intptr_t s, const uint8_t* data, int size, u
         sendto(ToNative(s), data, static_cast<size_t>(size), 0, reinterpret_cast<sockaddr*>(&to), sizeof(to)));
 }
 
-int ME::Net::SocketPlatform::RecvFrom(intptr_t s, uint8_t* buffer, int capacity, uint32_t& outIp,
-                                      uint16_t& outPort) {
+int ME::Net::SocketPlatform::RecvFrom(intptr_t s, uint8_t* buffer, int capacity, uint32_t& outIp, uint16_t& outPort) {
     sockaddr_in from{};
     socklen_t fromLength = sizeof(from);
     // A datagram bigger than capacity is cut: recvfrom returns its first capacity bytes and drops the rest.
@@ -129,8 +128,7 @@ int ME::Net::SocketPlatform::RecvFrom(intptr_t s, uint8_t* buffer, int capacity,
     return received;
 }
 
-ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip,
-                                                                            uint16_t port) {
+ME::Net::SocketPlatform::ConnectState ME::Net::SocketPlatform::StartConnect(intptr_t s, const char* ip, uint16_t port) {
     sockaddr_in address{};
     address.sin_family = AF_INET;
     address.sin_port = htons(port);

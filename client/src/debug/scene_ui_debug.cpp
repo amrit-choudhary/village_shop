@@ -3,7 +3,6 @@
 #include "client/src/utils/json_utils.h"
 #include "shared/src/math/vec2.h"
 
-
 namespace {
 constexpr float kRowStartX = 20.0f;
 constexpr float kRowStartY = 10.0f;

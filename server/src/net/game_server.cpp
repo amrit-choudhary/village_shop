@@ -17,6 +17,11 @@ bool ME::GameServer::Init(uint16_t port) {
         return false;
     }
     LogSuccess("Server listening on UDP port ", port);
+
+    if (timerManager != nullptr) {
+        quizTimer = timerManager->SetInterval(Delegate::Make<GameServer, &GameServer::OnQuizTimer>(this),
+                                              QUIZ_INTERVAL_SECONDS);
+    }
     return true;
 }
 
@@ -40,6 +45,9 @@ void ME::GameServer::Update(double deltaTime) {
 }
 
 void ME::GameServer::End() {
+    if (timerManager != nullptr) {
+        timerManager->Clear(quizTimer);
+    }
     socket.Close();
     scoreDB.Close();
 }
@@ -56,8 +64,7 @@ void ME::GameServer::ProcessDatagram(const uint8_t* data, int size, const Net::A
         return;
     }
 
-    LogInfo("Datagram: ", GameProtocol::GetVerbName(header.verb), ", client ",
-            static_cast<unsigned>(header.clientID));
+    LogInfo("Datagram: ", GameProtocol::GetVerbName(header.verb), ", client ", static_cast<unsigned>(header.clientID));
 
     switch (static_cast<Verb>(header.verb)) {
         case Verb::CONNECT:
@@ -164,6 +171,46 @@ void ME::GameServer::SendHighScore(uint8_t clientID) {
     GameProtocol::WriteHeader(writer, Verb::HIGHSCORE_RECV, clientID);
     writer.WriteU32(scoreDB.GetHighScore());
     SendDatagram(buffer, writer.GetSize(), clientID);
+}
+
+void ME::GameServer::SendQuizQuestion(uint8_t clientID) {
+    uint8_t buffer[GameProtocol::MAX_DATAGRAM_SIZE];
+    ByteWriter writer(buffer, sizeof(buffer));
+    GameProtocol::WriteHeader(writer, Verb::QUIZ_QUESTION, clientID);
+    GameProtocol::WriteQuizQuestion(writer, currentQuestion);
+    SendDatagram(buffer, writer.GetSize(), clientID);
+}
+
+void ME::GameServer::OnQuizTimer() {
+    GameProtocol::QuizQuestion question;
+    question.id = currentQuestion.id + 1;
+    question.lhs = static_cast<uint8_t>(quizRandom.NextRange(1, 9));
+    question.rhs = static_cast<uint8_t>(quizRandom.NextRange(1, 9));
+    question.op = quizRandom.NextRange(0, 1) == 0 ? '+' : '-';
+
+    // Subtraction keeps the larger number first, so answers are never negative.
+    if (question.op == '-' && question.lhs < question.rhs) {
+        const uint8_t temp = question.lhs;
+        question.lhs = question.rhs;
+        question.rhs = temp;
+    }
+
+    const int correct = question.op == '+' ? question.lhs + question.rhs : question.lhs - question.rhs;
+    const int offset = static_cast<int>(quizRandom.NextRange(1, 3));
+    const int wrong = (correct >= offset && quizRandom.NextRange(0, 1) == 0) ? correct - offset : correct + offset;
+
+    const uint32_t correctSlot = quizRandom.NextRange(0, 1);
+    question.options[correctSlot] = static_cast<uint8_t>(correct);
+    question.options[1 - correctSlot] = static_cast<uint8_t>(wrong);
+
+    currentQuestion = question;
+    LogInfo("Quiz question ", question.id, ": ", static_cast<unsigned>(question.lhs), " ", question.op, " ",
+            static_cast<unsigned>(question.rhs), " (options ", static_cast<unsigned>(question.options[0]), ", ",
+            static_cast<unsigned>(question.options[1]), ")");
+
+    for (const ConnectedClient& client : connectedClients) {
+        SendQuizQuestion(client.clientID);
+    }
 }
 
 void ME::GameServer::SendDatagram(const uint8_t* data, size_t size, uint8_t clientID) {

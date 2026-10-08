@@ -2,8 +2,8 @@
 
 #include <cstddef>
 
-#include "shared/src/misc/game_constants.h"
 #include "client/src/utils/json_utils.h"
+#include "shared/src/misc/game_constants.h"
 
 ME::SceneUIHUD::SceneUIHUD() {}
 

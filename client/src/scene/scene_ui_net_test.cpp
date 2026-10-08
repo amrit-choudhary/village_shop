@@ -5,6 +5,12 @@
 ME::SceneUINetTest::SceneUINetTest() {}
 
 ME::SceneUINetTest::~SceneUINetTest() {
+    for (int i = 0; i < ANSWER_COUNT; ++i) {
+        delete answerButtonLabels[i];
+        delete answerButtonPanels[i];
+        delete answerButtons[i];
+    }
+    delete quizQuestionLabel;
     delete scoreButtonLabel;
     delete scoreButtonPanel;
     delete scoreButton;
@@ -59,8 +65,8 @@ void ME::SceneUINetTest::BuildUIElements() {
     statusLabel->Init();
     AddUIElement(statusLabel);
 
-    pingLabel = new ME::Label("Pings: 0 / Pongs: 0", 0, 1, 0, ME::Color::White(), 24, 24, 0, 2, 80,
-                              ME::TextAlignment::Center);
+    pingLabel =
+        new ME::Label("Pings: 0 / Pongs: 0", 0, 1, 0, ME::Color::White(), 24, 24, 0, 2, 80, ME::TextAlignment::Center);
     pingLabel->SetAnchor(ME::UIAnchor::Center);
     pingLabel->SetPivot(ME::UIPivot::Center);
     pingLabel->SetOffset(ME::Vec2{0.0f, -10.0f});
@@ -86,8 +92,8 @@ void ME::SceneUINetTest::BuildUIElements() {
     yourScoreLabel->Init();
     AddUIElement(yourScoreLabel);
 
-    opponentScoreLabel = new ME::Label("Opponent Score: -", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80,
-                                       ME::TextAlignment::Right);
+    opponentScoreLabel =
+        new ME::Label("Opponent Score: -", 0, 1, 0, ME::Color::Yellow(), 24, 24, 0, 2, 80, ME::TextAlignment::Right);
     opponentScoreLabel->SetAnchor(ME::UIAnchor::BottomRight);
     opponentScoreLabel->SetPivot(ME::UIPivot::BottomRight);
     opponentScoreLabel->SetOffset(ME::Vec2{-20.0f, -20.0f});
@@ -121,6 +127,47 @@ void ME::SceneUINetTest::BuildUIElements() {
     AddUIElement(scoreButtonLabel);
 
     scoreButton->SetPanel(scoreButtonPanel);
+
+    quizQuestionLabel = new ME::Label("Quiz: waiting for question...", 0, 1, 0, ME::Color::White(), 24, 24, 0, 2, 80,
+                                      ME::TextAlignment::Center);
+    quizQuestionLabel->SetAnchor(ME::UIAnchor::Center);
+    quizQuestionLabel->SetPivot(ME::UIPivot::Center);
+    quizQuestionLabel->SetOffset(ME::Vec2{0.0f, 100.0f});
+    quizQuestionLabel->SetSize(ME::Vec2{500.0f, 40.0f});
+    quizQuestionLabel->Init();
+    AddUIElement(quizQuestionLabel);
+
+    const float answerOffsetsX[ANSWER_COUNT] = {-110.0f, 110.0f};
+    for (int i = 0; i < ANSWER_COUNT; ++i) {
+        answerButtons[i] = new ME::Button();
+        answerButtons[i]->SetAnchor(ME::UIAnchor::Center);
+        answerButtons[i]->SetPivot(ME::UIPivot::Center);
+        answerButtons[i]->SetOffset(ME::Vec2{answerOffsetsX[i], 160.0f});
+        answerButtons[i]->SetSize(ME::Vec2{180.0f, 50.0f});
+        answerButtons[i]->Init();
+        AddUIElement(answerButtons[i]);
+
+        answerButtonPanels[i] = new ME::Panel(0, 0, 0, 0, 660);
+        answerButtonPanels[i]->SetAnchor(ME::UIAnchor::Center);
+        answerButtonPanels[i]->SetPivot(ME::UIPivot::Center);
+        answerButtonPanels[i]->SetSize(ME::Vec2{180.0f, 50.0f});
+        answerButtonPanels[i]->SetParent(answerButtons[i]);
+        answerButtonPanels[i]->Init();
+        AddUIElement(answerButtonPanels[i]);
+
+        answerButtonLabels[i] =
+            new ME::Label("-", 0, 1, 0, ME::Color::Black(), 24, 24, 0, 2, 40, ME::TextAlignment::Center);
+        answerButtonLabels[i]->SetAnchor(ME::UIAnchor::Center);
+        answerButtonLabels[i]->SetPivot(ME::UIPivot::Center);
+        answerButtonLabels[i]->SetSize(ME::Vec2{180.0f, 50.0f});
+        answerButtonLabels[i]->SetParent(answerButtons[i]);
+        answerButtonLabels[i]->Init();
+        AddUIElement(answerButtonLabels[i]);
+
+        answerButtons[i]->SetPanel(answerButtonPanels[i]);
+        // Shown only while a question is open; children hide with their parent.
+        answerButtons[i]->SetVisible(false);
+    }
 }
 
 ME::Label* ME::SceneUINetTest::GetStatusLabel() const {
@@ -145,4 +192,22 @@ ME::Label* ME::SceneUINetTest::GetHighScoreLabel() const {
 
 ME::Button* ME::SceneUINetTest::GetScoreButton() const {
     return scoreButton;
+}
+
+ME::Label* ME::SceneUINetTest::GetQuizQuestionLabel() const {
+    return quizQuestionLabel;
+}
+
+ME::Button* ME::SceneUINetTest::GetAnswerButton(int index) const {
+    if (index < 0 || index >= ANSWER_COUNT) {
+        return nullptr;
+    }
+    return answerButtons[index];
+}
+
+ME::Label* ME::SceneUINetTest::GetAnswerLabel(int index) const {
+    if (index < 0 || index >= ANSWER_COUNT) {
+        return nullptr;
+    }
+    return answerButtonLabels[index];
 }

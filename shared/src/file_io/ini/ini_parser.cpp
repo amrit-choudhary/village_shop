@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-ME::INIMap ME::INIParser::Load(const char *relPath, FileRoot root) {
+ME::INIMap ME::INIParser::Load(const char* relPath, FileRoot root) {
     std::string text;
     if (!Vfs::ReadText(root, relPath, text)) {
         std::cout << "Unable to open file: " << Vfs::GetRootPath(root) << relPath << std::endl;
@@ -16,7 +16,7 @@ namespace {
 
 // Strips leading/trailing spaces, tabs and '\r' (left by "\r\n" line endings when read in binary mode).
 std::string_view Trim(std::string_view text) {
-    const char *whitespace = " \t\r";
+    const char* whitespace = " \t\r";
     const size_t first = text.find_first_not_of(whitespace);
     if (first == std::string_view::npos) {
         return {};
@@ -27,7 +27,7 @@ std::string_view Trim(std::string_view text) {
 
 }  // namespace
 
-ME::INIMap ME::INIParser::Parse(const std::string &text) {
+ME::INIMap ME::INIParser::Parse(const std::string& text) {
     INIMap iniMap;
     std::string section;
     const std::string_view allText(text);
@@ -70,10 +70,10 @@ ME::INIMap ME::INIParser::Parse(const std::string &text) {
     return iniMap;
 }
 
-void ME::INIParser::Print(const INIMap &iniMap) {
-    for (const auto &[k, v] : iniMap) {
+void ME::INIParser::Print(const INIMap& iniMap) {
+    for (const auto& [k, v] : iniMap) {
         std::cout << k << '\n';
-        for (const auto &[k2, v2] : v) {
+        for (const auto& [k2, v2] : v) {
             std::cout << "\t" << k2 << " = " << v2 << '\n';
         }
     }
