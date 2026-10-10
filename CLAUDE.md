@@ -97,6 +97,23 @@ README says "no external dependencies," but this isn't strictly true — vendore
 
 These are vendor code; treat them as opaque dependencies, not project code to modify.
 
+## Pi deployment (me_server_manager)
+The Pi runs the servers through a separate repo, **me_server_manager** (PC: `D:\Dev\me_server_manager\me_server_manager`,
+Pi: `/home/amrit/gamedev/me_server_manager/me_server_manager`): a stdlib-only Python web dashboard (port 8080,
+systemd service) to build, start/stop and monitor both servers. Its `config.json` hard-codes things from this repo;
+if you change any of them, say so, so the dashboard config gets updated too:
+- **Build steps**, run in the Pi clone `/home/amrit/gamedev/cpp_projects/village_shop/village_shop`: `git pull --ff-only`
+  (the Pi clone must stay free of local edits), `cmake -B build -DCMAKE_BUILD_TYPE=Release -DVG_BUILD_TESTS=OFF`,
+  `cmake --build build --target VillageShop_Server VillageShop_ContentServer -j2`, then `cp -r server/resources
+  build/server/` and `cp -r content_server/resources content_server/dlc build/content_server/`.
+- **Binary paths**: `build/server/VillageShop_Server`, `build/content_server/VillageShop_ContentServer`. Renaming a
+  target, adding a server, or new runtime folders to copy needs a dashboard config change.
+- **Clean build** uses `cmake --build build --target clean`, never `rm -rf build`, so `village_shop.db` survives.
+- **Runtime contract**: started with cwd = the binary's folder and stdout/stderr captured to a log file (line-buffered via
+  `stdbuf`), so log to stdout via `logging/`. Stopped with SIGTERM, then SIGKILL after 5 s, so any graceful shutdown
+  added later must finish within 5 s. Exiting without being stopped (any exit code) counts as a crash and triggers
+  auto-restart; a server that exits on purpose would be restarted.
+
 ## Dev log
 `FPSMilestones.txt` — informal engine-loop perf benchmarks from March 2025 (basic loop,
 logging overhead, fixed-frame-rate cap, RNG generation). Not gameplay milestones.
