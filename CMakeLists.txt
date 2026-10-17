@@ -1,43 +1,25 @@
-# CMake for the whole project.
+# The Village Shop: client and server, built on the Moksha engine. The `live` preset (CMakeUserPresets.json)
+# builds the local engine clone instead of the pinned commit.
 
 cmake_minimum_required(VERSION 3.31)
 
-project(VilageShop VERSION 0.0.1 LANGUAGES CXX C)
+project(VillageShop LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Disable RTTI and Exceptions globally
-if (MSVC)
-    add_compile_options(/GR-)
-    # CMake's default MSVC flags include /EHsc (exceptions ON); strip it so /EHs-c- takes effect
-    # without a D9025 override warning. With exceptions off MSVC only warns (C4530) on try/catch,
-    # so /we4530 promotes it to an error, matching clang's -fno-exceptions.
+# The engine builds without exceptions; drop MSVC's default /EHsc so it doesn't clash with /EHs-c- (D9025).
+if(MSVC)
     string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    add_compile_options(/EHs-c-)
-    add_compile_options(/we4530)
-    add_compile_options(/Wall)
-    add_compile_options(/Qspectre-)
-    add_compile_options(/wd5045)
-    add_compile_options(/wd4820)
-    add_compile_definitions(_HAS_EXCEPTIONS=0)
-else()
-  add_compile_options(-fno-rtti -fno-exceptions)
 endif()
 
-# Unit tests. Turn off with -DVG_BUILD_TESTS=OFF (e.g. on low-RAM build hosts).
-option(VG_BUILD_TESTS "Build unit test executables" ON)
+# The engine commit this game builds against. Bump it after pushing the engine changes the game needs.
+set(MOKSHA_PIN 7520df8d9c23421970d72fc7a3fd2b4d71705444)
 
-add_subdirectory(logging)
-add_subdirectory(shared)
+include(FetchContent)
+FetchContent_Declare(moksha
+    GIT_REPOSITORY https://github.com/amrit-choudhary/moksha.git
+    GIT_TAG ${MOKSHA_PIN})
+FetchContent_MakeAvailable(moksha)
+
 add_subdirectory(client)
 add_subdirectory(server)
-add_subdirectory(content_server)
-add_subdirectory(client_package)
-
-if(VG_BUILD_TESTS)
-    add_subdirectory(test_framework)
-    add_subdirectory(client_tests)
-    add_subdirectory(server_tests)
-endif()

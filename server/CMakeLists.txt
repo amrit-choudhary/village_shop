@@ -1,31 +1,7 @@
-# CMake for the server application.
+# The Village Shop server.
 
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-
-add_subdirectory(third_party/sqlite3)
-
-add_executable(VillageShop_Server ${SOURCES})
-
-target_include_directories(VillageShop_Server PRIVATE ${CMAKE_SOURCE_DIR})
-
-# Set preprocessor options.
-if(WIN32)
-    target_compile_definitions(VillageShop_Server PRIVATE VG_WIN)
-elseif(UNIX AND NOT APPLE)
-    target_compile_definitions(VillageShop_Server PRIVATE VG_LINUX)
-elseif(APPLE)
-    target_compile_definitions(VillageShop_Server PRIVATE VG_MAC)
-endif()
-# End Set preprocessor options.
-
-target_link_libraries(
-    VillageShop_Server
-    PRIVATE
-    VillageShop_Shared
-    sqlite3
-    )
-
-if(WIN32)
-    # Link against Winsock library
-    target_link_libraries(VillageShop_Server PRIVATE Ws2_32)
-endif()
+moksha_add_server(VillageShop_Server
+    SOURCES
+        main.cpp
+        village_server.cpp
+    RES_LIST resources/res_list.json)

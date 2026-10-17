@@ -1,7 +1,6 @@
 {
-  "permissions": {
-    "allow": [
-      "WebSearch"
-    ]
-  }
+    "permissions": {
+        "allow": ["WebSearch"],
+        "additionalDirectories": ["../../moksha/moksha"]
+    }
 }

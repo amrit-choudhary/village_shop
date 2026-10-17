@@ -1,119 +1,45 @@
+@../../moksha/moksha/CLAUDE.md
+
 # The Village Shop
 
-C++20 multiplayer village-shop simulation game. Player runs a shop in a village where
-every villager is individually simulated with needs (food, shelter, luxury goods); AI
-competitors open rival shops; the village population grows or shrinks based on how well
-its needs are met; a multiplayer mode lets players compete in a shared village simulation.
+A multiplayer village-shop simulation built on the Moksha engine. The player runs a shop in a village where
+every villager is simulated with needs (food, shelter, luxury goods); AI competitors open rival shops; the
+population grows or shrinks with how well its needs are met; in multiplayer, players compete in one shared
+village. Economy rules: [design/v1/design_v1.md](design/v1/design_v1.md) (day-based rounds,
+cost/price/demand/supply, population growth, bank loans, per-shop cash/stock/discount/pnl).
 
-**Current actual state**: early engine-building phase. Renderer backends (DX12/Metal),
-networking, physics, audio, and animation systems are being built out. The real shop/economy
-gameplay (`VillageGame`, see [client/CLAUDE.md](client/CLAUDE.md)) exists, but many `game_*`/
-`scene_*` files in `client/src/` are tech-demo scenes (breakout, dice, falling sand, game of
-life, RPG test) used to exercise engine subsystems, not shipped features. `client/doc/tdd_v1.txt`
-and `server/doc/tdd_v1.txt` are both empty placeholders — no formal TDD content yet.
+**Current state:** a fresh start on the engine. The client opens a window with an empty village scene and a
+title bar; the server accepts connections and has no village messages yet.
 
-Gameplay economy rules that do exist are documented in `design/v1/design_v1.md` (short, ~34
-lines): a day-based simulation (1 round = 1 day) with cost/price/demand/supply, village
-population/growth, bank loans/interest, and per-shop cash/stock/preference/discount/pnl.
+## Layout
+- `client/` (`VillageShop_Client`, `moksha_add_game`): `game_main.cpp` (`MOKSHA_GAME`), `game/village_game.*`
+  (`VS::VillageGame`), `scene/scene_village.*` (the world), `scene/scene_ui_village.*` (HUD), `resources/`
+  (`res_list.json`, `config/settings.ini`, the game's own assets; engine shaders, font and UI atlas come
+  from the engine).
+- `server/` (`VillageShop_Server`, `moksha_add_server`): `main.cpp` + `VS::VillageServer`
+  (`IGameServerListener`), `resources/config/settings.ini` (`[settings] port`).
+- Add `shared/` (a `VillageShop_Shared` library) once client and server share code, e.g. the village's
+  message verbs (from `GameProtocol::FIRST_GAME_VERB`). Pass it to both through `LIBRARIES`.
+- Game code is in `namespace VS`. Includes are qualified from this repo's root (`"client/game/village_game.h"`);
+  engine headers as `"moksha/..."`.
+- `design/` (game design), `automation/` (old helper scripts, written for the previous layout),
+  `screenshots/` (earlier prototype), `FPSMilestones.txt` (engine-loop benchmarks from March 2025).
 
-## Folder map
-- `shared/` — code shared by client and server: networking protocol, math, physics, RNG,
-  data structures, file I/O parsers. See [shared/CLAUDE.md](shared/CLAUDE.md).
-- `client/` — game client (rendering, scene, game logic, UI, audio, input, world).
-  See [client/CLAUDE.md](client/CLAUDE.md).
-- `server/` — game server (UDP networking, main loop). See [server/CLAUDE.md](server/CLAUDE.md).
-- `content_server/` — separate TCP service that delivers config files (`dlc/`) to clients; the client
-  downloads changed files at startup in the background. See [content_server/CLAUDE.md](content_server/CLAUDE.md).
-- `client_package/` — separate CLI tool that cooks/packages `client/resources` for
-  distribution (HLSL→CSO via dxc.exe, textures→DDS via texconv.exe). Not another client.
-- `test_framework/` — hand-rolled unit test framework (no GoogleTest): `TEST(category, name)`
-  auto-registers, `EXPECT` records a failure and continues, `ASSERT` records and returns from the
-  test, `EXPECT_NEAR` for floats. No exceptions. Each test executable's `main` returns
-  `ME::Test::RunAll()` (exit code 0 = all passed).
-- `client_tests/` — `VillageShop_Client_Tests`: covers shared code — `Grid`, `RingBuffer`, `Pool`,
-  `Span`, `INIParser::Parse`, Vec2/Vec3/Vec4/Vec3i, `FP_24_8`, `Random`/`RandomWt`,
-  `ByteWriter`/`ByteReader`, `GameProtocol` helpers, TCP message framing, `ContentManifest`. Links
-  only `VillageShop_Shared`; client code itself isn't testable until the client is split into a
-  library. Untested: sockets, physics, Matrix4/transform, CSV/DDS parsers, `TimeManager`.
-- `server_tests/` — `VillageShop_Server_Tests`: covers `ScoreDB` (SQLite `:memory:`, plus one
-  file round-trip). The server has no library target, so the CMake lists the server `.cpp` files
-  under test explicitly — add to `SERVER_SOURCES_UNDER_TEST` when testing a new server file.
-- `logging/` — minimal header-style logging library (colored console output, no file sinks,
-  no severity filtering).
-- `automation/` — local dev-helper shell scripts, not CI (no GitHub Actions in the repo):
-  clang-format-all, mac codesigning, LOC counts, and a trivial "launch client+server, check
-  exit codes" smoke test. Not a real integration test suite.
-- `design/` — game design docs (currently just `design/v1/design_v1.md`).
-
-## Build system
-- Root `CMakeLists.txt`: C++20, builds `logging` → `shared` → `client` → `server` →
-  `content_server` → `client_package`, then `test_framework` → `client_tests` → `server_tests`
-  when `VG_BUILD_TESTS` is ON (default; `-DVG_BUILD_TESTS=OFF` skips them).
-- **RTTI and exceptions are disabled globally** (MSVC: `/GR- /EHsc` + `_HAS_EXCEPTIONS=0`;
-  else: `-fno-rtti -fno-exceptions`). Do not write or suggest code using `try/catch`,
-  `dynamic_cast`, or `typeid`.
-- Platform matrix maintained in parallel: Windows (DX12 renderer, Winsock2 networking,
-  `VG_WIN` define) and Mac (Metal renderer, Cocoa, `VG_MAC` define), plus an ASCII/CLI
-  renderer + headless input backend for a console-only build.
-- The **server** and **content server** also build and run on Linux (`VG_LINUX`, POSIX sockets); the
-  client targets Windows and Mac only. Test host: a Raspberry Pi 4B (Linux ARM64).
-- Source files are collected with `file(GLOB ...)`, which runs only at configure time: after adding or
-  removing a `.cpp`, re-run `cmake -B build` before building (otherwise: undefined-reference link errors).
-
-## Code conventions
-Apply to all project code (not `third_party/`). Existing code that breaks a rule isn't rewritten
-unprompted; new code follows them.
-- **No exceptions or RTTI** — no `try`/`catch`/`throw`, `dynamic_cast`, `typeid` (see Build system).
-  Report failure with return values (`bool`, null pointer, error enum).
-- **`class`, never `struct`** — even for plain-data aggregates; use an explicit `public:` label.
-- **No `std::vector` in new code** — prefer caller-owned memory (pointer + capacity), fixed-size
-  arrays, or `Span<T>`, always with bounds checks. If growth is truly needed, ask first.
-- **No singletons / static instance pointers** to give callbacks or systems access to object state.
-  Pass explicit bound context instead (the `Delegate` pattern: `void* object` + function pointer, or
-  a listener interface). If a global looks like the only option, raise it as a design problem first.
-- **Includes are module-qualified from the repo root**: `client/src/...`, `shared/src/...`,
-  `server/src/...`, `logging/src/logging.h`, `test_framework/src/...`. No bare `src/...`, no `../`.
-- **Comments: max 2 lines**, stating the engine-level contract. Never justify code by what one
-  game or demo currently does — this is a general engine many games will be built on.
-- **Engine APIs over demo call sites** — if changing an API makes the engine more consistent, change
-  it and fix the tech-demo call sites in the same pass; demos carry no backward-compat weight.
-- Headers include what they use directly (e.g. `<cstdint>`): MSVC/Apple clang hide missing
-  includes, g++ (Linux server builds) does not.
-- Format with the repo's `.clang-format` (`automation/clang_format_all_files.sh`).
-
-## Working with AI assistants
-- Never `git commit` or stage; the user reviews and commits manually.
-- Don't build or run the client/server to verify; the user does that. Ask before running anything.
-- For new systems: small, independently buildable steps, simplest first, explain each, then stop.
-
-## Dependencies
-README says "no external dependencies," but this isn't strictly true — vendored code exists:
-- `shared/third_party/json` — cJSON, used for all JSON parsing (texture atlases, animation
-  clips, wave data).
-- `client/third_party/miniaudio-0.11.23` — audio playback backend.
-- `client/third_party/metal` — Metal helper headers for the Mac renderer.
-- `server/third_party/sqlite3` — SQLite amalgamation, server-only; persists the global high score
-  (see [server/CLAUDE.md](server/CLAUDE.md)).
-
-These are vendor code; treat them as opaque dependencies, not project code to modify.
+## Engine link
+- Engine pin: `MOKSHA_PIN` in the root `CMakeLists.txt`. Presets: `pinned` (`build/`) and `live`
+  (`build-live/`, from the gitignored `CMakeUserPresets.json`, building `../../moksha/moksha`).
+- Engine changes the game needs go into the engine (generic, no village specifics), pushed first; then bump
+  the pin. Engine conventions (imported above) apply to this repo too.
 
 ## Pi deployment (me_server_manager)
-The Pi runs the servers through a separate repo, **me_server_manager** (PC: `D:\Dev\me_server_manager\me_server_manager`,
-Pi: `/home/amrit/gamedev/me_server_manager/me_server_manager`): a stdlib-only Python web dashboard (port 8080,
-systemd service) to build, start/stop and monitor both servers. Its `config.json` hard-codes things from this repo;
-if you change any of them, say so, so the dashboard config gets updated too:
-- **Build steps**, run in the Pi clone `/home/amrit/gamedev/cpp_projects/village_shop/village_shop`: `git pull --ff-only`
-  (the Pi clone must stay free of local edits), `cmake -B build -DCMAKE_BUILD_TYPE=Release -DVG_BUILD_TESTS=OFF`,
-  `cmake --build build --target VillageShop_Server VillageShop_ContentServer -j2`, then `cp -r server/resources
-  build/server/` and `cp -r content_server/resources content_server/dlc build/content_server/`.
-- **Binary paths**: `build/server/VillageShop_Server`, `build/content_server/VillageShop_ContentServer`. Renaming a
-  target, adding a server, or new runtime folders to copy needs a dashboard config change.
-- **Clean build** uses `cmake --build build --target clean`, never `rm -rf build`, so `village_shop.db` survives.
-- **Runtime contract**: started with cwd = the binary's folder and stdout/stderr captured to a log file (line-buffered via
-  `stdbuf`), so log to stdout via `logging/`. Stopped with SIGTERM, then SIGKILL after 5 s, so any graceful shutdown
-  added later must finish within 5 s. Exiting without being stopped (any exit code) counts as a crash and triggers
-  auto-restart; a server that exits on purpose would be restarted.
-
-## Dev log
-`FPSMilestones.txt` — informal engine-loop perf benchmarks from March 2025 (basic loop,
-logging overhead, fixed-frame-rate cap, RNG generation). Not gameplay milestones.
+The Pi runs servers through a separate repo, **me_server_manager** (PC: `D:\Dev\me_server_manager\me_server_manager`,
+Pi: `/home/amrit/gamedev/me_server_manager/me_server_manager`): a Python web dashboard (port 8080, systemd
+service) that builds, starts, stops and monitors servers. Its `config.json` still has this repo's previous
+targets and steps; it needs updating before the dashboard can run the new server:
+- **Build**, in the Pi clone: `git pull --ff-only`, `cmake --preset pinned -DMOKSHA_BUILD_CLIENT=OFF
+  -DCMAKE_BUILD_TYPE=Release`, `cmake --build --preset pinned --target VillageShop_Server -j2`. The build
+  copies `resources/` next to the binary; no manual copy steps.
+- **Binary**: `build/server/VillageShop_Server`. There is no content server in this repo now.
+- **Runtime contract**: started with cwd = the binary's folder, stdout/stderr captured to a log file. Stopped
+  with SIGTERM, then SIGKILL after 5 s (the engine has no SIGTERM handler yet). Any exit counts as a crash and
+  triggers a restart.

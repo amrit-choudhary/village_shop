@@ -16,10 +16,6 @@
 *.dylib
 *.dll
 
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
 *.lai
 *.la
@@ -36,7 +32,11 @@
 
 # Builds
 /build
+/build-*
 /.vscode
 
-# Exceptions
-!client/resources/meshes/**/*.obj
+# clangd index
+/.cache
+
+# Per-machine presets (the live engine link)
+/CMakeUserPresets.json
